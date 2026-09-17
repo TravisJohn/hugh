@@ -103,11 +103,80 @@ Rules that are not optional:
 
 - **Forward-only.** There is no down-migration tooling. Review every migration
   before applying it to a project holding real data.
-- **Row Level Security is enabled on all 27 tables** and each has policies.
+- **Row Level Security is enabled on all 31 tables.** 27 carry policies; four
+  (`code_drills`, `operation_events`, `track_generations`, `usage_counters`)
+  have none on purpose — RLS with no policy denies everyone, and only the
+  service role, which bypasses RLS, touches them.
   `032_lock_down_profiles_rls.sql` closes a critical self-promotion gap found in
   the audit; it must be applied before any production launch.
 - **A fresh Supabase project needs all 51 applied in order.** They have never
   been squashed, and squashing is only safe before any row exists.
+
+**The live project is `hugh-sydney`, region Sydney (`ap-southeast-2`), since
+2026-09-17.** It replaced the original Tokyo project; see the PROJECT_LOG entry
+of that date. Any restore should target Sydney too — Hugh's intended users are
+in Australia.
+
+### 4a. Restoring from a dump rather than from migrations
+
+Replaying the 51 migrations rebuilds the schema but no rows. To bring back
+**data** — accounts, notes, files — restore a dump into a fresh Supabase
+project (never a bare Postgres: `auth` and `storage` need the services behind
+them). This path was run end to end on 2026-09-17. What it takes:
+
+1. **Dump** roles, schema, and data (`scripts/backup-db.sh`, or the nightly
+   artifact from `hugh-backups`).
+2. **Load in one transaction**, in this order: `roles.sql` → `schema.sql` →
+   `data.sql`, with `psql --single-transaction -v ON_ERROR_STOP=1` through the
+   **session pooler, port 5432**. One transaction means a failure writes
+   nothing and the load can simply be re-run.
+3. **Strip two things first**, or the load fails:
+   - `COMMENT ON SCHEMA "public"` in `schema.sql` — the `postgres` role does not
+     own that schema in a new project.
+   - The `COPY` blocks for `storage.buckets_vectors` and
+     `storage.vector_indexes` in `data.sql` — Supabase-internal tables that
+     `postgres` cannot write. Both are empty for Hugh; check before removing.
+4. **Re-create the seven objects the dump leaves out.** `supabase db dump`
+   skips the `auth` and `storage` schemas' DDL, so these are silently missing
+   after step 2 and nothing fails to say so:
+   - **Six storage policies** on `storage.objects` — owner-only select, insert
+     and delete for `note-images` (migration `027`) and `monitor-documents`
+     (migration `042`), both gated by the provisioning checks from `050`.
+     Without them, every image and document request is refused.
+   - **The `on_auth_user_created` trigger** on `auth.users` (migration `007`).
+     Without it, a new signup gets no `profiles` row.
+
+   Take their definitions from the migrations, or from the source database's
+   `pg_policies` and `pg_get_triggerdef` if it is still reachable. Load them
+   after `data.sql`, schema-qualifying function names (`public.…`), because
+   `data.sql` empties the `search_path`.
+5. **Copy the storage files.** The dump holds `storage.objects` *records*, not
+   file bytes. Upload every object to the same bucket and path (upsert, since
+   the record already exists), from the source project or from the
+   `hugh-backups` `storage/` mirror. Verify by comparing each object's size and
+   `eTag` between source and target, and that every target record was
+   rewritten by the upload — otherwise matching metadata proves nothing.
+6. **Re-enter the Auth settings by hand** — they live outside the database:
+   Authentication → URL Configuration (**Site URL** and **Redirect URLs**, which
+   must include the production domain and `http://localhost:3000/**`), and
+   Sign In / Providers.
+7. **Verify before switching anything:** exact row counts per table (including
+   `auth.users` and `storage.objects`), policy/RLS/trigger/function/grant
+   parity with the source, then `npm run health` and a real login against the
+   new project.
+
+Then repoint the three places that name the project:
+
+| Where | What | Watch out for |
+|---|---|---|
+| `.env.local` | the three Supabase variables | keep the old file until the switch is proven |
+| Vercel (Production + Preview) | the same three | `NEXT_PUBLIC_*` must be type **Config**, not Secret — Vercel refuses to save a public-prefixed Secret, and a type cannot be changed after creation, so remove and re-add. **Redeploy without the build cache**: the public values are compiled into the browser bundle. |
+| `hugh-backups` secrets | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL` | the DB URL password must be percent-encoded; dispatch both workflows and read the project ref in the snapshot log |
+
+Confirm the Vercel switch from outside rather than from the dashboard: the
+production bundle contains the Supabase URL and anon key, and the anon key's
+JWT payload names its project `ref`. A dashboard edit is not proof — on
+2026-09-17 two of the three edits had not saved.
 
 Off-site backups (daily encrypted DB snapshot plus a storage mirror) live in a
 separate private repo, `hugh-backups`, and run on GitHub Actions. The snapshot

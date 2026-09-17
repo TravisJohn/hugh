@@ -8248,3 +8248,68 @@ block a deploy — the realtime-mastery logging gap (flag off in Vercel), the
 
 Four merged PR branches were deleted from origin: `feat/learn-teaches-concepts`,
 `fix/learn-failure-paths`, `fix/realtime-usage-logging`, `fix/refinement-reset`.
+
+## 2026-09-17 — Hugh moves from Tokyo to Sydney
+
+Hugh's Supabase project was created in Tokyo (`ap-northeast-1`). Its intended
+first users are in Australia, and with one real user today, downtime was cheap
+and the move would only get more expensive. The live database, Storage, Vercel
+and the `hugh-backups` jobs now all point at a new project, `hugh-sydney`
+(`ap-southeast-2`). The Tokyo project was never written to during the move and
+is kept, untouched, as a fallback until **2026-09-24**, then deleted — which
+also frees the second Free-plan project slot.
+
+This was the first time the restore path in the 28 August entry was run into a
+real Supabase project rather than a bare Postgres, and it corrected that entry
+in three places.
+
+**What moved, and how each part was proven**
+
+| Part | Method | Proof |
+|---|---|---|
+| Rows, incl. 12 accounts | dump → one `psql --single-transaction` load | all 36 counted tables identical, 5,899 rows |
+| Security | same load, plus seven re-created objects | 35 policies, RLS on all 31 tables, 1 auth trigger, 5 functions, 93 grants — identical to Tokyo |
+| 1,075 Storage files (140 MB) | download from Tokyo, upsert into Sydney | size, `eTag` and type identical for every object, and every Sydney record rewritten by the upload |
+| App | `.env.local` switched; login, notes with images, Monitor docs, a write | passed locally, then live |
+| Backups | three `hugh-backups` secrets replaced, both workflows dispatched | snapshot log names the Sydney ref, 31 tables, 35 blocks; mirror sees 1,075 upstream, 1,075 present |
+
+Tokyo was checked for drift immediately before the switch: every count matched
+the pre-migration baseline, so nothing written after the dump was lost.
+
+**Three things the dump does not carry, and nothing warns about.**
+
+*Seven security objects.* `supabase db dump` emits no DDL for `auth` or
+`storage`, so the six owner-only storage policies (`027`, `042`) and the
+`on_auth_user_created` trigger (`007`) were simply absent after a clean load.
+The load reported success. Sydney would have refused every image and document
+request, and new signups would have had no `profiles` row. They were re-created
+from Tokyo's live definitions and checked for parity.
+
+*Two tables the `postgres` role cannot write.* `storage.buckets_vectors` and
+`storage.vector_indexes` are Supabase-internal; their empty `COPY` blocks abort
+the load. Removed, after confirming both were empty.
+
+*File bytes.* Known since 28 August, but worth stating the verification trap:
+restored `storage.objects` records already match the source, so comparing
+metadata alone proves nothing. The check that counts is that every target
+record was rewritten by an upload.
+
+**Vercel's save was not a save.** Two of the three variable edits never
+persisted: Vercel now refuses a `NEXT_PUBLIC_*` variable typed Secret, and the
+only sign was a red line under the field. A redeploy — even without build
+cache — shipped Tokyo's URL and anon key while the service key pointed at
+Sydney, which breaks every service-role route. It was caught by reading the
+production bundle and decoding the anon key's JWT `ref`, not from the
+dashboard. The two public variables are now type **Config** (they are public
+by design; RLS is what protects the data).
+
+**Corrections to earlier entries.** Hugh has 31 tables, not 27 or 28: four
+(`code_drills`, `operation_events`, `track_generations`, `usage_counters`) have
+RLS with no policy on purpose. And the Tokyo project's Auth **Site URL was
+still `http://localhost:3000`**, so any confirmation or reset email ever sent
+linked to localhost. Sydney's is the production domain.
+
+`RESTORE.md` §4a now carries the dump-restore procedure step by step. Open
+items: reset the database password (used interactively during the move) and
+re-run the backup-secret update; delete Tokyo on 24 September; rename
+`hugh-app` to Hugh as its own change.
