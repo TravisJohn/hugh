@@ -8347,3 +8347,36 @@ API answers 404, not 403, which reads like a missing file.
 A 24-hour Supabase personal access token was used for the Auth change and
 removed from `.env.local` afterwards. The 24 September Tokyo check now targets
 `heyhugh.vercel.app`.
+
+## 2026-09-17 — /privacy discloses live voice mastery
+
+The last thing standing between `MASTERY_REALTIME_ENABLED` and production was a
+disclosure: with the flag on, the learner's voice goes to OpenAI, and `/privacy`
+named only Google (standard Prove-it speech recognition) and ElevenLabs (text,
+not voice).
+
+Traced before writing, so the page describes the code rather than the plan:
+
+- **OpenAI** receives the audio browser-direct over WebRTC — it never passes
+  through Hugh's server — plus the card's `summary_doc`, or its criteria and
+  diary entries when there is none, as the coach's instructions.
+- **Anthropic** receives the text transcript once the session ends, for the
+  Haiku recap.
+- **Nothing is stored.** The recap route writes no row and logs no transcript;
+  no mastery route persists what the learner said.
+- **Live voice replaces Google**, it does not add to it — the page picks one
+  client or the other.
+
+The OpenAI wording is conditional ("if the live voice version is switched on")
+so the page is true in production today, with the flag off, and stays true when
+it goes on. A new "What Hugh does not store" paragraph makes the no-recording
+claim explicit; a comment in the page source names the recap route as what
+would falsify it. Last-updated moved to 17 September.
+
+The flag is still off in Vercel. The remaining gate on enabling it is the one
+the wishlist already records: no realtime session has ever run end to end.
+
+CLAUDE.md's STT row is corrected in the same change. "Browser-native" read as
+on-device; it now says Chrome sends the audio to Google, and that realtime
+mastery transcribes through OpenAI instead. That closes the second wishlist
+item this session.

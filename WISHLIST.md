@@ -102,17 +102,22 @@ are not cheap — were spent with no record anywhere.
 `MASTERY_REALTIME_ENABLED=true` in local `.env.local`; confirmed **off in
 Vercel**, so this was never live.
 
-**The money blocker is closed. A privacy blocker is not.** Enabling the flag
-sends learner **voice audio to OpenAI**, and `/privacy` does not say so — it
-currently discloses ElevenLabs (which receives text, not voice) and the
-browser's Google-backed speech recognition, and nothing else. That disclosure
-has to be written before the flag goes on in production.
+**The money blocker is closed, and so is the privacy one (2026-09-17).**
+Enabling the flag sends learner **voice audio to OpenAI**, browser-direct over
+WebRTC, along with the card's summary or diary notes as the coach's context.
+`/privacy` now says so, conditionally ("if the live voice version is switched
+on"), so it stays true whichever way the flag is set. It also names the
+transcript going to Anthropic for the recap, and states that Hugh stores
+neither the audio nor the transcript — true today because the recap route
+writes nothing. If that route ever persists the transcript, the page is wrong.
 
 **Still untested end to end.** The pure accumulator has tests and the transport
 has tests, but no realtime session has ever run against this code — the flag has
 never been on. First enable should be watched, with /admin/features open.
 
-## Browser speech recognition sends audio to Google (found 2026-09-05)
+## Browser speech recognition sends audio to Google (found 2026-09-05) — CLOSED 2026-09-17
+
+CLAUDE.md's tech-stack row now says it outright. The original note:
 
 `hooks/useSpeechRecognition.ts` uses `webkitSpeechRecognition`, live in
 `/mastery`. CLAUDE.md describes the Web Speech API as "browser-native,

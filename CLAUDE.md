@@ -48,7 +48,7 @@ pillar's scope changes.
 | LLM — Anthropic | Claude API (model per route — see Model Selection below) |
 | LLM — OpenAI | Notes Coach (vision), Notes summarise, Realtime mastery voice, admin architecture assistant |
 | TTS | ElevenLabs API |
-| STT | Web Speech API (browser-native, Chrome/Edge only) |
+| STT | Web Speech API (Chrome/Edge only) — a browser API, **not on-device**: Chrome sends the audio to Google. Realtime mastery uses OpenAI's transcription instead |
 | In-browser Python | Pyodide (`lib/code/pyodide.worker.ts`) — code drills and sandbox |
 | In-browser SQL | DuckDB-WASM (`lib/code/duckdbClient.ts`) |
 | Editor | CodeMirror (`@uiw/react-codemirror`) |
