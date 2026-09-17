@@ -67,8 +67,8 @@ is the shape of the file, never the values.
 
 ## 3. Restore the code
 
-    git clone https://github.com/TravisJohn/hugh-app.git
-    cd hugh-app
+    git clone https://github.com/TravisJohn/hugh.git
+    cd hugh
     git checkout -b <your-branch-name> stable-2026-09-12
     npm ci
     cp .env.example .env.local     # then fill in real values
