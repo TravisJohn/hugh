@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { RETENTION_DAYS } from "@/lib/retention";
 
 // The privacy disclosure. Deliberately PUBLIC — no verifyUserAccess — because a
 // privacy notice that can only be read after signing up is no notice at all.
@@ -114,8 +115,21 @@ export default function PrivacyPage() {
         <Section title="How long it is kept">
           <p>
             Until you delete it. Hugh does not expire your learning data on a timer —
-            a diary you wrote a year ago is still worth having. Deleting your account
-            removes it.
+            a diary you wrote a year ago is still worth having. That includes your
+            answers to the questions Hugh asks before building a track, which you can
+            read and delete from the track&apos;s card at any time. Deleting your account
+            removes all of it.
+          </p>
+          <p>
+            Two things do expire. If you upload a document to build a course and never
+            approve the topic Hugh suggests, the text extracted from it is deleted
+            after {RETENTION_DAYS.pendingDocumentExtractions} days. And technical records
+            of what Hugh did — whether a request succeeded and how long it took — are
+            deleted after {RETENTION_DAYS.operationEvents} days.
+          </p>
+          <p>
+            Hugh does not delete inactive accounts automatically. If you stop using
+            Hugh, your data stays until you delete your account.
           </p>
         </Section>
 

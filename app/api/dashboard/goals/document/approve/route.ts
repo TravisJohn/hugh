@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse, after } from "next/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { documentUploadEnabled, DOCUMENT_UPLOAD_LOCKED_MESSAGE } from "@/lib/learn/documentPath";
+import { documentUploadEnabled, DOCUMENT_EXPIRED_MESSAGE, DOCUMENT_UPLOAD_LOCKED_MESSAGE } from "@/lib/learn/documentPath";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { judgeTopicDomain } from "@/lib/learn/topic-domain-server";
@@ -49,6 +49,25 @@ export async function POST(request: NextRequest) {
   }
   if (goal.source_kind !== "document" || goal.track_status !== "awaiting_approval") {
     return NextResponse.json({ error: "This goal isn't awaiting approval." }, { status: 409 });
+  }
+
+  // The document text must still exist. The retention job (migration 052)
+  // clears it after a window without approval, and without this check the build
+  // below would quietly ground the track in the topic alone — a different
+  // product from the one the learner asked for, with nothing saying so. Checked
+  // before the topic gate so a refusal spends no tokens.
+  const { data: pendingText, error: pendingError } = await supabase
+    .from("pending_document_extractions")
+    .select("goal_id")
+    .eq("goal_id", goalId)
+    .maybeSingle();
+
+  if (pendingError) {
+    logSafeError("goals/document/approve pending text", pendingError, [topic]);
+    return NextResponse.json({ error: "Couldn't check your document. Please try again." }, { status: 500 });
+  }
+  if (!pendingText) {
+    return NextResponse.json({ error: DOCUMENT_EXPIRED_MESSAGE }, { status: 410 });
   }
 
   // Re-gate: the learner may have edited the topic since extraction. A human

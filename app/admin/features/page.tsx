@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, Layers, AlertTriangle, EyeOff } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/requireAdmin";
 import { createServiceClient } from "@/lib/supabase/service";
+import { RETENTION_DAYS } from "@/lib/retention";
 import {
   buildHealthReport,
   formatUsd,
@@ -47,6 +48,10 @@ export default async function FeaturesPage({ searchParams }: Props) {
   const sp    = await searchParams;
   const days  = WINDOWS.some(w => String(w.days) === sp.days) ? Number(sp.days) : 7;
   const label = WINDOWS.find(w => w.days === days)!.label;
+  // Health reads operation_events, which the retention job (migration 052)
+  // clears after a fixed window. "All time" is true of spend and learners but
+  // not of outcomes, so that column names the window it can actually see.
+  const healthLabel = days === 0 ? `last ${RETENTION_DAYS.operationEvents} days` : label;
 
   const service = createServiceClient();
 
@@ -253,7 +258,7 @@ export default async function FeaturesPage({ searchParams }: Props) {
                 <tr className="border-b border-slate-800/60 text-xs uppercase tracking-wider text-slate-600">
                   <th className="px-6 py-3 text-left font-medium">Feature</th>
                   <th className="px-4 py-3 text-left font-medium">Kind</th>
-                  <th className="px-4 py-3 text-left font-medium">Health · {label}</th>
+                  <th className="px-4 py-3 text-left font-medium">Health · {healthLabel}</th>
                   <th className="px-4 py-3 text-right font-medium">Spend</th>
                   <th className="px-4 py-3 text-right font-medium">Learners</th>
                   <th className="px-6 py-3 text-right font-medium">Tests</th>

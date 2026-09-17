@@ -253,6 +253,10 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   `SUPABASE_ACCESS_TOKEN` set. Applying is a manual step: shipping code that
   depends on an unapplied migration will break at runtime.
 - Row Level Security must be enabled on all tables
+- **Retention:** what a learner made (including `goal_answers`) is kept until
+  they delete it. Only temporary or system records expire, by pg_cron jobs in
+  migration 052. The windows live in `lib/retention.ts`, which `/privacy` renders
+  and a test holds equal to the SQL — adding an expiry means changing both.
 
 ## Persona Configuration
 Personas are a static config (not in DB), now used by scripted mastery for its

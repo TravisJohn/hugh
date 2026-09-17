@@ -51,6 +51,14 @@ in front of real users, and it should be treated as release-blocking.
   removes end to end, and what the Anthropic / OpenAI / ElevenLabs data-handling
   position is for learner text sent to them.
 
+- **This whole section is CLOSED (2026-09-17).** `/privacy`, account deletion
+  and the provider positions shipped in the privacy pass (PR #3). Retention was
+  the last item and is now decided: learner material, `goal_answers` included,
+  is kept until deleted; abandoned document extractions expire after 7 days and
+  `operation_events` after 180, by pg_cron (migration 052). Inactive accounts
+  are not auto-deleted, and `/privacy` says so. Dropping the leftover interview
+  tables was split out: it needs the dead Free/Pro quota layer removed first.
+
 ## Realtime mastery spends without logging — CLOSED 2026-09-08
 
 `app/api/tracker/mastery/realtime-session/route.ts` calls `enforceUsageGate`

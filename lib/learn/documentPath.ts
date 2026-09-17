@@ -1,4 +1,5 @@
 import "server-only";
+import { RETENTION_DAYS } from "@/lib/retention";
 
 // ── The document-upload path, locked ─────────────────────────────────────────
 //
@@ -27,6 +28,15 @@ import "server-only";
 export function documentUploadEnabled(): boolean {
   return process.env.DOCUMENT_UPLOAD_ENABLED === "true";
 }
+
+/**
+ * Approve's refusal once the extracted text is gone — cleared by the retention
+ * job (migration 052) because the learner did not approve within the window.
+ * Its own words, not a generic failure: this is not a breakage, and the way out
+ * is specific.
+ */
+export const DOCUMENT_EXPIRED_MESSAGE =
+  `Your document was cleared after ${RETENTION_DAYS.pendingDocumentExtractions} days without approval, so there is nothing to build this track from. Upload it again to continue.`;
 
 /** The refusal both routes return, so they cannot drift into different words. */
 export const DOCUMENT_UPLOAD_LOCKED_MESSAGE =

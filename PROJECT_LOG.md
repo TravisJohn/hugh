@@ -8380,3 +8380,48 @@ CLAUDE.md's STT row is corrected in the same change. "Browser-native" read as
 on-device; it now says Chrome sends the audio to Google, and that realtime
 mastery transcribes through OpenAI instead. That closes the second wishlist
 item this session.
+
+## 2026-09-17 — Retention decided, and the two expiries that follow from it
+
+The last open item of the privacy pass. The audit framed it as "a TTL for
+`goal_answers`"; it was treated instead as a policy across every store.
+
+**The decision (Travis):** what a learner made is kept until they delete it —
+diary, tracks, notes, Monitor documents, and `goal_answers`. The 5-whys answers
+were the real question: they are the most sensitive text in the product, but
+the replay harness reads them to measure generation quality, and the learner
+can already read and delete them from the goal card. Kept.
+
+**What expires**, by pg_cron inside the database (migration 052, needs no
+secret or external runner):
+
+| Store | Window | Why |
+|---|---|---|
+| `pending_document_extractions` | 7 days | Meant to live only between extract and approve (031's own comment), but an abandoned upload never reached approve, so the CV text stayed forever |
+| `operation_events` | 180 days | Already redacted and capped; tidiness. `/admin/observability` reads 30 days back, so nothing it shows is cut |
+
+The windows live in `lib/retention.ts`. `/privacy` renders them, and
+`lib/retention.test.ts` reads the migration and fails if the SQL intervals
+differ — confirmed by breaking the constant once and watching it fail.
+
+**Two knock-on fixes.** Approve now refuses with its own 410 message when the
+extraction is gone, checked before the topic gate so it spends nothing. Before,
+it passed possibly-undefined text straight to `generateTrack`, which would
+quietly build from the topic alone. And `/admin/features`' Health column labels
+"All time" as "last 180 days", because outcomes no longer go back further.
+
+**`/privacy`** now says the two windows, that `goal_answers` is kept and
+deletable from the card, and that inactive accounts are not deleted
+automatically — decided not to build that at 12 accounts.
+
+**Split out, not done:** dropping `sessions` / `questions` / `answers` from the
+deleted interview loop. `lib/quota.ts` still counts `sessions`, feeding a
+"free sessions used" meter on `/home/learn`, the `/upgrade` page, and a Pro
+modal on the board — a dead Free/Pro layer that has to go first, and part of it
+is a product call.
+
+The document path is locked (since 2026-09-09), so the extraction expiry
+protects the day it reopens rather than anyone today; 0 rows exist.
+
+**Migration 052 is NOT applied.** It enables `pg_cron`; confirm the jobs with
+the query at the bottom of the file.
