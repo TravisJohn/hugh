@@ -8313,3 +8313,37 @@ linked to localhost. Sydney's is the production domain.
 items: reset the database password (used interactively during the move) and
 re-run the backup-secret update; delete Tokyo on 24 September; rename
 `hugh-app` to Hugh as its own change.
+
+## 2026-09-17 — hugh-app becomes Hugh, at heyhugh.vercel.app
+
+The app kept the working name `hugh-app` outside the code: the Vercel project,
+its domain and the GitHub repo. All three are renamed.
+
+| Part | Before | After | Proof |
+|---|---|---|---|
+| Public address | `hugh-app.vercel.app` | `heyhugh.vercel.app` | `/login` serves Hugh; live bundle references Sydney, never Tokyo |
+| Old address | served the app | 308 to `heyhugh.vercel.app` | path and query carried, e.g. `/auth/confirm?token_hash=…` |
+| Vercel project | `hugh-app` | `hugh` | same project ID, no domain auto-added |
+| GitHub repo | `TravisJohn/hugh-app` | `TravisJohn/hugh` | a push deployed to production from the new name |
+| Supabase Auth (Sydney) | Site URL `hugh-app` | Site URL `heyhugh` | redirect list keeps `localhost` and `hugh-app` beside `heyhugh` |
+| `hugh-backups` | checked out `hugh-app` | checks out `hugh` | both workflows dispatched after the change |
+
+**`hugh.vercel.app` was never available.** The planned target belonged to an
+unrelated Vercel account (409, "already assigned to another project"), and
+`.vercel.app` names are global and case-insensitive, so `HugH` is the same
+address. `heyhugh` was chosen instead. HugH as a display name is still open and
+is independent of the URL.
+
+**The order was changed on purpose.** Supabase Auth was updated before the
+redirect went on, so no confirmation or reset link ever pointed at an address
+Auth did not trust. The old URL stays in the allow list so links already sent
+keep working.
+
+**Two things that needed a human.** Domain changes on Vercel were run by Travis
+rather than by the agent. And writing `.github/workflows/` needs the `workflow`
+scope on the GitHub CLI token, which it did not have; without it the contents
+API answers 404, not 403, which reads like a missing file.
+
+A 24-hour Supabase personal access token was used for the Auth change and
+removed from `.env.local` afterwards. The 24 September Tokyo check now targets
+`heyhugh.vercel.app`.
