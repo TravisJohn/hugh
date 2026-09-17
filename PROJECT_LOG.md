@@ -8423,5 +8423,7 @@ is a product call.
 The document path is locked (since 2026-09-09), so the extraction expiry
 protects the day it reopens rather than anyone today; 0 rows exist.
 
-**Migration 052 is NOT applied.** It enables `pg_cron`; confirm the jobs with
-the query at the bottom of the file.
+**Migration 052 applied** by Travis in the SQL editor, 2026-09-17. The `cron`
+schema is not exposed to the REST API, so the agent could not read `cron.job`
+back; the query at the bottom of the file confirms the two jobs, and
+`cron.job_run_details` shows whether they have run.
