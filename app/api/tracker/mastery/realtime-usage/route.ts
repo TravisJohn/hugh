@@ -14,7 +14,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-// Records what a realtime mastery session actually spent.
+// Records the browser's unverified report of Realtime spend (audit S3).
 //
 // The sibling route `realtime-session` mints an ephemeral credential and the
 // call then runs browser-to-OpenAI over WebRTC, so the server never observes
@@ -29,7 +29,9 @@ export const dynamic = "force-dynamic";
 // belongs on starting a session, not on paying for one that already ran.
 //
 // The figures are supplied by the browser, so they are BOUNDED, not trusted —
-// see `boundTotals`. There is no cheaper source: OpenAI bills the call, not us.
+// see `boundTotals`. Clamping cannot detect missing or understated spend.
+// Keep accepting reports from pre-restriction sessions and administrator
+// previews; this route does not issue credentials or establish accurate billing.
 
 /** The usage half of the request body, before it is trusted. */
 interface UsageBody {

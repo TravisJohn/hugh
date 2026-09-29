@@ -41,6 +41,8 @@ An approved account can submit a large valid prompt, within provider and platfor
 
 ### S3 - High when enabled: Realtime usage and session limits are controlled by the browser
 
+**Status: public-access containment implemented; release verification pending. Underlying accounting/lifecycle repair remains open.** Realtime requires a server-verified, unblocked administrator and the feature flag; regular learners use scripted mastery. This does not revoke earlier credentials or terminate active calls. See [S3 containment and remaining work](S3_REALTIME_CONTAINMENT.md). Original evidence follows.
+
 Evidence: [credential minting](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-session/route.ts:107>), [browser-supplied usage](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-usage/route.ts:79>), [browser timer](<D:/WEB PROJECTS/hugh/hooks/useMasteryRealtime.ts:183>), [reservation lifetime](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:61>).
 
 The server supplies a Realtime credential and then relies on the browser to report usage and close the connection at the app's deadline. A modified client can omit the usage request or report zero. Clamping the maximum reported number cannot detect under-reporting. The 6,000-token reservation expires after 150 seconds, whereas the app allows a 900-second session. Budget therefore becomes available again while even a legitimate voice session may still be running.

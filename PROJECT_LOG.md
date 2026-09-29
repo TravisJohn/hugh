@@ -8461,3 +8461,20 @@ Travis will return when his token allowance is replenished. S4 and S5 remain
 separate quota-lifecycle and failure-mode findings.
 The seven routes are learn/chat, code/chat, cloud/chat, learn/summarize,
 dashboard/refine, dashboard/goals and tracker/mastery/session.
+
+
+## 2026-09-30 - S3 Realtime production containment
+
+Realtime credential issuance and page routing now require the feature flag and
+a server-verified, explicitly unblocked administrator. Regular free/pro learners
+use scripted mastery. Missing privileges and profile lookup failures prevent
+credential issuance; usage and milestone-ownership checks still apply.
+
+Thirty regression tests cover forged request fields, public/admin routing,
+lookup failures, classic fallback and legacy usage reports. This release is
+isolated from the uncommitted S2 and unrelated local work. No migration is
+required. CI and production deployment verification follow on this revision.
+
+S3's public exposure is contained by the access restriction; the full server-owned
+accounting/lifecycle repair remains open. Already-issued credentials and active
+calls are not revoked by this code change. See S3_REALTIME_CONTAINMENT.md.

@@ -2,6 +2,8 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate } from "@/lib/usage";
+import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
+import { logSafeError } from "@/lib/observability/log";
 import type { LearningPoint } from "@/types";
 import {
   buildCriteria,
@@ -24,8 +26,9 @@ import {
 export const dynamic = "force-dynamic";
 
 // Mints a short-lived ephemeral credential for a Realtime MASTERY coach session.
-// The browser never receives OPENAI_API_KEY or the coach instructions — only the
-// client secret and coarse caps. Flag-, auth-, and usage-gated.
+// The browser receives a limited credential, never OPENAI_API_KEY. Session
+// instructions and settings must not be treated as secrets from that client.
+// S3 containment: flag-, authenticated-admin-, and usage-gated.
 
 const CLIENT_SECRET_TTL_SECONDS = 600;
 
@@ -41,6 +44,27 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // Enforce at credential issuance, not just in the page. Paid/approved learner
+  // status and client-supplied claims never grant this administrator preview.
+  const supabase = await createClient();
+  try {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("is_admin, is_blocked")
+      .eq("user_id", userId)
+      .single();
+    if (error) {
+      logSafeError("mastery/realtime-session access", error);
+      return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Use scripted mastery or try again shortly." }, { status: 503 });
+    }
+    if (!canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile)) {
+      return NextResponse.json({ error: "Realtime voice is currently an administrator preview. Please use scripted mastery." }, { status: 403 });
+    }
+  } catch (error) {
+    logSafeError("mastery/realtime-session access", error);
+    return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Use scripted mastery or try again shortly." }, { status: 503 });
+  }
+
   const usageGate = await enforceUsageGate(userId, "mastery/realtime");
   if (usageGate) return usageGate;
 
@@ -54,8 +78,6 @@ export async function POST(request: NextRequest) {
   if (!milestoneId) {
     return NextResponse.json({ error: "milestoneId is required" }, { status: 400 });
   }
-
-  const supabase = await createClient();
 
   // Ownership + card content. summary_doc is the on-screen guiding document the
   // coach anchors to; title/summary/learning_points are the fallback when a
