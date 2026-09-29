@@ -2,11 +2,11 @@
 
 Review date: 29 September 2026.
 
-Follow-up: S1's application guards and migration 053 have now been implemented
-and tested. A read-only production census found zero invalid references
-among 1,064 screenshot files and 11 document files. Travis confirmed production
-migration 053 was applied on 29 September 2026. Application release verification
-is being completed with the S1 merge. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
+Follow-up: **S1 is complete.** The fix was integrated into main as `b84b05e`;
+both CI jobs passed and Vercel reported a successful deployment. Travis confirmed
+production migration 053 was applied on 29 September 2026. A read-only census
+found zero invalid references among 1,064 screenshots and 11 document files.
+S2-S9 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
 
 **Assessment: fix the access-control and spending-control findings before opening this deployment to an untrusted public audience.** The project has useful defenses, but passing its current tests is not evidence that its tenant boundaries or financial limits hold against direct requests.
 
@@ -15,6 +15,9 @@ This is a source and dependency review of the current working tree, not a penetr
 ## Findings
 
 ### S1 - High: editable file references let the server act on another user's files
+
+**Status: resolved in b84b05e; deployed. Migration 053 applied per Travis.**
+The finding below is retained as the original evidence, not a current open issue.
 
 Evidence: [current Notes policies](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:121>), [document-version policy](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:142>), [image URL signing](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:41>), [image deletion](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:320>), [document URL signing](<D:/WEB PROJECTS/hugh/app/api/monitor/documents/file/route.ts:41>).
 

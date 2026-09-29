@@ -1,5 +1,11 @@
 # S1 storage ownership fix
 
+**Status: complete.** Integrated into main as `b84b05e`, with both CI jobs green
+and Vercel deployment successful. Migration 053 is applied per Travis.
+
+- [CI results](https://github.com/TravisJohn/hugh/actions/runs/36557201125)
+- [Verified deployment](https://vercel.com/travisjohnv/hugh/DDX82xBKfhE2MmPGxxpbUMpbQ99D)
+
 Implemented: canonical owner checks before privileged signing, Coach
 downloads, screenshot promotion and file cleanup. Migration 053 makes file
 references server-managed, retains permitted metadata edits, and constrains new
@@ -23,8 +29,8 @@ or updated references to their row owner's folder.
 ## Production rollout
 
 Travis confirmed migration 053 was applied on 29 September 2026. Application
-release verification is being completed with the S1 merge. Constraint validation
-and manual UI checks below are not independently confirmed.
+deployment and CI are verified. Constraint validation and manual UI checks below
+are not independently confirmed; the rollout procedure is retained for reference.
 
 1. Deploy the application ownership guards. They reject unsafe legacy references
    even before the database migration is applied.

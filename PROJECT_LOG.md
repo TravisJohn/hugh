@@ -8448,7 +8448,8 @@ A read-only production census checked 1,064 screenshot references and 11
 document references, with zero invalid references; this is not a historical
 breach investigation.
 
-Application release verification is being completed with the S1 merge.
+S1 is complete: integrated into main as b84b05e, both CI jobs passed (run
+36557201125), and Vercel reported successful deployment DDX82xBKfhE2MmPGxxpbUMpbQ99D.
 SUPABASE_ACCESS_TOKEN is not configured locally; constraint validation and
 manual UI checks are not independently confirmed. Rollout instructions are in
 docs/manual-tests/storage-ownership.md. S2 onward remains unchanged by this fix.
@@ -8458,3 +8459,5 @@ reservations based on the assembled prompt, reply and retries. Estimated effort
 is 2-3 developer days including testing. No S2 implementation was started;
 Travis will return when his token allowance is replenished. S4 and S5 remain
 separate quota-lifecycle and failure-mode findings.
+The seven routes are learn/chat, code/chat, cloud/chat, learn/summarize,
+dashboard/refine, dashboard/goals and tracker/mastery/session.
