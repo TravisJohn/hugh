@@ -8427,3 +8427,34 @@ protects the day it reopens rather than anyone today; 0 rows exist.
 schema is not exposed to the REST API, so the agent could not read `cron.job`
 back; the query at the bottom of the file confirms the two jobs, and
 `cron.job_run_details` shows whether they have run.
+
+## 2026-09-29 - S1 file-reference security fix
+
+Implemented shared ownership checks before privileged file signing, Coach
+downloads, screenshot promotion and cleanup. Ambiguous paths and references to
+another account fail before Storage operations. Cleanup now preserves database
+rows when its read or object removal fails.
+
+Migration 053 makes file references server-managed while preserving direct
+image title/flag/position and document-version note edits. Database constraints
+also reject unsafe new or updated paths from server writes. Existing rows are
+preserved for investigation, with a separate census and constraint-validation
+procedure. Travis confirmed migration 053 was applied in production.
+
+Verified 36 new ownership/route tests and the actual migration against two
+synthetic users in disposable PostgreSQL. All 1,543 tests, lint, TypeScript and
+the production build pass. CI now includes the database permission test.
+A read-only production census checked 1,064 screenshot references and 11
+document references, with zero invalid references; this is not a historical
+breach investigation.
+
+Application release verification is being completed with the S1 merge.
+SUPABASE_ACCESS_TOKEN is not configured locally; constraint validation and
+manual UI checks are not independently confirmed. Rollout instructions are in
+docs/manual-tests/storage-ownership.md. S2 onward remains unchanged by this fix.
+
+S2 planning identified seven direct-input routes needing bounded input and
+reservations based on the assembled prompt, reply and retries. Estimated effort
+is 2-3 developer days including testing. No S2 implementation was started;
+Travis will return when his token allowance is replenished. S4 and S5 remain
+separate quota-lifecycle and failure-mode findings.

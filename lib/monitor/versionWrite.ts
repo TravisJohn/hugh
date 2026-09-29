@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { nextVersionNumber, ALLOWED_DOC_MIME, MAX_DOC_BYTES, VERSION_NOTE_MAX } from "./documents";
 import { normaliseText, APP_DOC_MAX } from "./applications";
 import { MONITOR_DOCS_BUCKET } from "./storage";
+import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
 import type { MonitorDocumentVersion } from "@/types/monitor";
 
 // Writing a version — shared by "create a document" and "add a version to one",
@@ -103,6 +104,7 @@ export async function writeVersion(
   if (input.file) {
     const ext = ALLOWED_DOC_MIME[input.file.type];
     filePath = `${userId}/${documentId}/${crypto.randomUUID()}.${ext}`;
+    assertOwnedStoragePaths(userId, [filePath]);
     const bytes = new Uint8Array(await input.file.arrayBuffer());
     const { error: upErr } = await db.storage
       .from(MONITOR_DOCS_BUCKET)

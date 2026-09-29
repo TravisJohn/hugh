@@ -6,6 +6,7 @@ import { enforceUsageGate, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { createServiceClient } from "@/lib/supabase/service";
 import { NOTE_IMAGES_BUCKET } from "@/lib/notes/storage";
+import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
 import { buildCoachMessages, type CoachThreadMessage } from "@/lib/notes/coachPrompt";
 import type { NoteMessage } from "@/types";
 
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
       .eq("user_id", userId).eq("parent_image_id", imageId)
       .order("position", { ascending: true }).order("created_at", { ascending: true });
     const slices = [image, ...(partRows ?? [])] as Array<{ storage_path: string; mime: string }>;
+    assertOwnedStoragePaths(userId, slices.map((slice) => slice.storage_path));
 
     // Inline each slice's bytes as a base64 data URL so the model gets them
     // directly (no dependency on OpenAI reaching Supabase Storage). If ANY slice

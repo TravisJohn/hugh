@@ -3,6 +3,7 @@ import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { requireProvisionedApi } from "@/lib/auth/requireProvisioned";
 import { createServiceClient } from "@/lib/supabase/service";
 import { NOTE_IMAGES_BUCKET, SIGNED_URL_TTL } from "@/lib/notes/storage";
+import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
 import { MAX_BUCKET_PARTS, type NoteImage, type NoteImageBucket } from "@/types";
 
 // Screenshots for a note. Uploads go through this route (service-role) so we can
@@ -32,8 +33,10 @@ const FLAGS = new Set(["red", "yellow", "green"]);
 // Attach a fresh signed URL to each image row (best-effort per row).
 async function withSignedUrls(
   db: ReturnType<typeof createServiceClient>,
+  userId: string,
   rows: Array<Omit<NoteImage, "url">>,
 ): Promise<NoteImage[]> {
+  assertOwnedStoragePaths(userId, rows.map((row) => row.storage_path));
   return Promise.all(
     rows.map(async (r) => {
       const { data } = await db.storage
@@ -95,7 +98,7 @@ export async function GET(request: NextRequest) {
       .order("position", { ascending: true })
       .order("created_at", { ascending: true });
     if (error) throw error;
-    const images = toBuckets(await withSignedUrls(db, data ?? []));
+    const images = toBuckets(await withSignedUrls(db, userId, data ?? []));
     return NextResponse.json({ images });
   } catch (e) {
     console.error("[notes/images] list failed:", e);
@@ -180,6 +183,7 @@ export async function POST(request: NextRequest) {
       : `Snip ${(siblings ?? []).length + 2}`; // the bucket itself is snip 1
 
     const path = `${userId}/${noteId}/${crypto.randomUUID()}.${ext}`;
+    assertOwnedStoragePaths(userId, [path]);
     const bytes = new Uint8Array(await file.arrayBuffer());
     const { error: upErr } = await db.storage
       .from(NOTE_IMAGES_BUCKET)
@@ -197,7 +201,7 @@ export async function POST(request: NextRequest) {
       .single();
     if (error) throw error;
 
-    const [image] = await withSignedUrls(db, [data]);
+    const [image] = await withSignedUrls(db, userId, [data]);
     return NextResponse.json({ image });
   } catch (e) {
     console.error("[notes/images] upload failed:", e);
@@ -229,6 +233,8 @@ async function promoteSnip(
     .from("note_images").select("id, storage_path, mime")
     .eq("id", snip.parent_image_id).eq("user_id", userId).maybeSingle();
   if (!parent) return NextResponse.json({ error: "Screenshot not found." }, { status: 404 });
+
+  assertOwnedStoragePaths(userId, [snip.storage_path, parent.storage_path]);
 
   const [a, b] = await Promise.all([
     db.from("note_images").update({ storage_path: parent.storage_path, mime: parent.mime })
@@ -289,7 +295,7 @@ export async function PATCH(request: NextRequest) {
     if (error) throw error;
     if (!data) return NextResponse.json({ error: "Image not found." }, { status: 404 });
 
-    const [image] = await withSignedUrls(db, [data]);
+    const [image] = await withSignedUrls(db, userId, [data]);
     return NextResponse.json({ image });
   } catch (e) {
     console.error("[notes/images] update failed:", e);
@@ -316,18 +322,22 @@ export async function DELETE(request: NextRequest) {
 
   try {
     const db = createServiceClient();
-    const { data: row } = await db
+    const { data: row, error: readError } = await db
       .from("note_images").select("storage_path, parent_image_id")
       .eq("id", id).eq("user_id", userId).maybeSingle();
+    if (readError) throw readError;
 
-    const paths: string[] = row?.storage_path ? [row.storage_path as string] : [];
+    const paths: string[] = row ? [row.storage_path as string] : [];
     if (row && !row.parent_image_id) {
-      const { data: parts } = await db
+      const { data: parts, error: partsError } = await db
         .from("note_images").select("storage_path").eq("user_id", userId).eq("parent_image_id", id);
-      for (const p of parts ?? []) if (p.storage_path) paths.push(p.storage_path as string);
+      if (partsError) throw partsError;
+      for (const p of parts ?? []) paths.push(p.storage_path as string);
     }
+    assertOwnedStoragePaths(userId, paths);
     if (paths.length > 0) {
-      await db.storage.from(NOTE_IMAGES_BUCKET).remove(paths);
+      const { error: removeError } = await db.storage.from(NOTE_IMAGES_BUCKET).remove(paths);
+      if (removeError) throw removeError;
     }
     const { error } = await db.from("note_images").delete().eq("id", id).eq("user_id", userId);
     if (error) throw error;

@@ -3,6 +3,7 @@ import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { requireProvisionedApi } from "@/lib/auth/requireProvisioned";
 import { createServiceClient } from "@/lib/supabase/service";
 import { MONITOR_DOCS_BUCKET, SIGNED_URL_TTL } from "@/lib/monitor/storage";
+import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
 
 // Hand back a short-lived signed URL for one version's file.
 //
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
     }
 
     const asDownload = request.nextUrl.searchParams.get("download") === "1";
+    assertOwnedStoragePaths(userId, [row.file_path]);
     const { data, error } = await db.storage
       .from(MONITOR_DOCS_BUCKET)
       .createSignedUrl(

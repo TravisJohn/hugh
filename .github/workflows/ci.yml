@@ -24,6 +24,28 @@ permissions:
   contents: read
 
 jobs:
+  storage-security:
+    name: Storage ownership and database permissions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: hugh_s1_security_test
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Copy SQL fixtures to isolated database
+        run: docker cp supabase "${{ job.services.postgres.id }}:/tmp/hugh-s1"
+      - name: Test storage reference permissions with two synthetic tenants
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s1_security_test -f /tmp/hugh-s1/tests/053_storage_references.sql
+
   verify:
     name: lint · typecheck · test · audit · build
     runs-on: ubuntu-latest

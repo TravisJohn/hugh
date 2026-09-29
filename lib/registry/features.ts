@@ -478,6 +478,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
  */
 export const INFRA_LIB_DIRS: readonly string[] = [
   "supabase",      // database clients
+  "storage",       // file ownership checks shared by Notes and Monitor
   "auth",          // session and admin gating
   "claude",        // prompts and parsers
   "errors",        // error shapes
