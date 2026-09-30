@@ -39,3 +39,8 @@ reject mismatched or truncated input. No production files are used in tests.
 Controlled routes still have no total per-user storage allocation. That is a
 separate capacity decision; this release closes the direct bypass that could
 create arbitrary untracked objects outside those routes.
+
+Travis applied migration 056 to Sydney on 2026-09-30. A production read-back
+confirmed the 10 MB image and 5 MB document limits and the expected MIME lists.
+The authenticated direct-upload and controlled-route tests in step 3 remain
+pending.
