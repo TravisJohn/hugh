@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ListChecks, Loader2, ArrowLeftToLine } from "lucide-react";
+import { ListChecks, Loader2, ArrowLeftToLine, X } from "lucide-react";
 import { type CoverageResponse, type LearningPoint, type PointStatus } from "@/types";
 import { normalizeCoverage, countByStatus } from "@/utils/coverage";
 import PointStatusControl from "./PointStatusControl";
@@ -9,6 +9,8 @@ import PointStatusControl from "./PointStatusControl";
 interface Props {
   milestoneId:      string;
   milestoneTitle:   string;
+  mobileOpen:       boolean;
+  onClose:          () => void;
   // Drops a point's text into the chat composer (wired up by AskWorkspace), so
   // the learner can ask about an idea without retyping it.
   onInsertToPrompt?: (text: string) => void;
@@ -21,7 +23,7 @@ interface Props {
  * later, or are still stuck — purely their own awareness check. (No AI judges
  * coverage, and none of this gates mastery.)
  */
-export default function ChecklistRail({ milestoneId, milestoneTitle, onInsertToPrompt }: Props) {
+export default function ChecklistRail({ milestoneId, milestoneTitle, mobileOpen, onClose, onInsertToPrompt }: Props) {
   const [points, setPoints]     = useState<LearningPoint[]>([]);
   const [statuses, setStatuses] = useState<Record<string, PointStatus>>({});
   const [loading, setLoading]   = useState(true);
@@ -71,12 +73,15 @@ export default function ChecklistRail({ milestoneId, milestoneTitle, onInsertToP
   const allCovered = points.length > 0 && understood === points.length;
 
   return (
-    <aside className="hidden lg:flex w-72 shrink-0 flex-col border-l border-slate-800 bg-slate-900/50">
+    <aside className={`${mobileOpen ? "flex" : "hidden"} fixed inset-y-0 right-0 z-40 h-dvh w-full max-w-sm shrink-0 flex-col border-l border-slate-800 bg-slate-900 lg:static lg:z-auto lg:flex lg:h-auto lg:w-72 lg:max-w-none lg:bg-slate-900/50`} aria-label="What to understand">
       {/* Header */}
       <div className="shrink-0 border-b border-slate-800 px-5 py-3.5">
         <div className="flex items-center gap-2">
           <ListChecks size={14} className="text-sky-400" />
           <p className="text-sm font-semibold text-white">What to understand</p>
+          <button type="button" onClick={onClose} aria-label="Close checklist" className="ml-auto flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-400 lg:hidden">
+            <X size={18} />
+          </button>
         </div>
         <p className="mt-0.5 truncate text-xs text-slate-500">{milestoneTitle}</p>
       </div>

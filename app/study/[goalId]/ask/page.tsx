@@ -66,7 +66,7 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
     <>
       {/* Records that this surface was used today. Renders nothing. */}
       <RecordActivity feature="ask" />
-      <div className="relative flex h-screen flex-col bg-[#0A0F1E] overflow-hidden">
+      <div className="relative flex h-dvh flex-col overflow-hidden bg-[#0A0F1E] sm:h-screen">
 
         {/* Breathing orbs */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -75,7 +75,7 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
         </div>
 
         {/* Header — back goes to the tracker board */}
-        <header className="relative flex shrink-0 items-center justify-between border-b border-slate-800 px-6 py-3">
+        <header className="relative flex shrink-0 items-center justify-between border-b border-slate-800 px-3 py-2 sm:px-6 sm:py-3">
           <div className="flex items-center gap-3">
             <Link
               href={`/study/${goalId}/track`}
@@ -87,9 +87,9 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
             <span className="font-serif text-base font-semibold text-white">Hugh.</span>
           </div>
 
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 text-sm sm:gap-4">
             <HeaderUsage />
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300">
+            <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300 sm:flex">
               {initial}
             </div>
             <span className="hidden sm:block text-slate-500">{user.email}</span>
@@ -100,9 +100,9 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
 
         {/* Milestone focus strip — persists with the focused milestone */}
         {focusTitle && (
-          <div className="relative shrink-0 flex items-center gap-2.5 border-b border-violet-500/20 bg-violet-500/5 px-6 py-2">
+          <div className="relative flex shrink-0 items-center gap-2.5 border-b border-violet-500/20 bg-violet-500/5 px-3 py-2 sm:px-6">
             <MilestoneIcon size={13} className="shrink-0 text-violet-400" />
-            <span className="text-xs text-slate-500">Focused on</span>
+            <span className="hidden text-xs text-slate-500 sm:inline">Focused on</span>
             <span className="rounded-full bg-violet-900/50 px-2.5 py-0.5 text-xs font-semibold text-violet-300 truncate max-w-xs">
               {focusTitle}
             </span>

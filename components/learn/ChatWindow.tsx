@@ -383,27 +383,29 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
       <div className="flex flex-1 flex-col min-w-0 min-h-0">
 
         {/* Toolbar */}
-        <div className="shrink-0 flex items-center justify-between border-b border-slate-800/50 px-4 py-2">
+        <div className="flex shrink-0 items-center justify-between border-b border-slate-800/50 px-2 py-2 sm:px-4">
           <PomodoroControl pomo={pomo} />
           <div className="flex items-center gap-2">
             <button
               onClick={downloadTranscript}
               disabled={!hasTranscript}
+              aria-label="Download transcript"
               title={hasTranscript ? "Download this conversation as a Markdown file" : "Have a conversation first"}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold transition-all sm:px-3 ${
                 hasTranscript
                   ? "bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
                   : "cursor-not-allowed text-slate-600"
               }`}
             >
               <Download size={13} />
-              Download transcript
+              <span className="hidden sm:inline">Download transcript</span>
             </button>
             <button
               onClick={handleSummarise}
               disabled={!canSummarise || summarizing}
+              aria-label="Summarise session"
               title={canSummarise ? "Summarise this session" : "Have a conversation first"}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+              className={`flex min-h-10 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold transition-all sm:px-3 ${
                 panelOpen
                   ? "bg-violet-600/20 text-violet-300"
                   : canSummarise
@@ -412,7 +414,7 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
               }`}
             >
               <Sparkles size={13} />
-              Summarise session
+              <span className="hidden sm:inline">Summarise session</span>
             </button>
           </div>
         </div>
@@ -425,7 +427,7 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
         )}
 
         {/* Message list */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6 space-y-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-3 sm:px-4 sm:py-6">
           {messages.map((m, i) => (
             <ChatBubble key={i} role={m.role} content={m.content} />
           ))}
@@ -528,7 +530,7 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
             onExit={() => setCodeMode(false)}
           />
         ) : (
-          <div className="shrink-0 border-t border-slate-800 px-4 py-4">
+          <div className="shrink-0 border-t border-slate-800 px-3 py-2 sm:px-4 sm:py-4">
 
             {/* Mirror-this offer — appears after Hugh shares a snippet (offer-first) */}
             {offer && (
@@ -542,7 +544,7 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
               </button>
             )}
 
-            <div className="flex items-end gap-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 focus-within:border-violet-500 transition-colors">
+            <div className="flex items-end gap-3 rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 focus-within:border-violet-500 sm:px-4 sm:py-3 transition-colors">
               <textarea
                 ref={textareaRef}
                 value={draft}
@@ -555,12 +557,12 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
               <button
                 onClick={sendText}
                 disabled={!draft.trim() || loading}
-                className="shrink-0 flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 text-white hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-violet-600 text-white transition-colors hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40 sm:h-8 sm:w-8"
               >
                 <Send size={14} />
               </button>
             </div>
-            <p className="mt-1.5 text-center text-xs text-slate-700">
+            <p className="mt-1.5 hidden text-center text-xs text-slate-700 sm:block">
               Enter to send · Shift+Enter for new line
             </p>
           </div>
