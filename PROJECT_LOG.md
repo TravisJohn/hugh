@@ -8478,3 +8478,8 @@ required. CI and production deployment verification follow on this revision.
 S3's public exposure is contained by the access restriction; the full server-owned
 accounting/lifecycle repair remains open. Already-issued credentials and active
 calls are not revoked by this code change. See S3_REALTIME_CONTAINMENT.md.
+
+Release prerequisite: CI blocked on high-severity advisories in undici 7.29.0.
+The isolated release updates only that transitive package to compatible 7.30.0;
+package.json is unchanged. The production dependency audit now reports zero
+vulnerabilities. CI will recheck the exact updated revision before merge.

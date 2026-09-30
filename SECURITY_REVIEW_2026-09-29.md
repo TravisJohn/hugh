@@ -101,6 +101,8 @@ TTS reserves zero tokens and records tts_chars, which the monthly gate does not 
 
 ### S9 - Moderate advisory: production dependency undici 7.29.0 needs a security update
 
+**Release update:** the S3 release was blocked by additional high-severity undici advisories. The lockfile now resolves compatible undici 7.30.0, and `npm audit --omit=dev --audit-level=high` reports zero vulnerabilities. Deployment verification is pending. The original finding below is historical.
+
 npm audit --omit=dev reports one moderate vulnerability, no high or critical advisories. npm ls resolves cheerio@1.2.0 -> undici@7.29.0; the lockfile pins the affected version at [package-lock.json](<D:/WEB PROJECTS/hugh/package-lock.json:11253>).
 
 [The upstream advisory](https://github.com/nodejs/undici/security/advisories/GHSA-3wwx-pv8p-q78v) describes a process-crashing WebSocket decompression error, fixed in undici 7.29.1 on the 7.x line. Exploitation requires an affected WebSocket client connecting to a malicious or compromised peer. This review did not establish that reachable attack path through Hugh's Cheerio usage, so this is a dependency finding, not a demonstrated remote crash of Hugh.
