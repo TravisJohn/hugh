@@ -5,6 +5,7 @@ import { nextVersionNumber, ALLOWED_DOC_MIME, MAX_DOC_BYTES, VERSION_NOTE_MAX } 
 import { normaliseText, APP_DOC_MAX } from "./applications";
 import { MONITOR_DOCS_BUCKET } from "./storage";
 import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
+import { matchesUploadSignature } from "@/lib/storage/fileSignatures";
 import type { MonitorDocumentVersion } from "@/types/monitor";
 
 // Writing a version — shared by "create a document" and "add a version to one",
@@ -63,7 +64,7 @@ export async function readVersionInput(request: NextRequest): Promise<VersionInp
  * Validation happens up front precisely so a refused file never leaves a half
  * a version behind.
  */
-export function rejectBadVersion(input: VersionInput): NextResponse | null {
+export async function rejectBadVersion(input: VersionInput): Promise<NextResponse | null> {
   if (!input.content && !input.file) {
     return NextResponse.json({ error: "Attach a file or paste the text." }, { status: 400 });
   }
@@ -73,6 +74,10 @@ export function rejectBadVersion(input: VersionInput): NextResponse | null {
     }
     if (input.file.size > MAX_DOC_BYTES) {
       return NextResponse.json({ error: "That file is larger than 5 MB." }, { status: 413 });
+    }
+    const header = new Uint8Array(await input.file.slice(0, 16).arrayBuffer());
+    if (!matchesUploadSignature(input.file.type, header)) {
+      return NextResponse.json({ error: "The document content does not match its file type." }, { status: 415 });
     }
   }
   return null;

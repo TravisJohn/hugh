@@ -57,6 +57,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s6_security_test
       - name: Test blocked access with a still-valid session
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s6_security_test -f /tmp/hugh-s1/tests/055_blocked_account_access.sql
+      - name: Create disposable controlled-upload database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s7_security_test
+      - name: Test direct Storage upload denial
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s7_security_test -f /tmp/hugh-s1/tests/056_controlled_storage_uploads.sql
 
   verify:
     name: lint · typecheck · test · audit · build
