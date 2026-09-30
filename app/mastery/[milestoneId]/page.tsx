@@ -6,6 +6,7 @@ import { safeInternalPath } from "@/utils/safe-redirect";
 import MasteryClient from "./MasteryClient";
 import MasteryRealtimeClient from "./MasteryRealtimeClient";
 import RecordActivity from "@/components/monitor/RecordActivity";
+import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 
 interface Props {
   params:       Promise<{ milestoneId: string }>;
@@ -21,7 +22,7 @@ export default async function MasteryPage({ params, searchParams }: Props) {
   const returnUrl = rawReturnUrl ? safeInternalPath(rawReturnUrl, "/home/learn") : undefined;
 
   const supabase = await createClient();
-  await verifyUserAccess(supabase);
+  const { profile } = await verifyUserAccess(supabase);
 
   // Ownership + data fetch — include the track's goal_id so the client can
   // build a fallback URL pointing at that goal's board. The standalone
@@ -58,10 +59,12 @@ export default async function MasteryPage({ params, searchParams }: Props) {
     redirect(returnUrl ?? fallbackUrl);
   }
 
-  // Realtime mastery is behind a flag; `?classic=1` is an intentional escape
+  // S3 containment: the flag enables an administrator preview only. Learners
+  // use scripted mastery until Realtime accounting is server-authoritative.
+  // `?classic=1` is an intentional escape
   // hatch to the original scripted flow (used by the Realtime error UI so we
   // never silently fall back mid-session).
-  const realtimeEnabled = process.env.MASTERY_REALTIME_ENABLED === "true";
+  const realtimeEnabled = canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile);
 
   if (realtimeEnabled && classic !== "1") {
     const classicUrl =

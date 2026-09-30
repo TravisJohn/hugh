@@ -2,8 +2,8 @@ import "server-only";
 
 // ── Realtime mastery configuration (single source of truth, server-only) ────
 // Imported by the ephemeral-session route to build the coach session. The
-// browser never sees the model names or the API key — only the minted secret
-// and the coarse caps it needs to enforce client-side.
+// browser receives model names, a minted credential and client-side caps.
+// OPENAI_API_KEY stays server-side. Realtime is an admin preview (audit S3).
 
 // Speech-to-speech model that CONDUCTS the mastery conversation.
 export const REALTIME_MODEL = "gpt-realtime-mini";
@@ -45,12 +45,12 @@ export const TURN_DETECTION = {
 // an ElevenLabs-era concern; the mastery coach is one consistent voice.)
 export const MASTERY_VOICE = "cedar";
 
-// ── Hard caps (app-owned lifecycle) ─────────────────────────────────────────
+// ── Client-side backstops (not security-enforced caps; audit S3) ─────────────
 // Phase 30 (Guided Reflection) is UNMARKED and learner-ended — the coach never
-// concludes on its own. These caps are pure cost/safety backstops so a forgotten
-// session can't run unbounded; they're deliberately generous so a genuine
-// reflection is never cut off mid-thought.
-export const MAX_SESSION_SECONDS = 15 * 60;  // absolute session lifetime
+// concludes on its own. These values guide the normal browser's behavior. A
+// modified client can ignore them; server-owned limits are still required
+// before enabling Realtime for regular learners.
+export const MAX_SESSION_SECONDS = 15 * 60;  // normal browser's session deadline
 export const MAX_FOLLOWUPS       = 24;       // coach turns before the backstop trips
 export const INACTIVITY_MS       = 120_000;  // silence window before auto-ending
 

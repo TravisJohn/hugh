@@ -201,7 +201,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     id:    "mastery",
     label: "Prove mastery",
     kind:  "learner",
-    blurb: "Explain a milestone out loud — scripted, or Realtime voice behind a flag.",
+    blurb: "Explain a milestone out loud — scripted for learners; Realtime is an administrator preview.",
     routes: ["/mastery/[milestoneId]"],
     apiRoutes: [
       "tracker/mastery/evaluate",
@@ -230,7 +230,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "mastery.realtime",
     ],
     spendsTokens: true,
-    tests: 5,
+    tests: 6,
   },
   {
     id:    "code",

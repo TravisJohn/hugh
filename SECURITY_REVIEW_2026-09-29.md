@@ -41,6 +41,8 @@ An approved account can submit a large valid prompt, within provider and platfor
 
 ### S3 - High when enabled: Realtime usage and session limits are controlled by the browser
 
+**Status: public-access containment implemented; release verification pending. Underlying accounting/lifecycle repair remains open.** Realtime requires a server-verified, unblocked administrator and the feature flag; regular learners use scripted mastery. This does not revoke earlier credentials or terminate active calls. See [S3 containment and remaining work](S3_REALTIME_CONTAINMENT.md). Original evidence follows.
+
 Evidence: [credential minting](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-session/route.ts:107>), [browser-supplied usage](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-usage/route.ts:79>), [browser timer](<D:/WEB PROJECTS/hugh/hooks/useMasteryRealtime.ts:183>), [reservation lifetime](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:61>).
 
 The server supplies a Realtime credential and then relies on the browser to report usage and close the connection at the app's deadline. A modified client can omit the usage request or report zero. Clamping the maximum reported number cannot detect under-reporting. The 6,000-token reservation expires after 150 seconds, whereas the app allows a 900-second session. Budget therefore becomes available again while even a legitimate voice session may still be running.
@@ -98,6 +100,8 @@ TTS reserves zero tokens and records tts_chars, which the monthly gate does not 
 **Fix:** reserve and reconcile a character or monetary allowance for TTS, with an appropriate daily/monthly cap. Confirm provider-level spend/overage settings separately. Open signup and automatic approval make per-account and global controls especially relevant; auto-approval itself appears intentional and is not classified here as a privilege-escalation bug.
 
 ### S9 - Moderate advisory: production dependency undici 7.29.0 needs a security update
+
+**Release update:** the S3 release was blocked by additional high-severity undici advisories. The lockfile now resolves compatible undici 7.30.0, and `npm audit --omit=dev --audit-level=high` reports zero vulnerabilities. Deployment verification is pending. The original finding below is historical.
 
 npm audit --omit=dev reports one moderate vulnerability, no high or critical advisories. npm ls resolves cheerio@1.2.0 -> undici@7.29.0; the lockfile pins the affected version at [package-lock.json](<D:/WEB PROJECTS/hugh/package-lock.json:11253>).
 
