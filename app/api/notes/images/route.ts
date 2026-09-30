@@ -4,6 +4,7 @@ import { requireProvisionedApi } from "@/lib/auth/requireProvisioned";
 import { createServiceClient } from "@/lib/supabase/service";
 import { NOTE_IMAGES_BUCKET, SIGNED_URL_TTL } from "@/lib/notes/storage";
 import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
+import { matchesUploadSignature } from "@/lib/storage/fileSignatures";
 import { MAX_BUCKET_PARTS, type NoteImage, type NoteImageBucket } from "@/types";
 
 // Screenshots for a note. Uploads go through this route (service-role) so we can
@@ -185,6 +186,9 @@ export async function POST(request: NextRequest) {
     const path = `${userId}/${noteId}/${crypto.randomUUID()}.${ext}`;
     assertOwnedStoragePaths(userId, [path]);
     const bytes = new Uint8Array(await file.arrayBuffer());
+    if (!matchesUploadSignature(file.type, bytes)) {
+      return NextResponse.json({ error: "The image content does not match its file type." }, { status: 415 });
+    }
     const { error: upErr } = await db.storage
       .from(NOTE_IMAGES_BUCKET)
       .upload(path, bytes, { contentType: file.type, upsert: false });

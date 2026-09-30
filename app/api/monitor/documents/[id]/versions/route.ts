@@ -34,7 +34,7 @@ export async function POST(
   const input = await readVersionInput(request);
   if (!input) return NextResponse.json({ error: "Couldn't read that upload." }, { status: 400 });
 
-  const bad = rejectBadVersion(input);
+  const bad = await rejectBadVersion(input);
   if (bad) return bad;
 
   try {

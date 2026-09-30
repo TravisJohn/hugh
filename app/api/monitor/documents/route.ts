@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
   const label = normaliseLabel(input.label);
   if (!label) return NextResponse.json({ error: "Give the document a name." }, { status: 400 });
 
-  const bad = rejectBadVersion(input);
+  const bad = await rejectBadVersion(input);
   if (bad) return bad;
 
   try {

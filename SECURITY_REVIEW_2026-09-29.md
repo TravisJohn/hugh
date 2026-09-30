@@ -91,6 +91,8 @@ Blocking changes profiles.is_blocked. Paid AI routes inspect it, but Notes/Monit
 
 ### S7 - Medium: direct Storage uploads bypass application upload restrictions
 
+**Status: fix prepared in migration 056 and upload validation; production migration and direct-path verification are pending.** See [S7 controlled-upload rollout](S7_CONTROLLED_UPLOADS.md). The original finding follows.
+
 Evidence: [route size/type checks](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:133>), [Storage INSERT policy](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:169>), [Notes bucket creation](<D:/WEB PROJECTS/hugh/supabase/migrations/027_notes.sql:87>), [document bucket creation](<D:/WEB PROJECTS/hugh/supabase/migrations/042_monitor_document_files.sql:45>).
 
 A provisioned user's authenticated Supabase client may upload directly into their own storage prefix. That bypasses Next.js's file-size/type checks. The checked-in bucket definitions set neither file_size_limit nor allowed_mime_types, and there is no enforced per-user total storage quota. The provider's global limits still apply; this is not literally unlimited storage. Live bucket settings could mitigate size/type exposure, but were not inspected.
