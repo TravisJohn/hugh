@@ -1,5 +1,6 @@
 "use client";
 
+import { parseTextBody } from "@/lib/claude/textInput";
 import { useState, useEffect, useCallback } from "react";
 import { Loader2, SkipForward, ArrowRight, Brain, Compass, RotateCcw, AlertTriangle } from "lucide-react";
 import { useTrackStatusWatch } from "@/hooks/useTrackStatusWatch";
@@ -205,6 +206,13 @@ export default function RefinementFlow({ topic, endDate, lensNote, onGoalCreated
     if (!text || fetching || !question) return;
 
     const newAnswers = [...answers, { question, answer: text }];
+    try {
+      parseTextBody("refine", { topic, answers: newAnswers });
+    } catch (error) {
+      setApiError(error instanceof Error ? error.message : "Please shorten your answer.");
+      return; // Leave the answer in its editable draft.
+    }
+    setApiError(null);
     setAnswers(newAnswers);
     setDraft("");
     setQuestion(null);

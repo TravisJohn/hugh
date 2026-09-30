@@ -1,3 +1,4 @@
+import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
 import Anthropic from "@anthropic-ai/sdk";
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { backlogPriorityPrompt, parseClaudeJson } from "@/lib/claude/prompts";
@@ -42,6 +43,7 @@ export async function assignBacklogPriority(
   supabase: SupabaseClient,
   trackId:  string,
   topic:    string,
+  beforeCall?: TextCallGuard,
 ): Promise<PriorityResult | null> {
   const { data: rows } = await supabase
     .from("milestones")
@@ -55,11 +57,12 @@ export async function assignBacklogPriority(
 
   const items = milestones.map((m, i) => ({ n: i + 1, title: m.title, summary: m.summary }));
 
-  const res = await anthropic.messages.create({
-    model:      MODEL,
-    max_tokens: 1200,
-    messages:   [{ role: "user", content: backlogPriorityPrompt(topic, items) }],
-  });
+  const call: TextCall = {
+    model: MODEL, max_tokens: 1200,
+    messages: [{ role: "user", content: backlogPriorityPrompt(topic, items) }],
+  };
+  await beforeCall?.(call);
+  const res = await anthropic.messages.create(call, beforeCall ? { maxRetries: 0 } : undefined);
 
   const raw    = res.content[0]?.type === "text" ? res.content[0].text : "{}";
   const parsed = parseClaudeJson<{ ordered: Array<{ n: number; reason: string }> }>(raw);

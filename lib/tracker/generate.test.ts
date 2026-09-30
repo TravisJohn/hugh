@@ -24,6 +24,30 @@ vi.mock("@/lib/tracker/priority", () => ({ assignBacklogPriority: assignBacklogP
 
 const { generateTrack, TrackGenerationError } = await import("./generate");
 
+describe("prompt-sized background admission", () => {
+  it("refuses generation before the model or track writes", async () => {
+    const beforeGeneration = vi.fn().mockRejectedValue(new Error("budget refused"));
+    const { client, spy } = makeSupabase({});
+    await expect(generateTrack(client, "user-1", "SQL", "goal", undefined, { beforeGeneration })).rejects.toThrow("budget refused");
+    expect(messagesCreate).not.toHaveBeenCalled();
+    expect(spy.trackRowWritten).toBeNull();
+    expect(beforeGeneration).toHaveBeenCalledWith(expect.objectContaining({ max_tokens: 2048, messages: expect.any(Array) }), 2);
+  });
+
+  it("reserves both generation attempts and passes the separate ranking guard", async () => {
+    const beforeGeneration = vi.fn().mockResolvedValue(undefined);
+    const beforePriority = vi.fn().mockResolvedValue(undefined);
+    messagesCreate.mockResolvedValueOnce(claudeReply({ nonsense: true })).mockResolvedValueOnce(claudeReply(THREE_MILESTONES));
+    const { client } = makeSupabase({});
+    await generateTrack(client, "user-1", "SQL", "goal", undefined, { beforeGeneration, beforePriority });
+    expect(beforeGeneration).toHaveBeenCalledOnce();
+    expect(beforeGeneration).toHaveBeenCalledWith(messagesCreate.mock.calls[0][0], 2);
+    expect(messagesCreate).toHaveBeenCalledTimes(2);
+    for (const call of messagesCreate.mock.calls) expect(call[1]).toEqual({ maxRetries: 0 });
+    expect(assignBacklogPriorityMock).toHaveBeenCalledWith(client, "track-1", "SQL", beforePriority);
+  });
+});
+
 // -- Fixtures ---------------------------------------------------------------
 
 const THREE_MILESTONES = {

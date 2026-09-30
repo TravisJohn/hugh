@@ -197,13 +197,17 @@ async function recordAgainstCounter(
  * Reserve this request's estimated cost, atomically, and say whether it may run.
  *
  * `feature` is required, and is the same string the route passes to `logUsage`.
- * It selects the reservation size and lets the reconcile find its way back to
- * the same number without any state being handed between the two calls.
+ * `estimate`, when supplied by trusted server code, reserves the assembled
+ * prompt and output allowance. Otherwise the legacy feature estimate applies.
+ * Prompt-sized callers require a successful atomic reservation; they never
+ * fall back to the legacy, non-atomic log sum.
  */
 export async function checkUsageAllowed(
   userId:  string,
   feature: string,
+  estimate?: number,
 ): Promise<QuotaDecision> {
+  if (estimate !== undefined && (!Number.isSafeInteger(estimate) || estimate < 0)) throw new Error("Invalid usage reservation");
   const profile = await readProfile(userId);
 
   // The account check comes first and never touches the counter: a blocked or
@@ -216,7 +220,7 @@ export async function checkUsageAllowed(
   const { data, error } = await supabase.rpc("reserve_usage", {
     p_user_id:       userId,
     p_period_start:  periodStart(profile),
-    p_estimate:      reserveEstimateFor(feature),
+    p_estimate:      estimate ?? reserveEstimateFor(feature),
     p_token_limit:   tokenLimitFor(profile),
     p_max_requests:  RATE_LIMIT_MAX_REQUESTS,
     p_rate_window_s: RATE_LIMIT_WINDOW_SECONDS,
@@ -224,6 +228,12 @@ export async function checkUsageAllowed(
   });
 
   if (error) {
+    // Prompt-sized reservations must actually be acquired before spending.
+    // The legacy fallback remains for other features (audit S5).
+    if (estimate !== undefined) {
+      console.error("[usage] prompt reservation unavailable:", error.message);
+      return { allowed: false, reason: "unavailable", retryAfter: 30 };
+    }
     // Migration 049 is applied by hand (forward-only, no rollback tooling), so
     // the code can legitimately be running ahead of the database. Degrade to
     // the pre-049 sum rather than locking every learner out of the product.
@@ -292,8 +302,9 @@ async function legacyTokenCheck(
 export async function enforceUsageGate(
   userId:  string,
   feature: string,
+  estimate?: number,
 ): Promise<NextResponse | null> {
-  const { allowed, reason, retryAfter } = await checkUsageAllowed(userId, feature);
+  const { allowed, reason, retryAfter } = await checkUsageAllowed(userId, feature, estimate);
   if (allowed) return null;
 
   // Retry-After is what makes a rate limit actionable rather than a wall: the

@@ -1,5 +1,7 @@
 "use client";
 
+import { recentTextMessages } from "@/lib/claude/textInput";
+
 import { useRef, useState } from "react";
 import { Sparkles, Send } from "lucide-react";
 import type { CloudProvider } from "@/types/cloud";
@@ -42,7 +44,7 @@ export default function CloudAssistant({
 
     const next: Msg[] = [...messages, { role: "user", content: trimmed }];
     setMessages(next);
-    setInput("");
+    setInput(trimmed);
     setError(null);
     setLoading(true);
 
@@ -50,15 +52,18 @@ export default function CloudAssistant({
       const res = await fetch("/api/cloud/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, serviceId, messages: next }),
+        body: JSON.stringify({ provider, serviceId, messages: recentTextMessages(next, 12) }),
       });
       const data = (await res.json()) as { reply?: string; error?: string };
       if (!res.ok) {
+        setMessages(messages);
         setError(data.error ?? "Something went wrong. Please try again.");
       } else {
+        setInput(current => current === trimmed ? "" : current);
         setMessages([...next, { role: "assistant", content: data.reply ?? "" }]);
       }
     } catch {
+      setMessages(messages);
       setError("Network error. Please try again.");
     } finally {
       setLoading(false);

@@ -1,5 +1,7 @@
 "use client";
 
+import { recentTextMessages } from "@/lib/claude/textInput";
+
 import { useState, useRef, useEffect } from "react";
 import { Send, Loader2, Sparkles, Code2, Download, AlertCircle, RotateCw } from "lucide-react";
 import ChatBubble from "./ChatBubble";
@@ -169,7 +171,7 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
       const res  = await fetch("/api/learn/chat", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ topic, messages: apiMessages, focusMode: pomo.focusActive, codeModeRequested }),
+        body:    JSON.stringify({ topic, messages: recentTextMessages(apiMessages, 20), focusMode: pomo.focusActive, codeModeRequested }),
       });
       const data = await res.json().catch(() => null) as (Partial<ChatResponse> & { error?: string }) | null;
 
@@ -180,7 +182,8 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
       const outcome = chatOutcome(res.status, data);
       if (!outcome.ok) {
         setChatError(outcome);
-        return;   // nothing is appended: a refusal is not a turn Hugh took
+        setMessages(messages);
+        return false;   // nothing is appended: a refusal is not a turn Hugh took
       }
 
       // Fold any code example into the stored message so it renders (via the
@@ -223,7 +226,9 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
           : null;
         if (reason) setOfferReason(reason);
       }
+      return true;
     } catch (err) {
+      setMessages(messages);
       // Also kept out of the thread. "Network error — please try again." used
       // to be stored as something Hugh said, and travelled everywhere a real
       // answer travels.
@@ -237,13 +242,9 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
   /** Send the refused question again, without making the learner retype it. */
   function retryLastAsk() {
     if (!lastAsked || loading) return;
-    // Drop the user turn that went unanswered; `postMessage` appends it again,
-    // so retrying twice cannot leave the same question in the thread twice.
-    setMessages(prev => {
-      const last = prev[prev.length - 1];
-      return last?.role === "user" && last.content === lastAsked.content ? prev.slice(0, -1) : prev;
+    void postMessage(lastAsked.content, lastAsked.codeMode).then(sent => {
+      if (sent) setDraft(current => current.trim() === lastAsked.content ? "" : current);
     });
-    void postMessage(lastAsked.content, lastAsked.codeMode);
   }
 
   function sendText() {
@@ -258,21 +259,25 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
       return;
     }
 
-    setDraft("");
     // For other messages the keyword only gates the request; Hugh decides if code
     // actually helps (and may still proactively offer a snippet to mirror).
-    void postMessage(text, isCodeModeRequest(text)).then(() => textareaRef.current?.focus());
+    void postMessage(text, isCodeModeRequest(text)).then(sent => {
+      if (sent) setDraft(current => current.trim() === text ? "" : current);
+      textareaRef.current?.focus();
+    });
   }
 
   function sendCode() {
     const code = codeDraft.trim();
     if (!code || loading) return;
     const content = fenceCode(codeLang, code);
-    setCodeMode(false);
-    setCodeDraft("");
-    setOffer(null);
-    setOfferAge(0);
-    void postMessage(content, false);
+    void postMessage(content, false).then(sent => {
+      if (!sent) return;
+      setCodeMode(false);
+      setCodeDraft(current => current.trim() === code ? "" : current);
+      setOffer(null);
+      setOfferAge(0);
+    });
   }
 
   // Mirror path: retype the snippet Hugh just offered (language is dictated by it).

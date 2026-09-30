@@ -1,9 +1,11 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse, textBudgetGuard } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse, after } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { refineTopicPrompt, parseTopicRefinement } from "@/lib/claude/prompts";
 import { checkTopic, TOPIC_REJECTION_MESSAGE } from "@/lib/learn/topicInput";
 import { logSafeError } from "@/lib/observability/log";
@@ -31,23 +33,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const usageGate = await enforceUsageGate(userId, "tracker/generate");
-  if (usageGate) {
-    // 'refused', not 'failed'. The budget gate doing its job is the system
-    // working, and folding it into the failure rate would make a month of
-    // heavy use look like an outage.
-    void recordOperation({
-      userId, operation: "track.build", outcome: "refused",
-      detail: { source: "qa", reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
-  const body = (await request.json()) as {
-    topic:    string;
-    end_date: string;
-    answers?: Array<{ question: string; answer: string }>;
-  };
+  const input = await readTextRequest(request, "goals");
+  if (input.response) return input.response;
+  const body = input.body;
 
   const end_date = body.end_date?.trim();
   const answers  = body.answers ?? [];
@@ -76,7 +64,7 @@ export async function POST(request: NextRequest) {
   if (answers.length > 0) {
     try {
       const prompt = refineTopicPrompt(topic, answers);
-      const msg    = await anthropic.messages.create({
+      const msg    = await createTextMessage(anthropic, userId, "dashboard/refine-topic", {
         model:      MODEL,
         max_tokens: 600,
         messages:   [{ role: "user", content: prompt }],
@@ -96,6 +84,11 @@ export async function POST(request: NextRequest) {
       finalTopic = result.refinedTopic;
       tips       = result.tips;
     } catch (err) {
+      const refusal = textBudgetResponse(err);
+      if (refusal) {
+        void recordOperation({ userId: userId, operation: "track.build", outcome: "refused", detail: { reason: "text-admission" } });
+        return refusal;
+      }
       // Deliberately swallowed: refinement is an improvement, not a
       // requirement, and losing it should not cost the learner their goal.
       // `finalTopic` stays as the typed topic, which checkTopic already
@@ -109,7 +102,17 @@ export async function POST(request: NextRequest) {
   // endpoint is reachable directly. It also re-judges the *refined* topic
   // rather than the typed one, because refinement is what actually becomes the
   // curriculum. Same rule the document path already enforces in approve.
-  const verdict = await judgeTopicDomain(finalTopic, userId);
+  let verdict;
+  try {
+    verdict = await judgeTopicDomain(finalTopic, userId, [], textBudgetGuard(userId, "learn/topic-domain"));
+  } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) {
+      void recordOperation({ userId: userId, operation: "track.build", outcome: "refused", detail: { reason: "text-admission" } });
+      return refusal;
+    }
+    throw err;
+  }
   if (!mayProceed(verdict)) {
     return NextResponse.json(verdict, { status: 422 });
   }
@@ -170,7 +173,10 @@ export async function POST(request: NextRequest) {
     const service   = createServiceClient();
     const startedAt = Date.now();
     try {
-      await generateTrack(service, userId, finalTopic, goalId);
+      await generateTrack(service, userId, finalTopic, goalId, undefined, {
+        beforeGeneration: textBudgetGuard(userId, "tracker/generate"),
+        beforePriority: textBudgetGuard(userId, "tracker/priority"),
+      });
       await service
         .from("learning_goals")
         .update({ track_status: "ready" })

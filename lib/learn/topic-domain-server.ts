@@ -1,3 +1,4 @@
+import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { topicDomainJudgePrompt, parseClaudeJson } from "@/lib/claude/prompts";
@@ -43,8 +44,13 @@ export async function judgeTopicDomain(
   topic:            string,
   userId:           string,
   previousAttempts: readonly string[] = [],
+  beforeCall?: TextCallGuard,
 ): Promise<TopicDomainVerdict> {
   const prompt = topicDomainJudgePrompt(topic, previousAttempts);
+
+  const call: TextCall = { model: MODEL, max_tokens: 600, messages: [{ role: "user", content: prompt }] };
+  // Budget denials must propagate, never enter the classifier fail-open path.
+  await beforeCall?.(call, 2);
 
   const startedAt = Date.now();
 
@@ -60,17 +66,7 @@ export async function judgeTopicDomain(
 
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const msg = await anthropic.messages.create({
-        model:      MODEL,
-        // Headroom for the widest response, which is now a 'reframe': a
-        // first-person message plus up to three reframed topics, each a full
-        // phrase rather than a two-word label. A truncated body fails
-        // JSON.parse, which fails OPEN — and failing open on a reframe is
-        // worse than it ever was on a needs_angle, because the topic is known
-        // to be off-domain and the app would build a track for it anyway.
-        max_tokens: 600,
-        messages:   [{ role: "user", content: prompt }],
-      });
+      const msg = await anthropic.messages.create(call, beforeCall ? { maxRetries: 0 } : undefined);
       tokensIn  += msg.usage.input_tokens;
       tokensOut += msg.usage.output_tokens;
       const text = msg.content[0]?.type === "text" ? msg.content[0].text : "";

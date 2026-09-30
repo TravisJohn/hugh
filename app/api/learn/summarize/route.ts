@@ -1,8 +1,10 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { sanitizeCovered } from "@/lib/learn/sessionRecord";
 
@@ -17,28 +19,18 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(user.id, "learn/summarize");
-  if (usageGate) {
-    void recordOperation({
-      userId: user.id, operation: "ask.summarize", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
-  const body = await req.json() as {
-    topic: string;
-    messages: { role: string; content: string }[];
-  };
+  const input = await readTextRequest(req, "summary");
+  if (input.response) return input.response;
+  const body = input.body;
 
   const { topic, messages } = body;
   if (!topic || !messages?.length) {
     return NextResponse.json({ error: "Missing topic or messages" }, { status: 400 });
   }
 
-  const realMessages = messages[0]?.role === "assistant" ? messages.slice(1) : messages;
-
-  const conversation = realMessages
+  // The browser removes its synthetic welcome. Preserve all submitted evidence;
+  // an assistant-first transcript is not proof that its first turn is a greeting.
+  const conversation = messages
     .map(m => `${m.role === "user" ? "Student" : "Hugh"}: ${m.content}`)
     .join("\n\n");
 
@@ -72,7 +64,7 @@ Rules:
   const startedAt = Date.now();
 
   try {
-    const response = await anthropic.messages.create({
+    const response = await createTextMessage(anthropic, user.id, "learn/summarize", {
       model:      MODEL,
       // Raised for "covered": the narrative alone fitted in 512, the record of
       // substance does not.
@@ -107,6 +99,11 @@ Rules:
       covered:  sanitizeCovered(parsed.covered),
     });
   } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) {
+      void recordOperation({ userId: user.id, operation: "ask.summarize", outcome: "refused", detail: { reason: "text-admission" } });
+      return refusal;
+    }
     // A run of failures here starves review quizzes of material, because only
     // a saved diary entry can be quoted by one.
     void recordOperation({

@@ -1,5 +1,7 @@
 "use client";
 
+import { recentTextMessages } from "@/lib/claude/textInput";
+
 import { useEffect, useRef, useState } from "react";
 import type { DrillLang } from "@/types/code";
 import Image from "next/image";
@@ -65,6 +67,7 @@ export default function CodeChat({
   const [draft, setDraft]       = useState("");
   const [code, setCode]         = useState("");
   const [codeMode, setCodeMode] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading]   = useState(false);
   const [justPinned, setJustPinned] = useState<number | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -89,19 +92,28 @@ export default function CodeChat({
     if (!text || loading) return;
     const next = [...messages, { role: "user" as const, content: text }];
     setMessages(next);
-    setDraft(""); setCode(""); setCodeMode(false);
+    setError(null);
     setLoading(true);
     try {
       const res = await fetch("/api/code/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Drop the synthetic welcome so the transcript starts with a user turn.
-        body: JSON.stringify({ messages: next.slice(1), context: buildContext() }),
+        body: JSON.stringify({ messages: recentTextMessages(next.slice(1), 12), context: buildContext() }),
       });
       const data = await res.json();
-      setMessages(m => [...m, { role: "assistant", content: data.reply ?? data.error ?? "Sorry — please try again." }]);
+      if (!res.ok) {
+        setMessages(messages);
+        setError(data.error ?? "Unable to send. Please try again.");
+        return;
+      }
+      setMessages(m => [...m, { role: "assistant", content: data.reply ?? "Please try again." }]);
+      setDraft(current => current === draft ? "" : current);
+      setCode(current => current === code ? "" : current);
+      setCodeMode(false);
     } catch {
-      setMessages(m => [...m, { role: "assistant", content: "Network error — please try again." }]);
+      setMessages(messages);
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -166,6 +178,7 @@ export default function CodeChat({
                 )}
               </div>
             ))}
+            {error && <p role="alert" className="text-sm text-amber-300">{error}</p>}
             {loading && (
               <div className="flex items-center gap-2 text-xs text-slate-500">
                 <Loader2 size={13} className="animate-spin" /> Hugh is thinking…

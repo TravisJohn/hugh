@@ -1,7 +1,9 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { loadService } from "@/lib/cloud/loader";
 import { GROUP_LABELS } from "@/types/cloud";
@@ -16,8 +18,6 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.
 const MODEL = "claude-haiku-4-5";
-
-interface Msg { role: "user" | "assistant"; content: string }
 
 const BASE_SYSTEM = `You are Hugh, a friendly, concise cloud-skills tutor for a data/analytics learner.
 - Keep it short and plain-spoken: a few sentences, a tight list only when it helps. No preamble, no lecturing.
@@ -60,23 +60,10 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Please sign in to use the assistant." }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "cloud/chat");
-  if (usageGate) {
-    // A quota block is the system working, not breaking — recorded as
-    // 'refused' so it never inflates the failure count.
-    void recordOperation({
-      userId, operation: "cloud.chat", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
-  const body = (await request.json()) as {
-    provider?: string;
-    serviceId?: string;
-    messages?: Msg[];
-  };
-  const messages = Array.isArray(body.messages) ? body.messages.slice(-12) : [];
+  const input = await readTextRequest(request, "cloud");
+  if (input.response) return input.response;
+  const body = input.body;
+  const messages = body.messages;
   if (messages.length === 0) return NextResponse.json({ error: "messages required" }, { status: 400 });
   if (!body.provider || !body.serviceId) {
     return NextResponse.json({ error: "provider and serviceId required" }, { status: 400 });
@@ -88,7 +75,7 @@ export async function POST(request: NextRequest) {
   const startedAt = Date.now();
 
   try {
-    const res = await anthropic.messages.create({
+    const res = await createTextMessage(anthropic, userId, "cloud/chat", {
       model: MODEL,
       max_tokens: 600,
       system: `${BASE_SYSTEM}\n\n${serviceContext(service)}`,
@@ -104,6 +91,11 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ reply: reply || "Sorry — please try again." });
   } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) {
+      void recordOperation({ userId: userId, operation: "cloud.chat", outcome: "refused", detail: { reason: "text-admission" } });
+      return refusal;
+    }
     console.error("[cloud/chat] Claude error:", err);
     void recordOperation({
       userId, operation: "cloud.chat", outcome: "failed",
