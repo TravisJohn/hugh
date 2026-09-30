@@ -337,10 +337,10 @@ export default function DashboardPanel({
   }
 
   return (
-    <div className="flex w-full gap-10 px-10 py-8">
+    <div className="flex w-full gap-4 px-4 py-5 sm:gap-10 sm:px-10 sm:py-8">
 
       {/* ── The form and the library ─────────────────────────────────── */}
-      <div className="flex w-full max-w-2xl shrink-0 flex-col gap-10">
+      <div className="flex w-full min-w-0 max-w-2xl shrink-0 flex-col gap-6 sm:gap-10">
 
       {/* ── Add goal ───────────────────────────────────────────────── */}
       <section>

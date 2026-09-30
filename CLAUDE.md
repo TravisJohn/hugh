@@ -277,7 +277,6 @@ picked at random per mastery session.
 
 ## DO NOT Build (deferred)
 - Voice analysis: filler words, speech pace, volume, confidence scoring
-- Mobile responsive layout
 - AssemblyAI / Whisper STT upgrade
 - Case grading / sealed answer keys (Case Lab v2)
 - Widening the topic gate beyond data/analytics — that's a separate app

@@ -2,7 +2,7 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { GripVertical, BookOpen, OctagonAlert, ChevronRight, ChevronUp, ChevronDown, Check, Bookmark, HelpCircle } from "lucide-react";
-import { type Milestone, type BacklogPriorityMode } from "@/types";
+import { type Milestone, type BacklogPriorityMode, type KanbanColumn, KANBAN_COLUMNS, KANBAN_COLUMN_LABELS } from "@/types";
 import { normalizeCoverage, countByStatus } from "@/utils/coverage";
 
 interface Props {
@@ -18,6 +18,7 @@ interface Props {
   canMoveUp?:      boolean;
   canMoveDown?:    boolean;
   onMove?:         (dir: "up" | "down") => void;
+  onChangeColumn?: (column: KanbanColumn) => void;
   isOverlay?:      boolean;
   onClick:         (milestone: Milestone) => void;
 }
@@ -32,7 +33,7 @@ const CARD_TINTS: Record<string, { bg: string; border: string }> = {
 export default function MilestoneCard({
   milestone, entryCount, isActive, isPulsing, isFocused,
   isBacklog, priorityRank, priorityReason, priorityMode, canMoveUp, canMoveDown, onMove,
-  isOverlay, onClick,
+  isOverlay, onClick, onChangeColumn,
 }: Props) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id:   milestone.id,
@@ -204,6 +205,20 @@ export default function MilestoneCard({
           <ChevronRight size={11} />
         </span>
       </div>
+      {onChangeColumn && (
+        <select
+          aria-label={`Move ${milestone.title} to column`}
+          value={milestone.kanban_column}
+          onPointerDown={event => event.stopPropagation()}
+          onClick={event => event.stopPropagation()}
+          onChange={event => { event.stopPropagation(); onChangeColumn(event.target.value as KanbanColumn); }}
+          className="min-h-11 w-full rounded-lg border border-slate-600 bg-slate-900 px-3 text-sm text-slate-200 md:hidden"
+        >
+          {KANBAN_COLUMNS.map(column => (
+            <option key={column} value={column}>Move to {KANBAN_COLUMN_LABELS[column]}</option>
+          ))}
+        </select>
+      )}
     </div>
   );
 }

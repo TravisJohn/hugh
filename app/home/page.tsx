@@ -45,7 +45,7 @@ export default async function HomePage() {
   const initial   = firstName[0]?.toUpperCase() ?? "?";
 
   return (
-    <div className="relative flex h-screen flex-col bg-[#0A0F1E] overflow-hidden">
+    <div className="relative flex h-dvh flex-col overflow-hidden bg-[#0A0F1E] sm:h-screen">
 
       {/* ── Breathing background orbs ────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -55,12 +55,12 @@ export default async function HomePage() {
       </div>
 
       {/* ── Header ──────────────────────────────────────────────────── */}
-      <header className="relative flex shrink-0 items-center justify-between border-b border-slate-800 px-8 py-3">
+      <header className="relative flex shrink-0 items-center justify-between border-b border-slate-800 px-3 py-2 sm:px-8 sm:py-3">
         <span className="font-serif text-lg font-semibold text-white">Hugh.</span>
 
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-2 text-sm sm:gap-4">
           <HeaderUsage />
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300">
+          <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-sm font-semibold text-slate-300 sm:flex">
             {initial}
           </div>
           <span className="hidden sm:block text-slate-500">{user.email}</span>
@@ -83,10 +83,10 @@ export default async function HomePage() {
           was silently clipping the Notes bar off the bottom. clamp() keeps the
           generous spacing on tall/dual-monitor screens while compressing
           smoothly — no breakpoint jump — as height shrinks. */}
-      <main className="relative flex flex-1 flex-col items-center justify-center gap-[clamp(0.5rem,3vh,2rem)] px-6 overflow-hidden">
+      <main className="relative flex min-h-0 flex-1 flex-col items-center justify-start gap-2 overflow-hidden px-3 pt-8 sm:justify-center sm:gap-[clamp(0.5rem,3vh,2rem)] sm:px-6 sm:pt-0">
 
         {/* Logo */}
-        <div className="relative shrink-0">
+        <div className="relative hidden shrink-0 sm:block">
           <div className="absolute inset-0 rounded-full bg-sky-400/15 blur-2xl scale-150" />
           <Image
             src="/hugh-logo.png.png"
@@ -99,7 +99,7 @@ export default async function HomePage() {
         </div>
 
         {/* Greeting */}
-        <div className="text-center shrink-0">
+        <div className="shrink-0 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-600 mb-1">
             Welcome back, {firstName}
           </p>
@@ -110,12 +110,12 @@ export default async function HomePage() {
 
         {/* ── Six activities, 2 rows × 3 cols: Learn · Code · Cases ──
             Cloud Skills · Notes · Monitor ─────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-[clamp(0.5rem,2vh,1rem)] w-full max-w-4xl shrink-0">
+        <div className="grid w-full max-w-4xl shrink-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-[clamp(0.5rem,2vh,1rem)]">
 
           {/* Learn — the whole learning experience */}
           <Link
             href="/home/learn"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-green-500/40 bg-green-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-green-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-green-400/60 hover:bg-green-900/20 hover:shadow-xl hover:shadow-green-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-green-500/40 bg-green-900/10 p-3 shadow-lg shadow-green-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-green-400/60 hover:bg-green-900/20 hover:shadow-xl hover:shadow-green-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-green-500/15 text-green-400 transition-transform duration-300 group-hover:scale-110">
               <GraduationCap size={22} />
@@ -127,12 +127,12 @@ export default async function HomePage() {
                   Start here
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 Pick a topic and build real knowledge — follow your track, ask Hugh
                 anything, and practise out loud.
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-green-400 transition-all group-hover:text-green-300">
+            <span className="mt-auto hidden text-xs font-semibold text-green-400 transition-all group-hover:text-green-300 sm:block">
               Choose a topic →
             </span>
           </Link>
@@ -140,7 +140,7 @@ export default async function HomePage() {
           {/* Code — timed coding drills */}
           <Link
             href="/code/start"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-sky-500/40 bg-sky-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-sky-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-400/60 hover:bg-sky-900/20 hover:shadow-xl hover:shadow-sky-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-sky-500/40 bg-sky-900/10 p-3 shadow-lg shadow-sky-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-400/60 hover:bg-sky-900/20 hover:shadow-xl hover:shadow-sky-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-sky-500/15 text-sky-400 transition-transform duration-300 group-hover:scale-110">
               <Code2 size={22} />
@@ -152,12 +152,12 @@ export default async function HomePage() {
                   New
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 Short, timed coding reps that build muscle memory — practise what
                 you&apos;ve learned or spin up your own drill.
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-sky-400 transition-all group-hover:text-sky-300">
+            <span className="mt-auto hidden text-xs font-semibold text-sky-400 transition-all group-hover:text-sky-300 sm:block">
               Start coding →
             </span>
           </Link>
@@ -165,7 +165,7 @@ export default async function HomePage() {
           {/* Cases — The Case Room */}
           <Link
             href="/cases"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-amber-500/40 bg-amber-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-amber-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:bg-amber-900/20 hover:shadow-xl hover:shadow-amber-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-amber-500/40 bg-amber-900/10 p-3 shadow-lg shadow-amber-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/60 hover:bg-amber-900/20 hover:shadow-xl hover:shadow-amber-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-amber-500/15 text-amber-400 transition-transform duration-300 group-hover:scale-110">
               <Trophy size={22} />
@@ -177,12 +177,12 @@ export default async function HomePage() {
                   New
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 Work real business cases in The Case Room — make the calls that
                 matter and test your judgment against an expert&apos;s.
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-amber-400 transition-all group-hover:text-amber-300">
+            <span className="mt-auto hidden text-xs font-semibold text-amber-400 transition-all group-hover:text-amber-300 sm:block">
               Enter the Case Room →
             </span>
           </Link>
@@ -190,7 +190,7 @@ export default async function HomePage() {
           {/* Cloud Skills — cloud-services reference */}
           <Link
             href="/cloud"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-violet-500/40 bg-violet-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-violet-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-400/60 hover:bg-violet-900/20 hover:shadow-xl hover:shadow-violet-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-violet-500/40 bg-violet-900/10 p-3 shadow-lg shadow-violet-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-400/60 hover:bg-violet-900/20 hover:shadow-xl hover:shadow-violet-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-violet-500/15 text-violet-400 transition-transform duration-300 group-hover:scale-110">
               <Cloud size={22} />
@@ -202,12 +202,12 @@ export default async function HomePage() {
                   New
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 Know your cloud — AWS, GCP and Azure services for data work, grouped by
                 what they do, with an assistant to ask anything.
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-violet-400 transition-all group-hover:text-violet-300">
+            <span className="mt-auto hidden text-xs font-semibold text-violet-400 transition-all group-hover:text-violet-300 sm:block">
               Explore the clouds →
             </span>
           </Link>
@@ -218,18 +218,18 @@ export default async function HomePage() {
           {notesEnabled && (
           <Link
             href="/notes"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-rose-500/40 bg-rose-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-rose-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-400/60 hover:bg-rose-900/20 hover:shadow-xl hover:shadow-rose-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-rose-500/40 bg-rose-900/10 p-3 shadow-lg shadow-rose-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-400/60 hover:bg-rose-900/20 hover:shadow-xl hover:shadow-rose-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 transition-transform duration-300 group-hover:scale-110">
               <NotebookPen size={22} />
             </div>
             <div>
               <p className="font-semibold text-slate-100 text-base mb-1">Notes</p>
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 Drop a screenshot of a question you got wrong, jot your thinking, and let Hugh correct it.
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-rose-400 transition-all group-hover:text-rose-300">
+            <span className="mt-auto hidden text-xs font-semibold text-rose-400 transition-all group-hover:text-rose-300 sm:block">
               Open →
             </span>
           </Link>
@@ -241,7 +241,7 @@ export default async function HomePage() {
               see that from the card instead of discovering it inside. */}
           <Link
             href="/monitor"
-            className="group flex flex-col gap-[clamp(0.4rem,1.2vh,0.75rem)] rounded-2xl border border-cyan-500/40 bg-cyan-900/10 p-[clamp(0.75rem,2.2vh,1.25rem)] shadow-lg shadow-cyan-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/60 hover:bg-cyan-900/20 hover:shadow-xl hover:shadow-cyan-500/20"
+            className="group flex min-h-24 flex-col gap-1 rounded-2xl border border-cyan-500/40 bg-cyan-900/10 p-3 shadow-lg shadow-cyan-900/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/60 hover:bg-cyan-900/20 hover:shadow-xl hover:shadow-cyan-500/20 sm:gap-[clamp(0.4rem,1.2vh,0.75rem)] sm:p-[clamp(0.75rem,2.2vh,1.25rem)]"
           >
             <div className="flex h-[clamp(2rem,4.2vh,2.75rem)] w-[clamp(2rem,4.2vh,2.75rem)] items-center justify-center rounded-xl bg-cyan-500/15 text-cyan-400 transition-transform duration-300 group-hover:scale-110">
               <Activity size={22} />
@@ -256,7 +256,7 @@ export default async function HomePage() {
               {/* The subheading names only the views this account actually has.
                   Promising "jobs you've applied for" to someone whose documents
                   are not provisioned would be a card that lies about itself. */}
-              <p className="text-xs text-slate-500 leading-snug">
+              <p className="hidden text-xs leading-snug text-slate-500 sm:block">
                 {monitorDocsOn
                   ? <>Your own record, kept by hand — skills you&apos;re learning, jobs you&apos;ve
                       applied for, and where your time on Hugh actually went.</>
@@ -264,7 +264,7 @@ export default async function HomePage() {
                       where your time on Hugh actually went.</>}
               </p>
             </div>
-            <span className="mt-auto text-xs font-semibold text-cyan-400 transition-all group-hover:text-cyan-300">
+            <span className="mt-auto hidden text-xs font-semibold text-cyan-400 transition-all group-hover:text-cyan-300 sm:block">
               Open Monitor →
             </span>
           </Link>
@@ -272,7 +272,7 @@ export default async function HomePage() {
         </div>
 
         {/* ── Coming soon: Listen · Updates · Visualize · Manage ────── */}
-        <div className="w-full max-w-4xl shrink-0">
+        <div className="hidden w-full max-w-4xl shrink-0 sm:block">
           <div className="mb-[clamp(0.25rem,1vh,0.5rem)] flex items-center gap-3">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-600">
               Coming soon
