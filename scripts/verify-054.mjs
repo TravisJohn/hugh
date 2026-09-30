@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 const EMAIL = "test_user@testmail.com";
-const PERIOD = "2099-01-01T00:00:00.000Z";
+const PERIOD = "2099-04-01T00:00:00.000Z";
 const raw = readFileSync(new URL("../.env.local", import.meta.url), "utf8");
 const env = Object.fromEntries(
   raw.split(/\r?\n/)
