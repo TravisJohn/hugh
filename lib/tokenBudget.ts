@@ -32,6 +32,10 @@ export const DEFAULT_MONTHLY_TOKEN_LIMIT = 100_000;
  */
 export const PRO_MONTHLY_TOKEN_LIMIT = 1_000_000;
 
+/** Separate monthly character allowances for ElevenLabs, enforced for every plan. */
+export const FREE_MONTHLY_TTS_CHARS = 20_000;
+export const PRO_MONTHLY_TTS_CHARS = 100_000;
+
 /**
  * Requests per window, per user. Applies to every plan including admin: this
  * is abuse protection, not budgeting, and an admin account with a runaway
@@ -80,6 +84,12 @@ export interface QuotaProfile {
 export function tokenLimitFor(profile: QuotaProfile | null | undefined): number | null {
   if (profile?.is_admin || profile?.plan === "pro") return null;
   return profile?.token_limit ?? DEFAULT_MONTHLY_TOKEN_LIMIT;
+}
+
+export function ttsCharLimitFor(profile: QuotaProfile | null | undefined): number {
+  return profile?.is_admin || profile?.plan === "pro"
+    ? PRO_MONTHLY_TTS_CHARS
+    : FREE_MONTHLY_TTS_CHARS;
 }
 
 /** First instant of the current calendar month, as ISO. */
@@ -155,10 +165,8 @@ export const RESERVE_ESTIMATES: Record<string, number> = {
   // the real cost lets a burst overshoot the cap by the difference.
   "learn/topic-domain":         1_200,
 
-  // TTS spends ElevenLabs characters, not tokens, and the monthly cap has only
-  // ever counted tokens. Reserving zero keeps that posture exactly as it was —
-  // but the route still passes through the gate, so the RATE limit applies to
-  // it. That is the part that stops a loop running up an ElevenLabs bill.
+  // TTS spends ElevenLabs characters, not tokens. The shared gate enforces its
+  // request rate; reserve_tts separately enforces the monthly character cap.
   "tts":                            0,
 };
 

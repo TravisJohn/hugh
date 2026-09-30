@@ -61,6 +61,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s7_security_test
       - name: Test direct Storage upload denial
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s7_security_test -f /tmp/hugh-s1/tests/056_controlled_storage_uploads.sql
+      - name: Create disposable TTS budget database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s8_security_test
+      - name: Test concurrent TTS character admission
+        run: docker exec -e PGUSER=postgres -e PGDATABASE=hugh_s8_security_test "${{ job.services.postgres.id }}" sh /tmp/hugh-s1/tests/s8_tts_budget.sh
 
   verify:
     name: lint · typecheck · test · audit · build

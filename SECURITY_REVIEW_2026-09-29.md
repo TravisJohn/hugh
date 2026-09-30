@@ -6,7 +6,7 @@ Follow-up: **S1 is complete.** The fix was integrated into main as `b84b05e`;
 both CI jobs passed and Vercel reported a successful deployment. Travis confirmed
 production migration 053 was applied on 29 September 2026. A read-only census
 found zero invalid references among 1,064 screenshots and 11 document files.
-S2 is deployed via PR #11 and merge e56c9c0; Production and merged-main CI succeeded. S3 access-restriction code is deployed, with production role/transition checks and the full accounting repair still open. S4 migration 054 passed its production synthetic-period check. S5 is deployed via PR #13 and merge b2372b0. S9's lockfile fix is deployed; S6-S8 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
+S2 is deployed via PR #11 and merge e56c9c0; Production and merged-main CI succeeded. S3 access-restriction code is deployed, with production role/transition checks and the full accounting repair still open. S4 migration 054 passed its production synthetic-period check. S5 is deployed via PR #13 and merge b2372b0. S6 and S7 application changes are deployed; migrations 055 and 056 await the Sydney database rollout. S8 remains open. S9's lockfile fix is deployed. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
 
 **Assessment: fix the access-control and spending-control findings before opening this deployment to an untrusted public audience.** The project has useful defenses, but passing its current tests is not evidence that its tenant boundaries or financial limits hold against direct requests.
 
@@ -81,7 +81,7 @@ This does not bypass the earlier approval/block check, and the legacy query does
 
 ### S6 - Medium: blocking an account does not revoke its data/upload access
 
-**Status: fix prepared in migration 055 and API gates; production migration and live verification are pending.** See [S6 blocked-account access rollout](S6_BLOCKED_ACCOUNT_ACCESS.md). The original finding follows.
+**Status: API gates deployed in b605981 via PR #14. Migration 055 and live verification are pending.** See [S6 blocked-account access rollout](S6_BLOCKED_ACCOUNT_ACCESS.md). The original finding follows.
 
 Evidence: [block action](<D:/WEB PROJECTS/hugh/app/api/admin/users/[userId]/route.ts:38>), [provisioning columns](<D:/WEB PROJECTS/hugh/lib/auth/provisioning.ts:37>), [Notes upload gate](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:108>), [database provisioning predicates](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:84>).
 
@@ -91,7 +91,7 @@ Blocking changes profiles.is_blocked. Paid AI routes inspect it, but Notes/Monit
 
 ### S7 - Medium: direct Storage uploads bypass application upload restrictions
 
-**Status: fix prepared in migration 056 and upload validation; production migration and direct-path verification are pending.** See [S7 controlled-upload rollout](S7_CONTROLLED_UPLOADS.md). The original finding follows.
+**Status: upload validation deployed in 7a19815 via PR #15. Migration 056 and direct-path verification are pending.** See [S7 controlled-upload rollout](S7_CONTROLLED_UPLOADS.md). The original finding follows.
 
 Evidence: [route size/type checks](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:133>), [Storage INSERT policy](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:169>), [Notes bucket creation](<D:/WEB PROJECTS/hugh/supabase/migrations/027_notes.sql:87>), [document bucket creation](<D:/WEB PROJECTS/hugh/supabase/migrations/042_monitor_document_files.sql:45>).
 
@@ -102,6 +102,8 @@ An account can therefore consume storage outside the application's intended flow
 **Fix:** enforce supported MIME types and object-size ceilings on the bucket, then add a per-user allocation/rate policy or remove general direct-upload permission and use controlled uploads. Check file signatures where content type matters. Test the direct Supabase path, not just the upload form.
 
 ### S8 - Medium: TTS has a rate limit but no cumulative allowance
+
+**Status: fix prepared in migration 057 and the TTS gate; production migration must precede the application release.** See [S8 TTS character-budget rollout](S8_TTS_CHARACTER_BUDGET.md). The original finding follows.
 
 Evidence: [zero-token TTS reservation](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:157>), [character-only accounting](<D:/WEB PROJECTS/hugh/lib/usage.ts:172>), [TTS text limit](<D:/WEB PROJECTS/hugh/app/api/tts/route.ts:52>).
 

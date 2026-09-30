@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { ElevenLabsClient } from "elevenlabs";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { getPersonaById } from "@/lib/personas";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { enforceUsageGate, enforceTtsBudget, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 
 // Constructed per request, not at module scope. The ElevenLabs SDK throws
@@ -20,23 +20,11 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "tts");
-  if (usageGate) {
-    void recordOperation({
-      userId, operation: "voice.speak", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
+  const body = await request.json().catch(() => null) as { text?: unknown; personaId?: unknown } | null;
+  const text = body?.text;
+  const personaId = body?.personaId;
 
-  const body = (await request.json()) as {
-    text: string;
-    personaId: string;
-  };
-
-  const { text, personaId } = body;
-
-  if (!text || !personaId) {
+  if (typeof text !== "string" || !text.trim() || typeof personaId !== "string" || !personaId) {
     return NextResponse.json(
       { error: "text and personaId are required" },
       { status: 400 }
@@ -65,6 +53,24 @@ export async function POST(request: NextRequest) {
       { error: "Voice playback is unavailable right now." },
       { status: 503 }
     );
+  }
+
+  const usageGate = await enforceUsageGate(userId, "tts");
+  if (usageGate) {
+    void recordOperation({
+      userId, operation: "voice.speak", outcome: "refused",
+      detail: { reason: "usage-gate" },
+    });
+    return usageGate;
+  }
+
+  const ttsGate = await enforceTtsBudget(userId, text.length);
+  if (ttsGate) {
+    void recordOperation({
+      userId, operation: "voice.speak", outcome: "refused",
+      detail: { reason: "voice-allowance" },
+    });
+    return ttsGate;
   }
 
   const startedAt = Date.now();
