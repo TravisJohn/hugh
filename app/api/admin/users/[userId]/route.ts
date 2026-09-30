@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { requireAdminApi } from "@/lib/auth/requireAdmin";
 import { deleteAccount } from "@/lib/account/deleteAccount";
@@ -11,18 +10,8 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
-  // Verify the requesting user is an admin
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("user_id", user.id)
-    .single();
-
-  if (!profile?.is_admin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const gate = await requireAdminApi();
+  if (gate instanceof NextResponse) return gate;
 
   const { userId } = await params;
   const body = (await request.json()) as { action: Action };
@@ -65,8 +54,7 @@ export const maxDuration = 60;
  * (`app/api/account`) — two implementations of "delete everything" is how one
  * of them quietly stops covering a bucket.
  *
- * Uses the shared `requireAdminApi` gate rather than the inline check the POST
- * above still carries; that one predates the helper and is left alone here.
+ * Both admin actions use the shared active-admin gate.
  */
 export async function DELETE(
   request: NextRequest,

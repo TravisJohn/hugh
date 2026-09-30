@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isActiveAccount } from "@/lib/auth/accountAccess";
 
 /**
  * Shared admin gate for both pages and API routes. One source of truth for
@@ -20,11 +21,11 @@ async function getAdminStatus(): Promise<AdminStatus> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_admin")
+    .select("is_admin, approved, is_blocked")
     .eq("user_id", user.id)
     .single();
 
-  if (!profile?.is_admin) return { status: "forbidden", userId: user.id };
+  if (!profile?.is_admin || !isActiveAccount(profile)) return { status: "forbidden", userId: user.id };
   return { status: "ok", userId: user.id };
 }
 
