@@ -112,7 +112,7 @@ export default async function LearnDashboardPage() {
   });
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0F172A]">
+    <div className="flex h-dvh overflow-hidden bg-[#0F172A] sm:h-screen">
 
       {/* ── Left: Hugh logo ─────────────────────────────────────────── */}
       <aside className="hidden md:flex w-72 shrink-0 flex-col items-center justify-center border-r border-slate-800 bg-slate-900/60">
@@ -139,26 +139,27 @@ export default async function LearnDashboardPage() {
         </div>
 
         {/* Top bar */}
-        <header className="flex shrink-0 items-center justify-between border-b border-slate-800 px-8 py-4">
-          <div className="flex items-center gap-4">
+        <header className="flex shrink-0 items-center justify-between border-b border-slate-800 px-3 py-2 sm:px-8 sm:py-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-4">
             <Link
               href="/home"
               className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors"
             >
               <ArrowLeft size={14} />
-              Activities
+              <span className="hidden sm:inline">Activities</span>
             </Link>
-            <span className="text-slate-700">|</span>
+            <span className="hidden text-slate-700 sm:inline">|</span>
             <div>
               <h1 className="text-base font-bold text-white tracking-tight">
-                Welcome back, {firstName}
+                <span className="sm:hidden">Learn</span>
+                <span className="hidden sm:inline">Welcome back, {firstName}</span>
               </h1>
-              <p className="text-xs text-slate-600">{dateLabel}</p>
+              <p className="hidden text-xs text-slate-600 sm:block">{dateLabel}</p>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 text-sm sm:gap-4">
               <HeaderUsage />
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-sm font-semibold text-slate-200">
+            <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-sm font-semibold text-slate-200 sm:flex">
               {initial}
             </div>
             <span className="hidden sm:block text-slate-400">{user.email}</span>
@@ -170,7 +171,7 @@ export default async function LearnDashboardPage() {
 
         {/* Usage bar — only shown to free users */}
         {quota.plan === "free" && (
-          <div className={`shrink-0 border-b px-8 py-3 ${
+          <div className={`shrink-0 border-b px-3 py-2 sm:px-8 sm:py-3 ${
             quota.used >= FREE_SESSION_LIMIT
               ? "border-amber-500/20 bg-amber-500/5"
               : "border-slate-800 bg-transparent"

@@ -91,10 +91,10 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
     <>
       {/* Records that this surface was used today. Renders nothing. */}
       <RecordActivity feature="learn" />
-      <div className="flex h-screen flex-col bg-[#0F172A] overflow-hidden">
+      <div className="flex h-dvh flex-col overflow-hidden bg-[#0F172A] sm:h-screen">
 
         {/* Header */}
-        <header className="flex shrink-0 items-center justify-between border-b border-slate-800 px-6 py-3">
+        <header className="flex shrink-0 items-center justify-between border-b border-slate-800 px-3 py-2 sm:px-6 sm:py-3">
           <div className="flex items-center gap-3">
             <Link
               href="/home/learn"
@@ -106,9 +106,9 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
             <span className="font-serif text-base font-semibold text-white">Hugh.</span>
           </div>
 
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2 text-sm sm:gap-4">
             <HeaderUsage />
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-sm font-semibold text-slate-200">
+            <div className="hidden h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-sm font-semibold text-slate-200 sm:flex">
               {initial}
             </div>
             <span className="hidden sm:block text-slate-400">{user.email}</span>
@@ -121,7 +121,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
             Replaces the old Track/Ask/Converse tabs and the
             topic_description/title subtitle (both redundant now that the learner
             follows one fixed pathway). */}
-        <div className="shrink-0 flex items-center gap-4 border-b border-slate-800 bg-slate-900/40 px-6 py-2.5">
+        <div className="flex shrink-0 items-center gap-2 border-b border-slate-800 bg-slate-900/40 px-3 py-2 sm:gap-4 sm:px-6 sm:py-2.5">
           <h1 className="min-w-0 truncate text-sm font-semibold text-slate-200" title={g.topic}>
             {g.topic}
           </h1>
@@ -133,7 +133,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
 
         {view === "board" && t ? (
           /* Kanban board */
-          <div className="flex-1 overflow-hidden px-6 py-5">
+          <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-5">
             <KanbanBoard initialMilestones={milestones} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} />
           </div>
         ) : (

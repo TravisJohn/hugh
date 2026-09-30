@@ -27,21 +27,23 @@ interface Props {
   focusId:       string | null;
   isDragging:    boolean;
   priorityMode:  BacklogPriorityMode;
+  mobileActive:  boolean;
   onToggleMode:  (mode: BacklogPriorityMode) => void;
   onMoveCard:    (milestoneId: string, dir: "up" | "down") => void;
+  onChangeColumn: (milestoneId: string, column: KanbanColumnType) => void;
   onCardClick:   (milestone: Milestone) => void;
 }
 
 export default function KanbanColumn({
   column, milestones, entryCounts, activeId, pulseId, focusId, isDragging,
-  priorityMode, onToggleMode, onMoveCard, onCardClick,
+  priorityMode, mobileActive, onToggleMode, onMoveCard, onChangeColumn, onCardClick,
 }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: column });
   const styles    = COLUMN_STYLES[column];
   const isBacklog = column === "backlog";
 
   return (
-    <div className="flex flex-1 flex-col min-w-0 h-full">
+    <div className={`${mobileActive ? "flex" : "hidden"} min-w-0 flex-1 flex-col h-full md:flex`}>
       {/* Column header */}
       <div className="mb-3 flex items-center gap-2 px-1">
         <span className={`h-2 w-2 rounded-full ${styles.dot}`} />
@@ -106,6 +108,7 @@ export default function KanbanColumn({
             canMoveUp={idx > 0}
             canMoveDown={idx < milestones.length - 1}
             onMove={dir => onMoveCard(m.id, dir)}
+            onChangeColumn={next => onChangeColumn(m.id, next)}
             onClick={onCardClick}
           />
         ))}

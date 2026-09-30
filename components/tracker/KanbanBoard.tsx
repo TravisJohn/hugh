@@ -17,7 +17,7 @@ import {
   outcomeOfStatus, outcomeOfThrown,
   type SaveOutcome, type SaveFailure,
 } from "@/lib/errors/saveOutcome";
-import { type Milestone, type KanbanColumn, type BacklogPriorityMode, KANBAN_COLUMNS } from "@/types";
+import { type Milestone, type KanbanColumn, type BacklogPriorityMode, KANBAN_COLUMNS, KANBAN_COLUMN_LABELS } from "@/types";
 import KanbanColumnComponent from "./KanbanColumn";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneDrawer from "./MilestoneDrawer";
@@ -52,6 +52,11 @@ export default function KanbanBoard({
   const [pulseId, setPulseId]                     = useState<string | null>(initialPulseId ?? null);
   const [focusId, setFocusId]                     = useState<string | null>(focusMilestoneId ?? null);
   const [priorityMode, setPriorityMode]           = useState<BacklogPriorityMode>(backlogPriorityMode);
+  const [mobileColumn, setMobileColumn] = useState<KanbanColumn>(() =>
+    initialMilestones.find(m => m.id === focusMilestoneId)?.kanban_column
+    ?? KANBAN_COLUMNS.find(col => initialMilestones.some(m => m.kanban_column === col))
+    ?? "backlog"
+  );
   const [showPremiumGate, setShowPremiumGate]     = useState(false);
 
   // Set when an optimistic change was rolled back because the save was refused.
@@ -149,12 +154,7 @@ export default function KanbanBoard({
     setSaveFailure(outcome);
   }
 
-  function handleDragEnd({ active, over }: DragEndEvent) {
-    setDraggingMilestone(null);
-    if (!over) return;
-
-    const milestoneId = active.id as string;
-    const newColumn   = over.id as KanbanColumn;
+  function moveMilestoneToColumn(milestoneId: string, newColumn: KanbanColumn) {
     const current     = milestones.find(m => m.id === milestoneId);
     if (!current || current.kanban_column === newColumn) return;
 
@@ -179,10 +179,20 @@ export default function KanbanBoard({
     void persistOrRollBack(
       `/api/tracker/milestones/${milestoneId}`,
       patchBody,
-      () => setMilestones(prev =>
-        prev.map(m => m.id === milestoneId ? { ...m, ...current } : m)
-      ),
+      () => {
+        setMilestones(prev =>
+          prev.map(m => m.id === milestoneId ? { ...m, ...current } : m)
+        );
+        setMobileColumn(current.kanban_column);
+      },
     );
+    setMobileColumn(newColumn);
+  }
+
+  function handleDragEnd({ active, over }: DragEndEvent) {
+    setDraggingMilestone(null);
+    if (!over) return;
+    moveMilestoneToColumn(active.id as string, over.id as KanbanColumn);
   }
 
   function handleDragCancel() {
@@ -310,12 +320,27 @@ export default function KanbanBoard({
       </div>
 
       <DndContext
+        id={`track-${trackId ?? goalId}`}
         sensors={sensors}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
         <div className="relative z-10 flex flex-col h-full gap-2">
+          <div className="grid shrink-0 grid-cols-4 gap-1 md:hidden" role="tablist" aria-label="Track columns">
+            {KANBAN_COLUMNS.map(col => (
+              <button
+                key={col}
+                type="button"
+                role="tab"
+                aria-selected={mobileColumn === col}
+                onClick={() => setMobileColumn(col)}
+                className={`min-h-11 truncate rounded-lg px-1 text-[11px] font-semibold ${mobileColumn === col ? "bg-sky-600 text-white" : "bg-slate-800 text-slate-400"}`}
+              >
+                {KANBAN_COLUMN_LABELS[col]} <span className="tabular-nums">{byColumn[col].length}</span>
+              </button>
+            ))}
+          </div>
           <div className="flex gap-4 flex-1 min-h-0">
             {KANBAN_COLUMNS.map(col => (
               <KanbanColumnComponent
@@ -328,14 +353,16 @@ export default function KanbanBoard({
                 focusId={focusId}
                 isDragging={!!draggingMilestone}
                 priorityMode={priorityMode}
+                mobileActive={mobileColumn === col}
                 onToggleMode={toggleMode}
                 onMoveCard={moveCard}
+                onChangeColumn={moveMilestoneToColumn}
                 onCardClick={handleCardClick}
               />
             ))}
           </div>
 
-          <p className={`text-center text-xs text-slate-600 transition-opacity duration-200 ${draggingMilestone ? "opacity-100" : "opacity-0"}`}>
+          <p className={`hidden text-center text-xs text-slate-600 transition-opacity duration-200 md:block ${draggingMilestone ? "opacity-100" : "opacity-0"}`}>
             Drop on any column — cards can move forward or backward
           </p>
         </div>
