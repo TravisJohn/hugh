@@ -59,6 +59,24 @@ describe("prompt-size reservation reaches the atomic RPC", () => {
     await checkUsageAllowed("alice", "tts");
     expect(mocks.rpc.mock.calls[0][1].p_estimate).toBe(0);
   });
+  it.each([{}, { plan: "pro" }, { is_admin: true }])("refuses unestimated billable calls when the RPC fails: %j", async extra => {
+    profile = { approved: true, ...extra };
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
+    const response = await enforceUsageGate("alice", "tts");
+    expect(response?.status).toBe(503);
+    expect(response?.headers.get("Retry-After")).toBe("30");
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+  });
+  it.each([
+    { name: "thrown RPC", run: () => mocks.rpc.mockRejectedValue(new Error("offline")) },
+    { name: "empty decision", run: () => mocks.rpc.mockResolvedValue({ data: null, error: null }) },
+    { name: "invalid decision", run: () => mocks.rpc.mockResolvedValue({ data: [{ granted: false, reason: "unknown" }], error: null }) },
+  ])("refuses an unusable reservation result: $name", async ({ run }) => {
+    run();
+    const response = await enforceUsageGate("alice", "code/generate-drill");
+    expect(response?.status).toBe(503);
+    expect(mocks.from).toHaveBeenCalledTimes(1);
+  });
   it("only admitted calls reach the provider in a near-limit burst", async () => {
     // Contract double for SQL's atomic compare/add. The separate PostgreSQL
     // test exercises the real row lock with eight simultaneous connections.

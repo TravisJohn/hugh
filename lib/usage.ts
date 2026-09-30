@@ -198,9 +198,8 @@ async function recordAgainstCounter(
  *
  * `feature` is required, and is the same string the route passes to `logUsage`.
  * `estimate`, when supplied by trusted server code, reserves the assembled
- * prompt and output allowance. Otherwise the legacy feature estimate applies.
- * Prompt-sized callers require a successful atomic reservation; they never
- * fall back to the legacy, non-atomic log sum.
+ * prompt and output allowance. Otherwise the feature estimate applies.
+ * Every billable caller requires a successful atomic reservation.
  */
 export async function checkUsageAllowed(
   userId:  string,
@@ -216,77 +215,37 @@ export async function checkUsageAllowed(
   const account = accountAllowed(profile);
   if (!account.allowed) return account;
 
-  const supabase = createServiceClient();
-  const { data, error } = await supabase.rpc("reserve_usage", {
-    p_user_id:       userId,
-    p_period_start:  periodStart(profile),
-    p_estimate:      estimate ?? reserveEstimateFor(feature),
-    p_token_limit:   tokenLimitFor(profile),
-    p_max_requests:  RATE_LIMIT_MAX_REQUESTS,
-    p_rate_window_s: RATE_LIMIT_WINDOW_SECONDS,
-    p_reserve_ttl_s: RESERVE_TTL_SECONDS,
-  });
+  try {
+    const supabase = createServiceClient();
+    const { data, error } = await supabase.rpc("reserve_usage", {
+      p_user_id:       userId,
+      p_period_start:  periodStart(profile),
+      p_estimate:      estimate ?? reserveEstimateFor(feature),
+      p_token_limit:   tokenLimitFor(profile),
+      p_max_requests:  RATE_LIMIT_MAX_REQUESTS,
+      p_rate_window_s: RATE_LIMIT_WINDOW_SECONDS,
+      p_reserve_ttl_s: RESERVE_TTL_SECONDS,
+    });
 
-  if (error) {
-    // Prompt-sized reservations must actually be acquired before spending.
-    // The legacy fallback remains for other features (audit S5).
-    if (estimate !== undefined) {
-      console.error("[usage] prompt reservation unavailable:", error.message);
+    if (error) {
+      console.error(`[usage] reserve_usage unavailable for ${userId}:`, error.message);
       return { allowed: false, reason: "unavailable", retryAfter: 30 };
     }
-    // Migration 049 is applied by hand (forward-only, no rollback tooling), so
-    // the code can legitimately be running ahead of the database. Degrade to
-    // the pre-049 sum rather than locking every learner out of the product.
-    //
-    // This is a degradation, not a bypass: the legacy path still enforces the
-    // same cap, just without the reservation that closes the race. The account
-    // check above has already run and fails closed regardless.
-    console.error(`[usage] reserve_usage unavailable for ${userId} — falling back:`, error.message);
-    return legacyTokenCheck(userId, profile);
+
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row?.granted === true) return { allowed: true };
+    if (row?.granted === false && (row.reason === "limit_reached" || row.reason === "rate_limited")) {
+      return {
+        allowed: false,
+        reason: row.reason as QuotaDenial,
+        retryAfter: row.retry_after ?? undefined,
+      };
+    }
+    console.error(`[usage] reserve_usage returned an invalid decision for ${userId}`);
+  } catch (error) {
+    console.error(`[usage] reserve_usage threw for ${userId}:`, error);
   }
-
-  const row = Array.isArray(data) ? data[0] : data;
-  if (row?.granted) return { allowed: true };
-
-  return {
-    allowed:    false,
-    reason:     (row?.reason as QuotaDenial) ?? "limit_reached",
-    retryAfter: row?.retry_after ?? undefined,
-  };
-}
-
-/**
- * The pre-049 budget check: sum every log row for the period and compare.
- *
- * Kept only as the fallback above. It is O(rows this month) and racy by
- * construction — two concurrent callers both read the same pre-spend total —
- * which is the whole reason 049 exists. Do not call it directly.
- */
-async function legacyTokenCheck(
-  userId:  string,
-  profile: QuotaProfile | null,
-): Promise<QuotaDecision> {
-  const limit = tokenLimitFor(profile);
-  if (limit === null) return { allowed: true };
-
-  const supabase = createServiceClient();
-  const { data: logs, error } = await supabase
-    .from("usage_logs")
-    .select("tokens_in, tokens_out")
-    .eq("user_id", userId)
-    .gte("created_at", periodStart(profile));
-
-  // A dropped read must not read as "no spend yet" — that would hand an
-  // exhausted account a fresh allowance every time the query flaked.
-  if (error) {
-    console.error(`[usage] legacy token check failed for ${userId}:`, error.message);
-    return { allowed: false, reason: "limit_reached" };
-  }
-
-  const total = (logs ?? []).reduce(
-    (sum, r) => sum + (r.tokens_in ?? 0) + (r.tokens_out ?? 0), 0
-  );
-  return total >= limit ? { allowed: false, reason: "limit_reached" } : { allowed: true };
+  return { allowed: false, reason: "unavailable", retryAfter: 30 };
 }
 
 /**
