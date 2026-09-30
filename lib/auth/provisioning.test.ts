@@ -15,7 +15,7 @@ import {
 
 describe("isProvisioned", () => {
   it("grants a surface only when its own flag is true", () => {
-    const flags = { notes_enabled: true, monitor_docs_enabled: false };
+    const flags = { notes_enabled: true, monitor_docs_enabled: false, approved: true, is_blocked: false };
 
     expect(isProvisioned(flags, "notes")).toBe(true);
     // Two flags, not one: opening screenshots must not open résumés.
@@ -37,7 +37,19 @@ describe("isProvisioned", () => {
   });
 
   it("refuses a null column rather than treating it as unset-and-allowed", () => {
-    expect(isProvisioned({ notes_enabled: null }, "notes")).toBe(false);
+    expect(isProvisioned({ notes_enabled: null, approved: true, is_blocked: false }, "notes")).toBe(false);
+  });
+
+  it("revokes both surfaces for a still-provisioned blocked session", () => {
+    const flags = { notes_enabled: true, monitor_docs_enabled: true, approved: true, is_blocked: true };
+    expect(isProvisioned(flags, "notes")).toBe(false);
+    expect(isProvisioned(flags, "monitorDocs")).toBe(false);
+  });
+
+  it("refuses an unapproved account even when both flags remain on", () => {
+    const flags = { notes_enabled: true, monitor_docs_enabled: true, approved: false, is_blocked: false };
+    expect(isProvisioned(flags, "notes")).toBe(false);
+    expect(isProvisioned(flags, "monitorDocs")).toBe(false);
   });
 
   it("does not special-case an admin, because the database does not either", () => {

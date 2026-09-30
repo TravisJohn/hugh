@@ -6,7 +6,7 @@ Follow-up: **S1 is complete.** The fix was integrated into main as `b84b05e`;
 both CI jobs passed and Vercel reported a successful deployment. Travis confirmed
 production migration 053 was applied on 29 September 2026. A read-only census
 found zero invalid references among 1,064 screenshots and 11 document files.
-S2 is deployed via PR #11 and merge e56c9c0; Production and merged-main CI succeeded. S3 access-restriction code is deployed, with production role/transition checks and the full accounting repair still open. S9's lockfile fix is deployed; S4-S8 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
+S2 is deployed via PR #11 and merge e56c9c0; Production and merged-main CI succeeded. S3 access-restriction code is deployed, with production role/transition checks and the full accounting repair still open. S4 migration 054 passed its production synthetic-period check. S5 is deployed via PR #13 and merge b2372b0. S9's lockfile fix is deployed; S6-S8 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
 
 **Assessment: fix the access-control and spending-control findings before opening this deployment to an untrusted public audience.** The project has useful defenses, but passing its current tests is not evidence that its tenant boundaries or financial limits hold against direct requests.
 
@@ -31,7 +31,7 @@ This is a source-confirmed authorization defect under the write grants the suppl
 
 ### S2 - High: model input size is not bounded by the quota reservation
 
-**Status: deployed in e56c9c0 via PR #11.** See [S2 implementation and release notes](S2_TEXT_INPUT_ROLLOUT.md). Seven text-input routes now enforce runtime and byte limits and reserve the assembled prompt plus output/retries. S4 and the wider S5 remain open. The original finding follows for historical context.
+**Status: deployed in e56c9c0 via PR #11.** See [S2 implementation and release notes](S2_TEXT_INPUT_ROLLOUT.md). Seven text-input routes now enforce runtime and byte limits and reserve the assembled prompt plus output/retries. The original finding follows for historical context.
 
 Evidence: [Learn chat input](<D:/WEB PROJECTS/hugh/app/api/learn/chat/route.ts:34>), [Code chat input](<D:/WEB PROJECTS/hugh/app/api/code/chat/route.ts:39>), [Cloud chat input](<D:/WEB PROJECTS/hugh/app/api/cloud/chat/route.ts:74>), [fixed estimates](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:133>).
 
@@ -57,7 +57,7 @@ There is no durable server session record tying the credential, final charge, ex
 
 ### S4 - Medium: reservation expiry can discard a request's budget almost immediately
 
-**Status: fix prepared in migration 054; disposable PostgreSQL boundary and concurrency tests pass. Production migration and verification are pending.** The finding remains present in production until migration 054 is applied.
+**Status: deployed in 44e628b via PR #12.** Travis applied migration 054 to Sydney Supabase on 2026-09-30. The production synthetic-period verifier passed the zero-cost, late-claim, former shared-expiry, own-TTL and cleanup checks. Disposable PostgreSQL boundary and concurrency tests also passed.
 
 Evidence: [shared reservation window](<D:/WEB PROJECTS/hugh/supabase/migrations/049_usage_counters.sql:144>), [reservation update](<D:/WEB PROJECTS/hugh/supabase/migrations/049_usage_counters.sql:198>).
 
@@ -69,6 +69,8 @@ Source-derived example, with an initially unused 6,000-token allowance: a TTS re
 
 ### S5 - Medium: a quota RPC error silently removes rate limiting
 
+**Status: deployed in b2372b0 via PR #13.** Every billable admission now returns temporary-unavailable on an RPC error, thrown call, or unusable decision. The non-atomic usage-log fallback was removed. Free, pro and admin refusal tests and full CI passed; Vercel Production succeeded. The original finding follows.
+
 Evidence: [fallback branch](<D:/WEB PROJECTS/hugh/lib/usage.ts:226>), [legacy check](<D:/WEB PROJECTS/hugh/lib/usage.ts:255>).
 
 Any reserve_usage error falls back to a sum of usage_logs. That fallback has no request-rate limit and no atomic reservation. Pro/admin accounts are allowed immediately. Thus an unapplied migration or RPC failure removes abuse controls while model calls continue. The free-account sum also lacks pagination, so sufficiently many rows can be omitted under the deployment's PostgREST row-return limit.
@@ -78,6 +80,8 @@ This does not bypass the earlier approval/block check, and the legacy query does
 **Fix:** fail closed with a temporary-unavailable response for billable operations when atomic admission is unavailable. Verify the required migration before enabling traffic. If a fallback is required, it needs equivalent durable rate and budget guarantees.
 
 ### S6 - Medium: blocking an account does not revoke its data/upload access
+
+**Status: fix prepared in migration 055 and API gates; production migration and live verification are pending.** See [S6 blocked-account access rollout](S6_BLOCKED_ACCOUNT_ACCESS.md). The original finding follows.
 
 Evidence: [block action](<D:/WEB PROJECTS/hugh/app/api/admin/users/[userId]/route.ts:38>), [provisioning columns](<D:/WEB PROJECTS/hugh/lib/auth/provisioning.ts:37>), [Notes upload gate](<D:/WEB PROJECTS/hugh/app/api/notes/images/route.ts:108>), [database provisioning predicates](<D:/WEB PROJECTS/hugh/supabase/migrations/050_surface_provisioning.sql:84>).
 

@@ -1,3 +1,5 @@
+import { isActiveAccount, type AccountAccessFlags } from "./accountAccess";
+
 /**
  * Which personal-data surfaces an account is allowed to hold data in.
  *
@@ -11,7 +13,7 @@
  * decision, so it is tested rather than inlined into a route. The reads live in
  * `requireProvisioned.ts` beside it, the way `requireAdmin.ts` is arranged.
  *
- * THE RULE MUST MATCH THE DATABASE. Migration 050 puts the same check in RLS,
+ * THE RULE MUST MATCH THE DATABASE. Migrations 050 and 055 put the same checks in RLS,
  * with no `is_admin` special case — admins are provisioned by having the
  * columns set true, not by bypassing the rule. Do not add a bypass here either:
  * a gate that is laxer in TypeScript than in Postgres produces a UI that offers
@@ -22,7 +24,7 @@
 export type ProvisionedSurface = "notes" | "monitorDocs";
 
 /** The `profiles` columns migration 050 adds, as read back from Supabase. */
-export interface ProvisioningFlags {
+export interface ProvisioningFlags extends AccountAccessFlags {
   notes_enabled?:        boolean | null;
   monitor_docs_enabled?: boolean | null;
 }
@@ -34,23 +36,20 @@ export const PROVISIONING_COLUMN: Record<ProvisionedSurface, keyof ProvisioningF
 };
 
 /** The select list for reading both flags in one round-trip. */
-export const PROVISIONING_COLUMNS = "notes_enabled, monitor_docs_enabled";
+export const PROVISIONING_COLUMNS = "notes_enabled, monitor_docs_enabled, approved, is_blocked";
 
 /**
  * Is this account allowed to use the surface?
  *
  * Fails CLOSED on anything that is not exactly `true` — a missing profile, a
- * null column, or (the case that will actually happen) code deployed before
+ * null column, a blocked or unapproved account, or code deployed before
  * migration 050 is applied, where the column does not exist and reads back as
- * `undefined`. That is the opposite of the usage gate in `lib/usage.ts`, which
- * fails open so a flaky query cannot lock a learner out of the product. The
- * asymmetry is the point: availability should degrade toward letting someone
- * in, privacy toward keeping them out.
+ * `undefined`. The same active-account rule is enforced by migration 055.
  */
 export function isProvisioned(
   flags:   ProvisioningFlags | null | undefined,
   surface: ProvisionedSurface,
 ): boolean {
   if (!flags) return false;
-  return flags[PROVISIONING_COLUMN[surface]] === true;
+  return isActiveAccount(flags) && flags[PROVISIONING_COLUMN[surface]] === true;
 }

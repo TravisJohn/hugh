@@ -53,6 +53,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s4_security_test
       - name: Test per-request reservation expiry
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s4_security_test -f /tmp/hugh-s1/tests/054_usage_reservation_lifetime.sql
+      - name: Create disposable blocked-account database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s6_security_test
+      - name: Test blocked access with a still-valid session
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s6_security_test -f /tmp/hugh-s1/tests/055_blocked_account_access.sql
 
   verify:
     name: lint · typecheck · test · audit · build
