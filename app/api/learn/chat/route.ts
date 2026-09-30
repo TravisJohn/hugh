@@ -1,9 +1,11 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { focusedLearningSystemPrompt } from "@/lib/claude/prompts";
 import { parseChatResponse } from "@/lib/askcode/parse";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 
@@ -17,26 +19,15 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // Revert this constant to "claude-sonnet-4-6" if the answers get weaker.
 const MODEL = "claude-haiku-4-5";
 
-interface ChatMessage {
-  role:    "user" | "assistant";
-  content: string;
-}
-
 export async function POST(request: NextRequest) {
   const startedAt = Date.now();
 
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "learn/chat");
-  if (usageGate) return usageGate;
-
-  const body = (await request.json()) as {
-    topic:             string;
-    messages:          ChatMessage[];
-    focusMode?:        boolean;
-    codeModeRequested?: boolean;
-  };
+  const input = await readTextRequest(request, "learn");
+  if (input.response) return input.response;
+  const body = input.body;
 
   const { topic, messages, focusMode, codeModeRequested } = body;
 
@@ -44,8 +35,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "topic and messages are required" }, { status: 400 });
   }
 
-  // Cap transcript size to guard token cost
-  const capped = messages.slice(-20);
+  // Validated, bounded transcript; copy before adding the server reminder.
+  const capped = [...messages];
 
   // Code-mode request: the keyword only *gates* the request — Hugh's own reply
   // decides whether the topic is code-worthy. We signal the explicit ask by
@@ -62,7 +53,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const res = await anthropic.messages.create({
+    const res = await createTextMessage(anthropic, userId, "learn/chat", {
       model:      MODEL,
       max_tokens: 1024,
       system:     focusedLearningSystemPrompt(topic.trim()),
@@ -115,6 +106,8 @@ export async function POST(request: NextRequest) {
       covered,
     });
   } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) return refusal;
     logSafeError("learn/chat", err, [topic]);
     void recordOperation({
       userId, operation: "ask.chat", outcome: "failed",

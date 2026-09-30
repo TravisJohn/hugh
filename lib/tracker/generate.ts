@@ -1,3 +1,4 @@
+import type { TextCallGuard } from "@/lib/claude/textInput";
 import { type SupabaseClient } from "@supabase/supabase-js";
 import {
   generateMilestones,
@@ -27,6 +28,9 @@ export class TrackGenerationError extends Error {
 
 /** Optional provenance context — see `track_generations` in migration 048. */
 export interface GenerationOptions {
+  /** Prompt-sized admission for callers that opt into the S2 text boundary. */
+  beforeGeneration?: TextCallGuard;
+  beforePriority?: TextCallGuard;
   /**
    * Whether the generation prompt actually READ the learner's answers.
    *
@@ -199,7 +203,7 @@ export async function generateTrack(
     record.answer_count = answers.length;
     record.answer_chars = answerChars(answers);
 
-    const { parsed, usage: genUsage, attempts } = await generateMilestones(topic, documentText);
+    const { parsed, usage: genUsage, attempts } = await generateMilestones(topic, documentText, MODEL, undefined, options.beforeGeneration);
     record.attempts   = attempts;
     record.tokens_in  = genUsage.inputTokens;
     record.tokens_out = genUsage.outputTokens;
@@ -286,7 +290,7 @@ export async function generateTrack(
     // break track creation — the board simply falls back to no suggested order.
     let assignments: PriorityAssignment[] = [];
     try {
-      const priority = await assignBacklogPriority(supabase, trackId, topic);
+      const priority = await assignBacklogPriority(supabase, trackId, topic, options.beforePriority);
       if (priority) {
         assignments             = priority.assignments;
         record.ranked           = true;

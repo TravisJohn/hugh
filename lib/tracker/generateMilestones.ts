@@ -1,3 +1,4 @@
+import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
 /**
  * The milestone-generation call, on its own.
  *
@@ -117,6 +118,7 @@ export async function generateMilestones(
   documentText?: string,
   model:         string = MODEL,
   answers?:      readonly { question: string; answer: string }[],
+  beforeCall?:   TextCallGuard,
 ): Promise<MilestoneGenerationOutcome> {
   let lastErr: unknown = null;
   const usage: GenerationUsage = { inputTokens: 0, outputTokens: 0 };
@@ -126,13 +128,12 @@ export async function generateMilestones(
   const content  = milestoneGenerationPrompt(topic, documentText, answers);
   const promptId = milestonePromptId(documentText, answers);
 
+  const call: TextCall = { model, max_tokens: MAX_TOKENS, messages: [{ role: "user", content }] };
+  await beforeCall?.(call, 2);
+
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const res = await anthropicClient().messages.create({
-        model,
-        max_tokens: MAX_TOKENS,
-        messages:   [{ role: "user", content }],
-      });
+      const res = await anthropicClient().messages.create(call, beforeCall ? { maxRetries: 0 } : undefined);
       usage.inputTokens  += res.usage.input_tokens;
       usage.outputTokens += res.usage.output_tokens;
       const raw = res.content[0]?.type === "text" ? res.content[0].text : "{}";

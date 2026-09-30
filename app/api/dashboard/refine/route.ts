@@ -1,7 +1,9 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { refinementQuestionPrompt, parseClaudeJson } from "@/lib/claude/prompts";
 import { checkTopic, TOPIC_REJECTION_MESSAGE } from "@/lib/learn/topicInput";
 import { logSafeError } from "@/lib/observability/log";
@@ -18,13 +20,9 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "dashboard/refine");
-  if (usageGate) return usageGate;
-
-  const body = (await request.json()) as {
-    topic:   string;
-    answers: Array<{ question: string; answer: string }>;
-  };
+  const input = await readTextRequest(request, "refine");
+  if (input.response) return input.response;
+  const body = input.body;
 
   const { answers = [] } = body;
 
@@ -52,7 +50,7 @@ export async function POST(request: NextRequest) {
   let lastErr: unknown = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const msg = await anthropic.messages.create({
+      const msg = await createTextMessage(anthropic, userId, "dashboard/refine", {
         model:      MODEL,
         max_tokens: 200,
         messages:   [{ role: "user", content: prompt }],
@@ -76,6 +74,8 @@ export async function POST(request: NextRequest) {
       });
       return NextResponse.json(result);
     } catch (err) {
+      const refusal = textBudgetResponse(err);
+      if (refusal) return refusal;
       lastErr = err;
     }
   }

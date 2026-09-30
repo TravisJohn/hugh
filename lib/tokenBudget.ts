@@ -187,7 +187,7 @@ export function recordedTokens(tokensIn: number, tokensOut: number): number {
   return Math.max(0, tokensIn) + Math.max(0, tokensOut);
 }
 
-export type QuotaDenial = "blocked" | "limit_reached" | "rate_limited";
+export type QuotaDenial = "blocked" | "limit_reached" | "rate_limited" | "unavailable";
 
 export interface QuotaDecision {
   allowed:     boolean;
@@ -212,12 +212,15 @@ export function accountAllowed(profile: QuotaProfile | null | undefined): QuotaD
 
 /** The HTTP status each refusal maps to. 429 for both "too much" refusals. */
 export function statusForDenial(reason: QuotaDenial | undefined): number {
+  if (reason === "unavailable") return 503;
   return reason === "limit_reached" || reason === "rate_limited" ? 429 : 403;
 }
 
 /** The learner-facing sentence for each refusal. */
 export function messageForDenial(reason: QuotaDenial | undefined): string {
   switch (reason) {
+    case "unavailable":
+      return "Usage checks are temporarily unavailable. Please try again shortly.";
     case "limit_reached":
       return "Monthly usage limit reached. Please contact Travis to reset or upgrade.";
     case "rate_limited":

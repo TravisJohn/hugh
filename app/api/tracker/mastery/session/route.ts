@@ -1,8 +1,10 @@
+import { readTextRequest } from "@/lib/claude/textRequest";
+import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { enforceUsageGate, logUsage } from "@/lib/usage";
+import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { stripEmphasis } from "@/lib/claude/prompts";
 
@@ -22,13 +24,6 @@ interface Message {
   text: string;
 }
 
-interface RequestBody {
-  milestoneId: string;
-  scenario:    keyof typeof SCENARIO_PERSONAS;
-  phase:       "open" | "respond" | "evaluate";
-  messages:    Message[];
-}
-
 function buildConversationText(messages: Message[]): string {
   return messages
     .map(m => (m.role === "hugh" ? `Hugh: ${m.text}` : `Learner: ${m.text}`))
@@ -40,16 +35,9 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "mastery/session");
-  if (usageGate) {
-    void recordOperation({
-      userId, operation: "mastery.session", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
-  const body = (await request.json()) as RequestBody;
+  const input = await readTextRequest(request, "session");
+  if (input.response) return input.response;
+  const body = input.body;
   const { milestoneId, scenario, phase, messages } = body;
 
   if (!milestoneId || !scenario || !phase) {
@@ -78,14 +66,17 @@ export async function POST(request: NextRequest) {
     .from("milestone_entries")
     .select("title, body")
     .eq("milestone_id", milestoneId)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .limit(65);
 
   if (!entries || entries.length === 0) {
     return NextResponse.json({ error: "No diary entries found" }, { status: 422 });
   }
 
+  if (entries.length > 64) return NextResponse.json({ error: "Too many notes for one assessment. Use a smaller milestone." }, { status: 413 });
+
   const entriesText = entries
-    .map((e, i) => `[Entry ${i + 1}]${e.title ? ` ${e.title}` : ""}\n${(e.body ?? "").slice(0, 2000)}`)
+    .map((e, i) => `[Entry ${i + 1}]${e.title ? ` ${e.title}` : ""}\n${(e.body ?? "")}`)
     .join("\n\n");
 
   const persona    = SCENARIO_PERSONAS[scenario];
@@ -180,7 +171,7 @@ Return ONLY valid JSON with no markdown fences:
   // Wrapped so an SDK throw is recorded rather than becoming an unhandled 500
   // that leaves no trace — the shape every sibling route already uses.
   try {
-    const completion = await anthropic.messages.create({
+    const completion = await createTextMessage(anthropic, userId, "mastery/session", {
       model,
       max_tokens: phase === "evaluate" ? 512 : 256,
       messages:   [{ role: "user", content: prompt }],
@@ -215,6 +206,11 @@ Return ONLY valid JSON with no markdown fences:
     });
     return NextResponse.json({ text: stripEmphasis(raw) });
   } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) {
+      void recordOperation({ userId: userId, operation: "mastery.session", outcome: "refused", detail: { reason: "text-admission" } });
+      return refusal;
+    }
     console.error("[mastery/session] Anthropic error:", err);
     void recordOperation({
       userId, operation: "mastery.session", outcome: "failed",
