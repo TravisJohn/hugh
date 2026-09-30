@@ -41,7 +41,8 @@ these tests.
    uploads and new signed-file requests must fail; profile status and
    self-deletion must remain available. Unblock the test account afterward.
 
-Until migration 055 is applied, direct Supabase requests with an existing
-session can still use the older RLS policies. The API gate alone does not close
-that path. S7 addresses the separate direct-upload size/type bypass for
+Travis applied migration 055 to Sydney on 2026-09-30. A read-only production
+check confirmed that `account_active()` is callable. The same-session blocked
+account test in step 3 is still needed to verify the effective database and
+Storage policies. S7 addresses the separate direct-upload size/type bypass for
 otherwise active, provisioned accounts.

@@ -6,7 +6,7 @@ claim. Migration 057 adds a separate atomic monthly character counter. On the
 first request in a period it seeds earlier TTS usage from `usage_logs`; later
 requests lock the counter and compare admitted characters with the cap.
 
-The proposed caps are 20,000 characters for free accounts and 100,000 for
+The deployed caps are 20,000 characters for free accounts and 100,000 for
 pro/admin accounts. With the existing cost estimate in `lib/pricing.ts`, those
 correspond to about US$6 and US$30 respectively. These are per-account caps,
 not a workspace-wide financial ceiling. An admin usage reset begins a new
@@ -44,3 +44,10 @@ production usage counters are involved in these tests.
 4. Configure a credit quota on Hugh's ElevenLabs API key as an independent
    workspace-wide backstop. Per-account caps cannot prevent many newly approved
    accounts from exhausting one shared provider pool.
+
+Travis applied migration 057 to Sydney on 2026-09-30. A production synthetic
+test with the designated test learner passed the exact monthly boundary and
+eight concurrent near-limit reservations; its future-period counters were
+removed and cleanup verified. PR #16 merged as 4f6a2c3 and Vercel Production
+reported success. A provider-backed route smoke test and the independent
+ElevenLabs key quota in steps 3 and 4 remain to be confirmed.
