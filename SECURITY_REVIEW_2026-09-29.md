@@ -6,7 +6,7 @@ Follow-up: **S1 is complete.** The fix was integrated into main as `b84b05e`;
 both CI jobs passed and Vercel reported a successful deployment. Travis confirmed
 production migration 053 was applied on 29 September 2026. A read-only census
 found zero invalid references among 1,064 screenshots and 11 document files.
-S2-S9 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
+S2 is deployed via PR #11 and merge e56c9c0; Production and merged-main CI succeeded. S3 access-restriction code is deployed, with production role/transition checks and the full accounting repair still open. S9's lockfile fix is deployed; S4-S8 remain open. See [S1 rollout and verification](<D:/WEB PROJECTS/hugh/docs/manual-tests/storage-ownership.md>).
 
 **Assessment: fix the access-control and spending-control findings before opening this deployment to an untrusted public audience.** The project has useful defenses, but passing its current tests is not evidence that its tenant boundaries or financial limits hold against direct requests.
 
@@ -31,6 +31,8 @@ This is a source-confirmed authorization defect under the write grants the suppl
 
 ### S2 - High: model input size is not bounded by the quota reservation
 
+**Status: deployed in e56c9c0 via PR #11.** See [S2 implementation and release notes](S2_TEXT_INPUT_ROLLOUT.md). Seven text-input routes now enforce runtime and byte limits and reserve the assembled prompt plus output/retries. S4 and the wider S5 remain open. The original finding follows for historical context.
+
 Evidence: [Learn chat input](<D:/WEB PROJECTS/hugh/app/api/learn/chat/route.ts:34>), [Code chat input](<D:/WEB PROJECTS/hugh/app/api/code/chat/route.ts:39>), [Cloud chat input](<D:/WEB PROJECTS/hugh/app/api/cloud/chat/route.ts:74>), [fixed estimates](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:133>).
 
 These handlers limit the number of messages to 20 or 12 but do not limit the length of each message or total model input. Learn's topic is also unbounded. TypeScript casts do not validate the received JSON. The usage gate reserves only 6,000 tokens for Learn or 3,000 for Code/Cloud, before examining the request. max_tokens bounds model output, not input.
@@ -41,7 +43,7 @@ An approved account can submit a large valid prompt, within provider and platfor
 
 ### S3 - High when enabled: Realtime usage and session limits are controlled by the browser
 
-**Status: public-access containment implemented; release verification pending. Underlying accounting/lifecycle repair remains open.** Realtime requires a server-verified, unblocked administrator and the feature flag; regular learners use scripted mastery. This does not revoke earlier credentials or terminate active calls. See [S3 containment and remaining work](S3_REALTIME_CONTAINMENT.md). Original evidence follows.
+**Status: administrator-only credential restriction deployed in 8f7c5a1 via PR #10. Production role/transition checks and underlying accounting/lifecycle repair remain open.** Realtime now requires a server-verified, unblocked administrator and the feature flag; regular learners use scripted mastery. This does not revoke earlier credentials or terminate active calls. See [S3 containment and remaining work](S3_REALTIME_CONTAINMENT.md). Original evidence follows.
 
 Evidence: [credential minting](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-session/route.ts:107>), [browser-supplied usage](<D:/WEB PROJECTS/hugh/app/api/tracker/mastery/realtime-usage/route.ts:79>), [browser timer](<D:/WEB PROJECTS/hugh/hooks/useMasteryRealtime.ts:183>), [reservation lifetime](<D:/WEB PROJECTS/hugh/lib/tokenBudget.ts:61>).
 
@@ -54,6 +56,8 @@ There is no durable server session record tying the credential, final charge, ex
 **Fix:** keep the feature disabled for public users until sessions and spend are accounted for server-side. Use provider-supported server observation/control, a durable session ID, conservative upfront charging until verified reconciliation, and an enforced concurrency/lifetime policy. A browser crash or deliberately missing report must not refund consumed budget.
 
 ### S4 - Medium: reservation expiry can discard a request's budget almost immediately
+
+**Status: fix prepared in migration 054; disposable PostgreSQL boundary and concurrency tests pass. Production migration and verification are pending.** The finding remains present in production until migration 054 is applied.
 
 Evidence: [shared reservation window](<D:/WEB PROJECTS/hugh/supabase/migrations/049_usage_counters.sql:144>), [reservation update](<D:/WEB PROJECTS/hugh/supabase/migrations/049_usage_counters.sql:198>).
 
@@ -101,7 +105,7 @@ TTS reserves zero tokens and records tts_chars, which the monthly gate does not 
 
 ### S9 - Moderate advisory: production dependency undici 7.29.0 needs a security update
 
-**Release update:** the S3 release was blocked by additional high-severity undici advisories. The lockfile now resolves compatible undici 7.30.0, and `npm audit --omit=dev --audit-level=high` reports zero vulnerabilities. Deployment verification is pending. The original finding below is historical.
+**Status: lockfile fix deployed in 8f7c5a1 via PR #10.** The isolated release updates undici to compatible 7.30.0. Production dependency audit reports zero vulnerabilities and release/main CI passed. Additional advisories blocked the initial release attempt; the compatible update cleared that gate. This does not attest to the Node runtime's separately bundled copy. The original advisory assessment follows.
 
 npm audit --omit=dev reports one moderate vulnerability, no high or critical advisories. npm ls resolves cheerio@1.2.0 -> undici@7.29.0; the lockfile pins the affected version at [package-lock.json](<D:/WEB PROJECTS/hugh/package-lock.json:11253>).
 

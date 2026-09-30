@@ -8483,3 +8483,28 @@ Release prerequisite: CI blocked on high-severity advisories in undici 7.29.0.
 The isolated release updates only that transitive package to compatible 7.30.0;
 package.json is unchanged. The production dependency audit now reports zero
 vulnerabilities. CI will recheck the exact updated revision before merge.
+
+## 2026-09-30 - S2 text-input boundary deployed
+
+PR #11 merged as e56c9c0ad14704e45dc7bdf97aa8091ae0d264c9. Seven
+billable text routes now validate and bound requests before model calls and
+reserve for the assembled prompt, maximum output and retries. No new migration
+was required; production migration 049 had already been applied and verified.
+
+The isolated release passed 1,649 tests across 80 files, lint, TypeScript,
+production build, dependency audit and disposable PostgreSQL concurrency
+checks. PR CI 36666117974 and merged-main CI 36666297458 passed. Vercel
+Production deployment 6751085934 succeeded for the exact merge commit.
+The public landing page loaded; authenticated browser smoke cases remain
+unverified because no signed-in browser session was available.
+
+## 2026-09-30 - S4 per-request reservation expiry prepared
+
+Migration 054 replaces the shared 049 expiry window with per-request
+reservation rows while preserving the counter row lock, rate limit and
+additive spend accounting. Existing aggregate reservations are carried
+forward for 150 seconds at cutover. The S1/S2/S4 disposable PostgreSQL
+sequence passed, including the t=149/t=150 boundary, per-request expiry,
+rate behavior, permissions and eight-way concurrency. The migration has
+not been applied to production. S4_RESERVATION_LIFETIME.md records the
+rollout and synthetic-period verifier. S3 and S5 remain separate work.

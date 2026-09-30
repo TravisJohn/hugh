@@ -49,6 +49,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s2_security_test
       - name: Test concurrent prompt-sized reservations
         run: docker exec -e PGUSER=postgres -e PGDATABASE=hugh_s2_security_test "${{ job.services.postgres.id }}" sh /tmp/hugh-s1/tests/s2_text_budget.sh
+      - name: Create disposable reservation-lifetime database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s4_security_test
+      - name: Test per-request reservation expiry
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_s4_security_test -f /tmp/hugh-s1/tests/054_usage_reservation_lifetime.sql
 
   verify:
     name: lint · typecheck · test · audit · build
