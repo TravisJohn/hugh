@@ -15,6 +15,11 @@ Sign-in identity and plan usage are separate permissions. A learner would need
 to consent to plan usage; a successful login alone cannot fund requests. Usage
 counts toward that learner's existing plan limits and can be capped per app in
 ChatGPT settings. See the [user guide](https://learn.chatgpt.com/docs/sign-in-with-chatgpt).
+The [plan-usage overview](https://developers.openai.com/siwc/token-sharing-open-source)
+binds an issued client registration to the authorizing ChatGPT user and
+workspace. This makes the founder's personal subscription unsuitable as a
+shared billing pool for other Hugh learners; each eligible learner would need
+their own authorized connection if Hugh receives hosted-app access.
 
 ## Fit with Hugh's current AI routes
 
