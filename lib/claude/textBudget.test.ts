@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/service", () => ({ createServiceClient: () => mocks }));
 import { createTextMessage, textBudgetResponse } from "./textBudget";
-import { checkUsageAllowed, enforceUsageGate } from "@/lib/usage";
+import { checkUsageAllowed, enforceUsageGate, enforceTtsBudget } from "@/lib/usage";
 
 const call: TextCall = { model: "claude-haiku-4-5", max_tokens: 500, system: "Python helper", messages: [{ role: "user", content: "x".repeat(16000) }] };
 const ai = vi.fn();
@@ -91,5 +91,31 @@ describe("prompt-size reservation reaches the atomic RPC", () => {
     expect(results.filter(r => r.status === "fulfilled")).toHaveLength(1);
     expect(ai).toHaveBeenCalledOnce();
     expect(reserved).toBe(textReservation(call));
+  });
+});
+
+describe("TTS character admission", () => {
+  it.each([
+    [{}, 20_000],
+    [{ plan: "pro" }, 100_000],
+    [{ is_admin: true }, 100_000],
+  ])("uses a monthly character cap for every plan: %j", async (extra, limit) => {
+    profile = { approved: true, ...extra };
+    expect(await enforceTtsBudget("alice", 2000)).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledWith("reserve_tts", expect.objectContaining({
+      p_user_id: "alice", p_chars: 2000, p_char_limit: limit,
+    }));
+  });
+
+  it("returns 429 when the atomic character cap is exhausted", async () => {
+    mocks.rpc.mockResolvedValue({ data: [{ granted: false, chars_after: 20_000 }], error: null });
+    expect((await enforceTtsBudget("alice", 1))?.status).toBe(429);
+  });
+
+  it("fails closed when character admission is unavailable", async () => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { message: "offline" } });
+    const response = await enforceTtsBudget("alice", 2000);
+    expect(response?.status).toBe(503);
+    expect(response?.headers.get("Retry-After")).toBe("30");
   });
 });
