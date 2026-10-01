@@ -4,7 +4,7 @@ Hugh is an AI-powered learning platform for data and analytics. A learner picks
 a topic, Hugh generates a track of milestone cards, and the learner works
 through them: asking questions, keeping a learning diary, proving mastery out
 loud, drilling code, and working business cases. Built on Next.js 16 (App
-Router) with Supabase for auth/data and Anthropic, OpenAI, and ElevenLabs for
+Router) with Supabase for auth/data and Anthropic and OpenAI for
 the AI/voice features.
 
 The mock-interview loop it began as was deleted on 2026-08-24; the learning loop
@@ -24,7 +24,7 @@ stable tag does and does not bring back.
 - Node.js `>=20.9.0` (matches the `engines` field in `package.json` and
   Next.js's own minimum; developed against Node 24.x)
 - A Supabase project (Postgres + Auth + Storage)
-- API keys for Anthropic and ElevenLabs (required); OpenAI (optional — gates
+- An API key for Anthropic (required); OpenAI (optional — gates
   the Notes Coach/summarize and Realtime mastery features, which fail
   gracefully with a 503 if unset)
 
@@ -46,13 +46,12 @@ what each one gates. In short:
 
 | Variable | Required | Notes |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | Yes | Server-only. Interview generation, learn/chat, track generation, mastery evaluation. |
-| `ELEVENLABS_API_KEY` + `ELEVENLABS_VOICE_ID_1/2/3` | Yes | Server-only. Interview persona TTS. |
+| `ANTHROPIC_API_KEY` | Yes | Server-only. Learn/chat and track generation. |
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Public by design — used by the browser Supabase client. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Server-only. Bypasses RLS — never expose to the client. |
 | `SUPABASE_ACCESS_TOKEN` | No | Only needed for `scripts/run-migration.ts` (CLI migration apply). |
 | `OPENAI_API_KEY` | No | Server-only. Notes Coach/summarize, Realtime mastery, local architecture-dashboard assistant. |
-| `MASTERY_REALTIME_ENABLED` | No | Feature flag — `"true"` switches `/mastery` to the OpenAI Realtime voice flow. |
+| `MASTERY_REALTIME_ENABLED` | No | Feature flag — `"true"` allows an unblocked administrator to preview OpenAI Realtime voice. |
 
 `NEXT_PUBLIC_` vars are safe for the client bundle; every other key is
 server-only and must only be read from `/app/api/**` route handlers, Server

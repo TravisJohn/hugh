@@ -19,7 +19,6 @@ interface Props {
   /** The goal board to use when no returnUrl was supplied. */
   fallbackUrl:     string;
   alreadyMastered: boolean;
-  classicUrl:      string;   // intentional escape hatch to the scripted flow
   summaryDoc:      string | null;
   summaryDocAt:    string | null;
 }
@@ -37,7 +36,7 @@ const STATUS_LABEL: Record<MasteryRealtimeStatus, string> = {
 
 export default function MasteryRealtimeClient({
   milestoneId, milestoneTitle, returnUrl,
-  fallbackUrl, alreadyMastered, classicUrl,
+  fallbackUrl, alreadyMastered,
   summaryDoc, summaryDocAt,
 }: Props) {
   const router = useRouter();
@@ -176,12 +175,6 @@ export default function MasteryRealtimeClient({
                     >
                       Retry
                     </button>
-                    <a
-                      href={classicUrl}
-                      className="block w-full rounded-2xl border border-slate-700/60 py-3 text-sm text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors"
-                    >
-                      Use the classic (typed-script) mode instead
-                    </a>
                   </div>
                 </div>
               </div>

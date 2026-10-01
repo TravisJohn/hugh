@@ -42,7 +42,7 @@ export const TURN_DETECTION = {
 };
 
 // A single calm, coach-like built-in Realtime voice. (Persona randomisation was
-// an ElevenLabs-era concern; the mastery coach is one consistent voice.)
+// a retired persona concern; the mastery coach is one consistent voice.)
 export const MASTERY_VOICE = "cedar";
 
 // ── Client-side backstops (not security-enforced caps; audit S3) ─────────────

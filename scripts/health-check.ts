@@ -40,10 +40,6 @@ async function checkEnvVars(): Promise<boolean> {
   console.log("\n\x1b[1m[1] ENV VARS\x1b[0m");
   const required = [
     "ANTHROPIC_API_KEY",
-    "ELEVENLABS_API_KEY",
-    "ELEVENLABS_VOICE_ID_1",
-    "ELEVENLABS_VOICE_ID_2",
-    "ELEVENLABS_VOICE_ID_3",
     "NEXT_PUBLIC_SUPABASE_URL",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
@@ -103,56 +99,6 @@ async function checkAnthropic(): Promise<boolean> {
     result("API key valid + model reachable", false, String(e));
     return false;
   }
-}
-
-// ---------------------------------------------------------------------------
-// 3. ELEVENLABS
-// ---------------------------------------------------------------------------
-async function checkElevenLabs(): Promise<boolean> {
-  console.log("\n\x1b[1m[3] ELEVENLABS\x1b[0m");
-  const apiKey = env("ELEVENLABS_API_KEY");
-  if (!apiKey) {
-    result("API key present", false, "skipped — key missing");
-    return false;
-  }
-
-  let voices: Array<{ voice_id: string; name: string }> = [];
-  try {
-    const res = await fetch("https://api.elevenlabs.io/v1/voices", {
-      headers: { "xi-api-key": apiKey },
-    });
-    if (!res.ok) {
-      result("API key valid (/v1/voices)", false, `HTTP ${res.status}`);
-      return false;
-    }
-    const body = await res.json() as { voices: Array<{ voice_id: string; name: string }> };
-    voices = body.voices ?? [];
-    result("API key valid (/v1/voices)", true, `${voices.length} voices returned`);
-  } catch (e) {
-    result("API key valid (/v1/voices)", false, String(e));
-    return false;
-  }
-
-  const voiceIds = voices.map((v) => v.voice_id);
-  let allVoicesOk = true;
-  for (let i = 1; i <= 3; i++) {
-    const key = `ELEVENLABS_VOICE_ID_${i}`;
-    const id = env(key);
-    if (!id) {
-      result(`${key} found in account`, false, "env var missing");
-      allVoicesOk = false;
-      continue;
-    }
-    const found = voiceIds.includes(id);
-    const voiceName = voices.find((v) => v.voice_id === id)?.name;
-    result(
-      `${key} found in account`,
-      found,
-      found ? `"${voiceName}" (${id})` : `ID "${id}" not in account voices`
-    );
-    if (!found) allVoicesOk = false;
-  }
-  return allVoicesOk;
 }
 
 // ---------------------------------------------------------------------------
@@ -229,17 +175,15 @@ async function main() {
   const results = await Promise.all([
     checkEnvVars(),
     checkAnthropic(),
-    checkElevenLabs(),
     checkSupabase(),
   ]);
 
-  const [envOk, anthropicOk, elevenLabsOk, supabaseOk] = results;
-  const allOk = envOk && anthropicOk && elevenLabsOk && supabaseOk;
+  const [envOk, anthropicOk, supabaseOk] = results;
+  const allOk = envOk && anthropicOk && supabaseOk;
 
   console.log("\n\x1b[1m─── Summary ───────────────────────\x1b[0m");
   console.log(`  ENV VARS       ${envOk ? PASS : FAIL}`);
   console.log(`  ANTHROPIC      ${anthropicOk ? PASS : FAIL}`);
-  console.log(`  ELEVENLABS     ${elevenLabsOk ? PASS : FAIL}`);
   console.log(`  SUPABASE       ${supabaseOk ? PASS : FAIL}`);
   console.log("\x1b[1m───────────────────────────────────\x1b[0m");
 

@@ -66,8 +66,8 @@ export default async function LandingPage() {
 
           {/* Subtext */}
           <p className="max-w-xl text-lg leading-relaxed text-slate-400">
-            Hugh is your personal practice partner. Speak about what you want to learn,
-            get honest feedback, and grow your confidence — one session at a time.
+            Hugh builds a learning track around your topic. Ask questions, keep a diary,
+            and check your understanding as you go.
           </p>
 
           {/* Buttons */}
@@ -136,11 +136,11 @@ export default async function LandingPage() {
                 02
               </p>
               <p className="mt-3 text-sm font-semibold text-slate-200">
-                Start speaking about it
+                Explore it with Hugh
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                Your AI interviewer guides the discussion. Answer by voice —
-                just like a real conversation.
+                Ask questions, work through the ideas, and capture what you learn
+                in your diary.
               </p>
             </div>
 
@@ -152,8 +152,7 @@ export default async function LandingPage() {
                 Track your know-how
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                Sessions are logged so you can see where you&apos;ve grown and
-                exactly what to revisit next.
+                Your milestone cards show your progress and what to revisit next.
               </p>
             </div>
 

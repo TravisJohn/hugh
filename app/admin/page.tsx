@@ -31,28 +31,6 @@ export const dynamic = "force-dynamic";
 const ATTENTION_WINDOW_DAYS = 7;
 const ROW_CAP = 5000;
 
-interface ElevenLabsSubscription {
-  tier:                            string;
-  character_count:                 number;
-  character_limit:                 number;
-  next_character_count_reset_unix: number;
-  status:                          string;
-}
-
-async function fetchElevenLabsStatus(): Promise<ElevenLabsSubscription | null> {
-  try {
-    const res = await fetch("https://api.elevenlabs.io/v1/user", {
-      headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! },
-      next:    { revalidate: 300 },
-    });
-    if (!res.ok) return null;
-    const data = await res.json() as { subscription: ElevenLabsSubscription };
-    return data.subscription ?? null;
-  } catch {
-    return null;
-  }
-}
-
 function startOfMonth(): string {
   const d = new Date();
   d.setDate(1);
@@ -76,7 +54,7 @@ export default async function AdminPage() {
   // eslint-disable-next-line react-hooks/purity
   const windowStart = new Date(Date.now() - ATTENTION_WINDOW_DAYS * 86_400_000).toISOString();
 
-  const [usageRes, opsRes, profilesRes, elevenLabs] = await Promise.all([
+  const [usageRes, opsRes, profilesRes] = await Promise.all([
     service.from("usage_logs")
       .select("feature, tokens_in, tokens_out, tts_chars, model")
       .gte("created_at", monthStart)
@@ -86,7 +64,6 @@ export default async function AdminPage() {
       .gte("created_at", windowStart)
       .limit(ROW_CAP),
     service.from("profiles").select("user_id, approved, is_blocked, is_admin"),
-    fetchElevenLabsStatus(),
   ]);
 
   // Each read is tracked separately: a dropped query must never render as a
@@ -284,7 +261,7 @@ export default async function AdminPage() {
               )}
               {ttsCost > 0 && (
                 <span className="text-slate-500">
-                  Voice <span className="tabular-nums text-slate-400">{formatUsd(ttsCost)}</span>
+                  Legacy voice <span className="tabular-nums text-slate-400">{formatUsd(ttsCost)}</span>
                 </span>
               )}
             </div>
@@ -292,46 +269,6 @@ export default async function AdminPage() {
 
           {/* Providers */}
           <div className="space-y-4 lg:col-span-2">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-slate-300">ElevenLabs</p>
-                <Link
-                  href="https://elevenlabs.io/app/subscription"
-                  target="_blank"
-                  className="flex items-center gap-1 text-xs text-slate-600 transition-colors hover:text-slate-400"
-                >
-                  Dashboard <ExternalLink size={11} />
-                </Link>
-              </div>
-              {elevenLabs ? (
-                <div className="mt-3 space-y-2">
-                  <div className="flex items-end justify-between text-xs">
-                    <span className="text-slate-500">Characters used</span>
-                    <span className="tabular-nums text-slate-400">
-                      {fmt(elevenLabs.character_count)} / {fmt(elevenLabs.character_limit)}
-                    </span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
-                    <div
-                      className={`h-full rounded-full ${
-                        elevenLabs.character_count / elevenLabs.character_limit > 0.8 ? "bg-red-400"
-                        : elevenLabs.character_count / elevenLabs.character_limit > 0.6 ? "bg-amber-400"
-                        : "bg-sky-400"
-                      }`}
-                      style={{ width: `${Math.min(100, (elevenLabs.character_count / elevenLabs.character_limit) * 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-xs capitalize text-slate-600">
-                    {elevenLabs.tier} plan · resets{" "}
-                    {new Date(elevenLabs.next_character_count_reset_unix * 1000)
-                      .toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                  </p>
-                </div>
-              ) : (
-                <p className="mt-3 text-xs text-slate-600">Unable to fetch — check API key</p>
-              )}
-            </div>
-
             <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-slate-300">Anthropic</p>

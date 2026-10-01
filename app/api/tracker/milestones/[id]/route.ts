@@ -15,43 +15,38 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const body = (await request.json()) as {
+  const parsedBody: unknown = await request.json().catch(() => null);
+  if (!parsedBody || typeof parsedBody !== "object" || Array.isArray(parsedBody)) {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const body = parsedBody as {
     column?:           KanbanColumn;
     reviewValidated?:  boolean;
-    masteryValidated?: boolean;
-    masteryScore?:     number;
-    masteryFeedback?:  string;
+    masteryValidated?: unknown;
+    masteryScore?:     unknown;
+    masteryFeedback?:  unknown;
   };
 
   const updateData: {
     kanban_column?:     KanbanColumn;
     review_validated?:  boolean;
     mastery_validated?: boolean;
-    mastery_score?:     number | null;
-    mastery_feedback?:  string | null;
   } = {};
+
+  if ("masteryValidated" in body || "masteryScore" in body || "masteryFeedback" in body) {
+    return NextResponse.json({ error: "Mastery results cannot be set through this route" }, { status: 400 });
+  }
 
   if (body.column !== undefined) {
     if (!VALID_COLUMNS.includes(body.column)) {
       return NextResponse.json({ error: "Invalid column" }, { status: 400 });
     }
     updateData.kanban_column = body.column;
+    if (body.column === "done") updateData.mastery_validated = false;
   }
 
   if (body.reviewValidated !== undefined) {
     updateData.review_validated = body.reviewValidated;
-  }
-
-  if (body.masteryValidated !== undefined) {
-    updateData.mastery_validated = body.masteryValidated;
-  }
-
-  if (body.masteryScore !== undefined) {
-    updateData.mastery_score = body.masteryScore;
-  }
-
-  if (body.masteryFeedback !== undefined) {
-    updateData.mastery_feedback = body.masteryFeedback;
   }
 
   if (Object.keys(updateData).length === 0) {

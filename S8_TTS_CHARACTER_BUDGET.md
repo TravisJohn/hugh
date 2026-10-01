@@ -1,5 +1,9 @@
 # S8: monthly TTS character allowance
 
+Historical implementation record. The scripted mastery and ElevenLabs TTS
+runtime were removed in the pending 2026-10-02 cleanup. Migration 057 and
+historical usage rows remain so earlier spending can still be accounted for.
+
 TTS uses ElevenLabs characters, not model tokens. The shared `reserve_usage`
 gate continues to enforce the 30-request/minute rate limit with a zero-token
 claim. Migration 057 adds a separate atomic monthly character counter. On the

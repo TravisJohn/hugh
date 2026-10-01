@@ -156,7 +156,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 18,
+    tests: 19,
   },
   {
     id:    "ask",
@@ -201,12 +201,10 @@ export const FEATURES: readonly FeatureDefinition[] = [
     id:    "mastery",
     label: "Prove mastery",
     kind:  "learner",
-    blurb: "Explain a milestone out loud — scripted for learners; Realtime is an administrator preview.",
+    blurb: "Live voice mastery is an administrator preview while learner usage controls are completed.",
     routes: ["/mastery/[milestoneId]"],
     apiRoutes: [
-      "tracker/mastery/evaluate",
       "tracker/mastery/recap",
-      "tracker/mastery/session",
       "tracker/mastery/realtime-session",
       "tracker/mastery/realtime-usage",
     ],
@@ -214,9 +212,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     componentDirs: [],
     tables: ["milestones", "milestone_entries"],
     usageFeatures: [
-      "mastery/evaluate",
       "mastery/recap",
-      "mastery/session",
       // Realtime voice. Gated at mint time under this same string since the
       // flag was written; it only became a SPEND string once the usage report
       // landed, because before that nothing was ever logged against it.
@@ -335,11 +331,11 @@ export const FEATURES: readonly FeatureDefinition[] = [
   },
   {
     id:    "voice",
-    label: "Voice (TTS)",
+    label: "Retired voice (TTS)",
     kind:  "internal",
-    blurb: "ElevenLabs speech, called by whichever surface is speaking.",
+    blurb: "Historical speech costs; no active TTS route.",
     routes: [],
-    apiRoutes: ["tts"],
+    apiRoutes: [],
     libDirs:       [],
     componentDirs: [],
     tables: [],

@@ -10,6 +10,7 @@ import TrackBuildPanel from "@/components/tracker/TrackBuildPanel";
 import { buildState, trackViewState } from "@/lib/tracker/buildState";
 import { type LearningGoal, type Track, type Milestone } from "@/types";
 import RecordActivity from "@/components/monitor/RecordActivity";
+import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 
 interface Props {
   params:       Promise<{ goalId: string }>;
@@ -43,6 +44,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
 
   const isPremium = (profile?.plan === "pro") || (profile?.is_admin === true);
   const isAdmin   = profile?.is_admin === true;
+  const liveAvailable = canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile);
 
   if (!goal) notFound();
 
@@ -134,7 +136,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
         {view === "board" && t ? (
           /* Kanban board */
           <div className="flex-1 overflow-hidden px-6 py-5">
-            <KanbanBoard initialMilestones={milestones} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} />
+            <KanbanBoard initialMilestones={milestones} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} liveAvailable={liveAvailable} />
           </div>
         ) : (
           <TrackBuildPanel
