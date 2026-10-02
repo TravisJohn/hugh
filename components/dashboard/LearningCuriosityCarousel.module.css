@@ -80,6 +80,54 @@
   animation: pinpoint 4.8s ease-in-out infinite;
 }
 
+.descentTrail {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+  animation: traceDescent 7.8s linear infinite;
+}
+
+.descentStep {
+  animation: stepLight 7.8s ease-in-out both infinite;
+}
+
+.descentWalker {
+  animation: descend 7.8s ease-in-out infinite;
+}
+
+.forecastBand {
+  animation: forecastFan 6.8s ease-in-out infinite;
+}
+
+.forecastLine {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: forecastDraw 6.8s ease-in-out infinite;
+}
+
+.experimentSample {
+  animation: sampleArrive 7.2s ease-in-out both infinite;
+}
+
+.experimentBarA,
+.experimentBarB {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: barGrow 7.2s ease-in-out infinite;
+}
+
+.experimentBarB { animation-delay: .4s; }
+
+.experimentDifference {
+  animation: differenceReveal 7.2s ease-in-out infinite;
+}
+
+.slideProgress {
+  transform: scaleX(0);
+  animation: fillProgress 9s linear forwards;
+}
+
+.progressPaused { animation-play-state: paused; }
+
 @keyframes arrive {
   from { opacity: 0; transform: translateY(7px); }
   to { opacity: 1; transform: translateY(0); }
@@ -168,14 +216,76 @@
   45%, 75% { opacity: 1; }
 }
 
+@keyframes traceDescent {
+  0%, 6% { stroke-dashoffset: 320; opacity: .3; }
+  72%, 88% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 320; opacity: .3; }
+}
+
+@keyframes stepLight {
+  0%, 7% { opacity: .16; }
+  38%, 84% { opacity: 1; }
+  100% { opacity: .16; }
+}
+
+@keyframes descend {
+  0%, 6% { transform: translate(82px, 100px); }
+  17% { transform: translate(136px, 142px); }
+  29% { transform: translate(190px, 184px); }
+  42% { transform: translate(239px, 211px); }
+  56% { transform: translate(281px, 226px); }
+  72%, 88% { transform: translate(316px, 230px); }
+  100% { transform: translate(82px, 100px); }
+}
+
+@keyframes forecastFan {
+  0%, 12% { opacity: 0; clip-path: inset(0 100% 0 0); }
+  57%, 82% { opacity: 1; clip-path: inset(0 0 0 0); }
+  100% { opacity: 0; clip-path: inset(0 100% 0 0); }
+}
+
+@keyframes forecastDraw {
+  0%, 16% { stroke-dashoffset: 200; opacity: 0; }
+  57%, 82% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 200; opacity: 0; }
+}
+
+@keyframes sampleArrive {
+  0%, 7% { opacity: 0; transform: translateY(-27px); }
+  37%, 82% { opacity: .9; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-27px); }
+}
+
+@keyframes barGrow {
+  0%, 10% { transform: scaleY(.04); }
+  52%, 85% { transform: scaleY(1); }
+  100% { transform: scaleY(.04); }
+}
+
+@keyframes differenceReveal {
+  0%, 50% { opacity: 0; }
+  65%, 84% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fillProgress {
+  to { transform: scaleX(1); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stage, .clusterPoint, .clusterRegion, .clusterLabel, .failedRoute,
   .successRoute, .robot, .goalGlow, .retryLabel, .rewardLabel,
   .detectionField, .ordinaryPoint, .outlierGlow, .outlierRing,
-  .outlierDot { animation: none; }
+  .outlierDot, .descentTrail, .descentStep, .descentWalker,
+  .forecastBand, .forecastLine, .experimentSample, .experimentBarA,
+  .experimentBarB, .experimentDifference, .slideProgress { animation: none; }
   .clusterRegion, .clusterLabel { opacity: 1; }
   .failedRoute, .retryLabel { opacity: 0; }
   .successRoute { stroke-dashoffset: 0; }
   .robot { transform: translate(480px, 246px); }
   .rewardLabel { opacity: 1; }
+  .descentTrail, .forecastLine { stroke-dashoffset: 0; }
+  .descentWalker { transform: translate(316px, 230px); }
+  .experimentSample, .experimentDifference { opacity: 1; transform: none; }
+  .experimentBarA, .experimentBarB, .slideProgress { transform: none; }
 }

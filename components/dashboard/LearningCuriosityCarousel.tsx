@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import styles from "./LearningCuriosityCarousel.module.css";
 
 interface Props {
@@ -26,6 +26,24 @@ const SLIDES = [
     category: "Statistics · machine learning",
     title: "Which observation doesn’t fit?",
     description: "Most points share a pattern. One sits apart, waiting for someone to ask why.",
+  },
+  {
+    topic: "Gradient descent",
+    category: "Machine learning · optimization",
+    title: "How does a model find a better answer?",
+    description: "Follow each careful step downhill as the model reduces its error.",
+  },
+  {
+    topic: "Time series forecasting",
+    category: "Data science · forecasting",
+    title: "How far can a trend see?",
+    description: "Past observations point forward, while the range of possible futures widens.",
+  },
+  {
+    topic: "A/B testing",
+    category: "Statistics · experiments",
+    title: "Is B really better, or just lucky?",
+    description: "Watch the evidence accumulate before deciding whether a difference is real.",
   },
 ] as const;
 
@@ -74,7 +92,14 @@ const OUTLIER_POINTS = Array.from({ length: 46 }, (_, index) => {
   };
 });
 
-function ChartGrid() {
+const EXPERIMENT_SAMPLES = Array.from({ length: 24 }, (_, index) => ({
+  x: (index < 12 ? 113 : 369) + (index % 6) * 25,
+  y: 99 + Math.floor((index % 12) / 6) * 20,
+  delay: (index % 12) * 0.22,
+  variant: index < 12 ? "a" : "b",
+}));
+
+function ChartGrid({ verticalLabel = "FEATURE 02" }: { verticalLabel?: string }) {
   return (
     <>
       <defs>
@@ -84,7 +109,7 @@ function ChartGrid() {
       </defs>
       <rect width="620" height="300" fill="url(#learn-chart-grid)" opacity="0.55" />
       <path d="M52 35 V264 H574" fill="none" stroke="#66809b" strokeWidth="1" opacity="0.43" />
-      <text x="56" y="27" fill="#7188a2" fontSize="9" letterSpacing="2">FEATURE 02</text>
+      <text x="56" y="27" fill="#7188a2" fontSize="9" letterSpacing="2">{verticalLabel}</text>
     </>
   );
 }
@@ -204,30 +229,105 @@ function OutlierGraphic() {
   );
 }
 
-const GRAPHICS = [ClusteringGraphic, MazeGraphic, OutlierGraphic] as const;
+function DescentGraphic() {
+  const steps = [
+    [82, 100], [136, 142], [190, 184], [239, 211], [281, 226], [316, 230],
+  ] as const;
+
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <defs>
+        <linearGradient id="learn-loss-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fbbf24" stopOpacity="0.15" />
+          <stop offset="1" stopColor="#fbbf24" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id="learn-descent-glow">
+          <stop offset="0" stopColor="#fbbf24" stopOpacity="0.7" />
+          <stop offset="1" stopColor="#fbbf24" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <path d="M65 93 C106 107 148 151 195 187 S272 231 318 230 S415 186 560 60 L560 264 H65 Z" fill="url(#learn-loss-fill)" />
+      <path d="M65 93 C106 107 148 151 195 187 S272 231 318 230 S415 186 560 60" fill="none" stroke="#fbbf24" strokeWidth="2" opacity="0.75" />
+      <path d="M82 100 L136 142 L190 184 L239 211 L281 226 L316 230" fill="none" stroke="#fde68a" strokeWidth="1.5" strokeDasharray="4 6" className={styles.descentTrail} />
+      {steps.map(([x, y], index) => (
+        <circle key={index} cx={x} cy={y} r="4" fill="#fcd34d" className={styles.descentStep} style={{ animationDelay: `${index * 0.72}s` }} />
+      ))}
+      <g className={styles.descentWalker}>
+        <circle r="29" fill="url(#learn-descent-glow)" />
+        <circle r="8" fill="#fde68a" stroke="#fff7d6" strokeWidth="1.5" />
+      </g>
+      <text x="67" y="57" fill="#e7b861" fontSize="9" letterSpacing="2">HIGHER ERROR</text>
+      <text x="315" y="257" textAnchor="middle" fill="#fcd34d" fontSize="9" letterSpacing="2">LOWER ERROR</text>
+      <text x="555" y="27" textAnchor="end" fill="#8ca0b7" fontSize="9" letterSpacing="2">FOLLOW THE SLOPE</text>
+    </svg>
+  );
+}
+
+function ForecastGraphic() {
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <ChartGrid verticalLabel="VALUE" />
+      <defs>
+        <linearGradient id="learn-forecast-band" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#5eead4" stopOpacity="0.04" />
+          <stop offset="1" stopColor="#5eead4" stopOpacity="0.22" />
+        </linearGradient>
+      </defs>
+      <path d="M79 226 L115 208 L150 218 L184 168 L220 177 L257 145 L291 169 L327 113 L359 133 L388 116" fill="none" stroke="#5eead4" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round" />
+      {[ [79, 226], [115, 208], [150, 218], [184, 168], [220, 177], [257, 145], [291, 169], [327, 113], [359, 133], [388, 116] ].map(([x, y], index) => (
+        <circle key={index} cx={x} cy={y} r="3" fill="#99f6e4" />
+      ))}
+      <path d="M388 116 C445 86 506 55 560 42 L560 215 C508 192 453 152 388 116 Z" fill="url(#learn-forecast-band)" className={styles.forecastBand} />
+      <path d="M388 116 C445 86 506 55 560 42 M388 116 C453 152 508 192 560 215" fill="none" stroke="#5eead4" strokeWidth="1" strokeDasharray="4 6" opacity="0.48" className={styles.forecastBand} />
+      <path d="M388 116 C449 111 510 125 560 132" fill="none" stroke="#fbbf24" strokeWidth="2.7" strokeDasharray="7 6" strokeLinecap="round" className={styles.forecastLine} />
+      <path d="M388 52 V258" fill="none" stroke="#8ca0b7" strokeWidth="1" strokeDasharray="3 6" opacity="0.75" />
+      <circle cx="388" cy="116" r="5" fill="#99f6e4" />
+      <text x="337" y="63" textAnchor="end" fill="#8ca0b7" fontSize="9" letterSpacing="2">OBSERVED</text>
+      <text x="436" y="63" fill="#fbbf24" fontSize="9" letterSpacing="2">POSSIBLE FUTURES</text>
+    </svg>
+  );
+}
+
+function ExperimentGraphic() {
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <text x="560" y="27" textAnchor="end" fill="#8ca0b7" fontSize="9" letterSpacing="2">MORE DATA → MORE CONFIDENCE</text>
+      <rect x="72" y="48" width="220" height="204" rx="14" fill="#153044" stroke="#426076" strokeWidth="1" />
+      <rect x="328" y="48" width="220" height="204" rx="14" fill="#2b283e" stroke="#645779" strokeWidth="1" />
+      <text x="98" y="79" fill="#7dd3fc" fontSize="10" fontWeight="700" letterSpacing="2">A / CONTROL</text>
+      <text x="354" y="79" fill="#c4b5fd" fontSize="10" fontWeight="700" letterSpacing="2">B / VARIANT</text>
+      {EXPERIMENT_SAMPLES.map((sample, index) => (
+        <circle key={index} cx={sample.x} cy={sample.y} r="3.5" fill={sample.variant === "a" ? "#7dd3fc" : "#c4b5fd"} className={styles.experimentSample} style={{ animationDelay: `${sample.delay}s` }} />
+      ))}
+      <path d="M110 226 H254 M366 226 H510" fill="none" stroke="#7890a8" strokeWidth="1" opacity="0.6" />
+      <rect x="153" y="157" width="60" height="69" rx="5" fill="#38bdf8" opacity="0.78" className={styles.experimentBarA} />
+      <rect x="409" y="132" width="60" height="94" rx="5" fill="#a78bfa" opacity="0.82" className={styles.experimentBarB} />
+      <path d="M223 157 H397 M397 157 V132" fill="none" stroke="#fbbf24" strokeWidth="1.3" strokeDasharray="4 5" className={styles.experimentDifference} />
+    </svg>
+  );
+}
+
+const GRAPHICS = [ClusteringGraphic, MazeGraphic, OutlierGraphic, DescentGraphic, ForecastGraphic, ExperimentGraphic] as const;
 
 export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
   const [slideIndex, setSlideIndex] = useState(0);
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const slide = SLIDES[slideIndex]!;
   const Graphic = GRAPHICS[slideIndex]!;
+  const autoPlaying = !paused && !reducedMotion;
 
   useEffect(() => {
-    if (hovered || focused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setInterval(() => setSlideIndex(index => (index + 1) % SLIDES.length), 9_000);
-    return () => window.clearInterval(timer);
-  }, [slideIndex, hovered, focused]);
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPreference = () => setReducedMotion(preference.matches);
+    syncPreference();
+    preference.addEventListener("change", syncPreference);
+    return () => preference.removeEventListener("change", syncPreference);
+  }, []);
 
   return (
     <div
       className="mx-auto flex h-full w-full max-w-[42rem] flex-col px-1 pt-1"
-      onPointerEnter={() => setHovered(true)}
-      onPointerLeave={() => setHovered(false)}
-      onFocusCapture={() => setFocused(true)}
-      onBlurCapture={event => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false);
-      }}
       role="region"
       aria-roledescription="carousel"
       aria-label="Ideas to explore with Hugh"
@@ -243,7 +343,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
         Watch an idea unfold, then make it your next topic.
       </p>
 
-      <div className="mt-5" aria-live={hovered || focused ? "polite" : "off"} aria-atomic="true">
+      <div className="mt-5" aria-live={autoPlaying ? "off" : "polite"} aria-atomic="true">
         <button
           type="button"
           onClick={() => onChooseTopic(slide.topic)}
@@ -256,7 +356,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
               {slide.category}
             </span>
             <span className="absolute bottom-4 right-5 font-mono text-[10px] tracking-widest text-slate-400">
-              {String(slideIndex + 1).padStart(2, "0")} / 03
+              {String(slideIndex + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
             </span>
           </div>
           <div className="flex min-h-[7.25rem] items-center justify-between gap-5 px-6 py-4">
@@ -287,11 +387,30 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
               onClick={() => setSlideIndex(index)}
               aria-label={`Show ${item.topic}`}
               aria-current={slideIndex === index ? "true" : undefined}
-              className={`h-1.5 rounded-full transition-all focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 ${slideIndex === index ? "w-8 bg-amber-300" : "w-4 bg-slate-600 hover:bg-slate-400"}`}
-            />
+              className={`relative h-1.5 overflow-hidden rounded-full transition-all focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 ${slideIndex === index ? "w-8 bg-slate-600" : "w-4 bg-slate-600 hover:bg-slate-400"}`}
+            >
+              {slideIndex === index && (
+                <span
+                  className={`absolute inset-0 origin-left bg-amber-300 ${styles.slideProgress} ${autoPlaying ? "" : styles.progressPaused}`}
+                  onAnimationEnd={() => {
+                    if (autoPlaying) setSlideIndex(current => (current + 1) % SLIDES.length);
+                  }}
+                />
+              )}
+            </button>
           ))}
         </div>
         <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setPaused(value => !value)}
+            aria-label={reducedMotion ? "Automatic slides disabled by reduced motion preference" : paused ? "Resume automatic slides" : "Pause automatic slides"}
+            title={reducedMotion ? "Automatic slides disabled by reduced motion preference" : paused ? "Resume automatic slides" : "Pause automatic slides"}
+            disabled={reducedMotion}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+          >
+            {paused || reducedMotion ? <Play size={15} /> : <Pause size={15} />}
+          </button>
           <button
             type="button"
             onClick={() => setSlideIndex(index => (index + SLIDES.length - 1) % SLIDES.length)}
@@ -312,7 +431,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        Three starting points for now. You can also write any data or analytics topic of your own.
+        Six starting points to explore. You can also write any data or analytics topic of your own.
       </p>
     </div>
   );
