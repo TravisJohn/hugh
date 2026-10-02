@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { normalizeVerdict, mayProceed, awaitsChoice, openVerdict } from "./topic-domain";
+import { normalizeVerdict, mayProceed, awaitsChoice, unavailableVerdict } from "./topic-domain";
 
 describe("normalizeVerdict — the three verdicts", () => {
   it("passes a well-formed in-domain verdict through and lets it build a track", () => {
@@ -35,36 +35,37 @@ describe("normalizeVerdict — the three verdicts", () => {
   });
 });
 
-describe("normalizeVerdict — fails open, because a broken judge is Hugh's fault", () => {
+describe("normalizeVerdict — a broken judge asks for a retry", () => {
   it.each([
     ["null",              null],
     ["a bare string",     "out"],
     ["an empty object",   {}],
     ["an unknown verdict", { verdict: "maybe" }],
     ["a number verdict",  { verdict: 3 }],
-  ])("lets the learner through when the response is %s", (_label, raw) => {
-    expect(mayProceed(normalizeVerdict(raw))).toBe(true);
+  ])("does not build a track when the response is %s", (_label, raw) => {
+    expect(normalizeVerdict(raw).verdict).toBe("unavailable");
+    expect(mayProceed(normalizeVerdict(raw))).toBe(false);
   });
 
-  it("never leaks a fail-open message into the UI", () => {
+  it("shows a retry message without invented topic suggestions", () => {
     const v = normalizeVerdict({});
-    expect(v.message).toBe("");
+    expect(v.message).toContain("try again");
     expect(v.suggestions).toEqual([]);
   });
 });
 
 describe("normalizeVerdict — needs_angle must offer a way out", () => {
-  it("downgrades needs_angle to in when the judge names no angles", () => {
+  it("treats needs_angle without suggestions as unavailable", () => {
     // Blocking with zero suggestions would be a question with no answers —
     // a dead end (CLAUDE.md rule 5). Let it through instead.
     const v = normalizeVerdict({ verdict: "needs_angle", message: "Which one?", suggestions: [] });
-    expect(v.verdict).toBe("in");
+    expect(v.verdict).toBe("unavailable");
     expect(v.reason).toBe("needs-angle-without-suggestions");
   });
 
-  it("downgrades when the suggestions are present but blank", () => {
+  it("asks for a retry when the suggestions are present but blank", () => {
     const v = normalizeVerdict({ verdict: "needs_angle", suggestions: ["", "   "] });
-    expect(v.verdict).toBe("in");
+    expect(v.verdict).toBe("unavailable");
   });
 
   it("still blocks an out verdict that offers no suggestions", () => {
@@ -100,10 +101,10 @@ describe("normalizeVerdict — tolerates the old boolean shape", () => {
   });
 });
 
-describe("openVerdict", () => {
-  it("is permissive and carries a reason for the logs", () => {
-    const v = openVerdict();
-    expect(mayProceed(v)).toBe(true);
+describe("unavailableVerdict", () => {
+  it("blocks a build and carries a reason for the logs", () => {
+    const v = unavailableVerdict();
+    expect(mayProceed(v)).toBe(false);
     expect(v.reason).toBe("classifier-unavailable");
   });
 });
@@ -142,7 +143,7 @@ describe("awaitsChoice — so no caller branches on 'out' alone", () => {
   });
 
   it("is false for a decision Hugh has already made in either direction", () => {
-    expect(awaitsChoice(openVerdict())).toBe(false);
+    expect(awaitsChoice(unavailableVerdict())).toBe(false);
     expect(awaitsChoice(normalizeVerdict({
       verdict: "out", reason: "", message: "", suggestions: [],
     }))).toBe(false);
@@ -167,11 +168,9 @@ describe("an approved topic that still has something to say", () => {
     expect(v.message).toBe("");
   });
 
-  it("never puts words in Hugh's mouth when it failed open", () => {
-    // openVerdict is what a broken classifier returns. A note there would be
-    // Hugh announcing a decision it never actually made.
-    expect(openVerdict().message).toBe("");
-    expect(normalizeVerdict("not an object").message).toBe("");
+  it("does not claim to have judged a topic when unavailable", () => {
+    expect(unavailableVerdict().message).toContain("couldn't check");
+    expect(normalizeVerdict("not an object").message).toContain("couldn't check");
   });
 
   it("drops any suggestions that arrive with an 'in', which has nothing to offer", () => {

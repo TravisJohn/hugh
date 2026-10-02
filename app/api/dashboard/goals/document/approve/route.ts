@@ -73,7 +73,12 @@ export async function POST(request: NextRequest) {
   // Re-gate: the learner may have edited the topic since extraction. A human
   // editing a field doesn't get to skip the same check a machine-derived
   // topic goes through — this closes the edit-bypass gap (PRD §6/§7.1).
-  const verdict = await judgeTopicDomain(topic, userId);
+  let verdict;
+  try {
+    verdict = await judgeTopicDomain(topic, userId);
+  } catch {
+    return NextResponse.json({ error: "Hugh couldn't check this topic right now. Please try again." }, { status: 503 });
+  }
   if (!mayProceed(verdict)) {
     return NextResponse.json(verdict);
   }

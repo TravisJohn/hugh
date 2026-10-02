@@ -45,6 +45,10 @@ export async function POST(request: NextRequest) {
     return c.ok ? [c.topic] : [];
   });
 
-  const verdict = await judgeTopicDomain(checked.topic, userId, previousAttempts);
-  return NextResponse.json(verdict);
+  try {
+    const verdict = await judgeTopicDomain(checked.topic, userId, previousAttempts);
+    return NextResponse.json(verdict);
+  } catch {
+    return NextResponse.json({ error: "Hugh couldn't check this topic right now. Please try again." }, { status: 503 });
+  }
 }

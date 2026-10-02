@@ -9,7 +9,6 @@ import { type LearningGoal, type TrackStatus } from "@/types";
 import {
   type TopicDomainVerdict,
   normalizeVerdict,
-  mayProceed,
 } from "@/lib/learn/topic-domain";
 import TopicGateNotice from "./TopicGateNotice";
 
@@ -35,6 +34,7 @@ export const ACCEPT =
 type Phase = "picking" | "extracting" | "reviewing" | "waiting" | "failed";
 
 interface ExtractResponse {
+  verdict?:        TopicDomainVerdict["verdict"];
   goal?:           LearningGoal;
   candidateTopic?: string;
   tips?:           string[];
@@ -122,16 +122,11 @@ export default function DocumentUploadFlow({ endDate, initialFile, onGoalCreated
         setPhase("picking");
         return;
       }
-      // Only an "out" verdict comes back here — extract carries "needs_angle"
-      // through to the review step, where there is a field to answer it with.
-      const gate = normalizeVerdict(data);
-      if (!mayProceed(gate)) {
-        setBlocked(gate);
-        setPhase("picking");
-        return;
-      }
+      // Extract carries "needs_angle" through to the review step, where the
+      // learner has a field to answer it. A bare verdict here is a refusal.
       if (!data.goal || !data.candidateTopic) {
-        setPickError("Something went wrong reading that file.");
+        if (data.verdict) setBlocked(normalizeVerdict(data));
+        else setPickError("Something went wrong reading that file.");
         setPhase("picking");
         return;
       }
@@ -162,14 +157,10 @@ export default function DocumentUploadFlow({ endDate, initialFile, onGoalCreated
       });
       const data = (await res.json().catch(() => ({}))) as ExtractResponse;
 
-      const gate = normalizeVerdict(data);
-      if (!mayProceed(gate)) {
-        setBlocked(gate);
-        setApproving(false);
-        return;
-      }
       if (!res.ok || !data.goal) {
-        setApproveError(data.error ?? "Something went wrong — please try again.");
+        if (data.error) setApproveError(data.error);
+        else if (data.verdict) setBlocked(normalizeVerdict(data));
+        else setApproveError("Something went wrong — please try again.");
         setApproving(false);
         return;
       }

@@ -19,7 +19,7 @@ interface Props {
 // panel and the document flow so the two cannot drift into saying different
 // things about the same verdict.
 //
-// It renders TWO different notices, and the difference is the point:
+// It renders three outcomes, and the difference is the point:
 //
 //   needs_angle — Hugh is asking a question. No warning colour, no warning
 //                 icon, and copy that never suggests the topic is off-limits,
@@ -27,6 +27,7 @@ interface Props {
 //   out         — Hugh is declining, kindly, and finally. Warning treatment,
 //                 no suggestions: a decline that offers a data version of the
 //                 learner's subject reads as a pitch, not an answer.
+//   unavailable — the classifier made no call. The learner can retry unchanged.
 //
 // Rendering the first as the second is the bug this component exists to stop:
 // it is what told someone typing "Generative AI" that their topic sat outside
@@ -43,9 +44,12 @@ export default function TopicGateNotice({ verdict, onPickSuggestion, onWriteOwn 
   if (verdict.verdict === "in") return null;
 
   const asking = verdict.verdict === "needs_angle";
+  const unavailable = verdict.verdict === "unavailable";
 
   const fallbackMessage = asking
     ? "That topic covers a lot of ground — which part are you after?"
+    : unavailable
+    ? "Hugh couldn't check this topic right now. Please try again."
     : "Hugh is built specifically for data & analytics skill prep — that topic sits outside this focus.";
 
   // Chips belong to the question, not to the decline. A declined topic returns

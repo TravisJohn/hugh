@@ -9,7 +9,7 @@ import { MAX_TOPIC_CHARS } from "@/lib/learn/topicInput";
 import { recordAttempt } from "@/lib/learn/gateHistory";
 import GoalCard from "./GoalCard";
 import RefinementFlow from "./RefinementFlow";
-import IdeaConstellation from "./IdeaConstellation";
+import LearningFieldGuide from "./LearningFieldGuide";
 import ThoughtTrail, { type Thought } from "./ThoughtTrail";
 import { type GroupProgress } from "@/lib/learn/constellation";
 import { type RefinementPhase } from "@/lib/learn/network";
@@ -256,6 +256,11 @@ export default function DashboardPanel({
     setGate(null);
   }
 
+  function handleChooseStartingPoint(startingPoint: string) {
+    handlePickSuggestion(startingPoint);
+    topicRef.current?.focus();
+  }
+
   // "Something else — I'll describe it": hand them the field with the broad
   // topic selected, so typing replaces it and arrowing away still keeps it.
   function handleWriteOwn() {
@@ -337,22 +342,25 @@ export default function DashboardPanel({
   }
 
   return (
-    <div className="flex w-full gap-10 px-10 py-8">
+    <div className="flex w-full gap-10 px-10 py-9">
 
       {/* ── The form and the library ─────────────────────────────────── */}
       <div className="flex w-full max-w-2xl shrink-0 flex-col gap-10">
 
       {/* ── Add goal ───────────────────────────────────────────────── */}
       <section>
-        <h2 className="text-xl font-bold text-slate-100 tracking-tight">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-300/80">
+          Start a learning track
+        </p>
+        <h2 className="text-2xl font-semibold text-slate-100 tracking-tight">
           What do you want to learn?
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-2 text-sm leading-relaxed text-slate-400">
           {refining
             ? "Hugh is learning more about your goal to personalize your path."
             : uploadingDoc
             ? "Hugh is scoping a course around your document."
-            : "Data, analytics, and everything in between — add a topic and set a commitment date."}
+            : "Choose a topic in data science, statistics, analytics or the systems behind them."}
         </p>
 
         <div className="mt-5">
@@ -408,16 +416,22 @@ export default function DashboardPanel({
               {inputMode === "qa" || !documentUpload ? (
                 <>
                   {/* Topic input */}
-                  <input
-                    ref={topicRef}
-                    type="text"
-                    value={topic}
-                    onChange={e => handleTopicChange(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    maxLength={MAX_TOPIC_CHARS}
-                    placeholder="e.g. Statistics for data science, experiment design, dimensional modelling…"
-                    className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors"
-                  />
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="learn-topic" className="text-xs font-medium text-slate-300">
+                      Your topic
+                    </label>
+                    <input
+                      id="learn-topic"
+                      ref={topicRef}
+                      type="text"
+                      value={topic}
+                      onChange={e => handleTopicChange(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      maxLength={MAX_TOPIC_CHARS}
+                      placeholder="e.g. Experiment design, model evaluation, SQL…"
+                      className="w-full rounded-xl border border-slate-600/70 bg-slate-800/70 px-4 py-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition-colors"
+                    />
+                  </div>
 
                   {/* Topic gate: asks for an angle, or kindly declines. */}
                   {gate && (
@@ -505,7 +519,7 @@ export default function DashboardPanel({
                 <button
                   onClick={handleFinalize}
                   disabled={!canSubmit || checking}
-                  className="flex items-center justify-center gap-2 rounded-xl bg-amber-500 py-3 text-sm font-bold text-slate-900 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center justify-center gap-2 rounded-xl bg-amber-400 py-3.5 text-sm font-semibold text-slate-950 hover:bg-amber-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   {checking ? (
                     <>
@@ -514,8 +528,8 @@ export default function DashboardPanel({
                     </>
                   ) : (
                     <>
-                      <Sparkles size={15} />
-                      Let&apos;s Discuss
+                      Shape my track
+                      <ArrowRight size={15} />
                     </>
                   )}
                 </button>
@@ -590,23 +604,19 @@ export default function DashboardPanel({
       )}
       </div>
 
-      {/* ── The aside ────────────────────────────────────────────────────
-          Two layers crossfading in the same space rather than one swapping
-          for the other: the ideas recede as the learner commits to something,
-          and what they have said takes their place. Hidden below xl, where
-          there is no room for it and the form is the whole job. */}
-      {/* A FIXED height, not a minimum. As a minimum it stretched to whatever
-          the column beside it happened to be, so the sphere grew and shrank
-          with the number of goal cards — paging the library visibly resized
-          the constellation, which is not something the library should be able
-          to do. */}
-      <aside className="relative hidden h-[38rem] flex-1 xl:block" aria-live="polite">
+      {/* The field guide gives the scope a readable shape and usable starting
+          points. It yields to the learner's own thought trail during refinement. */}
+      <aside className="relative hidden h-[40rem] flex-1 xl:block" aria-live="polite">
         <div
           className={`absolute inset-0 transition-opacity duration-700 ${
             showIdeas ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
-          <IdeaConstellation active={showIdeas} progress={regionProgress} inFlight={flight} />
+          <LearningFieldGuide
+            progress={regionProgress}
+            inFlight={flight}
+            onChooseTopic={handleChooseStartingPoint}
+          />
         </div>
 
         <div

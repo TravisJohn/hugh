@@ -3,6 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate } from "@/lib/usage";
+import { textBudgetGuard, textBudgetResponse } from "@/lib/claude/textBudget";
+import { checkTopic } from "@/lib/learn/topicInput";
+import { judgeTopicDomain } from "@/lib/learn/topic-domain-server";
+import { mayProceed } from "@/lib/learn/topic-domain";
 import { generateTrack } from "@/lib/tracker/generate";
 import { buildState, retryVerdict, MAX_BUILDS_PER_GOAL } from "@/lib/tracker/buildState";
 import { recordOperation } from "@/lib/observability/record";
@@ -132,6 +136,42 @@ export async function POST(
       verdict === "rebuild-limit"   ? `This track has been rebuilt ${MAX_BUILDS_PER_GOAL} times without succeeding. Remove the goal and add it again to start over.` :
                                       "This track is fine - there is nothing to rebuild.";
     return NextResponse.json({ error: reason, verdict }, { status: 409 });
+  }
+
+  // A stored goal is not proof that its topic passed the gate. RLS lets an
+  // authenticated learner create their own goal row directly, and retry used
+  // to send that row straight to generation. Recheck before changing state or
+  // deleting any partial track. The ordinary create path makes the same call.
+  const checkedTopic = checkTopic(g.topic);
+  if (!checkedTopic.ok) {
+    return NextResponse.json({
+      error: "This goal's topic cannot be checked. Start a new learning track with a shorter, clear topic.",
+    }, { status: 422 });
+  }
+  if (checkedTopic.topic !== g.topic) {
+    return NextResponse.json({
+      error: "This stored topic contains unsupported formatting. Start a new learning track with a clear, single-line topic.",
+    }, { status: 422 });
+  }
+
+  let topicVerdict;
+  try {
+    topicVerdict = await judgeTopicDomain(
+      checkedTopic.topic, userId, [], textBudgetGuard(userId, "learn/topic-domain"),
+    );
+  } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) return refusal;
+    return NextResponse.json({
+      error: "Hugh couldn't check this topic right now. Please try rebuilding later.",
+    }, { status: 503 });
+  }
+  if (!mayProceed(topicVerdict)) {
+    return NextResponse.json({
+      error: topicVerdict.verdict === "needs_angle"
+        ? "This topic needs a clearer data angle. Start a new learning track so Hugh can ask what you mean."
+        : topicVerdict.message || "This topic sits outside Hugh's data and analytics focus.",
+    }, { status: 422 });
   }
 
   const startedAt = new Date().toISOString();

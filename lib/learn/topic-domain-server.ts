@@ -5,7 +5,6 @@ import { topicDomainJudgePrompt, parseClaudeJson } from "@/lib/claude/prompts";
 import {
   type TopicDomainVerdict,
   normalizeVerdict,
-  openVerdict,
   mayProceed,
 } from "@/lib/learn/topic-domain";
 import { logUsage } from "@/lib/usage";
@@ -28,8 +27,7 @@ const MODEL = "claude-haiku-4-5";
  * (PRD-course-from-document.md §6 layer 3) to gate document-derived topics
  * the same way a typed topic is gated.
  *
- * Fails OPEN on any network/parse error so a transient classifier failure
- * never blocks a legitimate learner.
+ * A network or parse failure is retryable and never approves a track.
  *
  * `userId` is required, not optional: this call spends tokens at every call
  * site, and an optional parameter is how a future caller forgets to bill them.
@@ -49,7 +47,7 @@ export async function judgeTopicDomain(
   const prompt = topicDomainJudgePrompt(topic, previousAttempts);
 
   const call: TextCall = { model: MODEL, max_tokens: 600, messages: [{ role: "user", content: prompt }] };
-  // Budget denials must propagate, never enter the classifier fail-open path.
+  // Budget denials must propagate, never enter the classifier retry loop.
   await beforeCall?.(call, 2);
 
   const startedAt = Date.now();
@@ -70,10 +68,11 @@ export async function judgeTopicDomain(
       tokensIn  += msg.usage.input_tokens;
       tokensOut += msg.usage.output_tokens;
       const text = msg.content[0]?.type === "text" ? msg.content[0].text : "";
-      // All fail-open and shape rules live in normalizeVerdict (pure, unit
+      // All malformed-output and shape rules live in normalizeVerdict (pure, unit
       // tested in topic-domain.test.ts) so the browser wrapper and this judge
       // cannot disagree about what a malformed response means.
       const verdict = normalizeVerdict(parseClaudeJson<unknown>(text));
+      if (verdict.verdict === "unavailable") throw new Error(`Malformed topic verdict: ${verdict.reason}`);
       bill();
       // 'refused' for anything that did not proceed: the gate turning someone
       // away is the gate working, and counting it as a failure would make a
@@ -107,11 +106,7 @@ export async function judgeTopicDomain(
   logSafeError("topic-domain-server judge", lastErr, [topic]);
   bill();
 
-  // THE SILENT FAILURE. Both attempts are gone and this returns "in domain",
-  // so the learner sees nothing wrong and their topic goes straight through —
-  // the gate has stopped gating and nobody would ever report it. Recorded as
-  // 'failed' even though the request succeeds, which is the entire reason
-  // operations are tracked separately from spend and engagement.
+  // Both attempts failed; report the outage and let the learner retry later.
   //
   // Wrapped in a named error so error_class groups on the operational meaning
   // ("the classifier is unavailable") rather than on whichever network error
@@ -126,8 +121,8 @@ export async function judgeTopicDomain(
     durationMs: Date.now() - startedAt,
     error:      unavailable,
     redact:     [topic],
-    detail:     { failedOpen: true, attempts: 2 },
+    detail:     { attempts: 2 },
   });
 
-  return openVerdict();
+  throw unavailable;
 }

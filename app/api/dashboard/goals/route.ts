@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       void recordOperation({ userId: userId, operation: "track.build", outcome: "refused", detail: { reason: "text-admission" } });
       return refusal;
     }
-    throw err;
+    return NextResponse.json({ error: "Hugh couldn't check this topic right now. Please try again." }, { status: 503 });
   }
   if (!mayProceed(verdict)) {
     return NextResponse.json(verdict, { status: 422 });
