@@ -8,9 +8,7 @@ import HeaderUsage from "@/components/usage/HeaderUsage";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
 import { type LearningGoal } from "@/types";
 import { checkSessionQuota, FREE_SESSION_LIMIT } from "@/lib/quota";
-import { regionProgress, goalsInFlight, type InFlightGoal } from "@/lib/learn/progress";
 import { documentUploadEnabled } from "@/lib/learn/documentPath";
-import { type GroupProgress } from "@/lib/learn/constellation";
 
 // "What do you want to learn?" — the learning dashboard. Reached by picking
 // "Learn" on the top-level activity picker (/home). Opening a goal here jumps
@@ -33,75 +31,6 @@ export default async function LearnDashboardPage() {
   // indistinguishable from having lost them. Say what actually happened.
   if (goalsError) {
     console.error("[home/learn] could not load goals:", goalsError.message);
-  }
-
-  // How lit each region of the constellation is. Three plain queries rather
-  // than one nested embed: milestones and tracks have a reverse foreign key
-  // between them that makes `tracks!inner(...)` ambiguous, and this read is
-  // small enough that the round trips cost less than the disambiguation would.
-  //
-  // `null` means "we could not find out", which is NOT the same as "nothing
-  // mastered" (rule 5). A dropped query must never render as a dark brain
-  // telling the learner they have achieved nothing.
-  let progress: GroupProgress | null = null;
-  let inFlight: InFlightGoal[] = [];
-
-  const goalRows = goals ?? [];
-  const filed = goalRows.map(g => ({
-    id:          g.id as string,
-    topic:       g.topic as string,
-    region:      (g.region ?? null) as string | null,
-    trackStatus: g.track_status as string,
-  }));
-
-  // Mastery per goal, or null when it could not be read. The distinction is
-  // load-bearing twice below, so it is a nullable value rather than an empty
-  // array standing in for both.
-  let mastery: { goalId: string; mastered: boolean }[] | null = null;
-
-  if (!goalsError && goalRows.length > 0) {
-    const { data: tracks, error: tracksError } = await supabase
-      .from("tracks")
-      .select("id, goal_id")
-      .in("goal_id", goalRows.map(g => g.id));
-
-    if (tracksError) {
-      console.error("[home/learn] could not load tracks for progress:", tracksError.message);
-    } else if ((tracks ?? []).length === 0) {
-      // No tracks is a fact, not a failure: every goal is still being built.
-      mastery = [];
-    } else {
-      const goalOfTrack = new Map((tracks ?? []).map(t => [t.id as string, t.goal_id as string]));
-      const { data: milestones, error: milestonesError } = await supabase
-        .from("milestones")
-        .select("track_id, mastery_validated")
-        .in("track_id", [...goalOfTrack.keys()]);
-
-      if (milestonesError) {
-        console.error("[home/learn] could not load milestones for progress:", milestonesError.message);
-      } else {
-        mastery = (milestones ?? []).flatMap(m => {
-          const goalId = goalOfTrack.get(m.track_id as string);
-          return goalId ? [{ goalId, mastered: Boolean(m.mastery_validated) }] : [];
-        });
-      }
-    }
-  }
-
-  if (!goalsError) {
-    // Progress stays null when mastery could not be read, so the sphere makes
-    // no claim about what has been earned (rule 5).
-    if (mastery !== null) progress = regionProgress(filed, mastery);
-
-    // In-flight is decided even when mastery is unknown, and the empty list is
-    // the right stand-in: it means "nothing is known to be finished", so a goal
-    // stays in flight. Showing work the learner may have completed is a far
-    // smaller harm than an empty sphere telling them they have nothing on.
-    //
-    // It also covers the ordinary case of a goal whose track is still
-    // generating — no tracks row exists yet, and that is the moment it is most
-    // in flight, not least.
-    inFlight = goalsInFlight(filed, mastery ?? []);
   }
 
   const firstName = (user.email ?? "").split("@")[0] ?? "there";
@@ -231,8 +160,6 @@ export default async function LearnDashboardPage() {
           ) : (
             <DashboardPanel
               initialGoals={(goals ?? []) as LearningGoal[]}
-              regionProgress={progress}
-              inFlight={inFlight}
               documentUpload={documentUploadEnabled()}
             />
           )}

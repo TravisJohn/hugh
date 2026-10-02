@@ -9,25 +9,15 @@ import { MAX_TOPIC_CHARS } from "@/lib/learn/topicInput";
 import { recordAttempt } from "@/lib/learn/gateHistory";
 import GoalCard from "./GoalCard";
 import RefinementFlow from "./RefinementFlow";
-import LearningFieldGuide from "./LearningFieldGuide";
+import LearningCuriosityCarousel from "./LearningCuriosityCarousel";
 import ThoughtTrail, { type Thought } from "./ThoughtTrail";
-import { type GroupProgress } from "@/lib/learn/constellation";
 import { type RefinementPhase } from "@/lib/learn/network";
-import { MAX_ORBITS, type InFlightGoal } from "@/lib/learn/progress";
-import { isRegionId } from "@/lib/learn/regions";
 import DocumentUploadFlow, { ACCEPT as DOCUMENT_ACCEPT } from "./DocumentUploadFlow";
 
 type InputMode = "qa" | "document";
 
 interface Props {
   initialGoals: LearningGoal[];
-  /**
-   * How lit each region of the constellation is. `null` means the read failed
-   * — distinct from `{}`, which means a learner who genuinely has nothing yet.
-   */
-  regionProgress: GroupProgress | null;
-  /** Goals the learner is working through, shown orbiting their clusters. */
-  inFlight: InFlightGoal[];
   /**
    * Whether the course-from-document path is open. Locked by default — see
    * lib/learn/documentPath.ts. The routes refuse regardless; this only decides
@@ -68,7 +58,7 @@ function todayStr(): string {
 }
 
 export default function DashboardPanel({
-  initialGoals, regionProgress, inFlight, documentUpload,
+  initialGoals, documentUpload,
 }: Props) {
   const [goals, setGoals]       = useState<LearningGoal[]>(initialGoals);
   const [topic, setTopic]       = useState("");
@@ -126,15 +116,6 @@ export default function DashboardPanel({
     answers: Thought[]; question: string | null; phase: RefinementPhase;
   }>({ answers: [], question: null, phase: "asking" });
 
-  // The orbits, kept in state rather than read straight from the prop.
-  //
-  // The prop is computed on the server when the page loads, so a goal created
-  // in this session would not appear until a reload — the learner finishes the
-  // questions, watches their track build, and the sphere carries on showing the
-  // work they had before. A goal created just now is in flight by definition:
-  // it exists, it has not failed, and nothing in it can be mastered yet.
-  const [flight, setFlight] = useState<InFlightGoal[]>(inFlight);
-
   // The library pages rather than grows. Rule 4: this screen has to fit the
   // viewport, and a list that gets longer for ever is how a teaching surface
   // quietly acquires a scrollbar. Paging keeps its height fixed no matter how
@@ -186,7 +167,7 @@ export default function DashboardPanel({
   // is when `checking` goes true — rather than going on the first keystroke.
   // Fading them while someone is still typing pulls half the page away
   // mid-thought, and typing is not a decision: they may still be reading the
-  // sphere for what to write. If the gate then declines the topic, `checking`
+  // carousel for what to write. If the gate then declines the topic, `checking`
   // drops back and the ideas return, which is right — that learner is choosing
   // again.
   const showTrail = refining;
@@ -278,12 +259,6 @@ export default function DashboardPanel({
     // The new goal is prepended, so page 0 is where the learner will look for
     // the thing they just made.
     setGoalPage(0);
-    if (isRegionId(goal.region)) {
-      setFlight(prev => [
-        { id: goal.id, topic: goal.topic, region: goal.region as string },
-        ...prev.filter(f => f.id !== goal.id),
-      ].slice(0, MAX_ORBITS));
-    }
     setAttemptHistory([]);
     setWritingOwn(false);
     setLensNote("");
@@ -336,16 +311,13 @@ export default function DashboardPanel({
 
   function handleGoalDeleted(id: string) {
     setGoals(prev => prev.filter(g => g.id !== id));
-    // A deleted goal is not in flight either — leaving its mote circling would
-    // be the same staleness in the other direction.
-    setFlight(prev => prev.filter(f => f.id !== id));
   }
 
   return (
-    <div className="flex w-full gap-10 px-10 py-9">
+    <div className="flex w-full flex-col gap-10 px-6 py-9 sm:px-10 2xl:flex-row">
 
       {/* ── The form and the library ─────────────────────────────────── */}
-      <div className="flex w-full max-w-2xl shrink-0 flex-col gap-10">
+      <div className="flex w-full max-w-2xl flex-col gap-10 2xl:flex-[0_1_42rem]">
 
       {/* ── Add goal ───────────────────────────────────────────────── */}
       <section>
@@ -604,19 +576,14 @@ export default function DashboardPanel({
       )}
       </div>
 
-      {/* The field guide gives the scope a readable shape and usable starting
-          points. It yields to the learner's own thought trail during refinement. */}
-      <aside className="relative hidden h-[40rem] flex-1 xl:block" aria-live="polite">
+      {/* Curiosity prompts yield to the learner's thought trail during refinement. */}
+      <aside className="relative h-[40rem] w-full max-w-2xl 2xl:min-w-[20rem] 2xl:max-w-none 2xl:flex-[1_1_20rem]" aria-live={showTrail ? "polite" : "off"}>
         <div
           className={`absolute inset-0 transition-opacity duration-700 ${
             showIdeas ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
-          <LearningFieldGuide
-            progress={regionProgress}
-            inFlight={flight}
-            onChooseTopic={handleChooseStartingPoint}
-          />
+          <LearningCuriosityCarousel onChooseTopic={handleChooseStartingPoint} />
         </div>
 
         <div
