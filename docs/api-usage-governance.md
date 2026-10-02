@@ -1,7 +1,7 @@
 # API usage and paid access map
 
-Updated 2026-10-02. This describes the pending scripted-mastery removal branch,
-not the currently deployed application.
+Updated 2026-10-02. This describes the pending scripted-mastery removal and
+Live voice control branches, not the currently deployed application.
 
 ## Current request paths
 
@@ -10,7 +10,7 @@ not the currently deployed application.
 | Topic selection, track generation, document extraction, milestones | Anthropic via `dashboard/*`, `tracker/*`, and `lib/tracker/*` | Hugh's Anthropic API account | Auth/approval, shared reservation and 30 requests/minute per user; free monthly token cap |
 | Ask Hugh, diary verification, review quiz, code chat/drill, cloud chat | Anthropic via `learn/*`, `tracker/review/*`, `code/*`, `cloud/*` | Hugh's Anthropic API account | Auth/approval and shared reservation/rate gate |
 | Notes Coach and Notes summary | OpenAI Chat Completions via `notes/coach`, `notes/summarize` | Hugh's OpenAI API account | Auth/approval, shared reservation/rate gate, usage logs |
-| Live mastery voice | OpenAI Realtime via `tracker/mastery/realtime-session`; browser connects to OpenAI; recap uses Anthropic | Hugh's OpenAI and Anthropic API accounts | Server verified administrator and feature flag at credential mint; browser reported voice usage, so learner access remains closed |
+| Live mastery voice | OpenAI Realtime via `tracker/mastery/realtime-session`; browser media uses WebRTC; recap uses Anthropic | Hugh's OpenAI and Anthropic API accounts | Server creates the call, observes provider usage, reserves allowance and can hang up; learner access remains closed pending live validation |
 | Admin architecture assistant | OpenAI via `architecture/chat` and local dashboard assistant | Hugh's OpenAI API account | Administrator access; this operator tool is outside learner `logUsage` and needs its own cost review |
 | Prerecorded code drill audio | Local MP3 files | No runtime API charge | Static playback |
 | Retired scripted mastery and ElevenLabs TTS | No active route in this branch | No new runtime charge | Historical `tts_chars` logs and pricing retained for past reporting |
@@ -29,14 +29,23 @@ checks Hugh Pro, but the Realtime credential endpoint intentionally accepts
 only an unblocked administrator. A browser-only plan check would not protect
 the provider key.
 
+The control branch sets a two-minute session cap, a 60-second inactivity cap,
+12 coach responses, one concurrent call per user, two across Hugh, a $0.20
+session reservation, a $2 monthly user allowance and a $10 monthly workspace
+allowance. A reservation stays charged for the month even if provider usage is
+missing. Observed usage is written from deduplicated server sideband events;
+browser reports are disabled by default. The admin can inspect recent sessions
+and end active calls at `/admin/voice`. The call endpoint fails closed unless
+the minute recovery job, Vault secrets and `CRON_SECRET` are configured.
+
 Before opening Live voice to paying learners:
 
-1. Make the server own each provider call's identity, usage, deadline,
-   termination, and recovery. Keep a durable per-session reservation and
-   concurrency slot.
-2. Define a per-Pro-user voice allowance and a workspace-wide ceiling.
-   Refuse a new session before minting a credential when either is exhausted.
-3. Check the protected plan on the server at credential issuance and use the
+1. Apply migrations 058 and 059, configure recovery, then verify a real
+   administrator call and modified-client termination on the deployed host.
+   Confirm observed usage against OpenAI billing, including interrupted calls.
+2. Decide whether the pilot's $2 user and $10 workspace monthly ceilings and
+   two-minute sessions are the right paid-product allowances.
+3. Check the protected plan on the server at call creation and use the
    same policy on the page. Test direct requests and forged client claims.
 4. Decide product semantics: the current Live flow writes a recap but does not
    score or set `mastery_validated`. The retired scripted flow did.

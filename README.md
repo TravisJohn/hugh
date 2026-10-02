@@ -52,6 +52,7 @@ what each one gates. In short:
 | `SUPABASE_ACCESS_TOKEN` | No | Only needed for `scripts/run-migration.ts` (CLI migration apply). |
 | `OPENAI_API_KEY` | No | Server-only. Notes Coach/summarize, Realtime mastery, local architecture-dashboard assistant. |
 | `MASTERY_REALTIME_ENABLED` | No | Feature flag — `"true"` allows an unblocked administrator to preview OpenAI Realtime voice. |
+| `CRON_SECRET` | For Live voice | Shared secret for the Supabase minute recovery job and Hugh's internal call-recovery endpoint. See [Live voice operations](docs/live-voice-operations.md). |
 
 `NEXT_PUBLIC_` vars are safe for the client bundle; every other key is
 server-only and must only be read from `/app/api/**` route handlers, Server

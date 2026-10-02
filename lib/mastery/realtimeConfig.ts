@@ -1,8 +1,7 @@
 import "server-only";
 
 // ── Realtime mastery configuration (single source of truth, server-only) ────
-// Imported by the ephemeral-session route to build the coach session. The
-// browser receives model names, a minted credential and client-side caps.
+// Imported by the server-owned call route to build the coach session.
 // OPENAI_API_KEY stays server-side. Realtime is an admin preview (audit S3).
 
 // Speech-to-speech model that CONDUCTS the mastery conversation.
@@ -45,14 +44,13 @@ export const TURN_DETECTION = {
 // a retired persona concern; the mastery coach is one consistent voice.)
 export const MASTERY_VOICE = "cedar";
 
-// ── Client-side backstops (not security-enforced caps; audit S3) ─────────────
-// Phase 30 (Guided Reflection) is UNMARKED and learner-ended — the coach never
-// concludes on its own. These values guide the normal browser's behavior. A
-// modified client can ignore them; server-owned limits are still required
-// before enabling Realtime for regular learners.
-export const MAX_SESSION_SECONDS = 15 * 60;  // normal browser's session deadline
-export const MAX_FOLLOWUPS       = 24;       // coach turns before the backstop trips
-export const INACTIVITY_MS       = 120_000;  // silence window before auto-ending
+// Short preview sessions fit inside a server function's configured lifetime.
+// The server observer enforces these; browser timers are only a UI backstop.
+export const MAX_SESSION_SECONDS = 120;
+export const MAX_FOLLOWUPS       = 12;
+export const INACTIVITY_MS       = 60_000;
+export const MAX_RESPONSE_OUTPUT_TOKENS = 500;
+export const MAX_CONTEXT_TOKENS = 2_000;
 
 // Diary context is supporting learner colour only — capped so it can never
 // dominate the authoritative card criteria in the prompt.

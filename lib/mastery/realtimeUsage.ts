@@ -1,16 +1,9 @@
 // ── Realtime mastery usage accounting (pure, no I/O) ────────────────────────
 //
-// The mastery voice coach is the one place in Hugh where the spend does NOT
-// happen on the server. `realtime-session/route.ts` mints an ephemeral client
-// secret and returns it; the session then runs browser-to-OpenAI over WebRTC.
-// The server hands out a credential and never hears from it again, so at the
-// only moment that route runs, nothing has been spent and there is no usage
-// figure to log. That is why `logUsage` was missing there — it was never a
-// dropped line.
-//
-// This module is the other half: it folds the usage the Realtime API reports
-// over the data channel into per-rate-class totals, bounds them so a tampered
-// browser cannot inflate them, and turns them into `usage_logs` rows.
+// The server sideband now uses these pure accumulators for provider usage
+// events. The browser also keeps local totals for its transcript UI, but they
+// do not authorize or bill a new call. `boundTotals` remains solely for the
+// temporary legacy reporting drain from pre-migration ephemeral sessions.
 //
 // Two events carry usage, and they are NOT the same source:
 //   • `response.done` -> `response.usage`, the coach model's own tokens.

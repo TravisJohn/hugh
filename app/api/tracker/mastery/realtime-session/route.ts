@@ -1,9 +1,12 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { after, type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate } from "@/lib/usage";
 import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 import { logSafeError } from "@/lib/observability/log";
+import { periodStart } from "@/lib/tokenBudget";
+import { attachSideband, callIdFromLocation, hangupCall, monitorCall, SESSION_RESERVE_USD, SESSION_USER_BUDGET_USD, SESSION_WORKSPACE_BUDGET_USD, SESSION_USER_CONCURRENCY, SESSION_WORKSPACE_CONCURRENCY } from "@/lib/mastery/liveVoiceControl";
 import type { LearningPoint } from "@/types";
 import {
   buildCriteria,
@@ -18,19 +21,19 @@ import {
   TURN_DETECTION,
   MASTERY_VOICE,
   MAX_SESSION_SECONDS,
+  MAX_RESPONSE_OUTPUT_TOKENS,
+  MAX_CONTEXT_TOKENS,
   MAX_FOLLOWUPS,
   INACTIVITY_MS,
   MAX_DIARY_CHARS,
 } from "@/lib/mastery/realtimeConfig";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+export const maxDuration = 240;
 
-// Mints a short-lived ephemeral credential for a Realtime MASTERY coach session.
-// The browser receives a limited credential, never OPENAI_API_KEY. Session
-// instructions and settings must not be treated as secrets from that client.
-// S3 containment: flag-, authenticated-admin-, and usage-gated.
-
-const CLIENT_SECRET_TTL_SECONDS = 600;
+// Creates the provider call on the server, binds its ID to the authenticated
+// user and keeps a sideband observer alive for the entire short preview.
 
 function realtimeEnabled(): boolean {
   return process.env.MASTERY_REALTIME_ENABLED === "true";
@@ -47,10 +50,11 @@ export async function POST(request: NextRequest) {
   // Enforce at credential issuance, not just in the page. Paid/approved learner
   // status and client-supplied claims never grant this administrator preview.
   const supabase = await createClient();
+  let usagePeriodStart = periodStart(null);
   try {
     const { data: profile, error } = await supabase
       .from("profiles")
-      .select("is_admin, is_blocked")
+      .select("is_admin, is_blocked, usage_reset_at")
       .eq("user_id", userId)
       .single();
     if (error) {
@@ -60,6 +64,7 @@ export async function POST(request: NextRequest) {
     if (!canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile)) {
       return NextResponse.json({ error: "Realtime voice is currently an administrator preview." }, { status: 403 });
     }
+    usagePeriodStart = periodStart(profile);
   } catch (error) {
     logSafeError("mastery/realtime-session access", error);
     return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Try again shortly." }, { status: 503 });
@@ -72,11 +77,19 @@ export async function POST(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json({ error: "Realtime voice is temporarily unavailable." }, { status: 503 });
   }
+  const db = createServiceClient();
+  const { data: recoveryReady, error: recoveryError } = await db.rpc("mastery_realtime_recovery_ready");
+  if (recoveryError || recoveryReady !== true || !process.env.CRON_SECRET) {
+    return NextResponse.json({ error: "Realtime recovery is not configured." }, { status: 503 });
+  }
 
-  const body = (await request.json()) as { milestoneId?: string };
-  const milestoneId = body.milestoneId;
-  if (!milestoneId) {
-    return NextResponse.json({ error: "milestoneId is required" }, { status: 400 });
+  let body: { milestoneId?: unknown; sdp?: unknown };
+  try { body = await request.json() as typeof body; }
+  catch { return NextResponse.json({ error: "Malformed session request" }, { status: 400 }); }
+  const milestoneId = typeof body.milestoneId === "string" ? body.milestoneId : "";
+  const sdp = typeof body.sdp === "string" ? body.sdp : "";
+  if (!/^[0-9a-f-]{36}$/i.test(milestoneId) || !sdp.startsWith("v=0\r\n") || sdp.length > 100_000) {
+    return NextResponse.json({ error: "Invalid milestone or WebRTC offer" }, { status: 400 });
   }
 
   // Ownership + card content. summary_doc is the on-screen guiding document the
@@ -129,6 +142,12 @@ export async function POST(request: NextRequest) {
   const sessionConfig = {
     type:  "realtime" as const,
     model: REALTIME_MODEL,
+    max_output_tokens: MAX_RESPONSE_OUTPUT_TOKENS,
+    truncation: {
+      type: "retention_ratio" as const,
+      retention_ratio: 0.8,
+      token_limits: { post_instructions: MAX_CONTEXT_TOKENS },
+    },
     instructions,
     audio: {
       input: {
@@ -139,31 +158,52 @@ export async function POST(request: NextRequest) {
     },
   };
 
+  const { data: reserved, error: reserveError } = await db.rpc("start_mastery_realtime_session", {
+    p_user_id: userId, p_milestone_id: milestoneId, p_seconds: MAX_SESSION_SECONDS,
+    p_reserve_usd: SESSION_RESERVE_USD, p_user_budget_usd: SESSION_USER_BUDGET_USD,
+    p_workspace_budget_usd: SESSION_WORKSPACE_BUDGET_USD,
+    p_user_concurrency: SESSION_USER_CONCURRENCY,
+    p_workspace_concurrency: SESSION_WORKSPACE_CONCURRENCY,
+  });
+  if (reserveError || typeof reserved !== "string") {
+    const limited = /realtime_(budget|concurrency)_limit/.test(reserveError?.message ?? "");
+    if (!limited) console.error("[mastery/realtime-session] reservation failed:", reserveError?.message);
+    return NextResponse.json({ error: limited ? "Live voice allowance or active-session limit reached." : "Realtime admission is unavailable." }, { status: limited ? 429 : 503 });
+  }
+  const sessionId = reserved;
+  let callId: string | null = null;
   try {
-    const res = await fetch("https://api.openai.com/v1/realtime/client_secrets", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        expires_after: { anchor: "created_at", seconds: CLIENT_SECRET_TTL_SECONDS },
-        session: sessionConfig,
-      }),
+    const form = new FormData();
+    form.set("sdp", sdp);
+    form.set("session", JSON.stringify(sessionConfig));
+    const res = await fetch("https://api.openai.com/v1/realtime/calls", {
+      method: "POST", headers: { Authorization: `Bearer ${apiKey}`, "X-Client-Request-Id": sessionId },
+      body: form, signal: AbortSignal.timeout(15000),
     });
-
-    if (!res.ok) {
-      const detail = await res.text();
-      console.error("[mastery/realtime-session] mint failed:", res.status, detail);
-      return NextResponse.json({ error: "Failed to start realtime session." }, { status: 502 });
+    if (!res.ok) throw new Error(`Provider call creation failed (${res.status})`);
+    callId = callIdFromLocation(res.headers.get("location"));
+    if (!callId) throw new Error("Provider call ID missing");
+    // Persist the call ID as early as possible. A process lost during the
+    // sideband handshake still leaves a call the minute worker can hang up.
+    const { error: bindError } = await db.from("mastery_realtime_sessions")
+      .update({ provider_call_id: callId }).eq("id", sessionId).eq("state", "starting");
+    if (bindError) throw new Error("Provider call binding failed");
+    const answerSdp = await res.text();
+    const socket = await attachSideband(callId);
+    const { data: active, error: activateError } = await db.from("mastery_realtime_sessions")
+      .update({ provider_call_id: callId, state: "active" }).eq("id", sessionId)
+      .eq("state", "starting").select("deadline_at").single();
+    if (activateError || !active?.deadline_at || socket.readyState !== 1) {
+      socket.terminate();
+      throw new Error("Session activation failed");
     }
-
-    const data = (await res.json()) as { value?: string; expires_at?: number };
-    if (!data.value) {
-      console.error("[mastery/realtime-session] mint response missing client secret");
-      return NextResponse.json({ error: "Failed to start realtime session." }, { status: 502 });
-    }
-
+    // Attach event listeners before returning the SDP answer; after() retains
+    // the already-running observer for the full call lifetime.
+    const observer = monitorCall(socket, sessionId, callId, userId, Date.parse(active.deadline_at), usagePeriodStart);
+    after(() => observer);
     return NextResponse.json({
-      clientSecret:          data.value,
-      expiresAt:             data.expires_at ?? null,
+      sessionId,
+      answerSdp,
       model:                 REALTIME_MODEL,
       voice:                 MASTERY_VOICE,
       transcriptionModel:    REALTIME_TRANSCRIPTION_MODEL,
@@ -175,6 +215,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error("[mastery/realtime-session] error:", err);
+    const hungUp = callId ? await hangupCall(callId) : true;
+    const { error: finalError } = await db.from("mastery_realtime_sessions").update(hungUp
+      ? { state: "failed", end_reason: "startup_error", ended_at: new Date().toISOString() }
+      : { state: "starting", provider_call_id: callId, end_reason: "startup_hangup_retry", deadline_at: new Date().toISOString() }
+    ).eq("id", sessionId);
+    if (finalError) console.error("[mastery/realtime-session] startup recovery record failed:", finalError.message);
     return NextResponse.json({ error: "Failed to start realtime session." }, { status: 502 });
   }
 }

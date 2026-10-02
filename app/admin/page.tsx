@@ -315,7 +315,7 @@ export default async function AdminPage() {
         </section>
 
         {/* ── Where to go next ──────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <NavCard
             href="/admin/features"
             icon={<Layers size={18} className="text-sky-400" />}
@@ -339,6 +339,12 @@ export default async function AdminPage() {
             icon={<Boxes size={18} className="text-amber-400" />}
             title="Architecture"
             note="Repo map and the admin assistant"
+          />
+          <NavCard
+            href="/admin/voice"
+            icon={<Activity size={18} className="text-cyan-400" />}
+            title="Live voice"
+            note="Sessions, usage and call termination"
           />
         </section>
 
