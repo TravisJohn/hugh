@@ -310,10 +310,10 @@ export interface MasteryTurnDetection {
   interrupt_response:   boolean;
 }
 
-// Payload from /api/tracker/mastery/realtime-session (no API key, no instructions).
+// Server-created WebRTC call. No browser credential or provider call ID.
 export interface MasteryRealtimeCredentials {
-  clientSecret:          string;
-  expiresAt:             number | null;
+  sessionId:             string;
+  answerSdp:             string;
   model:                 string;
   voice:                 string;
   transcriptionModel:    string;

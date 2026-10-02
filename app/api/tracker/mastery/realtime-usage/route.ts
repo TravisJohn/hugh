@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
-import { MAX_SESSION_SECONDS } from "@/lib/mastery/realtimeConfig";
 import {
   emptyTotals,
   boundTotals,
@@ -49,6 +48,14 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  // New sessions are accounted for by the server sideband. This legacy route
+  // can be opened briefly during a rollout to drain previously issued client
+  // secrets, but defaults closed so browser-forged totals cannot create spend.
+  const legacyUntil = Date.parse(process.env.MASTERY_LEGACY_REPORTS_UNTIL ?? "");
+  if (!Number.isFinite(legacyUntil) || Date.now() >= legacyUntil) {
+    return NextResponse.json({ error: "Legacy usage reporting has ended" }, { status: 410 });
+  }
+
   let body: UsageBody;
   try {
     body = (await request.json()) as UsageBody;
@@ -87,7 +94,9 @@ export async function POST(request: NextRequest) {
   };
 
   // The ceiling comes from the server's own config, never from the request.
-  const { bounded, clamped } = boundTotals(reported, MAX_SESSION_SECONDS);
+  // Older ephemeral credentials permitted fifteen-minute calls. Preserve that
+  // bound during the optional rollout drain even though new calls last two.
+  const { bounded, clamped } = boundTotals(reported, 15 * 60);
 
   if (clamped) {
     // Either a bug in the accumulator or a tampered client. Both are worth

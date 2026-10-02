@@ -206,11 +206,13 @@ export const FEATURES: readonly FeatureDefinition[] = [
     apiRoutes: [
       "tracker/mastery/recap",
       "tracker/mastery/realtime-session",
+      "tracker/mastery/realtime-end",
       "tracker/mastery/realtime-usage",
+      "internal/mastery-realtime-recover",
     ],
     libDirs:       ["mastery"],
     componentDirs: [],
-    tables: ["milestones", "milestone_entries"],
+    tables: ["milestones", "milestone_entries", "mastery_realtime_sessions", "mastery_realtime_usage_events"],
     usageFeatures: [
       "mastery/recap",
       // Realtime voice. Gated at mint time under this same string since the
@@ -226,7 +228,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "mastery.realtime",
     ],
     spendsTokens: true,
-    tests: 6,
+    tests: 8,
   },
   {
     id:    "code",
@@ -395,11 +397,11 @@ export const FEATURES: readonly FeatureDefinition[] = [
     label: "Admin console",
     kind:  "internal",
     blurb: "What needs attention, spend by feature, accounts and approvals.",
-    routes: ["/admin", "/admin/features", "/admin/users"],
-    apiRoutes: ["admin/users/[userId]"],
+    routes: ["/admin", "/admin/features", "/admin/users", "/admin/voice"],
+    apiRoutes: ["admin/users/[userId]", "admin/voice/[id]"],
     libDirs:       [],
     componentDirs: [],
-    tables: ["profiles", "usage_logs"],
+    tables: ["profiles", "usage_logs", "mastery_realtime_sessions"],
     usageFeatures: [],
     activityFeatures: [],
     operations: [],

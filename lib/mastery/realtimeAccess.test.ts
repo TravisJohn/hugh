@@ -4,10 +4,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import { canUseRealtime } from "./realtimeAccess";
 
-const mocks = vi.hoisted(() => ({ auth: vi.fn(), verify: vi.fn(), from: vi.fn(), gate: vi.fn(), usage: vi.fn(), provider: vi.fn(), eq: vi.fn() }));
+const mocks = vi.hoisted(() => ({ auth: vi.fn(), verify: vi.fn(), from: vi.fn(), gate: vi.fn(), usage: vi.fn(), provider: vi.fn(), eq: vi.fn(), rpc: vi.fn(), serviceFrom: vi.fn(), serviceUpdate: vi.fn(), attach: vi.fn(), monitor: vi.fn(), hangup: vi.fn(), after: vi.fn() }));
+vi.mock("next/server", async importOriginal => ({ ...(await importOriginal<typeof import("next/server")>()), after: mocks.after }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/auth-helper", () => ({ getAuthenticatedUserId: mocks.auth }));
 vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: mocks.from }) }));
+vi.mock("@/lib/supabase/service", () => ({ createServiceClient: () => ({ rpc: mocks.rpc, from: mocks.serviceFrom }) }));
+vi.mock("@/lib/mastery/liveVoiceControl", () => ({
+  attachSideband: mocks.attach, callIdFromLocation: () => "rtc_test", hangupCall: mocks.hangup,
+  monitorCall: mocks.monitor, SESSION_RESERVE_USD: 0.2, SESSION_USER_BUDGET_USD: 2,
+  SESSION_WORKSPACE_BUDGET_USD: 10, SESSION_USER_CONCURRENCY: 1, SESSION_WORKSPACE_CONCURRENCY: 2,
+}));
 vi.mock("@/lib/supabase/verify-access", () => ({ verifyUserAccess: mocks.verify }));
 vi.mock("@/lib/usage", () => ({ enforceUsageGate: mocks.gate, logUsage: mocks.usage }));
 vi.mock("@/lib/observability/record", () => ({ recordOperation: vi.fn() }));
@@ -21,7 +28,7 @@ import MasteryPage from "@/app/mastery/[milestoneId]/page";
 let profile: Record<string, unknown> | null;
 let profileError: { message: string } | null;
 let milestoneFound: boolean;
-function request(body: unknown = { milestoneId: "milestone" }) {
+function request(body: unknown = { milestoneId: "00000000-0000-4000-8000-000000000001", sdp: "v=0\r\no=- test\r\n" }) {
   return new NextRequest("http://localhost/api/tracker/mastery/realtime-session", { method: "POST", body: JSON.stringify(body) });
 }
 
@@ -29,12 +36,26 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("MASTERY_REALTIME_ENABLED", "true");
   vi.stubEnv("OPENAI_API_KEY", "test-only-not-a-real-key");
+  vi.stubEnv("CRON_SECRET", "test-secret-test-secret-test-secret-123");
   vi.stubGlobal("fetch", mocks.provider);
   // The test runner uses classic JSX; Next uses its own automatic JSX runtime.
   vi.stubGlobal("React", React);
   mocks.auth.mockResolvedValue("alice");
   mocks.gate.mockResolvedValue(null);
-  mocks.provider.mockResolvedValue(new Response(JSON.stringify({ value: "test-credential", expires_at: 123 }), { status: 200 }));
+  mocks.provider.mockResolvedValue(new Response("v=0\r\nanswer", { status: 200, headers: { location: "/v1/realtime/calls/rtc_test" } }));
+  mocks.rpc.mockImplementation(async (name: string) => ({
+    data: name === "mastery_realtime_recovery_ready" ? true : "00000000-0000-4000-8000-000000000002",
+    error: null,
+  }));
+  mocks.attach.mockResolvedValue({ terminate: vi.fn(), readyState: 1 });
+  mocks.serviceFrom.mockImplementation(() => {
+    const chain = { update: vi.fn(), eq: vi.fn(), select: vi.fn(), single: vi.fn() };
+    chain.update.mockImplementation((value: unknown) => { mocks.serviceUpdate(value); return chain; });
+    chain.eq.mockReturnValue(chain);
+    chain.select.mockReturnValue(chain);
+    chain.single.mockResolvedValue({ data: { deadline_at: new Date(Date.now() + 120000).toISOString() }, error: null });
+    return chain;
+  });
   profile = { is_admin: false, is_blocked: false, approved: true };
   profileError = null;
   milestoneFound = true;
@@ -69,7 +90,7 @@ describe("Realtime preview access policy", () => {
   });
 });
 
-describe("credential issuance is the security boundary", () => {
+describe("server-created call is the security boundary", () => {
   it("keeps the disabled flag closed even for administrators", async () => {
     profile = { is_admin: true, is_blocked: false };
     vi.stubEnv("MASTERY_REALTIME_ENABLED", "false");
@@ -85,7 +106,7 @@ describe("credential issuance is the security boundary", () => {
   });
   it.each(["free", "pro"])("refuses an approved %s learner even with forged request flags", async plan => {
     profile = { is_admin: false, is_blocked: false, approved: true, plan };
-    expect((await mint(request({ milestoneId: "milestone", is_admin: true, approved: true, plan: "pro", userId: "admin" }))).status).toBe(403);
+    expect((await mint(request({ milestoneId: "00000000-0000-4000-8000-000000000001", sdp: "v=0\r\no=- test\r\n", is_admin: true, approved: true, plan: "pro", userId: "admin" }))).status).toBe(403);
     expect(mocks.eq).toHaveBeenCalledWith("user_id", "alice");
     expect(mocks.gate).not.toHaveBeenCalled();
     expect(mocks.from).not.toHaveBeenCalledWith("milestones");
@@ -119,13 +140,48 @@ describe("credential issuance is the security boundary", () => {
     expect((await mint(request())).status).toBe(404);
     expect(mocks.provider).not.toHaveBeenCalled();
   });
+  it("refuses calls when durable recovery is not configured", async () => {
+    profile = { is_admin: true, is_blocked: false };
+    mocks.rpc.mockResolvedValue({ data: false, error: null });
+    expect((await mint(request())).status).toBe(503);
+    expect(mocks.provider).not.toHaveBeenCalled();
+  });
+  it("refuses calls when the atomic session allowance is exhausted", async () => {
+    profile = { is_admin: true, is_blocked: false };
+    mocks.rpc.mockImplementation(async (name: string) => name === "mastery_realtime_recovery_ready"
+      ? { data: true, error: null }
+      : { data: null, error: { message: "realtime_budget_limit" } });
+    expect((await mint(request())).status).toBe(429);
+    expect(mocks.provider).not.toHaveBeenCalled();
+  });
+  it("rejects missing or malformed SDP before admitting spend", async () => {
+    profile = { is_admin: true, is_blocked: false };
+    expect((await mint(request({ milestoneId: "00000000-0000-4000-8000-000000000001" }))).status).toBe(400);
+    expect(mocks.rpc).toHaveBeenCalledWith("mastery_realtime_recovery_ready");
+    expect(mocks.rpc).not.toHaveBeenCalledWith("start_mastery_realtime_session", expect.anything());
+    expect(mocks.provider).not.toHaveBeenCalled();
+  });
   it("admits the administrator preview without changing the provider model", async () => {
     profile = { is_admin: true, is_blocked: false };
     const response = await mint(request());
     expect(response.status).toBe(200);
-    expect(await response.json()).toMatchObject({ clientSecret: "test-credential", model: "gpt-realtime-mini" });
+    expect(await response.json()).toMatchObject({ sessionId: "00000000-0000-4000-8000-000000000002", answerSdp: "v=0\r\nanswer", model: "gpt-realtime-mini" });
     expect(mocks.provider).toHaveBeenCalledOnce();
+    const providerRequest = mocks.provider.mock.calls[0][1] as RequestInit;
+    expect(providerRequest.body).toBeInstanceOf(FormData);
+    expect((providerRequest.body as FormData).get("session")).toContain('"model":"gpt-realtime-mini"');
+    expect(mocks.attach).toHaveBeenCalledWith("rtc_test");
     expect(mocks.gate).toHaveBeenCalledWith("alice", "mastery/realtime");
+  });
+  it("leaves a failed hangup visible for the recovery job", async () => {
+    profile = { is_admin: true, is_blocked: false };
+    mocks.attach.mockRejectedValue(new Error("sideband unavailable"));
+    mocks.hangup.mockResolvedValue(false);
+    expect((await mint(request())).status).toBe(502);
+    expect(mocks.hangup).toHaveBeenCalledWith("rtc_test");
+    expect(mocks.serviceUpdate).toHaveBeenCalledWith(expect.objectContaining({
+      state: "starting", provider_call_id: "rtc_test", end_reason: "startup_hangup_retry",
+    }));
   });
 });
 
@@ -149,10 +205,10 @@ describe("mastery page agrees with the API", () => {
   });
 });
 
-it("still accepts best-effort usage reports from sessions predating containment", async () => {
+it("closes browser-supplied billing reports by default", async () => {
   vi.stubEnv("MASTERY_REALTIME_ENABLED", "false");
   const response = await report(request({ milestoneId: "milestone", usage: { audioIn: 10, audioOut: 5 } }));
-  expect(response.status).toBe(200);
-  expect(mocks.usage).toHaveBeenCalledWith(expect.objectContaining({ userId: "alice", feature: "mastery/realtime", tokensIn: 10, tokensOut: 5 }));
+  expect(response.status).toBe(410);
+  expect(mocks.usage).not.toHaveBeenCalled();
   expect(mocks.provider).not.toHaveBeenCalled();
 });

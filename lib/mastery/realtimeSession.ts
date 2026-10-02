@@ -10,10 +10,7 @@
 //     cannot inject a result).
 //   • Events after dispose() can never fire callbacks (disposed guard).
 //   • Transcript turns are deduped by id and finalised in arrival order.
-//   • Session usage is observed, never estimated: the two events that actually
-//     carry token counts are folded into totals the caller can read once the
-//     session ends. This is the ONLY record of realtime spend — the server
-//     mints a credential and never sees the call itself. See realtimeUsage.ts.
+//   • Browser usage totals are diagnostic. Server sideband events own billing.
 //
 // The event handler `ingestEvent` is deliberately callable in isolation so the
 // idempotency / dedup logic can be unit-tested without a live connection.
@@ -30,8 +27,6 @@ import {
   accumulateTranscription,
   type RealtimeUsageTotals,
 } from "./realtimeUsage";
-
-const REALTIME_CALLS_URL = "https://api.openai.com/v1/realtime/calls";
 
 export interface MasteryRealtimeCallbacks {
   onStatus:     (status: MasteryRealtimeStatus) => void;
@@ -70,7 +65,7 @@ export class MasteryRealtimeSession {
   private turns: MasteryTranscriptTurn[] = [];
   private seenKeys = new Set<string>();
 
-  private creds: MasteryRealtimeCredentials | null = null;
+  private sessionId: string | null = null;
 
   // Running token totals for this session, folded from the events below. Kept
   // here rather than in the hook so a re-render cannot lose a figure that no
@@ -81,6 +76,7 @@ export class MasteryRealtimeSession {
 
   getStatus(): MasteryRealtimeStatus { return this.status; }
   getTranscript(): MasteryTranscriptTurn[] { return [...this.turns]; }
+  getSessionId(): string | null { return this.sessionId; }
 
   /**
    * Token totals observed so far.
@@ -105,13 +101,12 @@ export class MasteryRealtimeSession {
   }
 
   // ── Connection ────────────────────────────────────────────────────────────
-  async connect(creds: MasteryRealtimeCredentials): Promise<void> {
-    if (this.disposed) return;
+  async connect(milestoneId: string): Promise<MasteryRealtimeCredentials | null> {
+    if (this.disposed) return null;
     if (!isSupported()) {
       this.fail("unsupported", "This browser does not support the realtime voice connection.");
-      return;
+      return null;
     }
-    this.creds = creds;
     this.setStatus("connecting");
 
     try {
@@ -120,9 +115,9 @@ export class MasteryRealtimeSession {
       });
     } catch {
       this.fail("mic_permission", "Microphone access is required for the mastery session.");
-      return;
+      return null;
     }
-    if (this.disposed) return;
+    if (this.disposed) return null;
 
     try {
       const pc = new RTCPeerConnection();
@@ -144,7 +139,6 @@ export class MasteryRealtimeSession {
 
       const dc = pc.createDataChannel("oai-events");
       this.dc = dc;
-      dc.onopen = () => this.onDataChannelOpen();
       dc.onmessage = (ev) => {
         if (this.disposed) return;
         try { this.ingestEvent(JSON.parse(ev.data as string) as ServerEvent); }
@@ -153,55 +147,37 @@ export class MasteryRealtimeSession {
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      if (this.disposed) return;
+      if (this.disposed) return null;
 
-      const sdpRes = await fetch(
-        `${REALTIME_CALLS_URL}?model=${encodeURIComponent(creds.model)}`,
-        {
-          method:  "POST",
-          body:    offer.sdp,
-          headers: { Authorization: `Bearer ${creds.clientSecret}`, "Content-Type": "application/sdp" },
-        },
-      );
-      if (this.disposed) return;
+      const sdpRes = await fetch('/api/tracker/mastery/realtime-session', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ milestoneId, sdp: offer.sdp }),
+      });
       if (!sdpRes.ok) {
-        this.fail("connection", `Realtime handshake failed (${sdpRes.status}).`);
-        return;
+        const body = await sdpRes.json().catch(() => ({})) as { error?: string };
+        this.fail("connection", body.error ?? `Realtime handshake failed (${sdpRes.status}).`);
+        return null;
       }
-
-      const answerSdp = await sdpRes.text();
-      await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
-      if (this.disposed) return;
+      const creds = await sdpRes.json() as MasteryRealtimeCredentials;
+      this.sessionId = creds.sessionId;
+      if (this.disposed) {
+        void fetch('/api/tracker/mastery/realtime-end', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: creds.sessionId, reason: 'disconnected' }), keepalive: true,
+        }).catch(() => {});
+        return null;
+      }
+      await pc.setRemoteDescription({ type: "answer", sdp: creds.answerSdp });
+      if (this.disposed) return null;
 
       this.setStatus("listening"); // connected; coach will open shortly
+      return creds;
     } catch (err) {
       console.error("[mastery-realtime] connect error:", err);
       this.fail("connection", "Could not establish the realtime voice connection.");
+      return null;
     }
-  }
-
-  private onDataChannelOpen(): void {
-    if (this.disposed || !this.creds) return;
-    // Re-assert the critical settings (belt-and-braces) using the SAME values the
-    // session was minted with: the noise-robust turn detection and pinned
-    // transcription language. Tools/instructions are already set at mint time.
-    this.send({
-      type: "session.update",
-      session: {
-        audio: {
-          input: {
-            transcription:  { model: this.creds.transcriptionModel, language: this.creds.transcriptionLanguage },
-            turn_detection: this.creds.turnDetection,
-          },
-          output: { voice: this.creds.voice },
-        },
-      },
-    });
-  }
-
-  private send(payload: Record<string, unknown>): void {
-    if (this.disposed) return;
-    if (this.dc && this.dc.readyState === "open") this.dc.send(JSON.stringify(payload));
   }
 
   private recordTurn(role: "coach" | "learner", key: string, text: string): void {

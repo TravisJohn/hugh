@@ -148,6 +148,7 @@ export default function MasteryRealtimeClient({
                   This is a relaxed, spoken reflection on <span className="text-slate-200 font-semibold">{milestoneTitle}</span> —
                   no test, no score. Your summary is on the right to guide you. When you start,
                   Hugh will simply ask what stuck with you, then follow your train of thought.
+                  The preview ends after two minutes at most.
                 </p>
                 <button
                   onClick={() => void begin()}

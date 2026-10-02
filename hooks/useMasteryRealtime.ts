@@ -3,11 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MasteryRealtimeSession } from '@/lib/mastery/realtimeSession';
 import { followupCapReached } from '@/lib/mastery/caps';
-import { isEmpty } from '@/lib/mastery/realtimeUsage';
 import type {
   MasteryRealtimeStatus,
   MasteryRealtimeError,
-  MasteryRealtimeCredentials,
   MasteryTranscriptTurn,
   MasteryEndReason,
 } from '@/types';
@@ -36,55 +34,18 @@ export function useMasteryRealtime(): UseMasteryRealtimeReturn {
   const inactivityMsRef = useRef(90_000);
   const endedRef = useRef(false); // single-evaluation guard
 
-  // Reporting what the session spent. The server minted a credential and never
-  // saw the call, so these two refs carry the only record of it: which card the
-  // spend belongs to, and whether it has already been sent. Without the second,
-  // the end-of-session report and the unload beacon would both fire and one
-  // conversation would be billed twice.
-  const milestoneIdRef = useRef<string | null>(null);
-  const reportedRef    = useRef(false);
+  const endRequestedRef = useRef(false);
 
-  /**
-   * Send the session's token usage to the server. At most once per session.
-   *
-   * `useBeacon` is for teardown paths (unload, unmount) where a normal fetch
-   * can be cancelled as the page goes away.
-   *
-   * Failures are swallowed on purpose: this is accounting riding on the
-   * learner's session, and it must never break the thing it measures. A report
-   * that never arrives is a known, documented gap — spend lost because the
-   * laptop closed cannot be recovered from the client.
-   */
-  const reportUsage = useCallback((useBeacon: boolean) => {
-    if (reportedRef.current) return;
-
-    const session     = sessionRef.current;
-    const milestoneId = milestoneIdRef.current;
-    if (!session || !milestoneId) return;
-
-    const usage = session.getUsage();
-    reportedRef.current = true;
-
-    // Nothing observed: no row to write. Silence is correct here — this is the
-    // page that opened and never connected.
-    if (isEmpty(usage)) return;
-
-    const body = JSON.stringify({ milestoneId, usage });
-    const url  = '/api/tracker/mastery/realtime-usage';
-
-    try {
-      if (useBeacon && typeof navigator !== 'undefined' && navigator.sendBeacon) {
-        navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
-        return;
-      }
-      void fetch(url, {
-        method:    'POST',
-        headers:   { 'Content-Type': 'application/json' },
-        body,
-        keepalive: true,
-      }).catch(() => { /* see doc comment — accounting must not surface here */ });
-    } catch {
-      /* same */
+  const requestServerEnd = useCallback((reason: MasteryEndReason | 'disconnected', useBeacon: boolean) => {
+    const sessionId = sessionRef.current?.getSessionId();
+    if (!sessionId || endRequestedRef.current) return;
+    endRequestedRef.current = true;
+    const body = JSON.stringify({ sessionId, reason });
+    const url = '/api/tracker/mastery/realtime-end';
+    if (useBeacon && navigator.sendBeacon) {
+      navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
+    } else {
+      void fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
     }
   }, []);
 
@@ -98,13 +59,11 @@ export function useMasteryRealtime(): UseMasteryRealtimeReturn {
     if (endedRef.current) return;
     endedRef.current = true;
     clearTimers();
-    // getUsage() deliberately survives dispose(), so the order of these two is
-    // not load-bearing — only that both happen on every end path.
-    reportUsage(false);
+    requestServerEnd(reason, false);
     sessionRef.current?.dispose();
     setEndReason(reason);
     setStatus('concluding');
-  }, [clearTimers, reportUsage]);
+  }, [clearTimers, requestServerEnd]);
 
   const bumpIdle = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
@@ -113,48 +72,20 @@ export function useMasteryRealtime(): UseMasteryRealtimeReturn {
 
   const disconnect = useCallback(() => {
     clearTimers();
-    // Covers the paths that never reach endSession: unmount mid-conversation,
-    // and starting a second session over a first. The guard inside makes the
-    // second of two calls a no-op.
-    reportUsage(true);
+    requestServerEnd('disconnected', true);
     sessionRef.current?.dispose();
     sessionRef.current = null;
-  }, [clearTimers, reportUsage]);
+  }, [clearTimers, requestServerEnd]);
 
   const connect = useCallback(async (milestoneId: string): Promise<boolean> => {
     disconnect();
-    // A fresh session: new card, and its spend has not been reported yet.
-    milestoneIdRef.current = milestoneId;
-    reportedRef.current    = false;
+    endRequestedRef.current = false;
     endedRef.current = false;
     coachTurnsRef.current = 0;
     setError(null);
     setEndReason(null);
     setTranscript([]);
     setStatus('connecting');
-
-    let creds: MasteryRealtimeCredentials;
-    try {
-      const res = await fetch('/api/tracker/mastery/realtime-session', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ milestoneId }),
-      });
-      if (!res.ok) {
-        const b = (await res.json().catch(() => ({}))) as { error?: string };
-        setStatus('error');
-        setError({ kind: 'connection', message: b.error ?? `Could not start the session (${res.status}).` });
-        return false;
-      }
-      creds = (await res.json()) as MasteryRealtimeCredentials;
-    } catch {
-      setStatus('error');
-      setError({ kind: 'connection', message: 'Could not reach the realtime session service.' });
-      return false;
-    }
-
-    maxFollowupsRef.current = creds.maxFollowups;
-    inactivityMsRef.current = creds.inactivityMs;
 
     const session = new MasteryRealtimeSession({
       onStatus: (s) => { if (sessionRef.current === session) setStatus(s); },
@@ -177,8 +108,12 @@ export function useMasteryRealtime(): UseMasteryRealtimeReturn {
     });
     sessionRef.current = session;
 
-    await session.connect(creds);
+    const creds = await session.connect(milestoneId);
     if (sessionRef.current !== session) return false;
+    if (!creds) return false;
+
+    maxFollowupsRef.current = creds.maxFollowups;
+    inactivityMsRef.current = creds.inactivityMs;
 
     maxTimerRef.current = setTimeout(() => endSession('max_duration'), creds.maxSessionSeconds * 1000);
     bumpIdle();
