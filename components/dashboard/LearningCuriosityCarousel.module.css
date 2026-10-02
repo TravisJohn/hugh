@@ -121,6 +121,51 @@
   animation: differenceReveal 7.2s ease-in-out infinite;
 }
 
+.networkSignal {
+  stroke-dasharray: 25 190;
+  filter: drop-shadow(0 0 5px #5eead4);
+  animation: networkTravel 6.8s linear infinite;
+}
+
+.networkNodeGlow { animation: networkNodeFlash 6.8s ease-in-out infinite; }
+
+.networkOutput,
+.networkAnswer {
+  animation: networkAnswer 6.8s ease-in-out infinite;
+}
+
+.priorCurve {
+  animation: priorShift 7.2s ease-in-out infinite;
+}
+
+.posteriorFill,
+.updatedLabel {
+  animation: posteriorReveal 7.2s ease-in-out infinite;
+}
+
+.posteriorCurve {
+  stroke-dasharray: 650;
+  stroke-dashoffset: 650;
+  animation: posteriorDraw 7.2s ease-in-out infinite;
+}
+
+.evidenceLine,
+.evidenceDot {
+  animation: evidenceArrives 7.2s ease-in-out infinite;
+}
+
+.treeRouteA,
+.treeRouteB {
+  stroke-dasharray: 320;
+  stroke-dashoffset: 320;
+}
+
+.treeRouteA,
+.treeLeafA { animation: treeFirst 7.6s ease-in-out infinite; }
+
+.treeRouteB,
+.treeLeafB { animation: treeSecond 7.6s ease-in-out infinite; }
+
 .slideProgress {
   transform: scaleX(0);
   animation: fillProgress 9s linear forwards;
@@ -268,6 +313,60 @@
   100% { opacity: 0; }
 }
 
+@keyframes networkTravel {
+  0%, 7% { opacity: 0; stroke-dashoffset: 175; }
+  14% { opacity: 1; }
+  42% { opacity: 1; stroke-dashoffset: -25; }
+  50%, 100% { opacity: 0; stroke-dashoffset: -25; }
+}
+
+@keyframes networkAnswer {
+  0%, 48%, 100% { opacity: .16; }
+  64%, 82% { opacity: 1; }
+}
+
+@keyframes networkNodeFlash {
+  0%, 7%, 36%, 100% { opacity: 0; }
+  17%, 27% { opacity: .9; }
+}
+
+@keyframes priorShift {
+  0%, 19% { opacity: 1; }
+  53%, 85% { opacity: .42; }
+  100% { opacity: 1; }
+}
+
+@keyframes posteriorReveal {
+  0%, 27% { opacity: 0; }
+  58%, 85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes posteriorDraw {
+  0%, 25% { stroke-dashoffset: 650; opacity: 0; }
+  57%, 85% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 650; opacity: 0; }
+}
+
+@keyframes evidenceArrives {
+  0%, 17%, 100% { opacity: .2; }
+  31%, 73% { opacity: 1; }
+}
+
+@keyframes treeFirst {
+  0%, 5% { opacity: 0; stroke-dashoffset: 320; }
+  13% { opacity: 1; }
+  37%, 45% { opacity: 1; stroke-dashoffset: 0; }
+  53%, 100% { opacity: 0; stroke-dashoffset: 0; }
+}
+
+@keyframes treeSecond {
+  0%, 49% { opacity: 0; stroke-dashoffset: 320; }
+  58% { opacity: 1; }
+  86%, 94% { opacity: 1; stroke-dashoffset: 0; }
+  100% { opacity: 0; stroke-dashoffset: 0; }
+}
+
 @keyframes fillProgress {
   to { transform: scaleX(1); }
 }
@@ -278,7 +377,11 @@
   .detectionField, .ordinaryPoint, .outlierGlow, .outlierRing,
   .outlierDot, .descentTrail, .descentStep, .descentWalker,
   .forecastBand, .forecastLine, .experimentSample, .experimentBarA,
-  .experimentBarB, .experimentDifference, .slideProgress { animation: none; }
+  .experimentBarB, .experimentDifference, .networkSignal, .networkNodeGlow,
+  .networkOutput, .networkAnswer, .priorCurve, .posteriorFill,
+  .posteriorCurve, .updatedLabel, .evidenceLine, .evidenceDot,
+  .treeRouteA, .treeRouteB, .treeLeafA, .treeLeafB,
+  .slideProgress { animation: none; }
   .clusterRegion, .clusterLabel { opacity: 1; }
   .failedRoute, .retryLabel { opacity: 0; }
   .successRoute { stroke-dashoffset: 0; }
@@ -288,4 +391,12 @@
   .descentWalker { transform: translate(316px, 230px); }
   .experimentSample, .experimentDifference { opacity: 1; transform: none; }
   .experimentBarA, .experimentBarB, .slideProgress { transform: none; }
+  .networkSignal { opacity: 1; stroke-dashoffset: 0; }
+  .networkNodeGlow { opacity: .65; }
+  .networkOutput, .networkAnswer, .updatedLabel, .posteriorFill { opacity: 1; }
+  .priorCurve { opacity: .45; }
+  .posteriorCurve { opacity: 1; stroke-dashoffset: 0; }
+  .evidenceLine, .evidenceDot { opacity: 1; }
+  .treeRouteA, .treeLeafA { opacity: 1; stroke-dashoffset: 0; }
+  .treeRouteB, .treeLeafB { opacity: 0; }
 }

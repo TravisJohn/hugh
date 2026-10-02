@@ -45,6 +45,24 @@ const SLIDES = [
     title: "Is B really better, or just lucky?",
     description: "Watch the evidence accumulate before deciding whether a difference is real.",
   },
+  {
+    topic: "Neural networks",
+    category: "Machine learning · neural networks",
+    title: "How can layers recognize a pattern?",
+    description: "Signals combine through a network until a useful pattern reaches the output.",
+  },
+  {
+    topic: "Bayesian inference",
+    category: "Statistics · probability",
+    title: "How should evidence change a belief?",
+    description: "A starting belief shifts as new evidence arrives, while uncertainty remains visible.",
+  },
+  {
+    topic: "Decision trees",
+    category: "Machine learning · decisions",
+    title: "Which question should a model ask first?",
+    description: "Each answer splits the possibilities, guiding the model toward a decision.",
+  },
 ] as const;
 
 const CLUSTER_CENTRES = [
@@ -98,6 +116,13 @@ const EXPERIMENT_SAMPLES = Array.from({ length: 24 }, (_, index) => ({
   delay: (index % 12) * 0.22,
   variant: index < 12 ? "a" : "b",
 }));
+
+const NETWORK_LAYERS = [
+  [{ x: 92, y: 83 }, { x: 92, y: 150 }, { x: 92, y: 217 }],
+  [{ x: 235, y: 61 }, { x: 235, y: 120 }, { x: 235, y: 180 }, { x: 235, y: 239 }],
+  [{ x: 390, y: 83 }, { x: 390, y: 150 }, { x: 390, y: 217 }],
+  [{ x: 528, y: 150 }],
+] as const;
 
 function ChartGrid({ verticalLabel = "FEATURE 02" }: { verticalLabel?: string }) {
   return (
@@ -307,7 +332,98 @@ function ExperimentGraphic() {
   );
 }
 
-const GRAPHICS = [ClusteringGraphic, MazeGraphic, OutlierGraphic, DescentGraphic, ForecastGraphic, ExperimentGraphic] as const;
+function NetworkGraphic() {
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <defs>
+        <radialGradient id="learn-network-output">
+          <stop offset="0" stopColor="#5eead4" stopOpacity="0.62" />
+          <stop offset="1" stopColor="#5eead4" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <text x="92" y="27" textAnchor="middle" fill="#8ca0b7" fontSize="9" letterSpacing="2">INPUTS</text>
+      <text x="314" y="27" textAnchor="middle" fill="#8ca0b7" fontSize="9" letterSpacing="2">LAYERS</text>
+      <text x="528" y="27" textAnchor="middle" fill="#8ca0b7" fontSize="9" letterSpacing="2">OUTPUT</text>
+      {NETWORK_LAYERS.slice(0, -1).flatMap((layer, layerIndex) =>
+        layer.flatMap((from, fromIndex) =>
+          NETWORK_LAYERS[layerIndex + 1]!.map((to, toIndex) => (
+            <line key={`${layerIndex}-${fromIndex}-${toIndex}`} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="#477089" strokeWidth="1" opacity="0.27" />
+          )),
+        ),
+      )}
+      <path d="M92 83 L235 120" fill="none" stroke="#5eead4" strokeWidth="4" className={styles.networkSignal} />
+      <path d="M235 120 L390 150" fill="none" stroke="#5eead4" strokeWidth="4" className={styles.networkSignal} style={{ animationDelay: "1.3s" }} />
+      <path d="M390 150 L528 150" fill="none" stroke="#5eead4" strokeWidth="4" className={styles.networkSignal} style={{ animationDelay: "2.6s" }} />
+      <circle cx="92" cy="83" r="27" fill="url(#learn-network-output)" className={styles.networkNodeGlow} />
+      <circle cx="235" cy="120" r="27" fill="url(#learn-network-output)" className={styles.networkNodeGlow} style={{ animationDelay: "1.3s" }} />
+      <circle cx="390" cy="150" r="27" fill="url(#learn-network-output)" className={styles.networkNodeGlow} style={{ animationDelay: "2.6s" }} />
+      <circle cx="528" cy="150" r="46" fill="url(#learn-network-output)" className={styles.networkOutput} />
+      {NETWORK_LAYERS.flatMap((layer, layerIndex) =>
+        layer.map((node, nodeIndex) => (
+          <g key={`${layerIndex}-${nodeIndex}`}>
+            <circle cx={node.x} cy={node.y} r="12" fill="#18364a" stroke="#6f9bb0" strokeWidth="1.1" />
+            <circle cx={node.x} cy={node.y} r="4" fill={layerIndex === 3 ? "#5eead4" : "#9bd1e0"} opacity="0.8" />
+          </g>
+        )),
+      )}
+      <text x="528" y="199" textAnchor="middle" fill="#5eead4" fontSize="9" letterSpacing="2" className={styles.networkAnswer}>PATTERN FOUND</text>
+    </svg>
+  );
+}
+
+function BayesianGraphic() {
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <defs>
+        <linearGradient id="learn-prior-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a78bfa" stopOpacity="0.27" />
+          <stop offset="1" stopColor="#a78bfa" stopOpacity="0.02" />
+        </linearGradient>
+        <linearGradient id="learn-posterior-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#5eead4" stopOpacity="0.3" />
+          <stop offset="1" stopColor="#5eead4" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d="M66 238 H558" fill="none" stroke="#607a91" strokeWidth="1" opacity="0.65" />
+      <path d="M76 238 C131 238 133 204 166 153 C188 117 211 99 235 105 C272 115 299 183 348 221 C366 234 387 238 405 238 Z" fill="url(#learn-prior-fill)" className={styles.priorCurve} />
+      <path d="M76 238 C131 238 133 204 166 153 C188 117 211 99 235 105 C272 115 299 183 348 221 C366 234 387 238 405 238" fill="none" stroke="#a78bfa" strokeWidth="2.5" className={styles.priorCurve} />
+      <path d="M253 238 C302 238 322 207 350 145 C371 98 389 75 410 82 C441 92 454 151 474 198 C491 228 516 238 548 238 Z" fill="url(#learn-posterior-fill)" className={styles.posteriorFill} />
+      <path d="M253 238 C302 238 322 207 350 145 C371 98 389 75 410 82 C441 92 454 151 474 198 C491 228 516 238 548 238" fill="none" stroke="#5eead4" strokeWidth="2.8" className={styles.posteriorCurve} />
+      <path d="M392 59 V236" fill="none" stroke="#fbbf24" strokeWidth="1.2" strokeDasharray="4 6" className={styles.evidenceLine} />
+      <circle cx="392" cy="59" r="5" fill="#fbbf24" className={styles.evidenceDot} />
+      <text x="150" y="91" fill="#c4b5fd" fontSize="9" letterSpacing="2">BEFORE</text>
+      <text x="393" y="44" textAnchor="middle" fill="#fbbf24" fontSize="9" letterSpacing="2">EVIDENCE</text>
+      <text x="488" y="102" fill="#99f6e4" fontSize="9" letterSpacing="2" className={styles.updatedLabel}>AFTER</text>
+    </svg>
+  );
+}
+
+function TreeGraphic() {
+  return (
+    <svg viewBox="0 0 620 300" className={styles.graphic} aria-hidden="true">
+      <text x="557" y="27" textAnchor="end" fill="#8ca0b7" fontSize="9" letterSpacing="2">FOLLOW ONE PATH</text>
+      <path d="M310 90 Q310 113 180 132 M310 90 Q310 113 440 132 M180 178 Q180 200 97 219 M180 178 Q180 200 233 219 M440 178 Q440 200 387 219 M440 178 Q440 200 523 219" fill="none" stroke="#54758c" strokeWidth="1.3" opacity="0.58" />
+      <path d="M310 90 Q310 113 180 132 M180 178 Q180 200 233 219" fill="none" stroke="#67e8f9" strokeWidth="3" strokeLinecap="round" className={styles.treeRouteA} />
+      <path d="M310 90 Q310 113 440 132 M440 178 Q440 200 523 219" fill="none" stroke="#fbbf24" strokeWidth="3" strokeLinecap="round" className={styles.treeRouteB} />
+      <rect x="251" y="45" width="118" height="45" rx="11" fill="#203b50" stroke="#86a9bd" strokeWidth="1.2" />
+      <text x="310" y="72" textAnchor="middle" fill="#e0f2fe" fontSize="11" fontWeight="700" letterSpacing="1">SIZE &gt; 5?</text>
+      <rect x="120" y="132" width="120" height="46" rx="11" fill="#17394a" stroke="#5795a8" strokeWidth="1.2" />
+      <rect x="380" y="132" width="120" height="46" rx="11" fill="#3b3440" stroke="#9c7d78" strokeWidth="1.2" />
+      <text x="180" y="160" textAnchor="middle" fill="#a5f3fc" fontSize="10" fontWeight="700" letterSpacing="1">COLOR?</text>
+      <text x="440" y="160" textAnchor="middle" fill="#fde68a" fontSize="10" fontWeight="700" letterSpacing="1">SHAPE?</text>
+      {[97, 233, 387, 523].map((x, index) => (
+        <g key={x}>
+          <circle cx={x} cy="235" r="16" fill={index < 2 ? "#123b4d" : "#3a3447"} stroke={index < 2 ? "#67e8f9" : "#fbbf24"} strokeWidth="1.2" />
+          <text x={x} y="239" textAnchor="middle" fill="#e2e8f0" fontSize="11" fontWeight="700">{String.fromCharCode(65 + index)}</text>
+        </g>
+      ))}
+      <circle cx="233" cy="235" r="24" fill="none" stroke="#67e8f9" strokeWidth="1" className={styles.treeLeafA} />
+      <circle cx="523" cy="235" r="24" fill="none" stroke="#fbbf24" strokeWidth="1" className={styles.treeLeafB} />
+    </svg>
+  );
+}
+
+const GRAPHICS = [ClusteringGraphic, MazeGraphic, OutlierGraphic, DescentGraphic, ForecastGraphic, ExperimentGraphic, NetworkGraphic, BayesianGraphic, TreeGraphic] as const;
 
 export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -378,8 +494,8 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
         </button>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2" aria-label="Choose an idea">
+      <div className="mt-5 flex items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-center gap-1 sm:gap-2" aria-label="Choose an idea">
           {SLIDES.map((item, index) => (
             <button
               key={item.topic}
@@ -387,7 +503,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
               onClick={() => setSlideIndex(index)}
               aria-label={`Show ${item.topic}`}
               aria-current={slideIndex === index ? "true" : undefined}
-              className={`relative h-1.5 overflow-hidden rounded-full transition-all focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 ${slideIndex === index ? "w-8 bg-slate-600" : "w-4 bg-slate-600 hover:bg-slate-400"}`}
+              className={`relative h-1.5 overflow-hidden rounded-full transition-all focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400 ${slideIndex === index ? "w-6 bg-slate-600 sm:w-8" : "w-2 bg-slate-600 hover:bg-slate-400 sm:w-4"}`}
             >
               {slideIndex === index && (
                 <span
@@ -407,7 +523,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
             aria-label={reducedMotion ? "Automatic slides disabled by reduced motion preference" : paused ? "Resume automatic slides" : "Pause automatic slides"}
             title={reducedMotion ? "Automatic slides disabled by reduced motion preference" : paused ? "Resume automatic slides" : "Pause automatic slides"}
             disabled={reducedMotion}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-9 sm:w-9"
           >
             {paused || reducedMotion ? <Play size={15} /> : <Pause size={15} />}
           </button>
@@ -415,7 +531,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
             type="button"
             onClick={() => setSlideIndex(index => (index + SLIDES.length - 1) % SLIDES.length)}
             aria-label="Previous idea"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-9 sm:w-9"
           >
             <ChevronLeft size={16} />
           </button>
@@ -423,7 +539,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
             type="button"
             onClick={() => setSlideIndex(index => (index + 1) % SLIDES.length)}
             aria-label="Next idea"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-9 sm:w-9"
           >
             <ChevronRight size={16} />
           </button>
@@ -431,7 +547,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        Six starting points to explore. You can also write any data or analytics topic of your own.
+        {SLIDES.length} starting points to explore. You can also write any data or analytics topic of your own.
       </p>
     </div>
   );
