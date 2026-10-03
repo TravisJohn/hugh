@@ -37,6 +37,7 @@ interface Props {
   // Lets the parent board keep its milestone copy (and thus the card chips) in
   // sync as the learner changes self-assessment statuses, without a reload.
   onCoverageChange?: (milestoneId: string, coverage: MilestoneCoverage) => void;
+  liveAvailable?:   boolean;
 }
 
 /**
@@ -95,7 +96,7 @@ function SectionToggle({ label, icon, open, onToggle, count }: SectionProps) {
   );
 }
 
-export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverageChange }: Props) {
+export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverageChange, liveAvailable = false }: Props) {
   const pathname = usePathname();
 
   const [entries, setEntries]               = useState<MilestoneEntry[]>([]);
@@ -865,14 +866,14 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
                             </div>
 
                             {/* Practice again — re-run the session without leaving the Mastered column */}
-                            <Link
+                            {liveAvailable ? <Link
                               href={`/mastery/${milestone.id}?returnUrl=${encodeURIComponent(pathname)}`}
                               className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-sm font-semibold text-slate-300 hover:border-slate-600 hover:bg-slate-800 transition-colors"
                             >
                               <Mic size={14} />
                               Practice again
                               <span className="text-xs font-normal text-slate-500">stays mastered</span>
-                            </Link>
+                            </Link> : <p className="text-xs text-slate-500">Live voice practice is temporarily unavailable.</p>}
 
                             {/* ── Learning summary document ─────────────────── */}
                             <div className="rounded-xl border border-slate-700/60 bg-slate-800/40 p-4 space-y-3">
@@ -983,13 +984,19 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
                             <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
                               <OctagonAlert size={15} className="shrink-0 mt-0.5 text-red-400" />
                               <p className="text-sm text-slate-300 leading-relaxed">
-                                This card is not yet confirmed. Profess your mastery in a short voice conversation to lock it in.
+                                This card is not yet confirmed. Live voice mastery is temporarily unavailable while usage controls are completed.
                               </p>
                             </div>
 
                             {checklistNudge}
 
-                            {gateView === "loading" ? (
+                            {!liveAvailable ? (
+                              <div className="rounded-xl border border-slate-700/60 bg-slate-800/50 px-4 py-3">
+                                <p className="text-sm text-slate-400 leading-relaxed">
+                                  Live voice mastery is being prepared for paying learners.
+                                </p>
+                              </div>
+                            ) : gateView === "loading" ? (
                               <div className="flex items-center gap-2 text-xs text-slate-500 px-1">
                                 <Loader2 size={12} className="animate-spin" />
                                 Checking learning activity…

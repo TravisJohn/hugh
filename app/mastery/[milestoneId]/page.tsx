@@ -1,21 +1,20 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { verifyUserAccess } from "@/lib/supabase/verify-access";
-import { getRandomPersona } from "@/lib/personas";
 import { safeInternalPath } from "@/utils/safe-redirect";
-import MasteryClient from "./MasteryClient";
 import MasteryRealtimeClient from "./MasteryRealtimeClient";
 import RecordActivity from "@/components/monitor/RecordActivity";
 import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 
 interface Props {
   params:       Promise<{ milestoneId: string }>;
-  searchParams: Promise<{ returnUrl?: string; classic?: string }>;
+  searchParams: Promise<{ returnUrl?: string }>;
 }
 
 export default async function MasteryPage({ params, searchParams }: Props) {
   const { milestoneId }             = await params;
-  const { returnUrl: rawReturnUrl, classic } = await searchParams;
+  const { returnUrl: rawReturnUrl } = await searchParams;
 
   // Sanitised once here; every downstream redirect()/client prop uses this,
   // never the raw query value.
@@ -59,17 +58,12 @@ export default async function MasteryPage({ params, searchParams }: Props) {
     redirect(returnUrl ?? fallbackUrl);
   }
 
-  // S3 containment: the flag enables an administrator preview only. Learners
-  // use scripted mastery until Realtime accounting is server-authoritative.
-  // `?classic=1` is an intentional escape
-  // hatch to the original scripted flow (used by the Realtime error UI so we
-  // never silently fall back mid-session).
+  // S3 containment: Live voice remains an administrator preview until its
+  // session accounting is owned by the server. The retired scripted flow must
+  // never be used as a fallback.
   const realtimeEnabled = canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile);
 
-  if (realtimeEnabled && classic !== "1") {
-    const classicUrl =
-      `/mastery/${milestoneId}?classic=1` +
-      (returnUrl ? `&returnUrl=${encodeURIComponent(returnUrl)}` : "");
+  if (realtimeEnabled) {
     return (
       <>
         {/* Records that this surface was used today. Renders nothing. */}
@@ -80,7 +74,6 @@ export default async function MasteryPage({ params, searchParams }: Props) {
           returnUrl={returnUrl}
           fallbackUrl={fallbackUrl}
           alreadyMastered={milestone.mastery_validated as boolean}
-          classicUrl={classicUrl}
           summaryDoc={(milestone as { summary_doc?: string | null }).summary_doc ?? null}
           summaryDocAt={(milestone as { summary_doc_at?: string | null }).summary_doc_at ?? null}
         />
@@ -88,17 +81,21 @@ export default async function MasteryPage({ params, searchParams }: Props) {
     );
   }
 
-  // Pick a random voice persona for this session's TTS (classic scripted flow)
-  const persona = getRandomPersona();
-
   return (
-    <MasteryClient
-      milestoneId={milestoneId}
-      milestoneTitle={milestone.title as string}
-      personaId={persona.id}
-      returnUrl={returnUrl}
-      fallbackUrl={fallbackUrl}
-      alreadyMastered={milestone.mastery_validated as boolean}
-    />
+    <main className="flex h-screen items-center justify-center bg-[#0F172A] px-6 text-slate-200">
+      <div className="max-w-md space-y-5 text-center">
+        <h1 className="font-serif text-2xl font-semibold">Live voice mastery is unavailable</h1>
+        <p className="text-sm leading-relaxed text-slate-400">
+          We are finishing the usage controls before opening live sessions to learners.
+          Your track and diary are safe.
+        </p>
+        <Link
+          href={returnUrl ?? fallbackUrl}
+          className="inline-flex rounded-xl bg-slate-700 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-600"
+        >
+          Back to track
+        </Link>
+      </div>
+    </main>
   );
 }

@@ -8508,3 +8508,24 @@ sequence passed, including the t=149/t=150 boundary, per-request expiry,
 rate behavior, permissions and eight-way concurrency. The migration has
 not been applied to production. S4_RESERVATION_LIFETIME.md records the
 rollout and synthetic-period verifier. S3 and S5 remain separate work.
+
+## 2026-10-02 - Scripted mastery and ElevenLabs runtime removed locally
+
+In an isolated branch, removed the scripted mastery page/client, its session
+and evaluation routes, Web Speech hooks, persona configuration, ElevenLabs TTS
+route and SDK, live provider-status request, voice generator script, and TTS
+health checks. Historical TTS prices, usage rows, operation labels, and
+migration 057 remain for past cost reporting. The mastery page and board now
+show an unavailable state to learners, and the retired `?classic=1` option
+does not select a session. Existing administrator Realtime preview access
+remains flag controlled. Free and Pro learners cannot mint Live credentials.
+
+The milestone PATCH route now rejects client-supplied mastery results. The
+Pro-only Mastered-column entitlement remains, but Live voice is not yet open
+to paying learners: S3 server-owned accounting and lifecycle controls are
+required first. Live is a reflection and recap flow without scoring, so it
+does not validate new mastery cards. No production deployment or database
+migration was performed for this cleanup. TypeScript, lint, focused access and
+registry tests, and production build passed in the isolated worktree.
+The current provider and route map, paid access prerequisites, and
+ChatGPT plan usage eligibility are recorded in docs/api-usage-governance.md.

@@ -212,8 +212,7 @@ export function selectReplayable(
  * Output is the softer half — a different model may write longer or shorter
  * milestones — so read this as the right order of magnitude, not a quote.
  *
- * The `ttsChars` argument is zero: no path in the replay harness touches
- * ElevenLabs.
+ * The `ttsChars` argument is zero: no path in the replay harness uses voice.
  */
 export function estimateReplayCost(
   rows:  readonly GenerationRow[],

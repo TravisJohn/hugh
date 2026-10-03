@@ -4,6 +4,7 @@ import { join } from "node:path";
 import {
   OPERATIONS,
   OPERATION_IDS,
+  RETIRED_OPERATION_IDS,
   OPERATION_OUTCOMES,
   CLIENT_REPORTABLE_IDS,
   SILENT_FAILURE_IDS,
@@ -238,7 +239,7 @@ describe("registry ↔ code", () => {
   const instrumented = instrumentedOperations(["app", "lib"]);
 
   it("instruments every operation the registry promises", () => {
-    const missing = OPERATION_IDS.filter(id => !instrumented.has(id));
+    const missing = OPERATION_IDS.filter(id => !RETIRED_OPERATION_IDS.includes(id) && !instrumented.has(id));
     expect(missing, `registered but never recorded: ${missing.join(", ")}`).toEqual([]);
   });
 
@@ -250,6 +251,6 @@ describe("registry ↔ code", () => {
   it("actually found call sites, so a broken scan cannot pass by finding nothing", () => {
     // Without this, deleting every recordOperation call in the app would make
     // the two tests above pass perfectly against an empty set.
-    expect(instrumented.size).toBe(OPERATION_IDS.length);
+    expect(instrumented.size).toBe(OPERATION_IDS.length - RETIRED_OPERATION_IDS.length);
   });
 });

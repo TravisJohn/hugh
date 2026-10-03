@@ -351,6 +351,13 @@ export const OPERATIONS: readonly OperationDefinition[] = [
 
 export const OPERATION_IDS: readonly OperationId[] = OPERATIONS.map(o => o.id);
 
+/** Retained for historical operation_events after their routes were removed. */
+export const RETIRED_OPERATION_IDS: readonly OperationId[] = [
+  "mastery.evaluate",
+  "mastery.session",
+  "voice.speak",
+];
+
 /** The only operations the beacon route will accept from a browser. */
 export const CLIENT_REPORTABLE_IDS: readonly OperationId[] = OPERATIONS
   .filter(o => o.clientReportable)

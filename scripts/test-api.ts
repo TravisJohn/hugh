@@ -145,40 +145,6 @@ async function testGenerateFeedback(): Promise<boolean> {
   return ok;
 }
 
-// ── Test 5: tts ───────────────────────────────────────────────────────────
-async function testTts(): Promise<boolean> {
-  console.log("\n\x1b[1m[5] POST /api/interview/tts\x1b[0m");
-
-  const res = await apiPost("/api/interview/tts", {
-    text:      "Thanks for coming in today. Let's start.",
-    personaId: "marcus",
-  });
-
-  const ok = res.ok;
-  const contentType = res.headers.get("content-type") ?? "";
-  const isAudio = contentType.includes("audio/mpeg");
-
-  if (ok) {
-    const buf = await res.arrayBuffer();
-    log(`HTTP ${res.status}`, true);
-    log(`Content-Type: audio/mpeg`, isAudio, contentType);
-    log(
-      "Audio body non-empty",
-      buf.byteLength > 0,
-      `${buf.byteLength} bytes`
-    );
-    // Save to tmp for manual inspection
-    const outPath = path.resolve(process.cwd(), "scripts", "tts-test.mp3");
-    fs.writeFileSync(outPath, Buffer.from(buf));
-    console.log(`         Saved to: ${outPath}`);
-    return isAudio && buf.byteLength > 0;
-  } else {
-    const text = await res.text();
-    log(`HTTP ${res.status}`, false, text.slice(0, 200));
-    return false;
-  }
-}
-
 // ── Main ──────────────────────────────────────────────────────────────────
 async function main() {
   console.log("\x1b[1m\n══════════════════════════════════════════\x1b[0m");
@@ -190,7 +156,6 @@ async function main() {
     await testGenerateQuestion(),
     await testGenerateQuestionDomain(),
     await testGenerateFeedback(),
-    await testTts(),
   ];
 
   const passed = results.filter(Boolean).length;

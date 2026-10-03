@@ -18,7 +18,6 @@ import {
   reserveEstimateFor,
   statusForDenial,
   tokenLimitFor,
-  ttsCharLimitFor,
 } from "@/lib/tokenBudget";
 
 // Pricing lives in lib/pricing.ts (pure, unit-tested). Re-exported here so the
@@ -276,46 +275,6 @@ export async function enforceUsageGate(
     { error: messageForDenial(reason), retryAfter },
     { status: statusForDenial(reason), headers },
   );
-}
-
-/** Reserve the whole TTS request before calling ElevenLabs. Never refund it:
- * a failed stream may already have been billed by the provider. */
-export async function enforceTtsBudget(userId: string, chars: number): Promise<NextResponse | null> {
-  if (!Number.isSafeInteger(chars) || chars <= 0) throw new Error("Invalid TTS reservation");
-  const profile = await readProfile(userId);
-  if (!accountAllowed(profile).allowed) {
-    return NextResponse.json({ error: messageForDenial("blocked") }, { status: 403 });
-  }
-
-  const unavailable = () => NextResponse.json(
-    { error: "Voice usage checks are temporarily unavailable. Please try again shortly." },
-    { status: 503, headers: { "Retry-After": "30" } },
-  );
-
-  try {
-    const { data, error } = await createServiceClient().rpc("reserve_tts", {
-      p_user_id: userId,
-      p_period_start: periodStart(profile),
-      p_chars: chars,
-      p_char_limit: ttsCharLimitFor(profile),
-    });
-    if (error) {
-      console.error(`[usage] reserve_tts unavailable for ${userId}:`, error.message);
-      return unavailable();
-    }
-    const row = Array.isArray(data) ? data[0] : data;
-    if (row?.granted === true) return null;
-    if (row?.granted === false) {
-      return NextResponse.json(
-        { error: "Monthly voice allowance reached. Please contact Travis to reset or upgrade." },
-        { status: 429 },
-      );
-    }
-    console.error(`[usage] reserve_tts returned an invalid decision for ${userId}`);
-  } catch (error) {
-    console.error(`[usage] reserve_tts threw for ${userId}:`, error);
-  }
-  return unavailable();
 }
 
 export interface UsageSummary {

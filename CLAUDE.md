@@ -10,8 +10,9 @@ interviewed the founder.
 It began as a mock-interview trainer. That loop was deleted on 2026-08-24
 along with the standalone `/tracker` board — both were legacy, and the second
 had become the unhardened path into track generation. **The learning loop is
-the product.** Its voice (`/api/tts`, `lib/personas.ts`, `useAudioPlayer`,
-`useSpeechRecognition`) was never interview-only and survives in `/mastery`.
+the product.** Scripted mastery and its ElevenLabs/Web Speech dependencies
+were retired. Live voice remains an administrator preview until its usage
+accounting is controlled by the server.
 
 `/learn` — a second, standalone "Focused Learning" chat with its own topic
 picker — was deleted on 2026-08-31 for the same reason. Nothing in the app
@@ -28,7 +29,7 @@ BY its goal. Do not reintroduce a chat surface outside `/study/[goalId]/ask`.
 | `/home/learn` → `/study/[goalId]` | Pick a topic, then the goal's Kanban track |
 | `/study/[goalId]/ask` | Ask Hugh — tutor chat, diary, focus timer |
 | `/review/[milestoneId]` | Diary-grounded review quiz |
-| `/mastery/[milestoneId]` | Prove mastery out loud (scripted, or Realtime voice behind a flag) |
+| `/mastery/[milestoneId]` | Live voice mastery (administrator preview behind a flag) |
 | `/code/start` · `/code/drill` · `/code` | Pattern map, timed fluency drills, free-form Python sandbox |
 | `/cases` · `/cases/lab` | The Case Room (judgment cases) · Case Lab (long-form + CSV) |
 | `/cloud` | Cloud-services reference — assistant, margin notes, and a review list |
@@ -47,8 +48,7 @@ pillar's scope changes.
 | Database + Auth + Storage | Supabase (PostgreSQL + Supabase Auth) |
 | LLM — Anthropic | Claude API (model per route — see Model Selection below) |
 | LLM — OpenAI | Notes Coach (vision), Notes summarise, Realtime mastery voice, admin architecture assistant |
-| TTS | ElevenLabs API |
-| STT | Web Speech API (Chrome/Edge only) — a browser API, **not on-device**: Chrome sends the audio to Google. Realtime mastery uses OpenAI's transcription instead |
+| Voice | OpenAI Realtime for live audio and transcription |
 | In-browser Python | Pyodide (`lib/code/pyodide.worker.ts`) — code drills and sandbox |
 | In-browser SQL | DuckDB-WASM (`lib/code/duckdbClient.ts`) |
 | Editor | CodeMirror (`@uiw/react-codemirror`) |
@@ -130,8 +130,6 @@ full list with notes on what each one gates.
 
 ```
 ANTHROPIC_API_KEY               # required
-ELEVENLABS_API_KEY              # required
-ELEVENLABS_VOICE_ID_1/2/3       # required
 NEXT_PUBLIC_SUPABASE_URL        # required, public by design
 NEXT_PUBLIC_SUPABASE_ANON_KEY   # required, public by design
 SUPABASE_SERVICE_ROLE_KEY       # required, bypasses RLS — never expose
@@ -168,13 +166,12 @@ types/                      # Shared TypeScript interfaces
 utils/                      # Pure helpers
 supabase/migrations/        # Numbered SQL migration files
 tools/architecture-dashboard/  # Local admin dashboard (built by predev/prebuild)
-public/personas/            # Persona avatar images
 ```
 
 ## Architecture Rules — Read These First
 
 ### 1. Never call external APIs from the client
-Anthropic, OpenAI, and ElevenLabs are server-side only. All calls go through
+Anthropic and OpenAI are server-side only. All calls go through
 `/app/api/**` routes. The browser never sees these API keys.
 
 ### 2. One source of truth for session state
@@ -258,12 +255,6 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   migration 052. The windows live in `lib/retention.ts`, which `/privacy` renders
   and a test holds equal to the SQL — adding an expiry means changing both.
 
-## Persona Configuration
-Personas are a static config (not in DB), now used by scripted mastery for its
-TTS voice. Three personas in `lib/personas.ts`, each with `id`, `name`, `role`,
-`company`, `voiceId` (maps to `ELEVENLABS_VOICE_ID_1/2/3`), `avatar`. One is
-picked at random per mastery session.
-
 ## Key Design Decisions
 | Decision | Choice | Reason |
 |---|---|---|
@@ -283,7 +274,7 @@ picked at random per mastery session.
 - Widening the topic gate beyond data/analytics — that's a separate app
 
 ## DO NOT Do (ever)
-- Call Anthropic, OpenAI, or ElevenLabs from client components
+- Call Anthropic or OpenAI from client components
 - Use the `any` TypeScript type
 - Add scrollable containers to a teaching screen (see Rule 4 for the two
   records-tool exceptions)

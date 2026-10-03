@@ -55,14 +55,14 @@ export async function POST(request: NextRequest) {
       .single();
     if (error) {
       logSafeError("mastery/realtime-session access", error);
-      return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Use scripted mastery or try again shortly." }, { status: 503 });
+      return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Try again shortly." }, { status: 503 });
     }
     if (!canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile)) {
-      return NextResponse.json({ error: "Realtime voice is currently an administrator preview. Please use scripted mastery." }, { status: 403 });
+      return NextResponse.json({ error: "Realtime voice is currently an administrator preview." }, { status: 403 });
     }
   } catch (error) {
     logSafeError("mastery/realtime-session access", error);
-    return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Use scripted mastery or try again shortly." }, { status: 503 });
+    return NextResponse.json({ error: "Realtime access checks are temporarily unavailable. Try again shortly." }, { status: 503 });
   }
 
   const usageGate = await enforceUsageGate(userId, "mastery/realtime");

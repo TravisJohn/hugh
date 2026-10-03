@@ -1,5 +1,12 @@
 # S3: Realtime administrator preview containment
 
+Current update (2026-10-02): Scripted mastery and its TTS route have been
+removed in the pending cleanup. Free and Pro learners now see an unavailable
+message on the mastery page. The credential endpoint still refuses them, and
+the administrator preview remains behind the flag. The historical release
+description and validation steps below describe the earlier S3 deployment;
+the scripted fallback and `?classic=1` checks no longer apply.
+
 Prepared for production release on 2026-09-30. Deployment verification is recorded in the project log. No migration or provider configuration change is required.
 
 ## Release behavior

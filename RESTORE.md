@@ -59,7 +59,7 @@ is the shape of the file, never the values.
 - **npm** — `package-lock.json` is the lockfile. Use `npm ci`, not `npm install`,
   for a reproducible restore.
 - **A Supabase project** (Postgres + Auth + Storage).
-- **API keys:** Anthropic and ElevenLabs are required. OpenAI is optional and
+- **API keys:** Anthropic is required. OpenAI is optional and
   gates the Notes Coach, Notes summarise, Realtime mastery and the local
   architecture-dashboard assistant; those fail with a 503 when it is unset.
 

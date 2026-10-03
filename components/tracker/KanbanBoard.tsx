@@ -34,13 +34,14 @@ interface Props {
   masteredId?:       string;
   isPremium?:        boolean;
   isAdmin?:          boolean;
+  liveAvailable?:    boolean;
 }
 
 export default function KanbanBoard({
   initialMilestones, goalId, trackId, focusMilestoneId,
   backlogPriorityMode = "auto",
   pulseId: initialPulseId, validatedId, masteredId,
-  isPremium = false, isAdmin = false,
+  isPremium = false, isAdmin = false, liveAvailable = false,
 }: Props) {
   const router   = useRouter();
   const pathname = usePathname();
@@ -172,9 +173,8 @@ export default function KanbanBoard({
       prev.map(m => m.id === milestoneId ? { ...m, ...updatedFields } : m)
     );
 
-    const patchBody: { column: KanbanColumn; reviewValidated?: boolean; masteryValidated?: boolean } = { column: newColumn };
+    const patchBody: { column: KanbanColumn; reviewValidated?: boolean } = { column: newColumn };
     if (newColumn === "review") patchBody.reviewValidated  = false;
-    if (newColumn === "done")   patchBody.masteryValidated = false;
 
     void persistOrRollBack(
       `/api/tracker/milestones/${milestoneId}`,
@@ -360,6 +360,7 @@ export default function KanbanBoard({
         goalId={goalId}
         onClose={handleDrawerClose}
         onCoverageChange={handleCoverageChange}
+        liveAvailable={liveAvailable}
       />
 
       {/* ── Premium gate modal ─────────────────────────────────────────── */}
@@ -383,7 +384,7 @@ export default function KanbanBoard({
             </div>
 
             <p className="text-sm text-slate-400 leading-relaxed">
-              Moving a card to <span className="text-amber-300 font-medium">Mastered</span> unlocks a voice-led proficiency session with Hugh — 3 exchanges scored by AI. You need a Pro subscription to access Mastery Sessions.
+              Moving a card to <span className="text-amber-300 font-medium">Mastered</span> is a Pro feature. Live voice sessions are being prepared for paying learners.
             </p>
 
             <Link

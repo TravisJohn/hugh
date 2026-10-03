@@ -19,7 +19,6 @@ import { POST as cloud } from "@/app/api/cloud/chat/route";
 import { POST as summary } from "@/app/api/learn/summarize/route";
 import { POST as refine } from "@/app/api/dashboard/refine/route";
 import { POST as goals } from "@/app/api/dashboard/goals/route";
-import { POST as session } from "@/app/api/tracker/mastery/session/route";
 
 const messages = [{ role: "user", content: "Explain SQL joins" }];
 const cases = [
@@ -29,7 +28,6 @@ const cases = [
   { name: "summary", post: summary, body: { topic: "SQL joins", messages } },
   { name: "refine", post: refine, body: { topic: "SQL joins", answers: [{ question: "Why?", answer: "Reporting" }] } },
   { name: "goals", post: goals, body: { topic: "SQL joins", end_date: "2026-12-01", answers: [{ question: "Why?", answer: "Reporting" }] } },
-  { name: "session", post: session, body: { milestoneId: "00000000-0000-0000-0000-000000000001", scenario: "interview", phase: "open", messages: [] } },
 ];
 function request(body: unknown, raw = false): NextRequest {
   return new NextRequest("http://localhost/test", { method: "POST", body: raw ? String(body) : JSON.stringify(body) });
@@ -37,18 +35,16 @@ function request(body: unknown, raw = false): NextRequest {
 function completion(text = '{"reply":"A join combines rows","question":"Why SQL?","done":false,"verdict":"in","story":"We explored joins","takeaway":"Match keys","title":"SQL joins","score":8,"feedback":"Clear","passed":true}') {
   return { content: [{ type: "text", text }], usage: { input_tokens: 50, output_tokens: 30 } };
 }
-let noteBody = "Joins combine rows by matching keys.";
 let updates: unknown[];
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.gate.mockReset().mockResolvedValue(null);
   mocks.ai.mockReset().mockResolvedValue(completion());
   mocks.generate.mockReset().mockResolvedValue("track");
-  noteBody = "Joins combine rows by matching keys.";
   updates = [];
   mocks.from.mockImplementation((table: string) => {
     const data = table === "milestones" ? { id: "milestone", title: "SQL joins" }
-      : table === "milestone_entries" ? [{ title: "Joins", body: noteBody }]
+      : table === "milestone_entries" ? [{ title: "Joins", body: "Joins combine rows by matching keys." }]
       : { id: "goal", topic: "SQL joins", track_status: "pending" };
     const result = { data, error: null };
     const chain = { select: vi.fn(), eq: vi.fn(), single: vi.fn(), order: vi.fn(), limit: vi.fn(), insert: vi.fn(), update: vi.fn(), then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
@@ -118,17 +114,6 @@ it("a retry refused by the quota makes no second provider call", async () => {
   mocks.gate.mockResolvedValueOnce(null).mockResolvedValueOnce(NextResponse.json({ error: "limit" }, { status: 429 }));
   expect((await refine(request({ topic: "SQL", answers: [] }))).status).toBe(429);
   expect(mocks.ai).toHaveBeenCalledOnce();
-});
-
-it("bounds server-side mastery notes, retaining all notes in an accepted prompt", async () => {
-  const base = cases.at(-1)!;
-  noteBody = "x".repeat(5000);
-  expect((await session(request(base.body))).status).toBe(200);
-  expect((mocks.ai.mock.calls[0][0] as TextCall).messages[0].content).toContain(noteBody);
-  mocks.ai.mockClear();
-  noteBody = "x".repeat(140000);
-  expect((await session(request(base.body))).status).toBe(413);
-  expect(mocks.ai).not.toHaveBeenCalled();
 });
 
 it("goal classification reserves both attempts and cannot fail open on a quota refusal", async () => {

@@ -207,7 +207,7 @@ function installedDeps() {
 function systemPrompt() {
   return [
     "You are the Hugh Admin Assistant — an expert pair-administrator for the Hugh codebase.",
-    "Hugh is a Next.js 14 (App Router) app on Vercel; Supabase (Postgres + Auth); Anthropic Claude for LLM; ElevenLabs TTS; Tailwind. Source roots: app/, components/, hooks/, lib/, types/, utils/, supabase/.",
+    "Hugh is a Next.js 16 (App Router) app on Vercel; Supabase (Postgres + Auth); Anthropic Claude for LLM; OpenAI Realtime voice in administrator preview; Tailwind. Source roots: app/, components/, hooks/, lib/, types/, utils/, supabase/.",
     "",
     "Your job: help administer and understand Hugh — architecture questions, where code lives, what changed recently, operational/admin tasks, and whether the libraries and tools it depends on have meaningful updates.",
     "",

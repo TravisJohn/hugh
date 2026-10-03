@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: "What Hugh stores, who processes it, how long it is kept, and how to delete it.",
 };
 
-const LAST_UPDATED = "17 September 2026";
+const LAST_UPDATED = "2 October 2026";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -96,12 +96,6 @@ export default function PrivacyPage() {
               diary notes for that card so the coach knows what you studied. OpenAI states
               that API data is not used to train its models unless you opt in, and that it
               may retain it for up to 30 days for abuse monitoring.</li>
-            <li><strong className="text-slate-300">ElevenLabs</strong> — receives the text Hugh
-              speaks aloud, to turn it into audio. It receives text, not your voice.</li>
-            <li><strong className="text-slate-300">Google</strong> — when you speak to Hugh in the
-              standard Prove-it exercise (not the live voice version above), transcription uses your browser&apos;s built-in speech
-              recognition. In Chrome that is not processed on your device: your browser sends
-              the audio to Google to be transcribed. Hugh receives only the text back.</li>
             <li><strong className="text-slate-300">Supabase and Vercel</strong> — host the database
               and the application itself, so your data is stored on their infrastructure.</li>
           </ul>

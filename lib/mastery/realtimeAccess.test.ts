@@ -11,8 +11,6 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: moc
 vi.mock("@/lib/supabase/verify-access", () => ({ verifyUserAccess: mocks.verify }));
 vi.mock("@/lib/usage", () => ({ enforceUsageGate: mocks.gate, logUsage: mocks.usage }));
 vi.mock("@/lib/observability/record", () => ({ recordOperation: vi.fn() }));
-vi.mock("@/lib/personas", () => ({ getRandomPersona: () => ({ id: "persona" }) }));
-vi.mock("@/app/mastery/[milestoneId]/MasteryClient", () => ({ default: () => "scripted mastery" }));
 vi.mock("@/app/mastery/[milestoneId]/MasteryRealtimeClient", () => ({ default: () => "realtime preview" }));
 vi.mock("@/components/monitor/RecordActivity", () => ({ default: () => null }));
 
@@ -133,21 +131,21 @@ describe("credential issuance is the security boundary", () => {
 
 describe("mastery page agrees with the API", () => {
   async function render(classic?: string) {
-    return renderToStaticMarkup(await MasteryPage({ params: Promise.resolve({ milestoneId: "milestone" }), searchParams: Promise.resolve({ classic }) }));
+    return renderToStaticMarkup(await MasteryPage({ params: Promise.resolve({ milestoneId: "milestone" }), searchParams: Promise.resolve({ returnUrl: undefined, classic }) }));
   }
-  it.each(["free", "pro"])("renders scripted mastery for %s learners with the flag on", async plan => {
+  it.each(["free", "pro"])("shows unavailable for %s learners with the flag on", async plan => {
     profile = { is_admin: false, is_blocked: false, approved: true, plan };
-    expect(await render()).toBe("scripted mastery");
+    expect(await render()).toContain("Live voice mastery is unavailable");
   });
   it("renders the administrator preview only when enabled", async () => {
     profile = { is_admin: true, is_blocked: false };
     expect(await render()).toContain("realtime preview");
     vi.stubEnv("MASTERY_REALTIME_ENABLED", "false");
-    expect(await render()).toBe("scripted mastery");
+    expect(await render()).toContain("Live voice mastery is unavailable");
   });
-  it("preserves the administrator's classic escape hatch", async () => {
+  it("ignores the retired classic query option", async () => {
     profile = { is_admin: true, is_blocked: false };
-    expect(await render("1")).toBe("scripted mastery");
+    expect(await render("1")).toContain("realtime preview");
   });
 });
 
