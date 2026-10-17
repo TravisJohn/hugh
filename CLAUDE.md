@@ -277,7 +277,10 @@ picked at random per mastery session.
 
 ## DO NOT Build (deferred)
 - Voice analysis: filler words, speech pace, volume, confidence scoring
-- Mobile responsive layout
+- Phone layouts beyond Learn. `/home`, `/home/learn`, the track board and Ask
+  Hugh have phone layouts (decided 2026-10-17). Review, mastery, code, cases,
+  cloud, notes, monitor and admin stay desktop-only; mastery's Web Speech input
+  works only in Chrome and Edge, so it cannot work on an iPhone anyway
 - AssemblyAI / Whisper STT upgrade
 - Case grading / sealed answer keys (Case Lab v2)
 - Widening the topic gate beyond data/analytics — that's a separate app
