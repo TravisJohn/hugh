@@ -8508,3 +8508,56 @@ sequence passed, including the t=149/t=150 boundary, per-request expiry,
 rate behavior, permissions and eight-way concurrency. The migration has
 not been applied to production. S4_RESERVATION_LIFETIME.md records the
 rollout and synthetic-period verifier. S3 and S5 remain separate work.
+
+## 2026-10-17 - Checkout synced; parked work decided
+
+The main checkout was 18 commits behind origin/main with 102 uncommitted
+files. Compared file by file, 39 already matched main, 4 were older than main,
+and 57 existed nowhere upstream. All 102 are kept in one local-only commit on
+`wip/local-2026-10-17` (5c5a250), checked byte for byte against a copy taken
+first. It is not pushed because this repository is public. Because it sits on
+the old base, it must never be merged as a whole: doing so would roll back
+S2-S8 work. Each piece comes forward as its own PR from main. The pieces are:
+- the subject read from learner-owned records instead of from the request
+- fixed track-intake questions with Skip
+- the Ask rule that points an unrelated subject at its own track
+- the Linear Regression evaluation pilot under docs/evals
+- loose docs, including four log entries (2026-09-21 x2, 2026-09-22,
+  2026-10-02) that exist only on that branch
+
+Mastery: scripted mastery stays. PRs #20 (remove scripted mastery and
+ElevenLabs) and #21 (server-owned Live voice controls) stay as drafts.
+Merging #20 would leave learners with no mastery step, and #21 still keeps
+Live closed to them. Reviewing #20 surfaced an integrity gap that is live
+now: the milestone PATCH route accepts mastery_validated, mastery_score,
+mastery_feedback and review_validated straight from the browser, and the
+mastery page and review quiz depend on that. A learner can mark their own
+cards as mastered or reviewed without proving it. Decision: close this on the
+server, so the server writes both results itself, separately from #20. The
+fix is not yet sized.
+
+Phone layouts: allowed for the Learn screens only. #18 was rebuilt on main.
+Its DashboardPanel conflict was merged with the carousel layout, and the
+ChatGPT plan feasibility doc was removed. Travis checked it on its Vercel
+preview, and it merged as 364b8ee and deployed to production. CLAUDE.md now
+lists home, the Learn picker, the track board and Ask as having phone layouts,
+with every other surface desktop-only.
+
+ChatGPT plan pilot: the docs-only `codex/chatgpt-plan-prep` branch stays
+parked locally and unpushed. It would move only Notes summary, Hugh's
+cheapest route. A ChatGPT plan cannot pay for Anthropic calls, and a hosted
+app needs OpenAI's commercial access first.
+
+Release gate: new high-severity advisories in sharp (below 0.35.5) and
+source-map-js (1.2.1 and earlier) failed the production audit on main. PR #22
+cleared them with a lockfile-only `npm audit fix` and merged as a01168a. It
+deployed, and CI on main passed. Two things remain open:
+- three moderate production advisories in mammoth -> argparse -> sprintf-js,
+  where npm's only fix is a downgrade
+- dev-only critical advisories in Vitest and Tinypool, proposed as a
+  separate Vitest 5 upgrade
+
+Gaps in this log, left uncorrected here: it has no entries for S5-S8 (PRs
+#13-#16, merged 2026-09-30), the 2026-10-03 Learn carousel commits, or the
+evaluation pilot. The S4 entry above still says its migration was not
+applied, while the wip branch's copy of this log records it as applied.
