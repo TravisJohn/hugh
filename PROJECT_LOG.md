@@ -8561,3 +8561,53 @@ Gaps in this log, left uncorrected here: it has no entries for S5-S8 (PRs
 #13-#16, merged 2026-09-30), the 2026-10-03 Learn carousel commits, or the
 evaluation pilot. The S4 entry above still says its migration was not
 applied, while the wip branch's copy of this log records it as applied.
+
+## 2026-10-19 - Learn narrows to source-checked packs; the first pack
+
+Decision with Travis: Learn moves from open topic entry to a fixed catalog.
+Each topic is backed by a reference pack, a versioned, source-checked
+syllabus. Every earlier grounding attempt had a model judging a model. The
+eval pilot's one real catch, card C10 calling VIF a remedy for
+multicollinearity, came from checking against sources. The hosted app stays.
+Packs are authored offline in Claude Code on Travis's Claude subscription;
+Hugh spends API tokens only at runtime.
+
+PRD-reference-packs.md was approved with one change: each key point carries
+`start` and `end` text anchors instead of a verbatim quote. Quotes would have
+copied licensed text into this public repository: Penn State STAT 501 is CC
+BY-NC 4.0, and Hugh has a paid plan. An anchor still proves the passage exists,
+and it yields a `#:~:text=` link that opens the source with the passage
+highlighted, so a spot-check is one click.
+
+Built:
+- `types/pack.ts`
+- `lib/packs/anchor.ts` and `lib/packs/validate.ts`: pure rules for shape,
+  references, limits, prerequisite cycles and the approval sample, with tests
+- `scripts/validate-pack.ts`: `npm run packs:check`, with `--dump` (cache
+  source text for authoring), `--links` and `--offline`
+- `lib/packs/content.test.ts`: checks every pack offline in `npm test`, so CI
+  covers packs with no workflow change
+
+Packs live server-side in `content/packs/`. The source-text cache
+`.pack-cache/` is git-ignored.
+
+`linear-regression` 2.0.0 is **provisional**: 28 concepts, 68 key points, 9
+misconceptions, 18 sources and 15 prerequisites, and every anchor was found on
+its live page. 60 anchors are on HTML pages; the 8 in ISLR slides and the CS229
+notes are flagged for a manual check. The VIF misconception is recorded under
+collinearity, anchored where Penn State turns from detecting multicollinearity
+to reducing it. The full gate passed: 1,724 tests, lint, typecheck, audit and
+build.
+
+Not done:
+- Travis's approval spot-check
+- building tracks from packs
+- grounding Ask in packs
+- the catalog UI
+- the A/B testing pack, which is the real test of the format
+
+Notes:
+- PDF.js drops "fi"/"ff" ligatures from PDF text, so PDF anchors avoid them.
+- `unpdf` prints harmless `Math.sumPrecise` warnings on Node 24.
+- Whether browser highlights treat straight and curly apostrophes as equal is
+  unverified; four anchors contain one.
