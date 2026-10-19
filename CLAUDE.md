@@ -253,6 +253,16 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   `SUPABASE_ACCESS_TOKEN` set. Applying is a manual step: shipping code that
   depends on an unapplied migration will break at runtime.
 - Row Level Security must be enabled on all tables
+- **Results are server-written.** Since migration 058, a learner's own session
+  cannot write `milestones.review_validated`, `mastery_validated`,
+  `mastery_score` or `mastery_feedback`. The server records them with the
+  service role after it grades (`lib/mastery/outcome.ts`,
+  `lib/tracker/milestonePatch.ts`). A learner's session may only UPDATE
+  `kanban_column`, `position`, `learning_points`, `coverage` and
+  `summary_doc(_at)`, and INSERT a card's basic fields. If a learner-written
+  write starts failing, grant that one column in a new migration; never grant
+  the table back. Until the review quiz is graded on the server, the PATCH
+  route still accepts a review pass from the browser.
 - **Retention:** what a learner made (including `goal_answers`) is kept until
   they delete it. Only temporary or system records expire, by pg_cron jobs in
   migration 052. The windows live in `lib/retention.ts`, which `/privacy` renders
