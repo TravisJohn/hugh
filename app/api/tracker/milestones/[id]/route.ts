@@ -1,9 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { type KanbanColumn } from "@/types";
+import { buildMilestonePatch } from "@/lib/tracker/milestonePatch";
 
-const VALID_COLUMNS: KanbanColumn[] = ["backlog", "learn", "review", "done"];
+interface OwnedMilestone {
+  id:     string;
+  tracks: { user_id: string } | null;
+}
 
 export async function PATCH(
   request: NextRequest,
@@ -15,65 +19,44 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const body = (await request.json()) as {
-    column?:           KanbanColumn;
-    reviewValidated?:  boolean;
-    masteryValidated?: boolean;
-    masteryScore?:     number;
-    masteryFeedback?:  string;
-  };
-
-  const updateData: {
-    kanban_column?:     KanbanColumn;
-    review_validated?:  boolean;
-    mastery_validated?: boolean;
-    mastery_score?:     number | null;
-    mastery_feedback?:  string | null;
-  } = {};
-
-  if (body.column !== undefined) {
-    if (!VALID_COLUMNS.includes(body.column)) {
-      return NextResponse.json({ error: "Invalid column" }, { status: 400 });
-    }
-    updateData.kanban_column = body.column;
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  if (body.reviewValidated !== undefined) {
-    updateData.review_validated = body.reviewValidated;
-  }
-
-  if (body.masteryValidated !== undefined) {
-    updateData.mastery_validated = body.masteryValidated;
-  }
-
-  if (body.masteryScore !== undefined) {
-    updateData.mastery_score = body.masteryScore;
-  }
-
-  if (body.masteryFeedback !== undefined) {
-    updateData.mastery_feedback = body.masteryFeedback;
-  }
-
-  if (Object.keys(updateData).length === 0) {
-    return NextResponse.json({ error: "No valid fields to update" }, { status: 400 });
+  // What this request may write, and which results a move resets. Mastery
+  // results are refused here: the mastery session route records them.
+  const patch = buildMilestonePatch(body);
+  if (!patch.ok) {
+    return NextResponse.json({ error: patch.error }, { status: 400 });
   }
 
   const supabase = await createClient();
-
-  // Confirm the milestone belongs to this user via its track
-  const { data: milestone, error: fetchError } = await supabase
+  const { data, error: fetchError } = await supabase
     .from("milestones")
     .select("id, tracks!track_id!inner(user_id)")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (fetchError || !milestone) {
+  if (fetchError) {
+    console.error("[tracker/milestones PATCH] lookup error:", fetchError.message);
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+  }
+  // RLS already hides other learners' rows from this read. The explicit check
+  // is the second lock, because the write below runs as the service role,
+  // where RLS does not apply.
+  const row = data as unknown as OwnedMilestone | null;
+  if (!row || row.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { error: updateError } = await supabase
+  // Since migration 058 a learner's session cannot write review or mastery
+  // results, and a move can reset them, so the write uses the service role.
+  const { error: updateError } = await createServiceClient()
     .from("milestones")
-    .update(updateData)
+    .update(patch.write)
     .eq("id", id);
 
   if (updateError) {
