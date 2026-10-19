@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ANCHOR_MAX_GAP, findAnchor, normalizeText, textFragmentUrl, wordCount } from "./anchor";
+import { ANCHOR_MAX_GAP, extractPassage, findAnchor, normalizeText, textFragmentUrl, wordCount } from "./anchor";
 
 const PAGE =
   "Lesson 12. When two predictors move together, the estimated coefficients become " +
@@ -57,5 +57,27 @@ describe("textFragmentUrl", () => {
   it("builds a link that highlights the passage, escaping the characters fragment syntax reserves", () => {
     expect(textFragmentUrl("https://example.org/lesson#top", { start: "least-squares fit", end: "errors, large" }))
       .toBe("https://example.org/lesson#:~:text=least%2Dsquares%20fit,errors%2C%20large");
+  });
+});
+
+describe("extractPassage", () => {
+  it("returns the passage from its start words through its end words, so the judge reads exactly what was anchored", () => {
+    expect(extractPassage(PAGE, { start: "A variance inflation", end: "remove the problem" }))
+      .toBe("A variance inflation factor measures how much the variance is inflated; it does not remove the problem");
+  });
+
+  it("keeps the page's own capitalisation even when the anchor's differs", () => {
+    expect(extractPassage(PAGE, { start: "WHEN TWO PREDICTORS", end: "move together" }))
+      .toBe("When two predictors move together");
+  });
+
+  it("folds whitespace and typographic quotes the way matching does", () => {
+    expect(extractPassage("It\u2019s   a\n  \u201Cfit\u201D here.", { start: "It's a", end: "fit\" here" }))
+      .toBe("It's a \"fit\" here");
+  });
+
+  it("returns null when the anchor does not resolve, rather than a guess", () => {
+    expect(extractPassage(PAGE, { start: "not on the page", end: "anywhere" })).toBeNull();
+    expect(extractPassage(PAGE, { start: "the", end: "large" })).toBeNull();
   });
 });

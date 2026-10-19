@@ -4,6 +4,7 @@ import {
   anchorTargets, checkPack, learningOrder, parsePack, sampleKeyPoints,
   type PackIssue,
 } from "./validate";
+import { errorsRequired, fingerprint, judgedItems } from "./judge";
 
 // One valid pack; each test breaks exactly one thing, so a failure names the
 // rule it is about.
@@ -29,6 +30,20 @@ function pack(over: Partial<ReferencePack> = {}): ReferencePack {
   };
 }
 
+/** The pack, with a passed machine check that truly matches it. */
+function checked(p: ReferencePack): ReferencePack {
+  const items = judgedItems(p).length;
+  return {
+    ...p,
+    machineCheck: {
+      judgeModel: "claude-test", instructionsVersion: "1", checkedAt: "2026-10-20",
+      itemsJudged: items, itemsSupported: items,
+      errorsPlanted: errorsRequired(items), errorsCaught: errorsRequired(items),
+      fingerprint: fingerprint(p),
+    },
+  };
+}
+
 const errors   = (issues: PackIssue[]) => issues.filter(i => i.level === "error");
 const warnings = (issues: PackIssue[]) => issues.filter(i => i.level === "warning");
 
@@ -48,7 +63,7 @@ describe("parsePack", () => {
 
   it("rejects an unknown status rather than treating it as draft", () => {
     expect(parsePack({ ...pack(), status: "done" }).issues).toContainEqual(
-      { level: "error", path: "$.status", message: "must be draft, provisional or approved" },
+      { level: "error", path: "$.status", message: "must be draft, provisional, machine-checked or approved" },
     );
   });
 
@@ -141,23 +156,68 @@ describe("checkPack", () => {
   });
 
   it("refuses an approved pack with no recorded spot-check", () => {
-    expect(errors(checkPack(pack({ status: "approved" })))[0].path).toBe("$.review");
+    expect(errors(checkPack(checked(pack({ status: "approved" }))))[0].path).toBe("$.review");
   });
 
   it("refuses an approval whose sample is under five distinct key points", () => {
     const review = { reviewedBy: "Travis", reviewedAt: "2026-10-20", sampledKeyPoints: ["a:1", "a:1", "a:2", "b:1"] };
-    expect(errors(checkPack(pack({ status: "approved", review })))[0].message).toBe("needs at least 5 distinct key points");
+    expect(errors(checkPack(checked(pack({ status: "approved", review }))))[0].message).toBe("needs at least 5 distinct key points");
   });
 
   it("accepts an approval that sampled five real key points", () => {
     const review = { reviewedBy: "Travis", reviewedAt: "2026-10-20", sampledKeyPoints: ["a:1", "a:2", "b:1", "b:2", "c:1"] };
     const p = pack({ status: "approved", review, concepts: [concept("a"), concept("b"), concept("c")] });
-    expect(checkPack(p)).toEqual([]);
+    expect(checkPack(checked(p))).toEqual([]);
   });
 
   it("rejects a sampled ref that names no key point, so a review cannot cite checks that never happened", () => {
     const review = { reviewedBy: "Travis", reviewedAt: "2026-10-20", sampledKeyPoints: ["a:1", "a:2", "b:1", "b:2", "b:9"] };
-    expect(errors(checkPack(pack({ status: "approved", review })))[0].message).toBe("\"b:9\" is not a key point");
+    expect(errors(checkPack(checked(pack({ status: "approved", review }))))[0].message).toBe("\"b:9\" is not a key point");
+  });
+});
+
+describe("checkPack: the machine check (spec v1.1)", () => {
+  it("accepts a machine-checked pack whose record matches it", () => {
+    expect(checkPack(checked(pack({ status: "machine-checked" })))).toEqual([]);
+  });
+
+  it("refuses machine-checked with no record, because the status must be earned by a run", () => {
+    expect(errors(checkPack(pack({ status: "machine-checked" })))[0].path).toBe("$.machineCheck");
+  });
+
+  it("refuses an approved pack with no machine check, since approval now audits the judge", () => {
+    const review = { reviewedBy: "Travis", reviewedAt: "2026-10-20", sampledKeyPoints: ["a:1", "a:2", "b:1", "b:2", "a:1"] };
+    expect(errors(checkPack(pack({ status: "approved", review }))).map(e => e.path)).toContain("$.machineCheck");
+  });
+
+  it("catches a key point edited after the check, so a judged pack cannot be quietly changed", () => {
+    const p = checked(pack({ status: "machine-checked" }));
+    p.concepts[0].keyPoints[0] = { ...p.concepts[0].keyPoints[0], text: "Edited after judging." };
+    expect(errors(checkPack(p))[0].message).toMatch(/changed after the machine check; set status to provisional/);
+  });
+
+  it("refuses a record where the judge did not support every item", () => {
+    const p = checked(pack({ status: "machine-checked" }));
+    p.machineCheck = { ...p.machineCheck!, itemsSupported: p.machineCheck!.itemsJudged - 1 };
+    expect(errors(checkPack(p))[0].path).toBe("$.machineCheck.itemsSupported");
+  });
+
+  it("refuses a record where a planted error got through", () => {
+    const p = checked(pack({ status: "machine-checked" }));
+    p.machineCheck = { ...p.machineCheck!, errorsCaught: p.machineCheck!.errorsPlanted - 1 };
+    expect(errors(checkPack(p))[0].path).toBe("$.machineCheck.errorsCaught");
+  });
+
+  it("refuses a record with too few planted errors to have proved anything", () => {
+    const p = checked(pack({ status: "machine-checked" }));
+    p.machineCheck = { ...p.machineCheck!, errorsPlanted: 2, errorsCaught: 2 };
+    expect(errors(checkPack(p))[0].path).toBe("$.machineCheck.errorsPlanted");
+  });
+
+  it("only warns about a record left on a provisional pack", () => {
+    const issues = checkPack(checked(pack({ status: "provisional" })));
+    expect(errors(issues)).toEqual([]);
+    expect(warnings(issues)[0].path).toBe("$.machineCheck");
   });
 });
 

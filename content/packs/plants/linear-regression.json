@@ -1,0 +1,31 @@
+{
+  "packId": "linear-regression",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "r_squared:2",
+      "type": "negation",
+      "sentence": "R-squared and the correlation coefficient cannot be swung by a single data point, so they are robust summaries that make the plot unnecessary."
+    },
+    {
+      "ref": "polynomial_terms:1",
+      "type": "overstatement",
+      "sentence": "When residual plots show curvature, adding powers of a predictor always captures the relationship exactly and guarantees a correct model."
+    },
+    {
+      "ref": "categorical_predictors:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "A categorical variable with c groups needs c + 1 indicator variables, one for every group plus one for the baseline."
+    },
+    {
+      "ref": "least_squares:1",
+      "type": "unsupported_addition",
+      "sentence": "Least squares picks the line that makes the sum of the squared prediction errors as small as possible, a method Gauss devised to track asteroids."
+    },
+    {
+      "ref": "multiple_regression:2",
+      "type": "causal_from_association",
+      "sentence": "Each slope shows how much a one-unit increase in its predictor causes the response to change, so the model proves what drives the outcome."
+    }
+  ]
+}
