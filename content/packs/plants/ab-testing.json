@@ -1,0 +1,31 @@
+{
+  "packId": "ab-testing",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "randomization:1",
+      "type": "negation",
+      "sentence": "Assigning variants at random cannot stop anyone steering units with better prospects into one group, so that bias stays in place."
+    },
+    {
+      "ref": "ci_difference:3",
+      "type": "overstatement",
+      "sentence": "If a 95% interval for the difference does not contain 0, the two groups certainly differ, with no chance of error."
+    },
+    {
+      "ref": "sample_size:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "The sample needed shrinks as the effect gets smaller: halving the smallest effect you want to detect roughly halves the sample."
+    },
+    {
+      "ref": "multiple_testing:2",
+      "type": "unsupported_addition",
+      "sentence": "The Bonferroni correction divides alpha by the number of tests, so three tests at 0.05 are each judged against about 0.0167; Bonferroni first devised it for insurance mathematics."
+    },
+    {
+      "ref": "segments_and_time:1",
+      "type": "causal_from_association",
+      "sentence": "Because results differ by browser, the browser a user chooses causes how strongly they respond to the change."
+    }
+  ]
+}

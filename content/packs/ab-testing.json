@@ -1,6 +1,6 @@
 {
   "id": "ab-testing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "provisional",
   "subject": "A/B testing: randomised controlled experiments that compare two versions of a product",
   "outOfScope": [
@@ -133,25 +133,40 @@
       "id": "experiment_hypothesis",
       "title": "Framing an A/B test",
       "outcome": "State the change being tested, the effect it should have, and the metrics that will show whether it did.",
-      "aliases": ["A/B test", "split test", "controlled experiment", "online controlled experiment", "treatment and control"],
+      "aliases": [
+        "A/B test",
+        "split test",
+        "controlled experiment",
+        "online controlled experiment",
+        "treatment and control"
+      ],
       "keyPoints": [
         {
           "text": "An A/B test begins with a clear hypothesis about what the change should do. Split a complex change into simpler ones, each with its own hypothesis, so the impact of each part can be measured.",
           "sourceId": "msexp-pre",
           "locator": "Formulate your Hypothesis and Success Metrics",
-          "anchor": { "start": "The first step in designing", "end": "of each individual component" }
+          "anchor": {
+            "start": "The first step in designing",
+            "end": "of each individual component"
+          }
         },
         {
           "text": "The hypothesis should name the metrics that will judge it, so the test can show it to be wrong. A claim such as 'this improves the brand' cannot be tested without a metric that measures brand.",
           "sourceId": "msexp-pre",
           "locator": "Formulate your Hypothesis and Success Metrics",
-          "anchor": { "start": "The hypothesis should also include", "end": "impact of the brand" }
+          "anchor": {
+            "start": "The hypothesis should also include",
+            "end": "impact of the brand"
+          }
         },
         {
           "text": "Comparing with a randomised control group cancels biases that affect both groups alike. Each group's own numbers may be off, but the difference between treatment and control can still be right.",
           "sourceId": "psu509-04",
           "locator": "4.1 Clinical Biases, Selection Bias and Fig 4.1",
-          "anchor": { "start": "Selection bias should affect all", "end": "magnitude as that in the population" }
+          "anchor": {
+            "start": "Selection bias should affect all",
+            "end": "magnitude as that in the population"
+          }
         }
       ]
     },
@@ -159,40 +174,60 @@
       "id": "randomization",
       "title": "Random assignment",
       "outcome": "Explain why units are assigned to variants at random, and what randomisation does and does not guarantee.",
-      "aliases": ["randomisation", "randomization", "random assignment", "random allocation"],
+      "aliases": [
+        "randomisation",
+        "randomization",
+        "random assignment",
+        "random allocation"
+      ],
       "keyPoints": [
         {
           "text": "Assigning variants at random means no one, knowingly or not, can steer units with better prospects into one group. That removes a bias known to have a strong effect on outcomes.",
           "sourceId": "psu509-04",
           "locator": "4.3.1 Randomization",
-          "anchor": { "start": "Randomization is effective in reducing", "end": "very strong effect on outcome variables" }
+          "anchor": {
+            "start": "Randomization is effective in reducing",
+            "end": "very strong effect on outcome variables"
+          }
         },
         {
           "text": "Randomisation also tends to balance the groups on other factors that affect the outcome, including ones nobody knows about, so those factors are not confused with the effect of the treatment.",
           "sourceId": "psu509-04",
           "locator": "4.3.1 Randomization",
-          "anchor": { "start": "Another benefit of randomization which", "end": "with respect to the prognostic variables" }
+          "anchor": {
+            "start": "Another benefit of randomization which",
+            "end": "with respect to the prognostic variables"
+          }
         },
         {
           "text": "Preventing imbalance by randomising beats adjusting for it afterwards. An adjustment model can only correct for factors someone knew about, and its assumptions may be wrong.",
           "sourceId": "psu509-04",
           "locator": "4.3.1 Randomization",
-          "anchor": { "start": "Some researchers argue against randomization", "end": "that may not be correct" }
+          "anchor": {
+            "start": "Some researchers argue against randomization",
+            "end": "that may not be correct"
+          }
         },
         {
           "text": "Letting someone choose each assignment invites large biases, and even a fixed pattern such as alternating can be discovered, which can also lead to bias. Random allocation is preferred.",
           "sourceId": "psu509-04",
           "locator": "4.3 Treatment Allocation and Randomization",
-          "anchor": { "start": "Treatment allocation in a clinical", "end": "we prefer randomized schemes" }
+          "anchor": {
+            "start": "Treatment allocation in a clinical",
+            "end": "we prefer randomized schemes"
+          }
         }
       ],
       "misconceptions": [
         {
           "claim": "Random assignment guarantees that the two groups are identical.",
-          "correction": "Simple randomisation balances groups on average, not in every test. By chance the groups can differ in size, or in factors that affect the outcome, and this matters most when samples are small.",
+          "correction": "Simple randomisation can leave the groups unequal in size, or unbalanced in factors that affect the outcome, especially when samples are small.",
           "sourceId": "psu509-04",
           "locator": "4.3.1 Randomization, Simple Randomization",
-          "anchor": { "start": "One problem with simple randomization", "end": "affect the outcome variables" }
+          "anchor": {
+            "start": "One problem with simple randomization",
+            "end": "affect the outcome variables"
+          }
         }
       ]
     },
@@ -200,25 +235,41 @@
       "id": "randomization_unit",
       "title": "The unit of randomisation",
       "outcome": "Choose what to randomise (a cookie, a user, a cluster or an organisation) and recognise when that choice biases the result.",
-      "aliases": ["randomization unit", "unit of randomisation", "unit of diversion", "cluster randomisation", "network effects", "SUTVA"],
+      "aliases": [
+        "randomization unit",
+        "unit of randomisation",
+        "unit of diversion",
+        "cluster randomisation",
+        "network effects",
+        "SUTVA"
+      ],
       "keyPoints": [
         {
           "text": "Cookie-based IDs are easy to use but unstable: a user who clears cookies can land in the other variant on the next visit. They suit short tests, not estimates of long-term effects.",
           "sourceId": "msexp-pre",
           "locator": "Choose the Appropriate Unit of Randomization, Stability of the Id",
-          "anchor": { "start": "On the web, users are", "end": "experiment population significantly churned" }
+          "anchor": {
+            "start": "On the web, users are",
+            "end": "experiment population significantly churned"
+          }
         },
         {
           "text": "If one user's treatment changes what their contacts experience, each user's outcome no longer depends only on their own assignment. Randomising whole clusters of connected users is a common remedy.",
           "sourceId": "msexp-pre",
           "locator": "Choose the Appropriate Unit of Randomization, Network Effects",
-          "anchor": { "start": "When product changes impact both", "end": "randomization at a cluster level" }
+          "anchor": {
+            "start": "When product changes impact both",
+            "end": "randomization at a cluster level"
+          }
         },
         {
           "text": "Business constraints can force a coarser unit. If a feature must reach a whole organisation to work, its users cannot be randomised one by one.",
           "sourceId": "msexp-pre",
           "locator": "Choose the Appropriate Unit of Randomization, Enterprise Constraints",
-          "anchor": { "start": "Product and business limitations can", "end": "to randomize by individual users" }
+          "anchor": {
+            "start": "Product and business limitations can",
+            "end": "to randomize by individual users"
+          }
         }
       ]
     },
@@ -226,31 +277,49 @@
       "id": "metrics",
       "title": "Choosing metrics",
       "outcome": "Pick metrics that answer the experiment's question, measure them without bias, and know when a proxy metric can mislead.",
-      "aliases": ["success metrics", "KPIs", "endpoints", "proxy metric", "surrogate metric"],
+      "aliases": [
+        "success metrics",
+        "KPIs",
+        "endpoints",
+        "proxy metric",
+        "surrogate metric"
+      ],
       "keyPoints": [
         {
           "text": "What you measure must match what the experiment is meant to find out, and the way it is measured must be accurate.",
           "sourceId": "psu509-06",
           "locator": "6.1 Endpoints",
-          "anchor": { "start": "The endpoints used in a", "end": "outcome assessment should be accurate" }
+          "anchor": {
+            "start": "The endpoints used in a",
+            "end": "outcome assessment should be accurate"
+          }
         },
         {
           "text": "Compute a standard core of metrics on every experiment in a product, covering user satisfaction, guardrails, feature engagement and data quality, so that regressions in important metrics are caught whatever feature is being tested.",
           "sourceId": "msexp-pre",
           "locator": "Formulate your Hypothesis and Success Metrics",
-          "anchor": { "start": "A core set of metrics", "end": "which feature we are testing on" }
+          "anchor": {
+            "start": "A core set of metrics",
+            "end": "which feature we are testing on"
+          }
         },
         {
           "text": "Changes often improve one thing while quietly hurting another. A broad metric set that covers most of the product is what lets a ship decision weigh the gains against the losses.",
           "sourceId": "msexp-during",
           "locator": "Capture Unexpected Effects Early with a Complete Metric Set",
-          "anchor": { "start": "It’s not uncommon for product", "end": "against the regressions observed" }
+          "anchor": {
+            "start": "It’s not uncommon for product",
+            "end": "against the regressions observed"
+          }
         },
         {
           "text": "A proxy metric stands in for the outcome you really care about when that outcome is too slow or costly to measure. It is only useful if it is strongly tied to that outcome.",
           "sourceId": "psu509-06",
           "locator": "6.3 Surrogate Endpoints",
-          "anchor": { "start": "Investigators choose a surrogate endpoint", "end": "associated with the definitive outcome" }
+          "anchor": {
+            "start": "Investigators choose a surrogate endpoint",
+            "end": "associated with the definitive outcome"
+          }
         }
       ]
     },
@@ -258,25 +327,41 @@
       "id": "oec_and_guardrails",
       "title": "Overall evaluation criterion and guardrail metrics",
       "outcome": "Tell the metric a test is trying to move from the metrics it must not harm, and decide what to do when they disagree.",
-      "aliases": ["OEC", "overall evaluation criteria", "north star metric", "primary metric", "guardrail metrics", "trade-offs"],
+      "aliases": [
+        "OEC",
+        "overall evaluation criteria",
+        "north star metric",
+        "primary metric",
+        "guardrail metrics",
+        "trade-offs"
+      ],
       "keyPoints": [
         {
           "text": "The overall evaluation criterion (OEC) captures the product's overall goal, usually user satisfaction or loyalty. Guardrail metrics, like page load time or crash rate, track what must not get worse, though the test is not trying to improve it.",
           "sourceId": "msexp-during",
           "locator": "Metric taxonomy table",
-          "anchor": { "start": "Overall Evaluation Criteria (OEC) Metrics", "end": "Crash Rate, Abandonment Rate" }
+          "anchor": {
+            "start": "Overall Evaluation Criteria (OEC) Metrics",
+            "end": "Crash Rate, Abandonment Rate"
+          }
         },
         {
           "text": "The decision is easy when the metrics tell one story: the OEC rises (or stays flat in a test with enough power) and the guardrails improve, or the reverse.",
           "sourceId": "msexp-post",
           "locator": "Tradeoff the Observed Metric Movements",
-          "anchor": { "start": "Sometimes, the metrics tell a", "end": "the change being tested" }
+          "anchor": {
+            "start": "Sometimes, the metrics tell a",
+            "end": "the change being tested"
+          }
         },
         {
-          "text": "When the OEC improves but a guardrail regresses, there is no standard answer. One approach is to weight the metrics, with weights the organisation agrees in advance rather than sets for a particular test.",
+          "text": "There is no standard way to weigh tradeoffs between key metrics. One method is to weight the metrics, with weights set in advance rather than for the specific test being analysed.",
           "sourceId": "msexp-post",
           "locator": "Tradeoff the Observed Metric Movements",
-          "anchor": { "start": "There is no standard way", "end": "specific A/B test being analyzed" }
+          "anchor": {
+            "start": "There is no standard way",
+            "end": "specific A/B test being analyzed"
+          }
         }
       ]
     },
@@ -284,25 +369,42 @@
       "id": "null_and_alternative",
       "title": "Null and alternative hypotheses",
       "outcome": "Write the null and alternative hypotheses for an A/B comparison, and choose a one- or two-sided test from the question being asked.",
-      "aliases": ["null hypothesis", "alternative hypothesis", "H0", "one-sided test", "two-sided test", "one-tailed", "two-tailed"],
+      "aliases": [
+        "null hypothesis",
+        "alternative hypothesis",
+        "H0",
+        "one-sided test",
+        "two-sided test",
+        "one-tailed",
+        "two-tailed"
+      ],
       "keyPoints": [
         {
           "text": "The null hypothesis says there is no difference in the population; the alternative hypothesis says there is some difference.",
           "sourceId": "psu200-05",
           "locator": "5.2 Writing Hypotheses, Definitions 5.2 and 5.3",
-          "anchor": { "start": "The statement that there is not", "end": "statement that there is some difference" }
+          "anchor": {
+            "start": "The statement that there is not",
+            "end": "statement that there is some difference"
+          }
         },
         {
           "text": "Hypotheses are statements about the population, not the sample. For a difference between two groups the null value is usually 0, and the null hypothesis always contains the equality.",
           "sourceId": "psu200-05",
           "locator": "5.2 Writing Hypotheses",
-          "anchor": { "start": "For the difference between two", "end": "always includes the equality" }
+          "anchor": {
+            "start": "For the difference between two",
+            "end": "always includes the equality"
+          }
         },
         {
           "text": "The research question sets the direction. 'Is B different from A?' calls for a two-sided test; 'is B better than A?' calls for a one-sided test.",
           "sourceId": "psu200-05",
           "locator": "5.2 Writing Hypotheses",
-          "anchor": { "start": "The research question will give", "end": "or left-tailed" }
+          "anchor": {
+            "start": "The research question will give",
+            "end": "or left-tailed"
+          }
         }
       ]
     },
@@ -310,25 +412,40 @@
       "id": "p_value",
       "title": "The p-value",
       "outcome": "Say what a p-value measures in an A/B test, and what it does not.",
-      "aliases": ["p value", "statistical significance", "statistically significant", "significance level", "alpha"],
+      "aliases": [
+        "p value",
+        "statistical significance",
+        "statistically significant",
+        "significance level",
+        "alpha"
+      ],
       "keyPoints": [
         {
           "text": "The p-value answers one question: if there were truly no difference, how often would chance alone give a result at least as extreme as the one observed?",
           "sourceId": "psu200-05",
           "locator": "5.1 Introduction to Hypothesis Testing",
-          "anchor": { "start": "we will compute the probability that", "end": "known as the p-value" }
+          "anchor": {
+            "start": "we will compute the probability that",
+            "end": "known as the p-value"
+          }
         },
         {
           "text": "A result is statistically significant when its p-value is at or below the significance level, alpha. The most common choice of alpha is 0.05.",
           "sourceId": "psu200-05",
           "locator": "5.1 Introduction to Hypothesis Testing",
-          "anchor": { "start": "A test is considered to be", "end": "most frequently used alpha level" }
+          "anchor": {
+            "start": "A test is considered to be",
+            "end": "most frequently used alpha level"
+          }
         },
         {
           "text": "A significant result means the difference seen is unlikely to be just random sampling variation.",
           "sourceId": "psu200-05",
           "locator": "5.1 Introduction to Hypothesis Testing",
-          "anchor": { "start": "Sample statistics vary from the", "end": "unlikely due to random sampling variation" }
+          "anchor": {
+            "start": "Sample statistics vary from the",
+            "end": "unlikely due to random sampling variation"
+          }
         }
       ],
       "misconceptions": [
@@ -337,14 +454,20 @@
           "correction": "The p-value is calculated assuming A and B are the same, and says how often chance alone would produce a gap this large. Dashboards that show its complement as a 'chance of beating the original' are relabelling it, not computing that chance.",
           "sourceId": "miller-peeking",
           "locator": "Background",
-          "anchor": { "start": "When an A/B testing dashboard", "end": "or something like that" }
+          "anchor": {
+            "start": "When an A/B testing dashboard",
+            "end": "or something like that"
+          }
         },
         {
           "claim": "The p-value is the probability that the result is due to chance alone.",
-          "correction": "A p-value is calculated assuming chance alone is at work, so it cannot also be the probability that chance is the explanation. It does not measure the probability that any hypothesis is true.",
+          "correction": "A p-value does not measure the probability that the data were produced by random chance alone, nor the probability that the hypothesis studied is true.",
           "sourceId": "asa-pvalues",
           "locator": "Page 1, principle 2",
-          "anchor": { "start": "P-values do not measure the", "end": "by random chance alone" }
+          "anchor": {
+            "start": "P-values do not measure the",
+            "end": "by random chance alone"
+          }
         }
       ]
     },
@@ -352,37 +475,59 @@
       "id": "type_i_ii_errors",
       "title": "Type I and Type II errors",
       "outcome": "Name the two ways a test's decision can be wrong, say what each costs in an A/B test, and explain how alpha and beta trade off.",
-      "aliases": ["false positive", "false negative", "Type I error", "Type II error", "alpha", "beta"],
+      "aliases": [
+        "false positive",
+        "false negative",
+        "Type I error",
+        "Type II error",
+        "alpha",
+        "beta"
+      ],
       "keyPoints": [
         {
           "text": "A Type I error is rejecting the null hypothesis when it is really true: in an A/B test, declaring a difference that does not exist, produced only by random sampling variation.",
           "sourceId": "psu200-06",
           "locator": "6.1 Type I and Type II Errors",
-          "anchor": { "start": "When we reject the null", "end": "known as a Type I error" }
+          "anchor": {
+            "start": "When we reject the null",
+            "end": "known as a Type I error"
+          }
         },
         {
           "text": "A Type II error is failing to reject the null hypothesis when it is false: missing a difference that really exists.",
           "sourceId": "psu200-06",
           "locator": "6.1 Type I and Type II Errors",
-          "anchor": { "start": "there are also two possibilities", "end": "we made a Type II error" }
+          "anchor": {
+            "start": "there are also two possibilities",
+            "end": "we made a Type II error"
+          }
         },
         {
           "text": "Alpha is chosen before any data are collected, after weighing what each type of error would cost in the situation at hand.",
           "sourceId": "psu200-06",
           "locator": "6.2 Significance Levels",
-          "anchor": { "start": "As we saw in the examples", "end": "before data are even collected" }
+          "anchor": {
+            "start": "As we saw in the examples",
+            "end": "before data are even collected"
+          }
         },
         {
           "text": "Where a false positive would do more harm than a false negative, a smaller alpha is used. That makes the null harder to reject but lowers the chance of a Type I error.",
           "sourceId": "psu200-06",
           "locator": "6.2 Significance Levels",
-          "anchor": { "start": "Studies in which making a", "end": "committing a Type I error" }
+          "anchor": {
+            "start": "Studies in which making a",
+            "end": "committing a Type I error"
+          }
         },
         {
           "text": "For a fixed sample size, lowering alpha raises beta, the chance of a Type II error. Lowering both at once needs a larger sample.",
           "sourceId": "psu200-06",
           "locator": "6.5 Power",
-          "anchor": { "start": "If the sample size is fixed", "end": "we should increase the sample size" }
+          "anchor": {
+            "start": "If the sample size is fixed",
+            "end": "we should increase the sample size"
+          }
         }
       ]
     },
@@ -390,34 +535,50 @@
       "id": "statistical_vs_practical",
       "title": "Statistical versus practical significance",
       "outcome": "Judge whether a statistically significant A/B result is large enough to matter, and explain why large tests make tiny effects significant.",
-      "aliases": ["practical significance", "effect size", "business significance"],
+      "aliases": [
+        "practical significance",
+        "effect size",
+        "business significance"
+      ],
       "keyPoints": [
         {
           "text": "Practical significance is about the size of the difference, the effect size, and whether it is big enough to matter in real life. What counts as meaningful depends on the context.",
           "sourceId": "psu200-06",
           "locator": "6.4 Practical Significance",
-          "anchor": { "start": "Practical significance refers to the", "end": "may depend on the context" }
+          "anchor": {
+            "start": "Practical significance refers to the",
+            "end": "may depend on the context"
+          }
         },
         {
           "text": "Statistical significance depends heavily on sample size: with a very large sample, even tiny differences become significant. The effect size does not grow with the sample, so check it whenever a result is significant.",
           "sourceId": "psu200-06",
           "locator": "6.4 Practical Significance",
-          "anchor": { "start": "Note that statistical significance is", "end": "not directly influenced by sample size" }
+          "anchor": {
+            "start": "Note that statistical significance is",
+            "end": "not directly influenced by sample size"
+          }
         },
         {
           "text": "A true difference is rarely exactly zero, so a large enough sample can reject almost any null hypothesis. That is why statistical and practical significance must be judged separately.",
           "sourceId": "psu500-06",
           "locator": "Statistical and Practical Significances",
-          "anchor": { "start": "Critics of hypothesis-testing procedures have", "end": "between statistical significance and practical significance" }
+          "anchor": {
+            "start": "Critics of hypothesis-testing procedures have",
+            "end": "between statistical significance and practical significance"
+          }
         }
       ],
       "misconceptions": [
         {
           "claim": "A statistically significant result means the change had a large or important effect.",
-          "correction": "Significance says a difference is unlikely to be chance alone. It does not measure how big the effect is, or whether it matters; look at the estimated size of the difference for that.",
+          "correction": "A p-value, or statistical significance, does not measure the size of an effect or the importance of a result.",
           "sourceId": "asa-pvalues",
           "locator": "Page 1, principle 5",
-          "anchor": { "start": "does not measure the size", "end": "importance of a result" }
+          "anchor": {
+            "start": "or statistical significance, does not",
+            "end": "importance of a result"
+          }
         }
       ]
     },
@@ -425,37 +586,60 @@
       "id": "comparing_two_groups",
       "title": "Tests for two independent groups",
       "outcome": "Choose a test for comparing a rate or a mean between two independent groups, and check that its conditions hold.",
-      "aliases": ["two-proportion z-test", "two-sample t-test", "difference in proportions", "conversion rate test", "Fisher's exact test", "randomization test", "permutation test"],
+      "aliases": [
+        "two-proportion z-test",
+        "two-sample t-test",
+        "difference in proportions",
+        "conversion rate test",
+        "Fisher's exact test",
+        "randomization test",
+        "permutation test"
+      ],
       "keyPoints": [
         {
           "text": "To compare a rate such as conversion between two groups: with at least 10 successes and 10 failures in each group, the difference between the two sample proportions is approximately normal, so the normal approximation can be used.",
           "sourceId": "psu200-09",
           "locator": "9.1 Two Independent Proportions",
-          "anchor": { "start": "This means if there are", "end": "will be approximately normal" }
+          "anchor": {
+            "start": "This means if there are",
+            "end": "will be approximately normal"
+          }
         },
         {
-          "text": "When those counts are too small, use Fisher's exact test, bootstrapping or a randomisation test instead.",
+          "text": "When the normal approximation's assumption is met, that method is typically preferred; when it is not, Fisher's exact method, bootstrapping or randomisation methods can be used.",
           "sourceId": "psu200-09",
           "locator": "9.1 Two Independent Proportions",
-          "anchor": { "start": "When this assumption is not", "end": "randomization methods may be used" }
+          "anchor": {
+            "start": "if the assumption above is met",
+            "end": "randomization methods may be used"
+          }
         },
         {
           "text": "These tests assume the two groups are independent: no unit appears in both groups, and the groups are not paired.",
           "sourceId": "psu200-09",
           "locator": "9.1.2 Hypothesis Testing",
-          "anchor": { "start": "The two groups that are", "end": "be unpaired and unrelated" }
+          "anchor": {
+            "start": "The two groups that are",
+            "end": "be unpaired and unrelated"
+          }
         },
         {
           "text": "To compare means, such as revenue per user, the t distribution can be used when both groups have at least 30 units or the populations are roughly normal. Otherwise, use bootstrapping or a randomisation test.",
           "sourceId": "psu200-09",
           "locator": "9.2 Two Independent Means",
-          "anchor": { "start": "If the populations are known", "end": "then simulation methods" }
+          "anchor": {
+            "start": "If the populations are known",
+            "end": "bootstrapping or randomization) may be used"
+          }
         },
         {
           "text": "A randomisation test resamples the data to build the distribution a statistic would have if the null hypothesis were true, so that distribution is centred on the null value.",
           "sourceId": "psu200-05",
           "locator": "5.3 Randomization Procedures",
-          "anchor": { "start": "Like bootstrapping procedures, randomization procedures", "end": "value in the null hypothesis" }
+          "anchor": {
+            "start": "Like bootstrapping procedures, randomization procedures",
+            "end": "value in the null hypothesis"
+          }
         }
       ]
     },
@@ -463,37 +647,57 @@
       "id": "ci_difference",
       "title": "Confidence interval for a difference",
       "outcome": "Build and read a confidence interval for the difference between two variants, and connect it to the test result.",
-      "aliases": ["confidence interval", "margin of error", "interval estimate", "uncertainty"],
+      "aliases": [
+        "confidence interval",
+        "margin of error",
+        "interval estimate",
+        "uncertainty"
+      ],
       "keyPoints": [
         {
           "text": "A confidence interval is centred on the point estimate (in an A/B test, the observed difference between variants) and reaches out by the margin of error on each side. The margin of error is half the interval's width.",
           "sourceId": "psu200-04",
           "locator": "4.2 Introduction to Confidence Intervals",
-          "anchor": { "start": "At the center of a confidence", "end": "to construct the confidence interval" }
+          "anchor": {
+            "start": "At the center of a confidence",
+            "end": "to construct the confidence interval"
+          }
         },
         {
           "text": "For conversion rates, the interval is the difference between the two sample proportions, plus or minus a multiplier times the standard error of that difference.",
           "sourceId": "psu200-09",
           "locator": "9.1.1 Confidence Intervals",
-          "anchor": { "start": "Recall from the general form", "end": "difference between two proportions" }
+          "anchor": {
+            "start": "Recall from the general form",
+            "end": "difference between two proportions"
+          }
         },
         {
           "text": "If a 95% interval for the difference does not contain 0, a difference of zero is not plausible, and you can conclude the two groups differ.",
           "sourceId": "psu200-09",
           "locator": "9.1.1 Confidence Intervals, Example 9.1",
-          "anchor": { "start": "This confidence interval does not contain", "end": "conclude that there is a difference" }
+          "anchor": {
+            "start": "This confidence interval does not contain",
+            "end": "conclude that there is a difference"
+          }
         },
         {
           "text": "Intervals and two-sided tests usually agree. If the 95% interval contains the null value, a test at alpha 0.05 will almost always fail to reject; if it excludes that value, the test will almost always reject.",
           "sourceId": "psu200-06",
           "locator": "6.6 Confidence Intervals & Hypothesis Testing",
-          "anchor": { "start": "if the 95% confidence interval contains", "end": "almost always reject the null hypothesis" }
+          "anchor": {
+            "start": "if the 95% confidence interval contains",
+            "end": "almost always reject the null hypothesis"
+          }
         },
         {
-          "text": "Larger samples give narrower intervals: the same sample proportion gives a much tighter interval from 200 observations than from 20.",
+          "text": "With the same sample proportion, a sample of 200 gave a narrower confidence interval than a sample of 20.",
           "sourceId": "psu200-04",
           "locator": "4.6 Impact of Sample Size on Confidence Intervals",
-          "anchor": { "start": "The difference was the sample", "end": "confidence interval became more narrow" }
+          "anchor": {
+            "start": "in each of the examples the",
+            "end": "confidence interval became more narrow"
+          }
         }
       ]
     },
@@ -501,34 +705,51 @@
       "id": "power",
       "title": "Statistical power",
       "outcome": "Explain what power is, what raises it, and why an underpowered test that finds nothing proves little.",
-      "aliases": ["power", "statistical power", "sensitivity", "underpowered test"],
+      "aliases": [
+        "power",
+        "statistical power",
+        "sensitivity",
+        "underpowered test"
+      ],
       "keyPoints": [
         {
           "text": "Power is the probability that a test rejects the null hypothesis when the null is false: the chance of detecting a difference that really exists. It equals one minus beta.",
           "sourceId": "psu200-06",
           "locator": "6.5 Power",
-          "anchor": { "start": "The probability of rejecting the", "end": "probability of correctly rejecting" }
+          "anchor": {
+            "start": "The probability of rejecting the",
+            "end": "of committing a type II error"
+          }
         },
         {
           "text": "Power goes up with a larger sample, a smaller standard error, a bigger true difference or a higher alpha. A one-sided test also has more power than a two-sided one.",
           "sourceId": "psu200-06",
           "locator": "6.5 Power",
-          "anchor": { "start": "The power of a test can", "end": "would also increase power" }
+          "anchor": {
+            "start": "The power of a test can",
+            "end": "would also increase power"
+          }
         },
         {
           "text": "Failing to reject the null does not show the null is true. Either there really is no difference, or the sample was too small to detect the one that exists.",
           "sourceId": "psu200-06",
           "locator": "6.5 Power, Try It",
-          "anchor": { "start": "When the null hypothesis cannot be", "end": "statistical power is too low" }
+          "anchor": {
+            "start": "When the null hypothesis cannot be",
+            "end": "statistical power is too low"
+          }
         }
       ],
       "misconceptions": [
         {
           "claim": "A test that found no significant difference shows the change has no effect.",
-          "correction": "A test only controls the false-positive rate, so it can show evidence against the null but never prove it. A non-significant result may be a real effect that the test lacked the power to detect.",
+          "correction": "A test only guards against Type I error, so it can show evidence against the null but not support for it. A non-significant result may mean no effect, or a sample too small to detect one.",
           "sourceId": "psu200-06",
           "locator": "6.5 Power, Try It",
-          "anchor": { "start": "When we perform a hypothesis test", "end": "evidence against the null hypothesis" }
+          "anchor": {
+            "start": "When we perform a hypothesis test",
+            "end": "is not large enough to reject"
+          }
         }
       ]
     },
@@ -536,37 +757,59 @@
       "id": "sample_size",
       "title": "Planning the sample size",
       "outcome": "Name the inputs a sample size calculation needs, and explain how the smallest effect worth detecting drives the number.",
-      "aliases": ["sample size calculation", "power analysis", "minimum detectable effect", "MDE", "traffic allocation", "test duration"],
+      "aliases": [
+        "sample size calculation",
+        "power analysis",
+        "minimum detectable effect",
+        "MDE",
+        "traffic allocation",
+        "test duration"
+      ],
       "keyPoints": [
         {
           "text": "The sample size for a test is set by the significance level, the power wanted (commonly 80% or 90%) and the smallest effect worth detecting.",
           "sourceId": "psu509-08",
           "locator": "Overview",
-          "anchor": { "start": "Usually, sample size is calculated", "end": "the clinically meaningful effect" }
+          "anchor": {
+            "start": "Usually, sample size is calculated",
+            "end": "the clinically meaningful effect"
+          }
         },
         {
           "text": "The sample needed grows with the square of the noise relative to the effect. Halving the smallest effect you want to detect roughly quadruples the sample.",
           "sourceId": "psu509-08",
           "locator": "8.4 Comparative Treatment Efficacy Studies",
-          "anchor": { "start": "Notice that the sample size expression", "end": "quadruples the required sample size" }
+          "anchor": {
+            "start": "Notice that the sample size expression",
+            "end": "quadruples the required sample size"
+          }
         },
         {
           "text": "Sample size calculations are approximations built on assumed inputs, such as how variable the outcome is, and those assumptions may not hold exactly.",
           "sourceId": "psu509-08",
           "locator": "Overview",
-          "anchor": { "start": "It is important to realize", "end": "may not hold exactly" }
+          "anchor": {
+            "start": "It is important to realize",
+            "end": "may not hold exactly"
+          }
         },
         {
           "text": "Splitting traffic equally between the variants gives the most power, provided the outcome is equally variable in both.",
           "sourceId": "psu509-04",
           "locator": "4.3.8 Unequal Treatment Allocation",
-          "anchor": { "start": "To maximize the efficiency", "end": "the same for each treatment" }
+          "anchor": {
+            "start": "To maximize the efficiency",
+            "end": "the same for each treatment"
+          }
         },
         {
           "text": "Power sets a floor on how many units must actually experience the change. If only a small share of traffic is affected, the test needs enough total traffic for that share to reach the floor.",
           "sourceId": "msexp-pre",
           "locator": "Formulate your Hypothesis and Success Metrics",
-          "anchor": { "start": "Another important consideration when forming", "end": "the power calculation lower bound" }
+          "anchor": {
+            "start": "Another important consideration when forming",
+            "end": "the power calculation lower bound"
+          }
         }
       ]
     },
@@ -574,53 +817,82 @@
       "id": "peeking",
       "title": "Peeking and early stopping",
       "outcome": "Explain why stopping a test when it first looks significant inflates false positives, and name the designs that allow valid early looks.",
-      "aliases": ["peeking", "optional stopping", "repeated significance testing", "early stopping", "interim analysis", "sequential testing", "group sequential design"],
+      "aliases": [
+        "peeking",
+        "optional stopping",
+        "repeated significance testing",
+        "early stopping",
+        "interim analysis",
+        "sequential testing",
+        "group sequential design"
+      ],
       "keyPoints": [
         {
           "text": "The usual significance calculation assumes the sample size was fixed in advance. Running a test until a significant difference appears breaks that assumption, and the reported significance levels lose their meaning.",
           "sourceId": "miller-peeking",
           "locator": "Background",
-          "anchor": { "start": "However, the significance calculation makes", "end": "reported significance levels become meaningless" }
+          "anchor": {
+            "start": "However, the significance calculation makes",
+            "end": "reported significance levels become meaningless"
+          }
         },
         {
           "text": "Testing data again and again as it accumulates raises the Type I error rate, so methods for interim looks aim to keep that rate under control.",
           "sourceId": "psu509-10",
           "locator": "10.1 Frequentist Methods",
-          "anchor": { "start": "From a frequentist point of", "end": "controlling the type I error rate" }
+          "anchor": {
+            "start": "From a frequentist point of",
+            "end": "controlling the type I error rate"
+          }
         },
         {
           "text": "The inflation can be large. In a worked example capped at 150 observations, checking after every one and stopping at the first 5% significant result gave false positives about 26% of the time.",
           "sourceId": "miller-peeking",
           "locator": "How big of a problem is this?",
-          "anchor": { "start": "Suppose your conversion rate is", "end": "thought the significance level was" }
+          "anchor": {
+            "start": "Suppose your conversion rate is",
+            "end": "thought the significance level was"
+          }
         },
         {
           "text": "A group sequential design stops at an interim look only if the test statistic crosses that look's boundary, and the boundaries are chosen so that the overall significance level stays within the target.",
           "sourceId": "psu509-10",
           "locator": "10.1 Frequentist Methods",
-          "anchor": { "start": "denote the corresponding boundary points", "end": "does not exceed the desired" }
+          "anchor": {
+            "start": "denote the corresponding boundary points",
+            "end": "does not exceed the desired"
+          }
         },
         {
-          "text": "A test stopped early because of a significant difference tends to overstate the effect, and the earlier it stops, the bigger the bias.",
+          "text": "Stopping a test early, for example because of a significant difference, biases the estimate of the effect, and the earlier the stop, the larger the bias.",
           "sourceId": "psu509-10",
           "locator": "10.2 Alpha Spending Function approach",
-          "anchor": { "start": "Regardless of whether a sequential", "end": "the larger the bias" }
+          "anchor": {
+            "start": "Regardless of whether a sequential",
+            "end": "potential for a lot of bias"
+          }
         }
       ],
       "misconceptions": [
         {
           "claim": "It is fine to stop an A/B test as soon as it reaches significance.",
-          "correction": "Stopping at the first significant look inflates the false-positive rate, and the more often you look, the worse it gets. Fix the sample size in advance, or use a sequential design built for early looks.",
+          "correction": "Stopping an experiment at a significant-looking result inflates the false-positive rate, and the more often you peek, the further off the significance levels become.",
           "sourceId": "miller-peeking",
           "locator": "How big of a problem is this?",
-          "anchor": { "start": "Repeated significance testing always increases", "end": "significance levels will be off" }
+          "anchor": {
+            "start": "Repeated significance testing always increases",
+            "end": "significance levels will be off"
+          }
         },
         {
           "claim": "You should not look at an A/B test at all until it ends.",
-          "correction": "Looking is useful: early monitoring catches bugs and harmful regressions. What breaks the statistics is stopping on an early significant result, so early calls need stricter thresholds, and otherwise the test runs its planned length.",
+          "correction": "Measuring throughout a test is essential so problems can be caught, but early results need stronger significance levels, and otherwise the test should run its planned duration.",
           "sourceId": "msexp-during",
           "locator": "Measure Early and Often",
-          "anchor": { "start": "Note that with these repeated", "end": "adopt the metric movements observed then" }
+          "anchor": {
+            "start": "at ExP, to make early results",
+            "end": "to avoid running blind"
+          }
         }
       ]
     },
@@ -628,47 +900,71 @@
       "id": "multiple_testing",
       "title": "Many metrics and multiple comparisons",
       "outcome": "Recognise when many tests are being run at once, estimate how many false positives to expect, and adjust for them.",
-      "aliases": ["multiple comparisons", "multiple testing", "Bonferroni correction", "family-wise error rate", "false discoveries"],
+      "aliases": [
+        "multiple comparisons",
+        "multiple testing",
+        "Bonferroni correction",
+        "family-wise error rate",
+        "false discoveries"
+      ],
       "keyPoints": [
         {
           "text": "At alpha 0.05, each test has a 5% chance of a false positive when there is no real difference. Run 100 such tests and about 5 will look significant by chance alone.",
           "sourceId": "psu200-06",
           "locator": "6.3 Issues with Multiple Testing",
-          "anchor": { "start": "If we are conducting a hypothesis", "end": "about 5 of those tests" }
+          "anchor": {
+            "start": "If we are conducting a hypothesis",
+            "end": "about 5 of those tests"
+          }
         },
         {
           "text": "The Bonferroni correction divides alpha by the number of tests, so three tests at 0.05 are each judged against about 0.0167. It is simple but conservative, which raises the risk of missing real effects.",
           "sourceId": "psu200-06",
           "locator": "6.3 Issues with Multiple Testing, Quick Correction for Multiple Tests",
-          "anchor": { "start": "For instance, if you are comparing", "end": "make a Type II error" }
+          "anchor": {
+            "start": "For instance, if you are comparing",
+            "end": "make a Type II error"
+          }
         },
         {
-          "text": "With several primary metrics, adjust alpha if the test counts as a success when any one of them moves. If success needs all of them to move, no adjustment is needed.",
+          "text": "With two primary outcomes, adjust alpha if the test counts as a success when either one moves. If success needs both to move, no adjustment is needed.",
           "sourceId": "psu509-08",
           "locator": "8.7 Adjustment Factors for Sample Size Calculations",
-          "anchor": { "start": "there are two primary outcome variables", "end": "level is not necessary" }
+          "anchor": {
+            "start": "there are two primary outcome variables",
+            "end": "level is not necessary"
+          }
         },
         {
           "text": "Running a pairwise comparison over and over, for every pair of variants, does not hold the overall significance level at the level set for one comparison.",
           "sourceId": "nist-multiple-comparisons",
           "locator": "7.4.7, Multiple Comparison test procedures are needed",
-          "anchor": { "start": "Doing pairwise comparison procedures over", "end": "for a single pair comparison" }
+          "anchor": {
+            "start": "Doing pairwise comparison procedures over",
+            "end": "for a single pair comparison"
+          }
         }
       ],
       "misconceptions": [
         {
           "claim": "If any one of our twenty metrics is significant at 0.05, the change had a real effect.",
-          "correction": "With many metrics, some will cross 0.05 by chance. When success means any one primary metric moving, the significance level has to be adjusted so the overall false-positive rate is not inflated.",
+          "correction": "When there is more than one primary outcome or comparison, the significance level should be adjusted so the overall false-positive rate is not inflated.",
           "sourceId": "psu509-08",
           "locator": "8.7 Adjustment Factors for Sample Size Calculations",
-          "anchor": { "start": "more than one primary outcome variable", "end": "inflate the overall false-positive rate" }
+          "anchor": {
+            "start": "more than one primary outcome variable",
+            "end": "inflate the overall false-positive rate"
+          }
         },
         {
           "claim": "If the overall result is flat, slicing it by segment until one shows a significant lift reveals who the change works for.",
-          "correction": "Comparisons picked after seeing the results do not carry the confidence level the procedure states. Choose the segments in advance, or use a method built for comparisons chosen after the data are in.",
+          "correction": "Comparisons chosen after seeing the results do not carry the confidence level the procedure states. Decide the comparisons in advance, or use a procedure built for comparisons chosen after the data are in.",
           "sourceId": "nist-multiple-comparisons",
           "locator": "7.4.7, Determine contrasts in advance of observing the experimental results",
-          "anchor": { "start": "These types of investigations should", "end": "use after observing the experimental results" }
+          "anchor": {
+            "start": "These types of investigations should",
+            "end": "use after observing the experimental results"
+          }
         }
       ]
     },
@@ -676,31 +972,49 @@
       "id": "segments_and_time",
       "title": "Segments and effects that change over time",
       "outcome": "Break results down by segment and by day without fooling yourself, and recognise a novelty effect.",
-      "aliases": ["segmentation", "subgroup analysis", "heterogeneous treatment effects", "novelty effect", "day-of-week effects"],
+      "aliases": [
+        "segmentation",
+        "subgroup analysis",
+        "heterogeneous treatment effects",
+        "novelty effect",
+        "day-of-week effects"
+      ],
       "keyPoints": [
         {
           "text": "A change can affect different users differently, so results are often broken down by segments such as market, browser or app version to find where the effect differs.",
           "sourceId": "msexp-during",
           "locator": "Slice the Analysis with the Appropriate Segments",
-          "anchor": { "start": "Treatments affect users differently depending", "end": "catch any heterogeneous treatment effects" }
+          "anchor": {
+            "start": "Treatments affect users differently depending",
+            "end": "catch any heterogeneous treatment effects"
+          }
         },
         {
           "text": "Segment sizes must stay balanced between treatment and control. Segments whose membership is fixed independently of the treatment stay balanced whenever the overall test does.",
           "sourceId": "msexp-during",
           "locator": "Use Segments that are Stable during the A/B Test",
-          "anchor": { "start": "When defining segments for a", "end": "will be SRM-free" }
+          "anchor": {
+            "start": "When defining segments for a",
+            "end": "will be SRM-free"
+          }
         },
         {
           "text": "Break results down by day. An effect that shrinks quickly from day to day suggests a novelty effect; a spike on a single day suggests a data problem or a one-off event.",
           "sourceId": "msexp-during",
           "locator": "Segment by Date",
-          "anchor": { "start": "At ExP, we recommend segmenting", "end": "interacted with the treatment" }
+          "anchor": {
+            "start": "At ExP, we recommend segmenting",
+            "end": "interacted with the treatment"
+          }
         },
         {
           "text": "Reading results early in a test can bias a team toward changes that give only a temporary improvement.",
           "sourceId": "msexp-during",
           "locator": "Segment by Date",
-          "anchor": { "start": "Looking at analysis results in", "end": "a temporary improvement to the product" }
+          "anchor": {
+            "start": "Looking at analysis results in",
+            "end": "a temporary improvement to the product"
+          }
         }
       ]
     },
@@ -708,37 +1022,58 @@
       "id": "sample_ratio_mismatch",
       "title": "Sample ratio mismatch and data quality",
       "outcome": "Check that a test's traffic split and data are sound before reading its results.",
-      "aliases": ["SRM", "sample ratio mismatch", "traffic split", "data quality checks", "metric SRM"],
+      "aliases": [
+        "SRM",
+        "sample ratio mismatch",
+        "traffic split",
+        "data quality checks",
+        "metric SRM"
+      ],
       "keyPoints": [
         {
           "text": "A sample ratio mismatch (SRM) is when the split of users between treatment and control differs from the split the test was set up with. An SRM usually invalidates the test.",
           "sourceId": "msexp-during",
           "locator": "Set Up Alerts to Detect Unintended Degradations",
-          "anchor": { "start": "One of the main metrics", "end": "results and metric movements untrustworthy" }
+          "anchor": {
+            "start": "One of the main metrics",
+            "end": "results and metric movements untrustworthy"
+          }
         },
         {
           "text": "Test for SRM early and alert on it, so a broken test can be investigated, and stopped if it cannot be saved.",
           "sourceId": "msexp-during",
           "locator": "Set Up Alerts to Detect Unintended Degradations",
-          "anchor": { "start": "Hence, it’s essential to have", "end": "if the results are not salvageable" }
+          "anchor": {
+            "start": "Hence, it’s essential to have",
+            "end": "if the results are not salvageable"
+          }
         },
         {
           "text": "SRM is the earliest validity check, but passing it overall does not rule out an imbalance within an individual metric.",
           "sourceId": "msexp-post",
           "locator": "Check for Imbalance in Metric Observation Units",
-          "anchor": { "start": "They are the earliest check", "end": "at an individual metric level" }
+          "anchor": {
+            "start": "They are the earliest check",
+            "end": "at an individual metric level"
+          }
         },
         {
           "text": "A ratio metric such as clicks per session can move only because its denominator moved. The denominator is a metric in its own right; if it shifts significantly, the ratio can move unexpectedly.",
           "sourceId": "msexp-post",
           "locator": "Check for Imbalance in Metric Observation Units",
-          "anchor": { "start": "A metric movement can be", "end": "unexpected movements in the rate metric" }
+          "anchor": {
+            "start": "A metric movement can be",
+            "end": "unexpected movements in the rate metric"
+          }
         },
         {
           "text": "Before reading results, confirm that the user count in each variant matches the planned allocation, and that metrics the change should obviously move did move.",
           "sourceId": "msexp-post",
           "locator": "Ensure Metric Movements Align with the Test Set-Up",
-          "anchor": { "start": "Does the number of users", "end": "reflected in the metrics" }
+          "anchor": {
+            "start": "Does the number of users",
+            "end": "reflected in the metrics"
+          }
         }
       ]
     },
@@ -746,44 +1081,119 @@
       "id": "validating_results",
       "title": "Sanity-checking surprising results",
       "outcome": "Treat a surprising result with suspicion, check for bias that was there before the test, and know when to re-run.",
-      "aliases": ["Twyman's law", "A/A test", "retrospective A/A", "replication", "re-running a test"],
+      "aliases": [
+        "Twyman's law",
+        "A/A test",
+        "retrospective A/A",
+        "replication",
+        "re-running a test"
+      ],
       "keyPoints": [
         {
-          "text": "A large effect from a change that few users even touch is a reason for suspicion, not celebration (Twyman's law): such a result may not be trustworthy.",
+          "text": "Twyman's law suggests that a very large effect from a feature that few users engage with may not be trustworthy.",
           "sourceId": "msexp-post",
           "locator": "When in Doubt, Reproduce Results",
-          "anchor": { "start": "implies that the metric movements", "end": "a large effect on user satisfaction" }
+          "anchor": {
+            "start": "Twyman's law [8] implies that",
+            "end": "a large effect on user satisfaction"
+          }
         },
         {
           "text": "The strongest check on a treatment effect is reproducing it: re-run the test on a fresh sample of users and see whether a comparable effect appears.",
           "sourceId": "msexp-post",
           "locator": "When in Doubt, Reproduce Results",
-          "anchor": { "start": "The ultimate test for a", "end": "When in doubt, we re-run" }
+          "anchor": {
+            "start": "The ultimate test for a",
+            "end": "When in doubt, we re-run"
+          }
         },
         {
           "text": "Comparing the two groups on the same metric before the test began (a retrospective A/A check) shows whether the randomisation itself produced a gap. A gap there makes a borderline result in the test suspect.",
           "sourceId": "msexp-pre",
           "locator": "Check and Account for Pre-Experiment Bias, Retrospective-AA Analysis",
-          "anchor": { "start": "This analysis computes the same", "end": "bias introduced by randomization" }
+          "anchor": {
+            "start": "This analysis computes the same",
+            "end": "bias introduced by randomization"
+          }
         }
       ]
     }
   ],
   "prerequisites": [
-    { "before": "experiment_hypothesis", "after": "null_and_alternative", "reason": "The null and alternative hypotheses formalise the product hypothesis." },
-    { "before": "randomization", "after": "randomization_unit", "reason": "Choosing what to randomise presumes knowing why randomisation matters." },
-    { "before": "randomization", "after": "sample_ratio_mismatch", "reason": "A sample ratio mismatch is a departure from the planned random split." },
-    { "before": "metrics", "after": "oec_and_guardrails", "reason": "The OEC and guardrails are kinds of metric with different jobs." },
-    { "before": "null_and_alternative", "after": "p_value", "reason": "A p-value is calculated assuming the null hypothesis is true." },
-    { "before": "null_and_alternative", "after": "comparing_two_groups", "reason": "Each two-group test checks a null hypothesis of no difference." },
-    { "before": "p_value", "after": "type_i_ii_errors", "reason": "Both errors are wrong decisions made by comparing a p-value with alpha." },
-    { "before": "p_value", "after": "statistical_vs_practical", "reason": "Statistical significance is defined through the p-value." },
-    { "before": "type_i_ii_errors", "after": "power", "reason": "Power is one minus the Type II error rate." },
-    { "before": "power", "after": "sample_size", "reason": "A sample size is chosen to reach a target power." },
-    { "before": "statistical_vs_practical", "after": "sample_size", "reason": "The smallest effect worth detecting is a practical-significance judgement." },
-    { "before": "type_i_ii_errors", "after": "peeking", "reason": "Peeking is a problem because it inflates the Type I error rate." },
-    { "before": "sample_size", "after": "peeking", "reason": "The plain remedy for peeking is to fix the sample size in advance." },
-    { "before": "type_i_ii_errors", "after": "multiple_testing", "reason": "Multiple testing inflates the overall Type I error rate." },
-    { "before": "multiple_testing", "after": "segments_and_time", "reason": "Each segment read is one more comparison." }
+    {
+      "before": "experiment_hypothesis",
+      "after": "null_and_alternative",
+      "reason": "The null and alternative hypotheses formalise the product hypothesis."
+    },
+    {
+      "before": "randomization",
+      "after": "randomization_unit",
+      "reason": "Choosing what to randomise presumes knowing why randomisation matters."
+    },
+    {
+      "before": "randomization",
+      "after": "sample_ratio_mismatch",
+      "reason": "A sample ratio mismatch is a departure from the planned random split."
+    },
+    {
+      "before": "metrics",
+      "after": "oec_and_guardrails",
+      "reason": "The OEC and guardrails are kinds of metric with different jobs."
+    },
+    {
+      "before": "null_and_alternative",
+      "after": "p_value",
+      "reason": "A p-value is calculated assuming the null hypothesis is true."
+    },
+    {
+      "before": "null_and_alternative",
+      "after": "comparing_two_groups",
+      "reason": "Each two-group test checks a null hypothesis of no difference."
+    },
+    {
+      "before": "p_value",
+      "after": "type_i_ii_errors",
+      "reason": "Both errors are wrong decisions made by comparing a p-value with alpha."
+    },
+    {
+      "before": "p_value",
+      "after": "statistical_vs_practical",
+      "reason": "Statistical significance is defined through the p-value."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "power",
+      "reason": "Power is one minus the Type II error rate."
+    },
+    {
+      "before": "power",
+      "after": "sample_size",
+      "reason": "A sample size is chosen to reach a target power."
+    },
+    {
+      "before": "statistical_vs_practical",
+      "after": "sample_size",
+      "reason": "The smallest effect worth detecting is a practical-significance judgement."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "peeking",
+      "reason": "Peeking is a problem because it inflates the Type I error rate."
+    },
+    {
+      "before": "sample_size",
+      "after": "peeking",
+      "reason": "The plain remedy for peeking is to fix the sample size in advance."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "multiple_testing",
+      "reason": "Multiple testing inflates the overall Type I error rate."
+    },
+    {
+      "before": "multiple_testing",
+      "after": "segments_and_time",
+      "reason": "Each segment read is one more comparison."
+    }
   ]
 }
