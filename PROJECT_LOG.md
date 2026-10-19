@@ -8618,6 +8618,57 @@ recorded in the pack and its status is now **approved**. One of the five links
 contained an apostrophe and still highlighted, which settles the note above:
 browsers treat straight and curly apostrophes as equal.
 
+## 2026-10-20 - Second reference pack: A/B testing; the format held
+
+`ab-testing` 1.0.0 is **provisional**: 18 concepts, 70 key points, 9
+misconceptions, 15 sources and 15 prerequisites. `npm run packs:check` found
+every anchor on its live page. 77 of the 79 anchors are on HTML pages; the 2 in
+the ASA p-value statement PDF are flagged for a manual check. The full gate
+passed: 1,726 tests, lint, typecheck, cloud check, audit and build.
+
+Success criterion 4 of PRD-reference-packs.md is met: a second topic needed no
+change to `types/pack.ts` or `lib/packs/validate.ts`, and no rule was bent.
+
+Sources: Penn State STAT 200 (4 lessons), STAT 500 (1) and STAT 509 (4), all
+CC BY-NC 4.0; the NIST/SEMATECH e-Handbook (7.4.7); Microsoft Experimentation
+Platform's three "Patterns of Trustworthy Experimentation" articles; Evan
+Miller's "How Not To Run an A/B Test"; and the ASA's release of its p-value
+statement. Only Penn State states a licence.
+
+Misconceptions recorded: stopping at first significance; never looking at a
+running test; a p-value as the chance B beats A; a p-value as the chance the
+result is luck; significance as a large effect; a null result as no effect;
+one hit among twenty metrics; slicing a flat test until a segment wins; and
+randomisation as a guarantee of identical groups.
+
+Before validating, every key point was read beside the passage its anchor
+bounds. Seven were reworded or re-anchored so that each says only what its
+highlighted passage says.
+
+Where the format pushed back, without needing a change:
+- One source per key point. A point resting on two sources (the rule from Penn
+  State, its size from Evan Miller) became two key points.
+- The 600-character gap moved two anchors (Bonferroni, group sequential
+  boundaries) and made one key point say only what the nearer passage says.
+- The clinical-trial notes (STAT 509) carry A/B ideas under other names:
+  endpoints for metrics, surrogate endpoints for proxy metrics, interim
+  analyses for peeking. The translation lives only in a key point's wording,
+  so the spot-check is where it gets judged.
+- The ASA statement's journal page refuses the validator (HTTP 403), so the
+  pack cites the ASA's own release, which lists the six principles. It is the
+  only PDF, and its anchors avoid fi/fl/ff words.
+
+Not done:
+- Travis's approval spot-check
+- building tracks from packs, grounding Ask in packs, the catalog UI
+
+Notes:
+- Anchors were drafted against `.pack-cache/` with the same `findAnchor`, so
+  only the final check needed the network. An `--offline-anchors` mode in
+  `packs:check` would make that the standard loop; not built.
+- On a tab's first, cold load, one Microsoft page did not scroll to its
+  highlighted passage; navigating to the same link again did.
+
 ## 2026-10-20 - Reference packs get a machine check (spec v1.1)
 
 Travis wanted the fairness spot-check automated, because there will be many
