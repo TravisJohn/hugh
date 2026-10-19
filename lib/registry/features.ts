@@ -140,7 +140,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "tracker/milestones/[id]/entries",
       "tracker/milestones/[id]/summary",
     ],
-    libDirs:       ["tracker", "documents", "learn"],
+    libDirs:       ["tracker", "documents", "learn", "packs"],
     componentDirs: ["dashboard", "tracker"],
     tables: [
       "learning_goals", "tracks", "milestones", "goal_answers",
@@ -156,7 +156,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 18,
+    tests: 20,
   },
   {
     id:    "ask",
