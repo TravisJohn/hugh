@@ -40,4 +40,4 @@ pack or its sources change.
 
 | Pack | Status | Concepts | Sources |
 |---|---|---|---|
-| `linear-regression` 2.0.0 | provisional | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
+| `linear-regression` 2.0.0 | approved (Travis, 2026-10-19) | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |

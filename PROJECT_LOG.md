@@ -8611,3 +8611,9 @@ Notes:
 - `unpdf` prints harmless `Math.sumPrecise` warnings on Node 24.
 - Whether browser highlights treat straight and curly apostrophes as equal is
   unverified; four anchors contain one.
+
+Later the same day, Travis spot-checked five random key points against their
+highlighted passages, and all five fairly matched their sources. The review is
+recorded in the pack and its status is now **approved**. One of the five links
+contained an apostrophe and still highlighted, which settles the note above:
+browsers treat straight and curly apostrophes as equal.

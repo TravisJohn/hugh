@@ -1,7 +1,7 @@
 {
   "id": "linear-regression",
   "version": "2.0.0",
-  "status": "provisional",
+  "status": "approved",
   "subject": "Linear regression for a continuous response",
   "outOfScope": [
     "Logistic regression and other generalised linear models",
@@ -1316,5 +1316,16 @@
       "after": "cross_validation",
       "reason": "Cross-validation repeats the hold-out idea across folds."
     }
-  ]
+  ],
+  "review": {
+    "reviewedBy": "Travis",
+    "reviewedAt": "2026-10-19",
+    "sampledKeyPoints": [
+      "coefficient_interpretation:2",
+      "coefficient_inference:1",
+      "polynomial_terms:1",
+      "regularization:3",
+      "variable_selection:3"
+    ]
+  }
 }
