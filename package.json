@@ -18,6 +18,7 @@
     "health": "tsx scripts/health-check.ts",
     "cloud": "tsx scripts/cloud-meta.ts",
     "cloud:check": "tsx scripts/cloud-meta.ts --check",
+    "packs:check": "tsx scripts/validate-pack.ts",
     "replay": "tsx scripts/replay-generations.ts"
   },
   "dependencies": {
