@@ -8617,3 +8617,66 @@ highlighted passages, and all five fairly matched their sources. The review is
 recorded in the pack and its status is now **approved**. One of the five links
 contained an apostrophe and still highlighted, which settles the note above:
 browsers treat straight and curly apostrophes as equal.
+
+## 2026-10-20 - Reference packs get a machine check (spec v1.1)
+
+Travis wanted the fairness spot-check automated, because there will be many
+packs. Spec v1.1, which he approved, adds a `machine-checked` status between
+`provisional` and `approved`. A judge model, in a fresh context and blind,
+reads each source passage (the text between the anchors) beside our sentence
+and gives one of four verdicts: supported, partly, not_supported or
+contradicts. It judges every key point and every misconception's correction.
+
+Planted errors are mixed in among the real items, and the judge cannot tell
+which are which. They are every misconception's claim stated as fact, plus one
+corrupted key point of each kind: negation, overstatement, a wrong number or
+direction, an unsupported addition, and a causal claim drawn from an
+association. There must be at least 5, or 10% of the items. A run passes only
+if every real item is supported and every planted error is caught.
+
+The record (`machineCheck`) holds a fingerprint of what was judged, so any
+later edit drops the pack back to `provisional`. The validator and CI enforce
+this. Human approval becomes an audit of one pack in five.
+
+Built:
+- `lib/packs/judge.ts`: the versioned judge instructions, the planted-error
+  rules, the packet builder (shuffled, with opaque ids and a separate answer
+  key), the scorer and the fingerprint. 23 tests.
+- `extractPassage` in `lib/packs/anchor.ts`, sharing one locator with
+  `findAnchor`.
+- Status rules in `lib/packs/validate.ts`.
+- `--judge-packet` and `--record-judgement` modes in `scripts/validate-pack.ts`.
+- `content/packs/plants/linear-regression.json`.
+- The judge runs on Travis's Claude subscription, inside the authoring
+  session. No Hugh API key is involved, and the script itself makes no model
+  calls.
+
+Judge model: Claude Fable 5.1, a tier above the author, needs usage credits
+beyond the subscription, and the first attempt was refused for that reason.
+Travis chose Claude Opus 5.5, the same model that authored the pack, run fresh
+and blind. Re-judging with Fable later is a re-run.
+
+The Linear Regression results show what the check is for. Every run caught 14
+of 14 planted errors, including the C10 claim. Real items supported:
+- **Run 1: 39 of 77.** Almost every flag had the same shape: the anchor
+  covered a fragment, and the key point drew on the text around it.
+  Twenty-five anchors were widened, and 13 claims that went beyond their
+  source were trimmed, for example "the baseline group", "Penn State's
+  example" and "test error eventually rises".
+- **Run 2: 73 of 77.**
+- **Run 3: 77 of 77.**
+
+Pack 2.1.0 is now `machine-checked`. Its 2026-10-19 v1 review, of five items
+on 2.0.0, was removed because it vouched for wording that has since changed.
+Three of its five sampled items were rewritten.
+
+Finding: **the judge varies from run to run on borderline wording.** Three
+items it supported in run 1 were flagged in run 2. A single-run pass is
+therefore strict but somewhat noisy. If this causes churn, the remedy to
+consider is requiring agreement across two runs, not lowering the bar.
+
+Two loose ends:
+- PR #24 (the mastery fix) also raises Learn's registry test count to 22.
+  Whichever branch merges second must set it to the true total.
+- The A/B testing pack, on `feat/ab-testing-pack`, has not been judged. It
+  needs that branch together with this one.

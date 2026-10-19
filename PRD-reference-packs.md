@@ -3,9 +3,10 @@
 Status: **approved by Travis**, 2026-10-19, with verbatim quotes replaced by
 text anchors (see "Why anchors, not quotes"). Scope: the pack format only.
 
-**v1.1 amendment (draft for Travis, 2026-10-20):** adds a `machine-checked`
-status, where a stronger model judges every key point against its source
-passage. See "The machine check". Human approval becomes an audit, not a gate.
+**v1.1 amendment (approved by Travis, 2026-10-20, with the recommended
+defaults):** adds a `machine-checked` status, where a stronger model judges
+every key point against its source passage. See "The machine check". Human
+approval becomes an audit, not a gate.
 
 ## Goal
 
@@ -258,9 +259,13 @@ scheduled re-review; and any pack other than Linear Regression.
    `provisional`, enforced by the validator and tested.
 4. Travis's first audit agrees with the judge on all five items.
 
-## v1.1 open questions
+## Decided at v1.1 approval
 
-1. **Audit cadence:** at least one in every five machine-checked packs
-   (recommended), or every pack?
-2. **Planted errors per run:** at least 5, or 10% of the items (recommended).
-   Raise it if an audit ever catches something the judge passed.
+1. **Audit cadence:** at least one in every five machine-checked packs.
+2. **Planted errors per run:** at least 5, or 10% of the items if that is
+   more. Raise it if an audit ever catches something the judge passed.
+3. **Judge model, first runs:** Claude Fable 5.1 needs usage credits beyond the
+   subscription, so the first runs used Claude Opus 5.5, the most capable model
+   the subscription includes, in a fresh blind context. That is the same model
+   that authored the packs. Re-judging with Fable later is a re-run, and the
+   record names the judge either way.

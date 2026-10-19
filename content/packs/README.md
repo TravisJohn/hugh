@@ -25,12 +25,31 @@ the passage that supports each key point. It never stores a source's text.
    PDF.js drops those ligatures.
 4. **Validate:** `npm run packs:check -- <id>`. Fix every error. The usual one
    is a start phrase that appears more than once on the page; lengthen it until
-   it is unique.
+   it is unique. The passage ends at the *first* place the end words appear
+   after the start, so make the end words distinctive too.
 5. **Set `status: "provisional"`** once it passes with the network on.
-6. **Spot-check.** The validator prints five random key points with links that
-   open each source scrolled to the passage. If each key point fairly says what
-   its passage says, record the review (`reviewedBy`, `reviewedAt`,
-   `sampledKeyPoints`) and set `status: "approved"`.
+6. **Plant errors.** Write `plants/<id>.json`: one deliberately wrong copy of a
+   real key point for each kind of corruption (`negation`, `overstatement`,
+   `wrong_number_or_direction`, `unsupported_addition`,
+   `causal_from_association`). Every misconception's claim is planted
+   automatically on top.
+7. **Machine check.** Run `npm run packs:check -- <id> --judge-packet`. Give a
+   judge in a fresh context *only* the packet it writes, and follow
+   `PRD-reference-packs.md` § The machine check. Then run
+   `npm run packs:check -- <id> --record-judgement <verdicts.json>`.
+   - Any real item that is not `supported` is listed. Widen its anchor if the
+     source supports the whole claim; otherwise trim the claim. Then rebuild
+     the packet and judge again.
+   - A planted error judged `supported` fails the run. Change the judge's
+     instructions and their version before re-running.
+   - A full pass writes the record and sets `machine-checked`.
+8. **Audit (one pack in five).** Travis reads five items beside their
+   passages. If he agrees, record the review with `agreedWithJudge: true` and
+   set `approved`. If he disagrees, the pack goes back to `provisional`.
+
+Editing any key point or misconception after a machine check makes the
+recorded fingerprint stop matching. The offline tests then fail until the pack
+is set back to `provisional` and judged again.
 
 `npm test` checks every pack here against the offline rules, so CI catches a
 broken file. It cannot check anchors (no network); run `packs:check` whenever a
@@ -40,4 +59,4 @@ pack or its sources change.
 
 | Pack | Status | Concepts | Sources |
 |---|---|---|---|
-| `linear-regression` 2.0.0 | approved (Travis, 2026-10-19) | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
+| `linear-regression` 2.1.0 | machine-checked (Opus 5.5, 2026-10-20: 77/77 supported, 14/14 planted errors caught) | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
