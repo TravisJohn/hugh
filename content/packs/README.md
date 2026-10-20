@@ -70,4 +70,4 @@ pack or its sources change.
 | Pack | Status | Concepts | Sources |
 |---|---|---|---|
 | `linear-regression` 2.2.0 | machine-checked (Opus 5.5, 2026-10-20: 77/77 supported, 14/14 planted errors caught); 12 cards; **in the catalog** | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
-| `ab-testing` 1.1.0 | machine-checked (Opus 5.5, 2026-10-20: 79/79 supported, 14/14 planted errors caught) | 18 | Penn State STAT 200 (4 lessons), STAT 500 (1), STAT 509 (4), NIST/SEMATECH e-Handbook (1), Microsoft Experimentation Platform (3 articles), Evan Miller, ASA p-value statement (PDF) |
+| `ab-testing` 1.2.0 | machine-checked (Opus 5.5, 2026-10-20: 79/79 supported, 14/14 planted errors caught); 9 cards; **in the catalog** | 18 | Penn State STAT 200 (4 lessons), STAT 500 (1), STAT 509 (4), NIST/SEMATECH e-Handbook (1), Microsoft Experimentation Platform (3 articles), Evan Miller, ASA p-value statement (PDF) |

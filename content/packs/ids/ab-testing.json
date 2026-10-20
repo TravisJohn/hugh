@@ -1,0 +1,35 @@
+{
+  "packId": "ab-testing",
+  "note": "Every concept and card id this pack has ever published to learners. Ids are permanent: a learner board stores them. Retire a concept instead of deleting it; never remove an id from this file.",
+  "concepts": [
+    "experiment_hypothesis",
+    "randomization",
+    "randomization_unit",
+    "metrics",
+    "oec_and_guardrails",
+    "null_and_alternative",
+    "p_value",
+    "type_i_ii_errors",
+    "statistical_vs_practical",
+    "comparing_two_groups",
+    "ci_difference",
+    "power",
+    "sample_size",
+    "peeking",
+    "multiple_testing",
+    "segments_and_time",
+    "sample_ratio_mismatch",
+    "validating_results"
+  ],
+  "cards": [
+    "framing-the-test",
+    "random-assignment",
+    "hypotheses-and-p",
+    "comparing-groups",
+    "errors-and-meaning",
+    "power-and-sample-size",
+    "peeking",
+    "many-comparisons",
+    "trusting-the-result"
+  ]
+}
