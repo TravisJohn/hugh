@@ -8,6 +8,7 @@ import {
   isGrounded,
   isWellFormed,
   keepGroundedQuestions,
+  keepSyllabusQuestions,
   MIN_QUESTIONS,
   MAX_QUESTIONS,
   MAX_ENTRY_CHARS,
@@ -220,5 +221,25 @@ describe("buildEntriesText", () => {
   it("truncates an over-long body to the cap", () => {
     const text = buildEntriesText([{ title: null, body: "y".repeat(MAX_ENTRY_CHARS + 100) }]);
     expect(text).not.toContain("y".repeat(MAX_ENTRY_CHARS + 1));
+  });
+});
+
+describe("keepSyllabusQuestions (a course card's quiz, PRD row 4)", () => {
+  const base = { question: "Q?", options: ["a", "b", "c", "d"], correctIndex: 0, explanation: "E.", source: "notes" };
+
+  it("keeps a question that names one of the card's key points", () => {
+    const q = { ...base, keyPoint: "collinearity:2" };
+    expect(keepSyllabusQuestions([q], ["collinearity:1", "collinearity:2"])).toEqual({ kept: [q], offSyllabus: 0 });
+  });
+
+  it("drops a question that tests nothing on the syllabus, or a key point the card does not have", () => {
+    const untagged = { ...base };
+    const elsewhere = { ...base, keyPoint: "least_squares:1" };
+    expect(keepSyllabusQuestions([untagged, elsewhere], ["collinearity:1"])).toEqual({ kept: [], offSyllabus: 2 });
+  });
+
+  it("accepts the tag in the well-formed check, and refuses a tag that is not text", () => {
+    expect(isWellFormed({ ...base, keyPoint: "collinearity:1" })).toBe(true);
+    expect(isWellFormed({ ...base, keyPoint: 3 })).toBe(false);
   });
 });

@@ -1,3 +1,4 @@
+import { boardSources } from "@/lib/packs/grounding";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CalendarClock } from "lucide-react";
@@ -134,7 +135,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
         {view === "board" && t ? (
           /* Kanban board */
           <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-5">
-            <KanbanBoard initialMilestones={milestones} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} />
+            <KanbanBoard initialMilestones={milestones} cardSources={boardSources(milestones)} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} />
           </div>
         ) : (
           <TrackBuildPanel

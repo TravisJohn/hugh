@@ -22,9 +22,12 @@ import KanbanColumnComponent from "./KanbanColumn";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneDrawer from "./MilestoneDrawer";
 import SaveFailureNotice from "@/components/ui/SaveFailureNotice";
+import type { CardSourcesView } from "@/lib/packs/grounding";
 
 interface Props {
   initialMilestones: Milestone[];
+  /** Each course card's Sources section, built on the server (lib/packs/grounding.ts). */
+  cardSources?:      Record<string, CardSourcesView>;
   goalId:            string;   // required — see MilestoneDrawer's Props
   trackId?:          string;
   focusMilestoneId?: string | null;
@@ -37,7 +40,7 @@ interface Props {
 }
 
 export default function KanbanBoard({
-  initialMilestones, goalId, trackId, focusMilestoneId,
+  initialMilestones, cardSources, goalId, trackId, focusMilestoneId,
   backlogPriorityMode = "auto",
   pulseId: initialPulseId, validatedId, masteredId,
   isPremium = false, isAdmin = false,
@@ -386,6 +389,7 @@ export default function KanbanBoard({
 
       <MilestoneDrawer
         milestone={activeMilestone}
+        sources={activeMilestone ? cardSources?.[activeMilestone.id] : undefined}
         goalId={goalId}
         onClose={handleDrawerClose}
         onCoverageChange={handleCoverageChange}

@@ -47,7 +47,8 @@ export function recentTextMessages(messages: TextMessage[], count: number): Text
 export interface SessionMessage { role: "hugh" | "learner"; text: string }
 interface AnswersBody { topic: string; answers: Array<{ question: string; answer: string }> }
 export interface TextBodies {
-  learn: { topic: string; messages: TextMessage[]; focusMode?: boolean; codeModeRequested?: boolean };
+  /** `milestoneId` names the card being asked about; a course card's prompt is then built on the server. */
+  learn: { topic: string; messages: TextMessage[]; focusMode?: boolean; codeModeRequested?: boolean; milestoneId?: string };
   code: { messages: TextMessage[]; context: string };
   cloud: { provider: string; serviceId: string; messages: TextMessage[] };
   summary: { topic: string; messages: TextMessage[] };
@@ -108,11 +109,16 @@ function parse(kind: TextRoute, value: unknown): TextBodies[TextRoute] {
   switch (kind) {
     case "learn":
     case "summary": {
-      fields(b, kind === "learn" ? ["topic", "messages", "focusMode", "codeModeRequested"] : ["topic", "messages"]);
+      fields(b, kind === "learn" ? ["topic", "messages", "focusMode", "codeModeRequested", "milestoneId"] : ["topic", "messages"]);
       for (const key of ["focusMode", "codeModeRequested"]) {
         if (b[key] !== undefined && typeof b[key] !== "boolean") throw new TextInputError(`${key} must be a boolean.`);
       }
-      return { topic: string(b.topic, "Topic", TEXT_LIMITS.topicBytes), messages: messages(b.messages, kind === "learn" ? 20 : 100) as TextMessage[], focusMode: b.focusMode as boolean | undefined, codeModeRequested: b.codeModeRequested as boolean | undefined };
+      const milestoneId = b.milestoneId === undefined ? undefined : string(b.milestoneId, "Milestone", 36);
+      return {
+        topic: string(b.topic, "Topic", TEXT_LIMITS.topicBytes), messages: messages(b.messages, kind === "learn" ? 20 : 100) as TextMessage[],
+        focusMode: b.focusMode as boolean | undefined, codeModeRequested: b.codeModeRequested as boolean | undefined,
+        ...(milestoneId !== undefined ? { milestoneId } : {}),
+      };
     }
     case "code":
       fields(b, ["messages", "context"]);

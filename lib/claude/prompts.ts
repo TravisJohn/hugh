@@ -595,8 +595,25 @@ export function factCheckEntryPrompt(
   topic:          string,
   milestoneTitle: string,
   entryBody:      string,
+  /**
+   * A course card's rendered syllabus (lib/packs/grounding.ts). When given,
+   * the note is judged against it alone, not the model's general knowledge
+   * (PRD-narrow-learn.md, row 4).
+   */
+  syllabus?:      string,
 ): string {
-  return `You are Hugh, a precise but supportive learning coach. A learner wrote a diary note while studying "${topic}" (milestone: "${milestoneTitle}"). Check it for factual or conceptual errors.
+  const authority = syllabus
+    ? `
+
+This card belongs to a course with a source-checked syllabus. Judge the note ONLY against it:
+
+${syllabus}
+
+- A statement that contradicts a key point, or repeats a listed wrong belief, is an error. Base the correction and the gap on the syllabus's own key point or correction.
+- A statement the syllabus does not address is NOT an error, even if you would phrase it differently. Do not judge it from your general knowledge.`
+    : "";
+
+  return `You are Hugh, a precise but supportive learning coach. A learner wrote a diary note while studying "${topic}" (milestone: "${milestoneTitle}"). Check it for factual or conceptual errors.${authority}
 
 Learner's note:
 """

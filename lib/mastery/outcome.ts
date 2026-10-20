@@ -19,6 +19,13 @@ export const MASTERY_FEEDBACK_MAX_CHARS = 2000;
 export interface MasteryEvaluation {
   score:    number;
   feedback: string;
+  /**
+   * A course card's listed wrong beliefs the learner stated and left
+   * uncorrected, by ref (`conceptId:mn`). Any one of them means the card is
+   * not mastered, whatever the score (PRD-narrow-learn.md, row 4). Empty on
+   * every other card.
+   */
+  misconceptionsHeld?: string[];
 }
 
 export interface MasteryWrite {
@@ -47,17 +54,28 @@ export interface MasteryOutcome {
  * or missing feedback, is a failed evaluation rather than something to round
  * or default: recording a made-up score is worse than asking for a re-run.
  */
-export function parseEvaluation(raw: unknown): MasteryEvaluation | null {
+export function parseEvaluation(raw: unknown, knownMisconceptions: readonly string[] = []): MasteryEvaluation | null {
   if (typeof raw !== "object" || raw === null) return null;
-  const { score, feedback } = raw as { score?: unknown; feedback?: unknown };
+  const { score, feedback, misconceptionsHeld } = raw as { score?: unknown; feedback?: unknown; misconceptionsHeld?: unknown };
   if (typeof score !== "number" || !Number.isInteger(score)) return null;
   if (score < MASTERY_SCORE_MIN || score > MASTERY_SCORE_MAX) return null;
   if (typeof feedback !== "string" || feedback.trim() === "") return null;
-  return { score, feedback: feedback.trim().slice(0, MASTERY_FEEDBACK_MAX_CHARS) };
+  const evaluation: MasteryEvaluation = { score, feedback: feedback.trim().slice(0, MASTERY_FEEDBACK_MAX_CHARS) };
+
+  if (knownMisconceptions.length > 0) {
+    // On a course card the list is required: a missing or garbled list is a
+    // failed evaluation, never read as "held none", which would pass the card.
+    if (!Array.isArray(misconceptionsHeld) || !misconceptionsHeld.every(r => typeof r === "string")) return null;
+    // Only this card's own wrong beliefs count. A ref the model made up is
+    // dropped rather than allowed to fail a learner on something unlisted.
+    const known = new Set(knownMisconceptions);
+    evaluation.misconceptionsHeld = [...new Set(misconceptionsHeld as string[])].filter(r => known.has(r));
+  }
+  return evaluation;
 }
 
 export function masteryOutcome(evaluation: MasteryEvaluation, alreadyMastered: boolean): MasteryOutcome {
-  const passed = evaluation.score >= MASTERY_PASS_SCORE;
+  const passed = evaluation.score >= MASTERY_PASS_SCORE && (evaluation.misconceptionsHeld ?? []).length === 0;
   const recorded = { mastery_score: evaluation.score, mastery_feedback: evaluation.feedback };
   if (alreadyMastered) return { passed, write: recorded };
   if (passed) return { passed, write: { mastery_validated: true, ...recorded } };

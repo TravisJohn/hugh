@@ -4,6 +4,7 @@ import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate } from "@/lib/usage";
 import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 import { logSafeError } from "@/lib/observability/log";
+import { cardGrounding, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE } from "@/lib/packs/grounding";
 import type { LearningPoint } from "@/types";
 import {
   buildCriteria,
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
   // summary hasn't been generated yet.
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("id, title, summary, summary_doc, learning_points, kanban_column, tracks!track_id!inner(user_id)")
+    .select("id, title, summary, summary_doc, learning_points, concept_ids, kanban_column, tracks!track_id!inner(user_id)")
     .eq("id", milestoneId)
     .single();
 
@@ -106,11 +107,17 @@ export async function POST(request: NextRequest) {
       .eq("milestone_id", milestoneId)
       .order("created_at", { ascending: true });
 
+    // A course card anchors the reflection on its syllabus, never on the
+    // learner-editable learning points (PRD-narrow-learn.md, row 4).
+    const grounding = cardGrounding((milestone as { concept_ids?: string[] | null }).concept_ids);
+    if (grounding.kind === "refused") {
+      return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+    }
     const criteria = buildCriteria({
       title,
       summary:        (milestone as { summary?: string | null }).summary ?? null,
       learningPoints: ((milestone as { learning_points?: LearningPoint[] | null }).learning_points) ?? null,
-    });
+    }, grounding.kind === "ok" ? criteriaSyllabus(grounding.ground) : undefined);
     const diaryContext = prepareDiaryContext(entries ?? [], MAX_DIARY_CHARS);
     fallbackContext = diaryContext
       ? `${renderCriteriaForPrompt(criteria)}\n\n${diaryContext}`
