@@ -16,10 +16,11 @@ export type AnchorResult =
 
 /**
  * Fold away the differences a page and a hand-typed anchor disagree on but a
- * reader would not: case, runs of whitespace, curly versus straight quotes,
- * the many dashes, soft hyphens and compatibility forms such as ligatures.
+ * reader would not: runs of whitespace, curly versus straight quotes, the many
+ * dashes, soft hyphens and compatibility forms such as ligatures. Case is kept,
+ * so a passage shown to the judge reads as written.
  */
-export function normalizeText(s: string): string {
+function foldForDisplay(s: string): string {
   return s
     .normalize("NFKC")
     .replace(/­/g, "")
@@ -27,8 +28,12 @@ export function normalizeText(s: string): string {
     .replace(/[“”„‟″]/g, "\"")
     .replace(/[‐-―−]/g, "-")
     .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
+    .trim();
+}
+
+/** `foldForDisplay`, then case too: the form anchors are matched in. */
+export function normalizeText(s: string): string {
+  return foldForDisplay(s).toLowerCase();
 }
 
 export function wordCount(s: string): number {
@@ -56,13 +61,18 @@ function wholeWordOccurrences(haystack: string, needle: string): number[] {
   }
 }
 
+type Located =
+  | { status: "found"; from: number; to: number }
+  | Exclude<AnchorResult, { status: "found" }>;
+
 /**
- * Check that a passage bounded by the anchor exists on the page. The start
+ * Where the anchored passage sits in already-normalised page text. The start
  * words must occur exactly once — an ambiguous start cannot say which passage
  * is meant — and the end words must follow within `maxGap` characters.
+ * `findAnchor` and `extractPassage` share this, so the validator and the judge
+ * always see the same passage.
  */
-export function findAnchor(pageText: string, anchor: PackAnchor, maxGap = ANCHOR_MAX_GAP): AnchorResult {
-  const page  = normalizeText(pageText);
+function locate(page: string, anchor: PackAnchor, maxGap: number): Located {
   const start = normalizeText(anchor.start);
   const end   = normalizeText(anchor.end);
 
@@ -72,7 +82,31 @@ export function findAnchor(pageText: string, anchor: PackAnchor, maxGap = ANCHOR
 
   const afterStart = starts[0] + start.length;
   const ends = wholeWordOccurrences(page.slice(afterStart, afterStart + maxGap + end.length), end);
-  return ends.length > 0 ? { status: "found" } : { status: "end-missing" };
+  return ends.length > 0
+    ? { status: "found", from: starts[0], to: afterStart + ends[0] + end.length }
+    : { status: "end-missing" };
+}
+
+/** Check that a passage bounded by the anchor exists on the page. */
+export function findAnchor(pageText: string, anchor: PackAnchor, maxGap = ANCHOR_MAX_GAP): AnchorResult {
+  const located = locate(normalizeText(pageText), anchor, maxGap);
+  return located.status === "found" ? { status: "found" } : located;
+}
+
+/**
+ * The passage itself, from its start words through its end words, with
+ * whitespace and typography folded but case kept, so the judge reads it as
+ * written. Null when the anchor does not resolve. The passage is for the judge
+ * and the reviewer only; it is never stored in a pack.
+ */
+export function extractPassage(pageText: string, anchor: PackAnchor, maxGap = ANCHOR_MAX_GAP): string | null {
+  const display = foldForDisplay(pageText);
+  const lower   = display.toLowerCase();
+  const located = locate(lower, anchor, maxGap);
+  if (located.status !== "found") return null;
+  // Lower-casing keeps the length of virtually all text, so the positions line
+  // up. If it ever does not, the lower-cased slice is still the right passage.
+  return (lower.length === display.length ? display : lower).slice(located.from, located.to);
 }
 
 /** Text-fragment syntax reserves `-`, `,` and `&`; encodeURIComponent misses `-`. */
