@@ -156,7 +156,7 @@ the surfaces table.
    misconception in mastery, and open three source links.
 7. **A/B testing** goes through the same steps (cards only). Then phase 2.
 
-## Phase 1 architecture (PROPOSED, awaiting Travis's approval)
+## Phase 1 architecture (APPROVED by Travis, 2026-10-20, all four decisions)
 
 Phase 1 is the Linear Regression proof behind a flag. The open-topic path is
 untouched, and no learner sees anything new.

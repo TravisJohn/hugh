@@ -8890,3 +8890,12 @@ Three corrections were made on approval, because #26 merged while the PRD was
 being written: its migration is 060 (059 became the review quiz), row 9 ships
 the full positioning sentence, and grounding the quiz in the pack is part of
 this work. Next: the phase 1 architecture, approved before any code.
+
+## 2026-10-20 - Narrow Learn phase 1 architecture approved
+
+Travis approved the phase 1 architecture as proposed (see the PRD), with all
+four decisions: the flag is admin-only in production; pack builds skip the
+token usage gate because they spend nothing; grounding keys off
+`milestones.concept_ids`, never `learning_goals.pack_id`; and the work ships
+as two PRs. PR A ("a pack becomes a board") starts with the Linear Regression
+card order, which Travis sees before anything else is built.
