@@ -1,8 +1,9 @@
 /**
  * What deleting an account actually removes, and in what order.
  *
- * Part of the privacy pass. Deleting the `auth.users` row cascades all 25
- * user-owned tables (and `pending_document_extractions` via `learning_goals`),
+ * Part of the privacy pass. Deleting the `auth.users` row cascades all 26
+ * user-owned tables (and `pending_document_extractions` via `learning_goals`,
+ * `review_quiz_answers` via `review_quizzes`),
  * but two things it does NOT reach:
  *
  *   1. Storage objects. `note-images` and `monitor-documents` are keyed

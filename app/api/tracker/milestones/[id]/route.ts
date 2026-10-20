@@ -26,8 +26,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // What this request may write, and which results a move resets. Mastery
-  // results are refused here: the mastery session route records them.
+  // What this request may write, and which results a move resets. Results are
+  // refused here: the mastery session route and tracker/review/submit record
+  // them after grading the learner themselves.
   const patch = buildMilestonePatch(body);
   if (!patch.ok) {
     return NextResponse.json({ error: patch.error }, { status: 400 });

@@ -121,11 +121,13 @@ export default function PrivacyPage() {
             removes all of it.
           </p>
           <p>
-            Two things do expire. If you upload a document to build a course and never
+            Three things do expire. If you upload a document to build a course and never
             approve the topic Hugh suggests, the text extracted from it is deleted
-            after {RETENTION_DAYS.pendingDocumentExtractions} days. And technical records
-            of what Hugh did — whether a request succeeded and how long it took — are
-            deleted after {RETENTION_DAYS.operationEvents} days.
+            after {RETENTION_DAYS.pendingDocumentExtractions} days. A review quiz — its
+            questions, its answer key and the answers you picked — is deleted
+            after {RETENTION_DAYS.reviewQuizzes} days; whether you passed stays on the
+            card. And technical records of what Hugh did — whether a request succeeded
+            and how long it took — are deleted after {RETENTION_DAYS.operationEvents} days.
           </p>
           <p>
             Hugh does not delete inactive accounts automatically. If you stop using
