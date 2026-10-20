@@ -13,6 +13,9 @@ import { judgeTopicDomain } from "@/lib/learn/topic-domain-server";
 import { mayProceed } from "@/lib/learn/topic-domain";
 import { generateTrack } from "@/lib/tracker/generate";
 import { recordOperation } from "@/lib/observability/record";
+import { isPackGoalBody, type PackGoalBody } from "@/lib/claude/textInput";
+import { canUsePackLearn } from "@/lib/packs/access";
+import { loadPack, PACK_REFUSAL_MESSAGE, refusalStatus } from "@/lib/packs/catalog";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -36,6 +39,9 @@ export async function POST(request: NextRequest) {
   const input = await readTextRequest(request, "goals");
   if (input.response) return input.response;
   const body = input.body;
+
+  // Narrow Learn: a catalog course. No topic, no refinement, no model call.
+  if (isPackGoalBody(body)) return startCourse(userId, body);
 
   const end_date = body.end_date?.trim();
   const answers  = body.answers ?? [];
@@ -202,4 +208,83 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json({ goal, tips });
+}
+
+/**
+ * Start a course from the reference-pack catalog (PRD-narrow-learn.md).
+ *
+ * The catalog is the gate: an id that is not a machine-checked pack with
+ * cards is refused with that refusal's own message, so there is no topic gate
+ * and no model call. The build spends nothing, so there is no usage gate
+ * either (phase 1 architecture, decision 2). It still runs through the one
+ * machine (Rule 3): goal 'pending', build in after(), settle 'ready' or
+ * 'failed'.
+ */
+async function startCourse(userId: string, body: PackGoalBody): Promise<NextResponse> {
+  const supabase = await createClient();
+
+  // Phase 1 is an administrator preview. Read from the protected profiles
+  // row, never from the request or JWT metadata.
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_admin, is_blocked")
+    .eq("user_id", userId)
+    .single();
+  if (profileError) {
+    logSafeError("dashboard/goals course access", profileError);
+    return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
+  }
+  if (!canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile)) {
+    return NextResponse.json({ error: "Courses aren't open yet." }, { status: 403 });
+  }
+
+  const loaded = loadPack(body.packId);
+  if (!loaded.ok) {
+    return NextResponse.json({ error: PACK_REFUSAL_MESSAGE[loaded.reason] }, { status: refusalStatus(loaded.reason) });
+  }
+  const { pack, region } = loaded;
+
+  const { data: goal, error: goalError } = await supabase
+    .from("learning_goals")
+    .insert({
+      user_id:      userId,
+      topic:        pack.subject,
+      end_date:     body.end_date,
+      track_status: "pending",
+      region,
+      source_kind:  "pack",
+      pack_id:      pack.id,
+      pack_version: pack.version,
+    })
+    .select("*")
+    .single();
+
+  if (goalError || !goal) {
+    logSafeError("dashboard/goals course db", goalError);
+    return NextResponse.json({ error: "Failed to save goal" }, { status: 500 });
+  }
+
+  const goalId = goal.id as string;
+
+  after(async () => {
+    const service   = createServiceClient();
+    const startedAt = Date.now();
+    try {
+      await generateTrack(service, userId, { kind: "pack", packId: pack.id }, goalId);
+      await service.from("learning_goals").update({ track_status: "ready" }).eq("id", goalId);
+      await recordOperation({
+        userId, operation: "track.build", outcome: "ok",
+        durationMs: Date.now() - startedAt, detail: { source: "pack", packId: pack.id },
+      });
+    } catch (err) {
+      logSafeError("dashboard/goals course build", err);
+      await service.from("learning_goals").update({ track_status: "failed" }).eq("id", goalId);
+      await recordOperation({
+        userId, operation: "track.build", outcome: "failed",
+        durationMs: Date.now() - startedAt, error: err, detail: { source: "pack", packId: pack.id },
+      });
+    }
+  });
+
+  return NextResponse.json({ goal, tips: [] });
 }

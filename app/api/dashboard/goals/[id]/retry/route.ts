@@ -11,6 +11,8 @@ import { generateTrack } from "@/lib/tracker/generate";
 import { buildState, retryVerdict, MAX_BUILDS_PER_GOAL } from "@/lib/tracker/buildState";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
+import { canUsePackLearn } from "@/lib/packs/access";
+import { loadPack, PACK_REFUSAL_MESSAGE, refusalStatus } from "@/lib/packs/catalog";
 import { type LearningGoal } from "@/types";
 
 // Rebuild the track for a goal whose build failed or died mid-flight.
@@ -33,20 +35,6 @@ export async function POST(
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // A retry spends a full track-generation call, so it is gated like any
-  // other spend. Without this, a failing build would be an unmetered loop.
-  const usageGate = await enforceUsageGate(userId, "tracker/generate");
-  if (usageGate) {
-    void recordOperation({
-      userId, operation: "track.retry", outcome: "refused",
-      // No `source` here, deliberately: this refusal happens before the goal
-      // is loaded, and loading it just to label a budget refusal would add a
-      // query to the one path that is meant to spend nothing.
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
   const { id: goalId } = await params;
   const supabase = await createClient();
 
@@ -62,6 +50,24 @@ export async function POST(
   }
 
   const g = goal as LearningGoal;
+  const isCourse = g.source_kind === "pack";
+
+  // A topic retry spends a full track-generation call, so it is gated like any
+  // other spend; without this, a failing build would be an unmetered loop. A
+  // course rebuild lays out the pack's cards and spends nothing, so it is not
+  // (phase 1 architecture, decision 2). The rebuild ceiling below still holds
+  // for both. Loading the goal first costs one query on a refusal, which is
+  // what knowing the kind of goal takes.
+  if (!isCourse) {
+    const usageGate = await enforceUsageGate(userId, "tracker/generate");
+    if (usageGate) {
+      void recordOperation({
+        userId, operation: "track.retry", outcome: "refused",
+        detail: { reason: "usage-gate", source: g.source_kind },
+      });
+      return usageGate;
+    }
+  }
 
   // "Does a usable board already exist?" is part of the decision: a goal can
   // read 'ready' and still have no track, or a track with nothing on it.
@@ -138,40 +144,32 @@ export async function POST(
     return NextResponse.json({ error: reason, verdict }, { status: 409 });
   }
 
-  // A stored goal is not proof that its topic passed the gate. RLS lets an
-  // authenticated learner create their own goal row directly, and retry used
-  // to send that row straight to generation. Recheck before changing state or
-  // deleting any partial track. The ordinary create path makes the same call.
-  const checkedTopic = checkTopic(g.topic);
-  if (!checkedTopic.ok) {
-    return NextResponse.json({
-      error: "This goal's topic cannot be checked. Start a new learning track with a shorter, clear topic.",
-    }, { status: 422 });
-  }
-  if (checkedTopic.topic !== g.topic) {
-    return NextResponse.json({
-      error: "This stored topic contains unsupported formatting. Start a new learning track with a clear, single-line topic.",
-    }, { status: 422 });
-  }
-
-  let topicVerdict;
-  try {
-    topicVerdict = await judgeTopicDomain(
-      checkedTopic.topic, userId, [], textBudgetGuard(userId, "learn/topic-domain"),
-    );
-  } catch (err) {
-    const refusal = textBudgetResponse(err);
-    if (refusal) return refusal;
-    return NextResponse.json({
-      error: "Hugh couldn't check this topic right now. Please try rebuilding later.",
-    }, { status: 503 });
-  }
-  if (!mayProceed(topicVerdict)) {
-    return NextResponse.json({
-      error: topicVerdict.verdict === "needs_angle"
-        ? "This topic needs a clearer data angle. Start a new learning track so Hugh can ask what you mean."
-        : topicVerdict.message || "This topic sits outside Hugh's data and analytics focus.",
-    }, { status: 422 });
+  // A course is checked against the catalog instead of the topic gate. The
+  // goal row is learner-writable, so neither `source_kind` nor `pack_id` is
+  // trusted here: the admin preview is enforced again, and the id must name a
+  // teachable pack. Then it rebuilds from the pack, exactly as it was built.
+  let coursePackId: string | null = null;
+  if (isCourse) {
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("is_admin, is_blocked")
+      .eq("user_id", userId)
+      .single();
+    if (profileError) {
+      logSafeError("goals/retry course access", profileError);
+      return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
+    }
+    if (!canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile)) {
+      return NextResponse.json({ error: "Courses aren't open yet." }, { status: 403 });
+    }
+    const loaded = loadPack(g.pack_id ?? "");
+    if (!loaded.ok) {
+      return NextResponse.json({ error: PACK_REFUSAL_MESSAGE[loaded.reason] }, { status: refusalStatus(loaded.reason) });
+    }
+    coursePackId = loaded.pack.id;
+  } else {
+    const refused = await recheckTopic(g, userId);
+    if (refused) return refused;
   }
 
   const startedAt = new Date().toISOString();
@@ -205,7 +203,8 @@ export async function POST(
         throw new Error(`could not clear the previous track: ${clearError.message}`);
       }
 
-      await generateTrack(service, userId, g.topic, goalId);
+      if (coursePackId) await generateTrack(service, userId, { kind: "pack", packId: coursePackId }, goalId);
+      else              await generateTrack(service, userId, g.topic, goalId);
       await service.from("learning_goals").update({ track_status: "ready" }).eq("id", goalId);
       await recordOperation({
         userId, operation: "track.retry", outcome: "ok",
@@ -232,4 +231,47 @@ export async function POST(
   return NextResponse.json({
     goal: { ...g, track_status: "pending", track_started_at: startedAt },
   });
+}
+
+/**
+ * A stored goal is not proof that its topic passed the gate. RLS lets an
+ * authenticated learner create their own goal row directly, and retry used
+ * to send that row straight to generation. Recheck before changing state or
+ * deleting any partial track. The ordinary create path makes the same call.
+ * Returns the refusal to send, or null to proceed.
+ */
+async function recheckTopic(g: LearningGoal, userId: string): Promise<NextResponse | null> {
+  const checkedTopic = checkTopic(g.topic);
+  if (!checkedTopic.ok) {
+    return NextResponse.json({
+      error: "This goal's topic cannot be checked. Start a new learning track with a shorter, clear topic.",
+    }, { status: 422 });
+  }
+  if (checkedTopic.topic !== g.topic) {
+    return NextResponse.json({
+      error: "This stored topic contains unsupported formatting. Start a new learning track with a clear, single-line topic.",
+    }, { status: 422 });
+  }
+
+  let topicVerdict;
+  try {
+    topicVerdict = await judgeTopicDomain(
+      checkedTopic.topic, userId, [], textBudgetGuard(userId, "learn/topic-domain"),
+    );
+  } catch (err) {
+    const refusal = textBudgetResponse(err);
+    if (refusal) return refusal;
+    return NextResponse.json({
+      error: "Hugh couldn't check this topic right now. Please try rebuilding later.",
+    }, { status: 503 });
+  }
+  if (!mayProceed(topicVerdict)) {
+    return NextResponse.json({
+      error: topicVerdict.verdict === "needs_angle"
+        ? "This topic needs a clearer data angle. Start a new learning track so Hugh can ask what you mean."
+        : topicVerdict.message || "This topic sits outside Hugh's data and analytics focus.",
+    }, { status: 422 });
+  }
+
+  return null;
 }

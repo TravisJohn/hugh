@@ -8899,3 +8899,40 @@ token usage gate because they spend nothing; grounding keys off
 `milestones.concept_ids`, never `learning_goals.pack_id`; and the work ships
 as two PRs. PR A ("a pack becomes a board") starts with the Linear Regression
 card order, which Travis sees before anything else is built.
+
+## 2026-10-20 - Narrow Learn PR A: a pack becomes a board
+
+Built behind `PACK_LEARN_ENABLED` as an administrator preview. Learners see
+nothing new, and the open-topic path is unchanged.
+
+- **Pack format v1.2:** `cards` (8 to 14, 1 to 4 concepts each, in teaching
+  order) and `retired` on a concept. The validator checks that every live
+  concept is on exactly one card and that no card teaches ahead of a
+  prerequisite. Adding cards leaves the machine-check fingerprint unchanged,
+  and a test proves it.
+- **Linear Regression 2.2.0** carries the 12 cards Travis approved. It is
+  still machine-checked. `content/packs/ids/linear-regression.json` locks its
+  28 concept ids and 12 card ids: an id published to a learner's board can
+  never disappear.
+- **`lib/packs/catalog.ts`** lists the courses and loads one, refusing a pack
+  that is unknown, invalid, below machine-checked, or has no cards, each with
+  its own message. A broken pack is listed as broken, never dropped.
+  **`track.ts`** turns a pack into board rows with no model call.
+  **`access.ts`** is the admin-preview check.
+- **`generateTrack`** takes a `{ kind: "pack" }` source. It shares one board
+  writer (pulled out of the topic path unchanged) and one provenance row:
+  `source_kind 'pack'`, model `pack`, the pack's version and fingerprint, and
+  0 tokens.
+- **The routes:** `dashboard/goals` and `retry` accept a course. There is no
+  topic gate and no usage gate on that path, because the catalog is the gate
+  and it spends nothing. Retry re-checks the admin preview, because learners
+  can write `learning_goals`.
+- **Migration 060** adds `milestones.concept_ids` (no learner grant),
+  `learning_goals.pack_id` and `pack_version` (display only), and `'pack'` to
+  both `source_kind` CHECKs. Its SQL test runs in CI.
+- **`/home/learn`** shows a "Courses · admin preview" section.
+- **Registry:** a written `tracker -> packs` edge, and Learn's test count goes
+  to 27. CLAUDE.md Rule 3 now says "gate the spend it causes".
+
+DEPLOY ORDER: apply 060 before this code deploys. Then set
+`PACK_LEARN_ENABLED=true` in Vercel to see the course.

@@ -76,6 +76,7 @@ interface Script {
 interface Spy {
   deletedTrackIds:      string[];
   milestoneRowsWritten: number;
+  milestoneRows:        Record<string, unknown>[];
   trackRowWritten:      Record<string, unknown> | null;
   generationRows:       Record<string, unknown>[];
 }
@@ -91,6 +92,7 @@ function makeSupabase(script: Script): { client: SupabaseClient; spy: Spy } {
   const spy: Spy = {
     deletedTrackIds:      [],
     milestoneRowsWritten: 0,
+    milestoneRows:        [],
     trackRowWritten:      null,
     generationRows:       [],
   };
@@ -118,8 +120,9 @@ function makeSupabase(script: Script): { client: SupabaseClient; spy: Spy } {
       }
       if (table === "milestones") {
         return {
-          insert(rows: unknown[]) {
+          insert(rows: Record<string, unknown>[]) {
             spy.milestoneRowsWritten = rows.length;
+            spy.milestoneRows        = rows;
             return {
               select: async () =>
                 script.milestoneInsert ?? {
@@ -490,5 +493,63 @@ describe("generateTrack - the provenance row", () => {
         : original(table);
 
     await expect(generateTrack(client, "user-1", "SQL")).resolves.toBe("track-1");
+  });
+});
+
+// -- A course built from a reference pack (narrow Learn, phase 1) -----------
+
+describe("generateTrack - a course built from a reference pack", () => {
+  it("lays out the pack's cards with no model call, no ranking call and no usage logged", async () => {
+    const { client, spy } = makeSupabase({});
+    await expect(generateTrack(client, "user-1", { kind: "pack", packId: "linear-regression" }, "goal-9"))
+      .resolves.toBe("track-1");
+
+    expect(messagesCreate).not.toHaveBeenCalled();
+    expect(assignBacklogPriorityMock).not.toHaveBeenCalled();
+    expect(logUsageMock).not.toHaveBeenCalled();
+
+    expect(spy.trackRowWritten).toMatchObject({
+      user_id: "user-1", goal_id: "goal-9", title: "Linear regression for a continuous response",
+    });
+    expect(spy.milestoneRows).toHaveLength(12);
+    expect(spy.milestoneRows[0]).toMatchObject({
+      track_id: "track-1", title: "Framing a regression problem", kanban_column: "learn", position: 0,
+      concept_ids: ["linear-regression:problem_frame", "linear-regression:linear_model", "linear-regression:population_vs_estimated"],
+    });
+    expect((spy.milestoneRows[0]!.learning_points as unknown[]).length).toBeGreaterThan(0);
+    expect(spy.milestoneRows.slice(1).every(r => r.kanban_column === "backlog")).toBe(true);
+  });
+
+  it("records the build's provenance as a pack build, naming the pack, its version and its fingerprint", async () => {
+    const { client, spy } = makeSupabase({});
+    await generateTrack(client, "user-1", { kind: "pack", packId: "linear-regression" }, "goal-9");
+
+    expect(spy.generationRows).toHaveLength(1);
+    expect(spy.generationRows[0]).toMatchObject({
+      source_kind: "pack", model: "pack", input_topic: "linear-regression",
+      prompt_version: "linear-regression@2.2.0", prompt_fingerprint: expect.stringMatching(/^sha256:/),
+      max_tokens: null, tokens_in: 0, tokens_out: 0, ranked: false,
+      outcome: "ok", milestone_count: 12, track_id: "track-1", goal_id: "goal-9",
+    });
+  });
+
+  it("refuses a course that is not in the catalog before writing anything, and still records the failure", async () => {
+    const { client, spy } = makeSupabase({});
+    await expect(generateTrack(client, "user-1", { kind: "pack", packId: "not-a-course" }, "goal-9"))
+      .rejects.toBeInstanceOf(TrackGenerationError);
+
+    expect(spy.trackRowWritten).toBeNull();
+    expect(spy.generationRows[0]).toMatchObject({
+      source_kind: "pack", outcome: "failed", prompt_version: "not-a-course@unloaded", track_id: null,
+    });
+  });
+
+  it("removes the track it made when the cards fail to save, so a retry finds a clean slate", async () => {
+    const { client, spy } = makeSupabase({ milestoneInsert: { data: null, error: { message: "boom" } } });
+    await expect(generateTrack(client, "user-1", { kind: "pack", packId: "linear-regression" }, "goal-9"))
+      .rejects.toBeInstanceOf(TrackGenerationError);
+
+    expect(spy.deletedTrackIds).toEqual(["track-1"]);
+    expect(spy.generationRows[0]).toMatchObject({ outcome: "failed", source_kind: "pack" });
   });
 });

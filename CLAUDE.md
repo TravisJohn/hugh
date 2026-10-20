@@ -139,6 +139,7 @@ OPENAI_API_KEY                  # optional — gates Notes Coach, Realtime maste
 OPENAI_MODEL                    # optional — admin architecture assistant
 HUGH_ADMIN_URL                  # optional — admin architecture assistant
 MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery
+PACK_LEARN_ENABLED              # optional flag — narrow-Learn courses, admin preview
 SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
 ```
 
@@ -189,10 +190,18 @@ pending → after() runs generateTrack → ready | failed
 ```
 Watched by `useTrackStatusWatch` (Realtime + 3s poll + hard timeout). Three
 routes drive it — `dashboard/goals`, `goals/document/approve`, and
-`goals/[id]/retry` — and each must set `maxDuration`, gate usage, and settle
-the status in both the success and failure branch. Do not add a fourth path
-that generates a track synchronously; that was `/api/tracker/generate`, and it
-was deleted for having no `maxDuration`, no usage gate and no domain gate.
+`goals/[id]/retry` — and each must set `maxDuration`, gate the spend it
+causes, and settle the status in both the success and failure branch. Do not
+add a fourth path that generates a track synchronously; that was
+`/api/tracker/generate`, and it was deleted for having no `maxDuration`, no
+usage gate and no domain gate.
+
+`generateTrack` takes either a topic (the model builds the milestones) or a
+`{ kind: "pack", packId }` source (narrow Learn: the milestones are a reference
+pack's authored cards, `lib/packs/track.ts`). A pack build makes no model call,
+so `dashboard/goals` and `retry` skip the usage gate and the topic gate for it;
+the catalog (`lib/packs/catalog.ts`) is its gate, and the rebuild ceiling still
+holds. Both kinds share one board writer and one provenance row.
 
 Whether a build is *still running* or *dead* is decided in one place:
 `lib/tracker/buildState.ts` (pure, unit-tested). The card, the track page and
@@ -263,6 +272,11 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   basic fields. If a learner-written write starts failing, grant that one
   column in a new migration; never grant the table back. The milestone PATCH
   route accepts no results at all.
+- **A card's concepts are server-written.** `milestones.concept_ids`
+  (migration 060) names the reference-pack concepts a course card teaches, as
+  `packId:conceptId`. Grounding keys off it, so no learner grant ever includes
+  it. Never ground a card in `learning_goals.pack_id`: learners can write
+  `learning_goals`, so that column is display only.
 - **The review answer key never reaches the browser.** Since migration 059 the
   quiz route stores each quiz with its key in `review_quizzes` and sends the
   questions only. `tracker/review/answer` locks one answer per question (the

@@ -92,9 +92,9 @@ export type ClientPersona = Omit<Persona, 'voiceId'>;
 // fires (see PRD-course-from-document.md).
 export type TrackStatus = 'pending' | 'ready' | 'failed' | 'awaiting_approval';
 
-// Where a goal's topic came from: the Socratic refinement loop, or an
-// uploaded document.
-export type SourceKind = 'qa' | 'document';
+// Where a goal's topic came from: the Socratic refinement loop, an uploaded
+// document, or (narrow Learn) a course in the reference-pack catalog.
+export type SourceKind = 'qa' | 'document' | 'pack';
 
 export interface LearningGoal {
   id:           string;
@@ -112,6 +112,11 @@ export interface LearningGoal {
   // assigned by the topic gate. Null on every goal created before it, and on
   // any the gate could not honestly place — an unfiled goal lights nothing.
   region: string | null;
+  // The course and version a pack goal was built from (migration 060); null
+  // on every other goal. Display only: a learner can write these, so nothing
+  // grounds a card in them. Cards carry their own concept_ids for that.
+  pack_id?:      string | null;
+  pack_version?: string | null;
 }
 
 // One 5-whys question and the learner's answer to it, as stored by migration
