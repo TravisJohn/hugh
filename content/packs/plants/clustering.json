@@ -1,0 +1,31 @@
+{
+  "packId": "clustering",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "kmeans_algorithm:4",
+      "type": "negation",
+      "sentence": "K-means is not guaranteed to converge, because the objective function can increase from one iteration to the next."
+    },
+    {
+      "ref": "kmeans_initialisation:5",
+      "type": "overstatement",
+      "sentence": "Because k-means++ starts the centroids far apart, it guarantees the globally best clustering, which random initialisation never finds."
+    },
+    {
+      "ref": "external_evaluation:3",
+      "type": "wrong_number_or_direction",
+      "sentence": "Both scores reach 1.0 for a perfect match; the unadjusted Rand index ranges from -1 to 1 and the adjusted one from 0 to 1."
+    },
+    {
+      "ref": "dbscan:1",
+      "type": "unsupported_addition",
+      "sentence": "DBSCAN sees clusters as areas of high density separated by areas of low density, so its clusters can be any shape; it was first built to cluster web search results."
+    },
+    {
+      "ref": "silhouette:5",
+      "type": "causal_from_association",
+      "sentence": "Making a dataset's clusters more convex causes its silhouette coefficient to rise, so reshaping clusters to be convex is how to improve a clustering."
+    }
+  ]
+}
