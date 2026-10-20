@@ -8617,3 +8617,136 @@ highlighted passages, and all five fairly matched their sources. The review is
 recorded in the pack and its status is now **approved**. One of the five links
 contained an apostrophe and still highlighted, which settles the note above:
 browsers treat straight and curly apostrophes as equal.
+
+## 2026-10-20 - Second reference pack: A/B testing; the format held
+
+`ab-testing` 1.0.0 is **provisional**: 18 concepts, 70 key points, 9
+misconceptions, 15 sources and 15 prerequisites. `npm run packs:check` found
+every anchor on its live page. 77 of the 79 anchors are on HTML pages; the 2 in
+the ASA p-value statement PDF are flagged for a manual check. The full gate
+passed: 1,726 tests, lint, typecheck, cloud check, audit and build.
+
+Success criterion 4 of PRD-reference-packs.md is met: a second topic needed no
+change to `types/pack.ts` or `lib/packs/validate.ts`, and no rule was bent.
+
+Sources: Penn State STAT 200 (4 lessons), STAT 500 (1) and STAT 509 (4), all
+CC BY-NC 4.0; the NIST/SEMATECH e-Handbook (7.4.7); Microsoft Experimentation
+Platform's three "Patterns of Trustworthy Experimentation" articles; Evan
+Miller's "How Not To Run an A/B Test"; and the ASA's release of its p-value
+statement. Only Penn State states a licence.
+
+Misconceptions recorded: stopping at first significance; never looking at a
+running test; a p-value as the chance B beats A; a p-value as the chance the
+result is luck; significance as a large effect; a null result as no effect;
+one hit among twenty metrics; slicing a flat test until a segment wins; and
+randomisation as a guarantee of identical groups.
+
+Before validating, every key point was read beside the passage its anchor
+bounds. Seven were reworded or re-anchored so that each says only what its
+highlighted passage says.
+
+Where the format pushed back, without needing a change:
+- One source per key point. A point resting on two sources (the rule from Penn
+  State, its size from Evan Miller) became two key points.
+- The 600-character gap moved two anchors (Bonferroni, group sequential
+  boundaries) and made one key point say only what the nearer passage says.
+- The clinical-trial notes (STAT 509) carry A/B ideas under other names:
+  endpoints for metrics, surrogate endpoints for proxy metrics, interim
+  analyses for peeking. The translation lives only in a key point's wording,
+  so the spot-check is where it gets judged.
+- The ASA statement's journal page refuses the validator (HTTP 403), so the
+  pack cites the ASA's own release, which lists the six principles. It is the
+  only PDF, and its anchors avoid fi/fl/ff words.
+
+Not done:
+- Travis's approval spot-check
+- building tracks from packs, grounding Ask in packs, the catalog UI
+
+Notes:
+- Anchors were drafted against `.pack-cache/` with the same `findAnchor`, so
+  only the final check needed the network. An `--offline-anchors` mode in
+  `packs:check` would make that the standard loop; not built.
+- On a tab's first, cold load, one Microsoft page did not scroll to its
+  highlighted passage; navigating to the same link again did.
+
+## 2026-10-20 - Reference packs get a machine check (spec v1.1)
+
+Travis wanted the fairness spot-check automated, because there will be many
+packs. Spec v1.1, which he approved, adds a `machine-checked` status between
+`provisional` and `approved`. A judge model, in a fresh context and blind,
+reads each source passage (the text between the anchors) beside our sentence
+and gives one of four verdicts: supported, partly, not_supported or
+contradicts. It judges every key point and every misconception's correction.
+
+Planted errors are mixed in among the real items, and the judge cannot tell
+which are which. They are every misconception's claim stated as fact, plus one
+corrupted key point of each kind: negation, overstatement, a wrong number or
+direction, an unsupported addition, and a causal claim drawn from an
+association. There must be at least 5, or 10% of the items. A run passes only
+if every real item is supported and every planted error is caught.
+
+The record (`machineCheck`) holds a fingerprint of what was judged, so any
+later edit drops the pack back to `provisional`. The validator and CI enforce
+this. Human approval becomes an audit of one pack in five.
+
+Built:
+- `lib/packs/judge.ts`: the versioned judge instructions, the planted-error
+  rules, the packet builder (shuffled, with opaque ids and a separate answer
+  key), the scorer and the fingerprint. 23 tests.
+- `extractPassage` in `lib/packs/anchor.ts`, sharing one locator with
+  `findAnchor`.
+- Status rules in `lib/packs/validate.ts`.
+- `--judge-packet` and `--record-judgement` modes in `scripts/validate-pack.ts`.
+- `content/packs/plants/linear-regression.json`.
+- The judge runs on Travis's Claude subscription, inside the authoring
+  session. No Hugh API key is involved, and the script itself makes no model
+  calls.
+
+Judge model: Claude Fable 5.1, a tier above the author, needs usage credits
+beyond the subscription, and the first attempt was refused for that reason.
+Travis chose Claude Opus 5.5, the same model that authored the pack, run fresh
+and blind. Re-judging with Fable later is a re-run.
+
+The Linear Regression results show what the check is for. Every run caught 14
+of 14 planted errors, including the C10 claim. Real items supported:
+- **Run 1: 39 of 77.** Almost every flag had the same shape: the anchor
+  covered a fragment, and the key point drew on the text around it.
+  Twenty-five anchors were widened, and 13 claims that went beyond their
+  source were trimmed, for example "the baseline group", "Penn State's
+  example" and "test error eventually rises".
+- **Run 2: 73 of 77.**
+- **Run 3: 77 of 77.**
+
+Pack 2.1.0 is now `machine-checked`. Its 2026-10-19 v1 review, of five items
+on 2.0.0, was removed because it vouched for wording that has since changed.
+Three of its five sampled items were rewritten.
+
+Finding: **the judge varies from run to run on borderline wording.** Three
+items it supported in run 1 were flagged in run 2. A single-run pass is
+therefore strict but somewhat noisy. If this causes churn, the remedy to
+consider is requiring agreement across two runs, not lowering the bar.
+
+Two loose ends:
+- PR #24 (the mastery fix) also raises Learn's registry test count to 22.
+  Whichever branch merges second must set it to the true total.
+- The A/B testing pack, on `feat/ab-testing-pack`, has not been judged. It
+  needs that branch together with this one.
+
+## 2026-10-20 - A/B testing pack passes the machine check
+
+The A/B testing pack (merged from `feat/ab-testing-pack`) got its planted
+errors (one of each corruption kind; with its 9 misconception claims, 14 in
+all) and four blind Claude Opus 5.5 runs. Real items supported, out of 79:
+69, then 74, then 78, then 79. Every run caught 14 of 14 planted errors.
+Fifteen items were reworked along the way. Most widened an anchor to
+definitions sitting just beside it (power = 1 - beta, Twyman's law, the
+200-versus-20 comparison). Others trimmed corrections that added reasoning
+their source did not give, such as remedies Evan Miller's peeking passage
+never prescribes, or "segments" where NIST discusses factor contrasts. The
+pack is now 1.1.0 and `machine-checked`.
+
+This confirms the run-to-run variance seen on Linear Regression. Each run's
+new flags were items an earlier run had supported, so a pass took four runs
+here and three there. The flags were still fair, and each named a real
+stretch. Both packs now meet the v1.1 success criterion; the remaining v1.1
+check is Travis's first audit.

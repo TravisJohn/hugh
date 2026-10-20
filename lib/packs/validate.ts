@@ -8,10 +8,11 @@
 
 import {
   isPackStatus,
-  type PackAnchor, type PackConcept, type PackKeyPoint, type PackMisconception,
+  type PackAnchor, type PackConcept, type PackKeyPoint, type PackMachineCheck, type PackMisconception,
   type PackPrerequisite, type PackReview, type PackSource, type ReferencePack,
 } from "@/types/pack";
 import { wordCount } from "./anchor";
+import { errorsRequired, fingerprint, judgedItems } from "./judge";
 
 export const KEY_POINTS_MIN     = 2;
 export const KEY_POINTS_MAX     = 5;
@@ -128,8 +129,30 @@ class ShapeReader {
     if (!isObj(v)) return this.fail(p, "must be an object");
     const reviewedBy = this.str(v, "reviewedBy", p), reviewedAt = this.str(v, "reviewedAt", p);
     const sampledKeyPoints = this.list(v, "sampledKeyPoints", p, this.string);
+    if (v.agreedWithJudge !== undefined && typeof v.agreedWithJudge !== "boolean") {
+      return this.fail(`${p}.agreedWithJudge`, "must be true or false");
+    }
     return reviewedBy !== null && reviewedAt !== null && sampledKeyPoints !== null
-      ? { reviewedBy, reviewedAt, sampledKeyPoints } : null;
+      ? { reviewedBy, reviewedAt, sampledKeyPoints, ...(typeof v.agreedWithJudge === "boolean" ? { agreedWithJudge: v.agreedWithJudge } : {}) }
+      : null;
+  };
+
+  count(o: Obj, key: string, path: string): number | null {
+    const v = o[key];
+    return typeof v === "number" && Number.isInteger(v) && v >= 0
+      ? v
+      : this.fail(`${path}.${key}`, "must be a whole number, 0 or more");
+  }
+
+  machineCheck = (v: unknown, p: string): PackMachineCheck | null => {
+    if (!isObj(v)) return this.fail(p, "must be an object");
+    const judgeModel = this.str(v, "judgeModel", p), instructionsVersion = this.str(v, "instructionsVersion", p);
+    const checkedAt = this.str(v, "checkedAt", p), fingerprint = this.str(v, "fingerprint", p);
+    const itemsJudged = this.count(v, "itemsJudged", p), itemsSupported = this.count(v, "itemsSupported", p);
+    const errorsPlanted = this.count(v, "errorsPlanted", p), errorsCaught = this.count(v, "errorsCaught", p);
+    if (judgeModel === null || instructionsVersion === null || checkedAt === null || fingerprint === null ||
+        itemsJudged === null || itemsSupported === null || errorsPlanted === null || errorsCaught === null) return null;
+    return { judgeModel, instructionsVersion, checkedAt, itemsJudged, itemsSupported, errorsPlanted, errorsCaught, fingerprint };
   };
 }
 
@@ -142,19 +165,24 @@ export function parsePack(raw: unknown): { pack: ReferencePack | null; issues: P
   if (!isObj(raw)) return { pack: null, issues: [{ level: "error", path: "$", message: "a pack must be a JSON object" }] };
 
   const id = r.str(raw, "id", "$"), version = r.str(raw, "version", "$"), subject = r.str(raw, "subject", "$");
-  const status = isPackStatus(raw.status) ? raw.status : r.fail("$.status", "must be draft, provisional or approved");
+  const status = isPackStatus(raw.status) ? raw.status : r.fail("$.status", "must be draft, provisional, machine-checked or approved");
   const outOfScope    = r.list(raw, "outOfScope", "$", r.string);
   const sources       = r.list(raw, "sources", "$", r.source);
   const concepts      = r.list(raw, "concepts", "$", r.concept);
   const prerequisites = r.list(raw, "prerequisites", "$", r.prerequisite);
+  const machineCheck = raw.machineCheck === undefined ? undefined : r.machineCheck(raw.machineCheck, "$.machineCheck");
   const review = raw.review === undefined ? undefined : r.review(raw.review, "$.review");
 
   if (id === null || version === null || subject === null || status === null || outOfScope === null ||
-      sources === null || concepts === null || prerequisites === null || review === null) {
+      sources === null || concepts === null || prerequisites === null || machineCheck === null || review === null) {
     return { pack: null, issues: r.issues };
   }
   return {
-    pack: { id, version, status, subject, outOfScope, sources, concepts, prerequisites, ...(review !== undefined ? { review } : {}) },
+    pack: {
+      id, version, status, subject, outOfScope, sources, concepts, prerequisites,
+      ...(machineCheck !== undefined ? { machineCheck } : {}),
+      ...(review !== undefined ? { review } : {}),
+    },
     issues: r.issues,
   };
 }
@@ -327,6 +355,30 @@ export function checkPack(pack: ReferencePack): PackIssue[] {
   });
   const order = learningOrder(conceptIds, pack.prerequisites);
   if (!order.ok) error("$.prerequisites", `form a loop through: ${order.cycle.join(", ")}`);
+
+  // Spec v1.1: from machine-checked up, a pack must carry a passed machine
+  // check that still matches what it says. An edit after the check makes the
+  // fingerprint stop matching, and the pack must go back to provisional.
+  if (pack.status === "machine-checked" || pack.status === "approved") {
+    const mc = pack.machineCheck;
+    if (!mc) {
+      error("$.machineCheck", `a ${pack.status} pack must record a passed machine check`);
+    } else {
+      if (mc.fingerprint !== fingerprint(pack)) {
+        error("$.machineCheck.fingerprint", "key points or misconceptions changed after the machine check; set status to provisional and judge again");
+      }
+      const real = judgedItems(pack).length;
+      if (mc.itemsJudged !== real) error("$.machineCheck.itemsJudged", `says ${mc.itemsJudged} items; the pack has ${real}`);
+      if (mc.itemsSupported !== mc.itemsJudged) error("$.machineCheck.itemsSupported", "every judged item must be supported");
+      if (mc.errorsCaught !== mc.errorsPlanted) error("$.machineCheck.errorsCaught", "every planted error must be caught");
+      if (mc.errorsPlanted < errorsRequired(mc.itemsJudged)) {
+        error("$.machineCheck.errorsPlanted", `needs at least ${errorsRequired(mc.itemsJudged)} planted errors`);
+      }
+      if (!isDay(mc.checkedAt)) error("$.machineCheck.checkedAt", "must be a real date, YYYY-MM-DD");
+    }
+  } else if (pack.machineCheck) {
+    warning("$.machineCheck", `recorded on a ${pack.status} pack; judge again before raising its status`);
+  }
 
   if (pack.status === "approved") {
     if (!pack.review) {

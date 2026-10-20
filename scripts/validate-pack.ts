@@ -16,12 +16,25 @@
 // validator will later search, not a browser's rendering of the page. The
 // cache is git-ignored: it holds other publishers' text, which a pack never
 // stores.
+//
+// The machine check (spec v1.1):
+//   npm run packs:check -- <id> --judge-packet
+//       Extracts every anchored passage, mixes in the planted errors from
+//       content/packs/plants/<id>.json, and writes the judge's packet and a
+//       separate answer key to .pack-cache/<id>/. The judge reads only the
+//       packet, in a fresh context.
+//   npm run packs:check -- <id> --record-judgement <verdicts.json>
+//       Scores the verdicts against the key. Only a full pass writes the
+//       machineCheck record and raises the status.
 
 import fs from "fs";
 import path from "path";
 import { extractText as extractPdfText } from "unpdf";
 import { extractHtmlText } from "../lib/documents/extractHtml";
-import { findAnchor, textFragmentUrl } from "../lib/packs/anchor";
+import { extractPassage, findAnchor, textFragmentUrl } from "../lib/packs/anchor";
+import {
+  buildJudgePacket, fingerprint, parseJudgement, parsePlants, scoreJudgement, type JudgeKey,
+} from "../lib/packs/judge";
 import {
   anchorTargets, checkPack, learningOrder, parsePack, sampleKeyPoints,
   REVIEW_MIN_SAMPLE, type PackIssue,
@@ -29,6 +42,8 @@ import {
 import type { ReferencePack } from "../types/pack";
 
 const PACK_DIR = path.join(process.cwd(), "content", "packs");
+const PLANTS_DIR = path.join(PACK_DIR, "plants");
+const cacheDir = (id: string) => path.join(process.cwd(), ".pack-cache", id);
 const USER_AGENT = "HughPackValidator/1.0 (+https://heyhugh.vercel.app)";
 
 type Page =
@@ -183,12 +198,156 @@ async function checkFile(file: string, offline: boolean, showLinks: boolean, dum
   return errors.length > 0;
 }
 
+// ── The machine check ───────────────────────────────────────────────────────
+
+function readJson(file: string): unknown {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+/** Load a pack that must parse and pass the offline rules before it can be judged. */
+function loadPackOrExplain(id: string): { raw: Record<string, unknown>; pack: ReferencePack } | null {
+  const raw = readJson(path.join(PACK_DIR, `${id}.json`)) as Record<string, unknown>;
+  const { pack, issues } = parsePack(raw);
+  const errors = [...issues, ...(pack ? checkPack({ ...pack, status: "provisional" }) : [])].filter(i => i.level === "error");
+  if (!pack || errors.length > 0) {
+    console.log(`✗ ${id}: fix these before judging:`);
+    for (const e of errors) console.log(`  ERROR    ${e.path}: ${e.message}`);
+    return null;
+  }
+  return { raw, pack };
+}
+
+async function writeJudgePacket(id: string): Promise<boolean> {
+  const loaded = loadPackOrExplain(id);
+  if (!loaded) return true;
+  const { pack } = loaded;
+
+  const plantsFile = path.join(PLANTS_DIR, `${id}.json`);
+  if (!fs.existsSync(plantsFile)) {
+    console.log(`✗ ${id}: no planted errors at ${path.relative(process.cwd(), plantsFile)}`);
+    return true;
+  }
+  const { plants, problems } = parsePlants(pack, readJson(plantsFile));
+  if (!plants) {
+    for (const p of problems) console.log(`  ERROR    plants: ${p}`);
+    return true;
+  }
+
+  // Every passage is needed: a run with a missing passage judges nothing.
+  const urlOf = new Map(pack.sources.map(s => [s.id, s.url]));
+  const pages = new Map<string, Awaited<ReturnType<typeof readPage>>>();
+  const passages = new Map<string, string>();
+  const missing: string[] = [];
+  for (const t of anchorTargets(pack)) {
+    const url = urlOf.get(t.sourceId)!;
+    if (!pages.has(url)) pages.set(url, await readPage(url));
+    const page = pages.get(url)!;
+    const passage = page.kind === "unreadable" ? null : extractPassage(page.text, t.anchor);
+    if (passage === null) missing.push(`${t.ref} (${page.kind === "unreadable" ? page.reason : "anchor did not resolve"})`);
+    else passages.set(t.ref, passage);
+  }
+  if (missing.length > 0) {
+    console.log(`✗ ${id}: cannot extract every passage:`);
+    for (const m of missing) console.log(`  ERROR    ${m}`);
+    return true;
+  }
+
+  const built = buildJudgePacket(pack, passages, plants, Math.random);
+  if (!built.ok) {
+    for (const p of built.problems) console.log(`  ERROR    ${p}`);
+    return true;
+  }
+  const dir = cacheDir(id);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, "judge-packet.json"), JSON.stringify(built.packet, null, 2) + "\n");
+  fs.writeFileSync(path.join(dir, "judge-key.json"), JSON.stringify(built.key, null, 2) + "\n");
+  const planted = built.key.entries.filter(e => e.planted).length;
+  console.log(`✓ ${id}: ${built.packet.items.length} items (${built.packet.items.length - planted} real, ${planted} planted)`);
+  console.log(`  packet (give the judge only this): ${path.join(dir, "judge-packet.json")}`);
+  console.log(`  answer key (never show the judge): ${path.join(dir, "judge-key.json")}`);
+  return false;
+}
+
+function recordJudgement(id: string, verdictsFile: string): boolean {
+  const loaded = loadPackOrExplain(id);
+  if (!loaded) return true;
+  const { raw, pack } = loaded;
+  const key = readJson(path.join(cacheDir(id), "judge-key.json")) as JudgeKey;
+
+  if (key.fingerprint !== fingerprint(pack)) {
+    console.log(`✗ ${id}: the pack changed after its judge packet was built; build a new packet and judge again`);
+    return true;
+  }
+  const { judgement, problems } = parseJudgement(readJson(verdictsFile));
+  if (!judgement) {
+    for (const p of problems) console.log(`  ERROR    judgement: ${p}`);
+    return true;
+  }
+
+  const result = scoreJudgement(key, judgement);
+  console.log(`${result.passed ? "✓" : "✗"} ${id}: judged by ${judgement.judgeModel} (instructions v${judgement.instructionsVersion})`);
+  console.log(`  real items: ${result.itemsSupported}/${result.itemsJudged} supported · planted errors: ${result.errorsCaught}/${result.errorsPlanted} caught`);
+  for (const p of result.problems) console.log(`  INVALID  ${p}`);
+  for (const u of result.unsupported) console.log(`  REWRITE  ${u.ref} [${u.verdict}] ${u.reason}`);
+  for (const m of result.missedErrors) console.log(`  MISSED   ${m.ref} (${m.kind}) judged supported: ${m.reason}`);
+  if (!result.passed) {
+    if (result.missedErrors.length > 0) {
+      console.log("  The run fails: a planted error got through. Change the judge's instructions (and their version) before re-running.");
+    }
+    return true;
+  }
+
+  // Write into the file's own object so its key order and layout survive.
+  // The date is the author's local day: toISOString() is UTC, which in
+  // Sydney's morning is still yesterday.
+  const now = new Date();
+  const localDay = [now.getFullYear(), now.getMonth() + 1, now.getDate()].map(n => String(n).padStart(2, "0")).join("-");
+  raw.machineCheck = {
+    judgeModel: judgement.judgeModel,
+    instructionsVersion: judgement.instructionsVersion,
+    checkedAt: localDay,
+    itemsJudged: result.itemsJudged,
+    itemsSupported: result.itemsSupported,
+    errorsPlanted: result.errorsPlanted,
+    errorsCaught: result.errorsCaught,
+    fingerprint: key.fingerprint,
+  };
+  // An approved pack stays approved: its audit still stands, and the record
+  // now satisfies the v1.1 rule that approval sits on a machine check.
+  if (raw.status !== "approved") raw.status = "machine-checked";
+  fs.writeFileSync(path.join(PACK_DIR, `${id}.json`), JSON.stringify(raw, null, 2) + "\n");
+
+  const recheck = parsePack(raw);
+  const errors = recheck.pack ? checkPack(recheck.pack).filter(i => i.level === "error") : recheck.issues;
+  if (errors.length > 0) {
+    for (const e of errors) console.log(`  ERROR    ${e.path}: ${e.message}`);
+    return true;
+  }
+  console.log(`  recorded: status is now ${String(raw.status)}`);
+  return false;
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const offline   = args.includes("--offline");
   const showLinks = args.includes("--links");
   const dump      = args.includes("--dump");
-  const ids = args.filter(a => !a.startsWith("--"));
+  const recordAt  = args.indexOf("--record-judgement");
+  const verdicts  = recordAt >= 0 ? args[recordAt + 1] : undefined;
+  const ids = args.filter((a, i) => !a.startsWith("--") && !(recordAt >= 0 && i === recordAt + 1));
+
+  if (args.includes("--judge-packet") || recordAt >= 0) {
+    if (ids.length !== 1) {
+      console.log("The machine check runs on one pack at a time: npm run packs:check -- <id> --judge-packet");
+      process.exit(1);
+    }
+    if (recordAt >= 0 && !verdicts) {
+      console.log("Name the verdicts file: npm run packs:check -- <id> --record-judgement <verdicts.json>");
+      process.exit(1);
+    }
+    const failed = recordAt >= 0 ? recordJudgement(ids[0], verdicts!) : await writeJudgePacket(ids[0]);
+    process.exit(failed ? 1 : 0);
+  }
 
   const files = ids.length > 0
     ? ids.map(id => `${id}.json`)
