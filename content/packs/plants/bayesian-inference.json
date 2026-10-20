@@ -1,0 +1,31 @@
+{
+  "packId": "bayesian-inference",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "sequential_updating:3",
+      "type": "negation",
+      "sentence": "The final posterior depends on the order in which the data are observed, so the same data seen in a different order give a different posterior."
+    },
+    {
+      "ref": "mcmc_diagnostics:5",
+      "type": "overstatement",
+      "sentence": "An R-hat of 1 proves that the simulation has converged and that its posterior approximation is exact, so no other diagnostic is ever needed."
+    },
+    {
+      "ref": "prior_data_balance:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "As the sample grows, the prior gains influence over the posterior, while the influence of the data diminishes."
+    },
+    {
+      "ref": "bayes_factors:1",
+      "type": "unsupported_addition",
+      "sentence": "A Bayes factor describes how likely the data are under one hypothesis relative to another; Harold Jeffreys introduced it in the 1930s."
+    },
+    {
+      "ref": "beta_binomial:3",
+      "type": "causal_from_association",
+      "sentence": "The poll in which 30 of 50 people supported the candidate caused her actual support among voters to rise from about 45% to 50%."
+    }
+  ]
+}
