@@ -65,6 +65,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_s8_security_test
       - name: Test concurrent TTS character admission
         run: docker exec -e PGUSER=postgres -e PGDATABASE=hugh_s8_security_test "${{ job.services.postgres.id }}" sh /tmp/hugh-s1/tests/s8_tts_budget.sh
+      - name: Create disposable milestone-results database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_058_results_test
+      - name: Test that review and mastery results are server-owned
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_058_results_test -f /tmp/hugh-s1/tests/058_milestone_result_columns.sql
 
   verify:
     name: lint · typecheck · test · audit · build

@@ -47,12 +47,14 @@ beforeEach(() => {
   noteBody = "Joins combine rows by matching keys.";
   updates = [];
   mocks.from.mockImplementation((table: string) => {
-    const data = table === "milestones" ? { id: "milestone", title: "SQL joins" }
+    // The mastery session route checks the card's owner itself (it records
+    // results with the service role), so the fake card says who owns it.
+    const data = table === "milestones" ? { id: "milestone", title: "SQL joins", mastery_validated: false, tracks: { user_id: "alice" } }
       : table === "milestone_entries" ? [{ title: "Joins", body: noteBody }]
       : { id: "goal", topic: "SQL joins", track_status: "pending" };
     const result = { data, error: null };
-    const chain = { select: vi.fn(), eq: vi.fn(), single: vi.fn(), order: vi.fn(), limit: vi.fn(), insert: vi.fn(), update: vi.fn(), then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
-    for (const name of ["select", "eq", "single", "order", "limit", "insert"] as const) chain[name].mockReturnValue(chain);
+    const chain = { select: vi.fn(), eq: vi.fn(), single: vi.fn(), maybeSingle: vi.fn(), order: vi.fn(), limit: vi.fn(), insert: vi.fn(), update: vi.fn(), then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
+    for (const name of ["select", "eq", "single", "maybeSingle", "order", "limit", "insert"] as const) chain[name].mockReturnValue(chain);
     chain.update.mockImplementation(value => { updates.push(value); return chain; });
     return chain;
   });

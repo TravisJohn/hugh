@@ -104,7 +104,8 @@ export default function MasteryRealtimeClient({
       await fetch(`/api/tracker/milestones/${milestoneId}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ column: "review", reviewValidated: false }),
+        // A move into review clears the review result on the server.
+        body:    JSON.stringify({ column: "review" }),
       });
     } catch { /* best-effort — still navigate back */ }
     router.push(boardUrl);

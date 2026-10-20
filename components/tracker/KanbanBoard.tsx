@@ -164,6 +164,10 @@ export default function KanbanBoard({
       return;
     }
 
+    // Mirror locally what the server does on a move: entering a stage clears
+    // that stage's result, so the card has to earn it again. The server derives
+    // the same reset itself (lib/tracker/milestonePatch.ts), so only the column
+    // is sent.
     const updatedFields: Partial<Milestone> = { kanban_column: newColumn };
     if (newColumn === "review") updatedFields.review_validated  = false;
     if (newColumn === "done")   updatedFields.mastery_validated = false;
@@ -172,9 +176,7 @@ export default function KanbanBoard({
       prev.map(m => m.id === milestoneId ? { ...m, ...updatedFields } : m)
     );
 
-    const patchBody: { column: KanbanColumn; reviewValidated?: boolean; masteryValidated?: boolean } = { column: newColumn };
-    if (newColumn === "review") patchBody.reviewValidated  = false;
-    if (newColumn === "done")   patchBody.masteryValidated = false;
+    const patchBody: { column: KanbanColumn } = { column: newColumn };
 
     void persistOrRollBack(
       `/api/tracker/milestones/${milestoneId}`,

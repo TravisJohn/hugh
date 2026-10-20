@@ -3,12 +3,42 @@ import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { stripEmphasis } from "@/lib/claude/prompts";
+import {
+  masteryOutcome, parseEvaluation,
+  type MasteryEvaluation, type MasteryRecord, type MasteryWrite,
+} from "@/lib/mastery/outcome";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+interface SessionMilestone {
+  id:                string;
+  title:             string;
+  mastery_validated: boolean;
+  tracks:            { user_id: string } | null;
+}
+
+/**
+ * Write a scored result. Since migration 058 a learner's own session cannot
+ * write mastery results, so the server records them with the service role.
+ * A failed write is reported, never thrown: the score is still real, and the
+ * page has to say it was not saved.
+ */
+async function recordMasteryResult(milestoneId: string, write: MasteryWrite): Promise<MasteryRecord> {
+  const { error } = await createServiceClient()
+    .from("milestones")
+    .update(write)
+    .eq("id", milestoneId);
+  if (error) {
+    console.error("[mastery/session] Failed to record result:", error.message);
+    return "failed";
+  }
+  return "saved";
+}
 
 const MAX_EXCHANGES = 3;
 
@@ -50,14 +80,21 @@ export async function POST(request: NextRequest) {
 
   const supabase = await createClient();
 
-  // Verify ownership
-  const { data: milestone } = await supabase
+  // Verify ownership. RLS already hides other learners' rows from this read;
+  // the explicit check is the second lock, because the evaluate phase records
+  // its result with the service role, where RLS does not apply.
+  const { data, error: lookupError } = await supabase
     .from("milestones")
-    .select("id, title, tracks!track_id!inner(user_id)")
+    .select("id, title, mastery_validated, tracks!track_id!inner(user_id)")
     .eq("id", milestoneId)
-    .single();
+    .maybeSingle();
 
-  if (!milestone) {
+  if (lookupError) {
+    console.error("[mastery/session] milestone lookup error:", lookupError.message);
+    return NextResponse.json({ error: "Couldn't load this card. Please try again." }, { status: 500 });
+  }
+  const milestone = data as unknown as SessionMilestone | null;
+  if (!milestone || milestone.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
 
@@ -80,7 +117,7 @@ export async function POST(request: NextRequest) {
     .join("\n\n");
 
   const persona    = SCENARIO_PERSONAS[scenario];
-  const topicTitle = (milestone as { title: string }).title;
+  const topicTitle = milestone.title;
 
   let prompt = "";
 
@@ -183,14 +220,13 @@ Return ONLY valid JSON with no markdown fences:
 
     if (phase === "evaluate") {
       const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+      let evaluation: MasteryEvaluation | null;
       try {
-        const result = JSON.parse(cleaned) as { score: number; feedback: string; passed: boolean };
-        void recordOperation({
-          userId, operation: "mastery.session", outcome: "ok",
-          durationMs: Date.now() - startedAt, detail: { phase },
-        });
-        return NextResponse.json({ ...result, feedback: stripEmphasis(result.feedback) });
+        evaluation = parseEvaluation(JSON.parse(cleaned));
       } catch {
+        evaluation = null;
+      }
+      if (!evaluation) {
         console.error("[mastery/session] Failed to parse evaluate JSON:", cleaned);
         void recordOperation({
           userId, operation: "mastery.session", outcome: "failed",
@@ -198,6 +234,23 @@ Return ONLY valid JSON with no markdown fences:
         });
         return NextResponse.json({ error: "Failed to parse evaluation" }, { status: 500 });
       }
+
+      // The server records the result the moment it is scored; the browser
+      // can no longer write it (migration 058). Pass or fail is decided from
+      // the score, not from the model's own flag, and the feedback is stored
+      // exactly as the learner sees it.
+      const feedback = stripEmphasis(evaluation.feedback);
+      const outcome  = masteryOutcome({ score: evaluation.score, feedback }, milestone.mastery_validated);
+      const record: MasteryRecord = outcome.write
+        ? await recordMasteryResult(milestoneId, outcome.write)
+        : "skipped";
+
+      void recordOperation({
+        userId, operation: "mastery.session", outcome: record === "failed" ? "failed" : "ok",
+        durationMs: Date.now() - startedAt,
+        detail: record === "failed" ? { phase, record, stage: "record" } : { phase, record },
+      });
+      return NextResponse.json({ score: evaluation.score, feedback, passed: outcome.passed, record });
     }
 
     void recordOperation({

@@ -156,7 +156,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 22,
+    tests: 23,
   },
   {
     id:    "ask",
@@ -230,7 +230,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "mastery.realtime",
     ],
     spendsTokens: true,
-    tests: 6,
+    tests: 8,
   },
   {
     id:    "code",

@@ -7,10 +7,7 @@ import {
   Mic, MicOff, Loader2, Trophy, RotateCcw, AlertCircle,
 } from "lucide-react";
 import ExitLink from "@/components/ui/ExitLink";
-import {
-  outcomeOfStatus, outcomeOfThrown,
-  type SaveOutcome, type SaveFailure,
-} from "@/lib/errors/saveOutcome";
+import type { MasteryRecord } from "@/lib/mastery/outcome";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
@@ -24,26 +21,20 @@ type Phase =
   | "playing"     // Hugh's audio is playing
   | "listening"   // user's turn to speak
   | "thinking"    // fetching Hugh's next response
-  | "evaluating"  // Claude scoring the conversation
-  | "result"      // show score + feedback
-  | "validating"; // PATCHing DB + navigating
+  | "evaluating"  // Claude scoring the conversation (the server records it)
+  | "result";     // show score + feedback
 
 interface ConversationMessage {
   role: "hugh" | "learner";
   text: string;
 }
 
-/** The two shapes of mastery write; `masteryValidated` only on a first pass. */
-interface MasteryPatch {
-  masteryValidated?: boolean;
-  masteryScore:      number;
-  masteryFeedback:   string;
-}
-
 interface Evaluation {
   score:    number;
   feedback: string;
   passed:   boolean;
+  /** Whether the server recorded it. The score is real either way. */
+  record:   MasteryRecord;
 }
 
 // ── Scenario config ────────────────────────────────────────────────────────
@@ -127,8 +118,6 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
   const [messages,   setMessages]   = useState<ConversationMessage[]>([]);
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [apiError,   setApiError]   = useState<string | null>(null);
-  // Set when the session was scored but recording the result was refused.
-  const [saveFailure, setSaveFailure] = useState<SaveFailure | null>(null);
 
   const speech      = useSpeechRecognition();
   const messagesRef = useRef<ConversationMessage[]>([]);
@@ -170,7 +159,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
       const d = await res.json().catch(() => ({}));
       throw new Error((d as { error?: string }).error ?? `Error ${res.status}`);
     }
-    return res.json() as Promise<{ text?: string; score?: number; feedback?: string; passed?: boolean }>;
+    return res.json() as Promise<{ text?: string; score?: number; feedback?: string; passed?: boolean; record?: MasteryRecord }>;
   }
 
   // ── Start or restart a session ────────────────────────────────────────────
@@ -218,7 +207,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
       setPhase("evaluating");
       try {
         const data = await callSession("evaluate", updated, scenario);
-        setEvaluation({ score: data.score!, feedback: data.feedback!, passed: data.passed! });
+        setEvaluation({ score: data.score!, feedback: data.feedback!, passed: data.passed!, record: data.record! });
       } catch (e) {
         setApiError((e as Error).message);
       }
@@ -250,66 +239,15 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
     speech.reset();
   }
 
+  // The result is recorded by the server the moment the session is scored
+  // (lib/mastery/outcome.ts); this page no longer writes it. So the buttons on
+  // the result screen only navigate, and they are shown only when the server
+  // reports the result saved. The board celebrates a card arriving with
+  // ?mastered=, and that must never fire for a result that was not recorded.
+  // The summary document is still generated lazily by the milestone drawer.
   function navigateBackMastered() {
     const sep = boardUrl.includes("?") ? "&" : "?";
     router.push(`${boardUrl}${sep}mastered=${milestoneId}`);
-  }
-
-  /**
-   * Persist a mastery result, and leave this screen only if it persisted.
-   *
-   * Both callers used to `await fetch(...)` and navigate unconditionally. That
-   * fails twice over, and rule 5 names both: `fetch` resolves for a refused
-   * save, so a lapsed session took the learner to the board's gold-confetti
-   * celebration with nothing recorded; and a dropped connection threw straight
-   * out of the handler, stranding the screen on "Saving your mastery…" forever
-   * with no control to press. A failure now returns to the score with its own
-   * copy and its own way out.
-   */
-  async function saveResult(patch: MasteryPatch) {
-    setSaveFailure(null);
-    setPhase("validating");
-
-    let outcome: SaveOutcome;
-    try {
-      const res = await fetch(`/api/tracker/milestones/${milestoneId}`, {
-        method:  "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(patch),
-      });
-      outcome = outcomeOfStatus(res.status);
-    } catch (err) {
-      outcome = outcomeOfThrown(err);
-    }
-
-    if (!outcome.ok) {
-      setSaveFailure(outcome);
-      setPhase("result");
-      return;
-    }
-
-    navigateBackMastered();
-  }
-
-  // ── First-time mastery: validate + persist score/feedback, then navigate ──
-  // The summary document is generated lazily by the milestone drawer (it shows
-  // a "writing…" state) so confirming mastery stays fast and never blocks on it.
-  function confirmMastery() {
-    return saveResult({
-      masteryValidated: true,
-      masteryScore:     evaluation?.score ?? 0,
-      masteryFeedback:  evaluation?.feedback ?? "",
-    });
-  }
-
-  // ── Practice run on an already-mastered card ──────────────────────────────
-  // Records the latest score + feedback (even if lower) and never revokes
-  // mastery. Does NOT regenerate the summary doc — that stays on-demand.
-  function finishPractice() {
-    return saveResult({
-      masteryScore:    evaluation?.score ?? 0,
-      masteryFeedback: evaluation?.feedback ?? "",
-    });
   }
 
   // ── Derived values ────────────────────────────────────────────────────────
@@ -317,7 +255,8 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
   const currentExchange = Math.min(learnerCount + 1, MAX_EXCHANGES);
   const cfg             = SCENARIOS[scenario];
   const colors          = COLOR_CLASSES[cfg.color as ColorKey];
-  const isBusy          = ["generating", "thinking", "evaluating", "validating"].includes(phase);
+  const isBusy          = ["generating", "thinking", "evaluating"].includes(phase);
+  const saveFailed      = evaluation?.record === "failed";
   // On an already-mastered card every practice run is "positive" — mastery is
   // locked, so we never show a fail/almost framing.
   const positive        = alreadyMastered || !!evaluation?.passed;
@@ -431,7 +370,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
       )}
 
       {/* ── ACTIVE CONVERSATION ───────────────────────────────────────────── */}
-      {!["setup", "result", "validating"].includes(phase) && (
+      {!["setup", "result"].includes(phase) && (
         <div className="relative z-10 flex flex-1 flex-col min-h-0">
           {/* Exchange counter */}
           {!["evaluating"].includes(phase) && (
@@ -575,7 +514,9 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                 <span className="text-2xl font-normal text-slate-500">/10</span>
               </div>
               <p className={`text-sm font-semibold ${positive ? "text-green-400" : "text-amber-400"}`}>
-                {alreadyMastered
+                {saveFailed
+                  ? "Scored, but not saved"
+                  : alreadyMastered
                   ? "Still mastered — practice logged"
                   : evaluation?.passed
                   ? "Mastery confirmed"
@@ -604,17 +545,27 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
               </div>
             </div>
 
-            {/* A scored session Hugh could not record. The score above is real
-                and stays put — it is only the saving of it that failed. The
-                board link is the way out: the result screen's own controls all
-                assume the save will eventually work, and where it cannot
-                (a lapsed session) that would be a dead end. */}
-            {saveFailure && (
+            {/* CTA. A scored session the server could not record gets its own
+                copy and its own way out (rule 5): the score above is real, only
+                the saving failed, and running the session again scores and
+                records afresh. The board link leaves without a record. Every
+                other button only navigates, because the server has already
+                recorded the result. */}
+            {saveFailed ? (
               <div className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5">
                 <div className="flex items-start gap-2.5">
                   <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
-                  <p className="text-sm text-red-300">{saveFailure.message}</p>
+                  <p className="text-sm text-red-300">
+                    Hugh scored this session but couldn&apos;t save the result. Your score above is real; run the session again to record it.
+                  </p>
                 </div>
+                <button
+                  onClick={() => startSession(scenario)}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-500/20 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/30 transition-colors"
+                >
+                  <RotateCcw size={14} />
+                  Run it again
+                </button>
                 <ExitLink
                   href={boardUrl}
                   label="Back to board without saving"
@@ -623,17 +574,14 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                   className="block w-full rounded-xl border border-red-500/30 py-2 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
                 />
               </div>
-            )}
-
-            {/* CTA */}
-            {alreadyMastered ? (
+            ) : alreadyMastered ? (
               <div className="space-y-2">
                 <button
-                  onClick={finishPractice}
+                  onClick={navigateBackMastered}
                   className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
                 >
                   <Trophy size={16} />
-                  Save score &amp; finish
+                  Finish
                 </button>
                 <button
                   onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
@@ -645,11 +593,11 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
               </div>
             ) : evaluation?.passed ? (
               <button
-                onClick={confirmMastery}
+                onClick={navigateBackMastered}
                 className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
               >
                 <Trophy size={16} />
-                Confirm Mastery
+                Continue
               </button>
             ) : (
               <div className="space-y-2">
@@ -670,14 +618,6 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
             )}
 
           </div>
-        </div>
-      )}
-
-      {/* ── VALIDATING ────────────────────────────────────────────────────── */}
-      {phase === "validating" && (
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center gap-4">
-          <Loader2 size={28} className="animate-spin text-green-400" />
-          <p className="text-sm text-slate-400">Saving your mastery…</p>
         </div>
       )}
 

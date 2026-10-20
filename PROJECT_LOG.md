@@ -8618,6 +8618,47 @@ recorded in the pack and its status is now **approved**. One of the five links
 contained an apostrophe and still highlighted, which settles the note above:
 browsers treat straight and curly apostrophes as equal.
 
+## 2026-10-19 - Mastery results are recorded by the server (integrity fix, part 1)
+
+The gap: the mastery page and the review quiz marked cards passed from the
+browser, through a milestone PATCH route that copied the result straight into
+the row. Worse, the milestones_owner policy (FOR ALL) plus Supabase's default
+grants let a signed-in learner write those columns directly through the REST
+API; this was checked on production on 2026-10-17. A learner could mark their
+own cards mastered or reviewed without passing anything. Those flags drive the
+board badges, the drawer and the learning map.
+
+Travis chose option A: the server saves the result the moment it scores. The
+`evaluate` phase of the mastery session route now records the result itself,
+with the service role, by the rules in `lib/mastery/outcome.ts`. Pass or fail
+is decided from the score (7 or more), not from the model's own flag. A first
+pass validates the card; a practice run on a mastered card logs the latest
+score and never revokes mastery; a first attempt that does not pass records
+nothing. Those are the rules the browser followed before. On the page, "Confirm
+Mastery" becomes "Continue" and "Save score & finish" becomes "Finish". A
+scored session the server could not save gets its own message and a "Run it
+again" way out (Rule 5).
+
+The milestone PATCH route now decides what it may write in
+`lib/tracker/milestonePatch.ts`. It refuses mastery results. It derives the
+existing resets from column moves: a move into review clears the review
+result, and a move into done clears the mastery result. It writes with the
+service role only after an explicit owner check. A review pass from the
+browser is still accepted on its own until the quiz is graded on the server,
+which is part 2 and removes that path.
+
+Migration 058 revokes INSERT and UPDATE on milestones from anon and
+authenticated, including old column grants, in the 053 pattern. It then grants
+back only what learners' own routes write: UPDATE on kanban_column, position,
+learning_points, coverage and summary_doc(_at), and INSERT on a card's basic
+fields. **Deploy order: deploy this code first, then apply 058.** Applied
+before the code, it would block the old browser save. A disposable-Postgres
+test (`supabase/tests/058_milestone_result_columns.sql`) runs the real
+migrations and checks every refusal and every learner write that must still
+work; it runs in CI. Tests: 14 outcome rules, 17 PATCH rules and 11 route
+tests, which use two fake clients to prove a learner's session never writes a
+result.
+
 ## 2026-10-20 - Second reference pack: A/B testing; the format held
 
 `ab-testing` 1.0.0 is **provisional**: 18 concepts, 70 key points, 9
@@ -8750,3 +8791,11 @@ new flags were items an earlier run had supported, so a pass took four runs
 here and three there. The flags were still fair, and each named a real
 stretch. Both packs now meet the v1.1 success criterion; the remaining v1.1
 check is Travis's first audit.
+
+## 2026-10-20 - Machine check merged; the integrity fix catches up
+
+PR #25 (the machine check, with both packs machine-checked) merged to main as
+c606cf3. The integrity-fix branch then took main in. Both branches had set
+Learn's registry test count to 22, so the line merged with no conflict and was
+still wrong: the registry guard found 23 on disk, and the count is now 23. The
+log's only conflict was the two branches' entries, kept in date order.
