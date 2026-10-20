@@ -1,3 +1,4 @@
+import { cardGrounding, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE } from "@/lib/packs/grounding";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
 import Anthropic from "@anthropic-ai/sdk";
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
   // Ownership + authoritative card content, server-side.
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("id, title, summary, learning_points, tracks!track_id!inner(user_id)")
+    .select("id, title, summary, learning_points, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", milestoneId)
     .single();
 
@@ -96,11 +97,17 @@ export async function POST(request: NextRequest) {
     .eq("milestone_id", milestoneId)
     .order("created_at", { ascending: true });
 
+  // A course card is scored against its syllabus, never the learner-editable
+  // learning points (PRD-narrow-learn.md, row 4).
+  const grounding = cardGrounding((milestone as { concept_ids?: string[] | null }).concept_ids);
+  if (grounding.kind === "refused") {
+    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+  }
   const criteria = buildCriteria({
     title:          (milestone as { title: string }).title,
     summary:        (milestone as { summary?: string | null }).summary ?? null,
     learningPoints: ((milestone as { learning_points?: LearningPoint[] | null }).learning_points) ?? null,
-  });
+  }, grounding.kind === "ok" ? criteriaSyllabus(grounding.ground) : undefined);
 
   const prompt = buildEvaluationPrompt({
     criteriaText: renderCriteriaForPrompt(criteria),

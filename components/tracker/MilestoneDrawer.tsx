@@ -7,8 +7,9 @@ import {
   Maximize2, Minimize2, ChevronDown, PenLine, BookOpen,
   OctagonAlert, CheckCircle2, ClipboardCheck, Mic,
   ListChecks, Check, Pencil, RotateCw, AlertTriangle, Paperclip,
-  Download, FileText, Sparkles, Tag, Archive,
+  Download, FileText, Sparkles, Tag, Archive, Library, ExternalLink,
 } from "lucide-react";
+import type { CardSourcesView } from "@/lib/packs/grounding";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -37,6 +38,11 @@ interface Props {
   // Lets the parent board keep its milestone copy (and thus the card chips) in
   // sync as the learner changes self-assessment statuses, without a reload.
   onCoverageChange?: (milestoneId: string, coverage: MilestoneCoverage) => void;
+  /**
+   * A course card's Sources section, built on the server from its pack.
+   * Absent on any other card, which then shows no Sources section at all.
+   */
+  sources?:          CardSourcesView;
 }
 
 /**
@@ -95,7 +101,7 @@ function SectionToggle({ label, icon, open, onToggle, count }: SectionProps) {
   );
 }
 
-export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverageChange }: Props) {
+export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverageChange, sources }: Props) {
   const pathname = usePathname();
 
   const [entries, setEntries]               = useState<MilestoneEntry[]>([]);
@@ -154,6 +160,8 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
   const [showDiary,     setShowDiary]       = useState(true);
   const [showWriteEntry, setShowWriteEntry] = useState(true);
   const [showArchived,  setShowArchived]    = useState(false);
+  // Collapsed by default: the list is long, and the drawer must not grow.
+  const [showSources,   setShowSources]     = useState(false);
 
   // Which individual entries are expanded
   const [openEntries, setOpenEntries] = useState<Set<string>>(new Set());
@@ -762,6 +770,47 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
                     </div>
                   )}
                 </div>
+
+                {/* ── Sources (course cards only) ────────────────────── */}
+                {sources && (
+                  <div className="border-b border-slate-700/40 px-6">
+                    <SectionToggle
+                      label="Sources"
+                      icon={<Library size={13} />}
+                      open={showSources}
+                      onToggle={() => setShowSources(v => !v)}
+                      count={sources.kind === "sources" ? sources.items.length : undefined}
+                    />
+                    {showSources && (
+                      sources.kind === "problem" ? (
+                        <p className="pb-4 text-xs leading-relaxed text-red-300">{sources.message}</p>
+                      ) : (
+                        <div className="pb-4">
+                          <p className="mb-2 text-xs leading-relaxed text-slate-500">
+                            Each point on this card is checked against the passage it comes from. Open one to read it in the source.
+                          </p>
+                          <ul className="space-y-2">
+                            {sources.items.map(item => (
+                              <li key={item.ref} className="text-xs leading-snug">
+                                <p className="text-slate-300">{item.text}</p>
+                                <a
+                                  href={item.source.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-0.5 inline-flex items-center gap-1 text-sky-400 hover:text-sky-300"
+                                >
+                                  {item.source.publisher}
+                                  {item.source.manual && <span className="text-slate-500">· {item.source.locator}</span>}
+                                  <ExternalLink size={10} />
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
 
                 {/* ── Review (only for review-column cards) ──────────── */}
                 {milestone.kanban_column === "review" && (

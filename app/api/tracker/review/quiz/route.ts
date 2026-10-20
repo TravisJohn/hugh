@@ -8,9 +8,10 @@ import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { checkUsageAllowed, logUsage } from "@/lib/usage";
 import { messageForDenial, statusForDenial } from "@/lib/tokenBudget";
 import {
-  buildEntriesText, sourceCharCount, questionTarget, keepGroundedQuestions,
+  buildEntriesText, sourceCharCount, questionTarget, keepGroundedQuestions, keepSyllabusQuestions,
   MIN_QUESTIONS, type DiaryEntry,
 } from "@/lib/tracker/quizSource";
+import { cardGrounding, cardKeyPointRefs, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
 import { toPublicQuestions } from "@/lib/tracker/reviewGrading";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -54,9 +55,9 @@ export async function POST(request: NextRequest) {
   // rather than left implicit — a quiz is generated from private notes.
   const { data: milestone, error: milestoneError } = await supabase
     .from("milestones")
-    .select("id, title, tracks!track_id!inner(user_id)")
+    .select("id, title, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", body.milestoneId)
-    .maybeSingle<{ id: string; title: string; tracks: { user_id: string } }>();
+    .maybeSingle<{ id: string; title: string; concept_ids: string[] | null; tracks: { user_id: string } }>();
 
   // A failed read is not a missing card (rule 5): say it broke, don't say 404.
   if (milestoneError) {
@@ -66,6 +67,15 @@ export async function POST(request: NextRequest) {
   if (!milestone || milestone.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
+
+  // A course card's quiz also answers to its syllabus (PRD-narrow-learn.md,
+  // row 4). A course card whose pack can't be taught is refused in its own
+  // words, never quizzed ungrounded.
+  const grounding = cardGrounding(milestone.concept_ids);
+  if (grounding.kind === "refused") {
+    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+  }
+  const course = grounding.kind === "ok" ? grounding.ground : null;
 
   // Archived entries are hidden from the learner's diary, so they must not be
   // quizzed either — otherwise the quiz asks about notes they cannot re-read.
@@ -98,9 +108,23 @@ export async function POST(request: NextRequest) {
   // Note what is deliberately absent: the milestone title. Naming the subject
   // gave the model a topic to generate from when the notes ran thin, which is
   // exactly how questions about undiscussed material got in.
+  // A course card adds its syllabus: the answer must agree with it, each
+  // question names the key point it tests, and wrong options may be drawn
+  // from the card's listed wrong beliefs. The notes rule is unchanged.
+  const courseBlock = course ? `
+
+This card belongs to a course with a source-checked syllabus:
+
+${renderCardSyllabus(course)}
+
+Course rules:
+- Each question must test one of this card's key points, and the correct answer must agree with it. Set "keyPoint" to that key point's ref, e.g. "${cardKeyPointRefs(course)[0]}". A question that tests nothing in the syllabus is discarded.
+- Wrong options may restate the syllabus's listed wrong beliefs; that is the one thing an option may contain that the notes do not.` : "";
+
   const prompt = `A learner wrote the notes below while studying. They are the ONLY material you may draw on.
 
 ${entriesText}
+${courseBlock}
 
 Write ${target} multiple-choice question${target === 1 ? "" : "s"} checking whether the learner understood what their own notes say.
 
@@ -119,7 +143,8 @@ Return ONLY a valid JSON array — no markdown, no commentary:
     "options": ["Option text A", "Option text B", "Option text C", "Option text D"],
     "correctIndex": 0,
     "explanation": "...",
-    "source": "verbatim phrase from the notes"
+    "source": "verbatim phrase from the notes"${course ? `,
+    "keyPoint": "conceptId:n"` : ""}
   }
 ]`;
 
@@ -142,12 +167,16 @@ Return ONLY a valid JSON array — no markdown, no commentary:
     const raw    = block.text.trim().replace(/^```(?:json)?\n?|\n?```$/g, "").trim();
     const parsed = JSON.parse(raw) as unknown;
 
-    const { kept, malformed, ungrounded } = keepGroundedQuestions(parsed, entriesText, target);
+    const grounded = keepGroundedQuestions(parsed, entriesText, target);
+    const { malformed, ungrounded } = grounded;
+    const { kept, offSyllabus } = course
+      ? keepSyllabusQuestions(grounded.kept, cardKeyPointRefs(course))
+      : { kept: grounded.kept, offSyllabus: 0 };
 
-    if (malformed || ungrounded) {
+    if (malformed || ungrounded || offSyllabus) {
       console.warn(
         `[review/quiz] milestone=${body.milestoneId} target=${target} kept=${kept.length} ` +
-        `malformed=${malformed} ungrounded=${ungrounded}`
+        `malformed=${malformed} ungrounded=${ungrounded} offSyllabus=${offSyllabus}`
       );
     }
 

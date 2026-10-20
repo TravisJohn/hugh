@@ -9,6 +9,9 @@ import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { stripEmphasis } from "@/lib/claude/prompts";
 import {
+  cardGrounding, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback, misconceptionsByRef, renderCardSyllabus,
+} from "@/lib/packs/grounding";
+import {
   masteryOutcome, parseEvaluation,
   type MasteryEvaluation, type MasteryRecord, type MasteryWrite,
 } from "@/lib/mastery/outcome";
@@ -19,6 +22,7 @@ interface SessionMilestone {
   id:                string;
   title:             string;
   mastery_validated: boolean;
+  concept_ids:       string[] | null;
   tracks:            { user_id: string } | null;
 }
 
@@ -85,7 +89,7 @@ export async function POST(request: NextRequest) {
   // its result with the service role, where RLS does not apply.
   const { data, error: lookupError } = await supabase
     .from("milestones")
-    .select("id, title, mastery_validated, tracks!track_id!inner(user_id)")
+    .select("id, title, mastery_validated, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", milestoneId)
     .maybeSingle();
 
@@ -97,6 +101,21 @@ export async function POST(request: NextRequest) {
   if (!milestone || milestone.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
+
+  // A course card is judged against its source-checked syllabus, keyed off
+  // concept_ids, which learners cannot write (060). A course card whose pack
+  // cannot be taught is refused in its own words, never scored ungrounded.
+  const grounding = cardGrounding(milestone.concept_ids);
+  if (grounding.kind === "refused") {
+    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+  }
+  const course       = grounding.kind === "ok" ? grounding.ground : null;
+  const syllabusNote = course
+    ? `
+The course syllabus for this card (source-checked; probe these key points):
+${renderCardSyllabus(course)}
+`
+    : "";
 
   // Fetch diary entries
   const { data: entries } = await supabase
@@ -129,7 +148,7 @@ Here is context from the learner's own notes about this topic:
 ---
 ${entriesText}
 ---
-
+${syllabusNote}
 Generate ONE natural opening line that:
 1. Sets the conversational context implicitly — do not describe or announce the scenario
 2. Invites the learner to explain or demonstrate their understanding of "${topicTitle}"
@@ -153,7 +172,7 @@ Context from the learner's own notes:
 ---
 ${entriesText}
 ---
-
+${syllabusNote}
 Conversation so far:
 ${conversationText}
 
@@ -175,12 +194,14 @@ Context from the learner's own notes:
 ---
 ${entriesText}
 ---
-
+${syllabusNote}
 Full conversation (${scenario} scenario, Hugh playing ${persona}):
 ${conversationText}
 
 Score the learner from 1 to 10 across these dimensions:
-- Accuracy: are their explanations factually correct relative to their own notes?
+- Accuracy: ${course
+    ? "are their explanations correct relative to the course syllabus above? It is the authority; their notes are only context."
+    : "are their explanations factually correct relative to their own notes?"}
 - Clarity: are they explained well and easy to follow?
 - Confidence: do they sound fluent and self-assured?
 - Completeness: did they cover the key aspects of the topic?
@@ -191,8 +212,11 @@ Return ONLY valid JSON with no markdown fences:
 {
   "score": <integer 1-10>,
   "feedback": "<2-3 sentences: start with what was strong, then note what could be sharper>",
-  "passed": <true if score >= 7>
-}`;
+  "passed": <true if score >= 7>${course ? `,
+  "misconceptionsHeld": [<the ref, e.g. "${[...misconceptionsByRef(course).keys()][0] ?? "concept:m1"}", of every wrong belief from the syllabus that the learner stated and did not correct; [] if none>]` : ""}
+}${course ? `
+
+A wrong belief counts as held only if the learner said it and did not take it back during the conversation. Hugh saying it, or the learner rejecting it, does not count.` : ""}`;
 
   } else {
     return NextResponse.json({ error: "Invalid phase" }, { status: 400 });
@@ -222,7 +246,7 @@ Return ONLY valid JSON with no markdown fences:
       const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
       let evaluation: MasteryEvaluation | null;
       try {
-        evaluation = parseEvaluation(JSON.parse(cleaned));
+        evaluation = parseEvaluation(JSON.parse(cleaned), course ? [...misconceptionsByRef(course).keys()] : []);
       } catch {
         evaluation = null;
       }
@@ -239,8 +263,11 @@ Return ONLY valid JSON with no markdown fences:
       // can no longer write it (migration 058). Pass or fail is decided from
       // the score, not from the model's own flag, and the feedback is stored
       // exactly as the learner sees it.
-      const feedback = stripEmphasis(evaluation.feedback);
-      const outcome  = masteryOutcome({ score: evaluation.score, feedback }, milestone.mastery_validated);
+      // A held wrong belief gets the course's own correction and source,
+      // written from the pack rather than by the model.
+      const correction = course ? misconceptionFeedback(course, evaluation.misconceptionsHeld ?? []) : "";
+      const feedback   = [stripEmphasis(evaluation.feedback), correction].filter(Boolean).join("\n\n");
+      const outcome    = masteryOutcome({ ...evaluation, feedback }, milestone.mastery_validated);
       const record: MasteryRecord = outcome.write
         ? await recordMasteryResult(milestoneId, outcome.write)
         : "skipped";
