@@ -1,7 +1,7 @@
 {
   "id": "clustering",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Clustering: finding groups in unlabelled data",
   "outOfScope": [
     "Spectral clustering in depth, beyond the idea of reducing dimensions before clustering",
@@ -219,11 +219,11 @@
       ],
       "keyPoints": [
         {
-          "text": "Clustering is unsupervised: it groups unlabelled examples by how similar they are; when the examples already carry labels, that kind of grouping is called classification.",
+          "text": "Clustering is an unsupervised technique that groups unlabelled examples by how similar they are; when the examples already carry labels, that kind of grouping is called classification.",
           "sourceId": "g-overview",
           "locator": "What is clustering?",
           "anchor": {
-            "start": "Clustering is an unsupervised",
+            "start": "unsupervised machine learning technique designed",
             "end": "called classification."
           }
         },
@@ -332,11 +332,11 @@
           }
         },
         {
-          "text": "You can invent your own measure, but it must satisfy symmetry, positivity and identity, and must obey the triangle inequality.",
+          "text": "Whatever distance measure you invent must satisfy symmetry, positivity and identity, and must obey the triangle inequality.",
           "sourceId": "psu505-14",
           "locator": "14.1 Measures of Association for Continuous Variables",
           "anchor": {
-            "start": "Or, if you like, you can",
+            "start": "whatever you invent, the measure",
             "end": "Triangle inequality"
           }
         },
@@ -493,7 +493,7 @@
           "sourceId": "g-clustering-algorithms",
           "locator": "Centroid-based clustering",
           "anchor": {
-            "start": "The centroid of a cluster is the",
+            "start": "The centroid of a cluster is",
             "end": "the most widely used."
           }
         },
@@ -656,7 +656,7 @@
           "sourceId": "psu508-13",
           "locator": "13.4 Example: K-means",
           "anchor": {
-            "start": "It can be shown that",
+            "start": "Unfortunately, however, until we get",
             "end": "to find the global optimal."
           }
         },
@@ -721,7 +721,7 @@
           }
         },
         {
-          "text": "Because k-means minimises Euclidean distance to the assigned centroid, it is most appropriate for clusters that are isotropic and normally distributed, like spherical Gaussian blobs.",
+          "text": "Because k-means minimises Euclidean distance to the assigned centroid, it is better suited to clusters that are isotropic and normally distributed, like spherical Gaussian blobs.",
           "sourceId": "sk-kmeans-assumptions",
           "locator": "Anisotropically distributed blobs",
           "anchor": {
@@ -752,7 +752,7 @@
           "sourceId": "sk-kmeans-assumptions",
           "locator": "Final remarks",
           "anchor": {
-            "start": "In the case where clusters are known",
+            "start": "In the case where clusters are",
             "end": "clustering algorithms available."
           }
         }
@@ -833,7 +833,7 @@
           "sourceId": "sk-clustering",
           "locator": "2.3.11.5 Silhouette Coefficient",
           "anchor": {
-            "start": "evaluation must be performed using the",
+            "start": "are not known, evaluation must be",
             "end": "better defined clusters."
           }
         },
@@ -1009,7 +1009,7 @@
           "sourceId": "psu505-14",
           "locator": "Dendrograms (Tree Diagrams)",
           "anchor": {
-            "start": "The results of cluster analysis are best",
+            "start": "results of cluster analysis are best",
             "end": "two clusters are joined."
           }
         },
@@ -1045,7 +1045,7 @@
           "sourceId": "psu505-14",
           "locator": "14.6 Ward's Method",
           "anchor": {
-            "start": "It looks as though there are two",
+            "start": "It looks as though there are",
             "end": "branches of the tree."
           }
         }
@@ -1086,7 +1086,7 @@
           "sourceId": "sk-clustering",
           "locator": "2.3.7 DBSCAN",
           "anchor": {
-            "start": "A cluster is a set of core",
+            "start": "A cluster is a set of",
             "end": "the fringes of a cluster."
           }
         },
@@ -1139,7 +1139,7 @@
           "sourceId": "sk-mixture",
           "locator": "2.1 Gaussian mixture models",
           "anchor": {
-            "start": "A Gaussian mixture model is a probabilistic",
+            "start": "Gaussian mixture model is a probabilistic",
             "end": "centers of the latent Gaussians."
           }
         },
@@ -1254,11 +1254,11 @@
       ],
       "keyPoints": [
         {
-          "text": "When the ground-truth classes are known, the Rand index measures how similar the clustering is to them, ignoring how the clusters happen to be numbered.",
+          "text": "The Rand index, adjusted or not, measures how similar two label assignments of the same samples are, ignoring how the labels are permuted.",
           "sourceId": "sk-clustering",
           "locator": "2.3.11.1 Rand index",
           "anchor": {
-            "start": "Given the knowledge of the ground",
+            "start": "labels_pred, the (adjusted or unadjusted)",
             "end": "ignoring permutations:"
           }
         },
@@ -1290,11 +1290,11 @@
           }
         },
         {
-          "text": "The Rand index assumes nothing about cluster shape, so it can compare algorithms as different as k-means and spectral clustering.",
+          "text": "The Rand index can compare all kinds of clustering algorithms, such as k-means, which assumes isotropic blobs, against spectral clustering, which can find folded shapes.",
           "sourceId": "sk-clustering",
           "locator": "2.3.11.1 Rand index",
           "anchor": {
-            "start": "No assumption is made on the",
+            "start": "used to compare all kinds of",
             "end": "\"folded\" shapes."
           }
         }
@@ -1398,7 +1398,7 @@
           }
         },
         {
-          "text": "How cleanly clusters can be described can favour one method: in Penn State's example, Ward's clusters read more cleanly than complete linkage's, suggesting Ward's suits that data.",
+          "text": "How cleanly clusters can be described can favour one method: in Penn State's example, Ward's clusters read more cleanly than complete linkage's, suggesting Ward's method may be preferred for that data.",
           "sourceId": "psu505-14",
           "locator": "14.6 Ward's Method",
           "anchor": {
@@ -1445,7 +1445,7 @@
           }
         },
         {
-          "text": "Density-based algorithms also have difficulty with data that has many dimensions.",
+          "text": "Density-based algorithms have difficulty with data that has many dimensions.",
           "sourceId": "g-clustering-algorithms",
           "locator": "Density-based clustering",
           "anchor": {
@@ -1482,7 +1482,7 @@
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.1 Exact PCA",
           "anchor": {
-            "start": "PCA is used to decompose a multivariate",
+            "start": "PCA is used to decompose a",
             "end": "amount of the variance."
           }
         },
@@ -1496,11 +1496,11 @@
           }
         },
         {
-          "text": "Running PCA before k-means can ease the inflation of distances in high dimensions and speed up the computation.",
+          "text": "In very high-dimensional spaces Euclidean distances become inflated; running PCA before k-means can ease this and speed up the computation.",
           "sourceId": "sk-clustering",
           "locator": "2.3.2 K-means",
           "anchor": {
-            "start": "Running a dimensionality reduction algorithm such",
+            "start": "But in very high-dimensional spaces,",
             "end": "speed up the computations."
           }
         },
@@ -1514,7 +1514,7 @@
           }
         },
         {
-          "text": "Variables with the largest variances dominate the first principal components, so standardise variables measured in different units, or meant to count equally, before PCA.",
+          "text": "Variables with the largest variances tend to be emphasised in the first principal components, so standardise variables measured in different units, or meant to count equally, before PCA.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables",
           "anchor": {
