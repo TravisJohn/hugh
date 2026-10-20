@@ -150,6 +150,7 @@ export default function MasteryRealtimeClient({
                   This is a relaxed, spoken reflection on <span className="text-slate-200 font-semibold">{milestoneTitle}</span> —
                   no test, no score. Your summary is on the right to guide you. When you start,
                   Hugh will simply ask what stuck with you, then follow your train of thought.
+                  A reflection doesn&apos;t confirm the card; the short mastery check afterwards does.
                 </p>
                 <button
                   onClick={() => void begin()}
@@ -237,15 +238,30 @@ export default function MasteryRealtimeClient({
                 </div>
 
                 <p className="text-center text-xs text-slate-500">
-                  Spotted a gap? Update your summary on the right — then revisit the card whenever you like.
+                  {alreadyMastered
+                    ? "Spotted a gap? Update your summary on the right — then revisit the card whenever you like."
+                    : "This reflection doesn't confirm the card. Lock it in with a short spoken check — update your summary first if you spotted a gap."}
                 </p>
 
                 <div className="space-y-2">
+                  {/* The reflection is unscored by design; the scripted check is
+                      what the server grades and records (lib/mastery/outcome.ts). */}
+                  {!alreadyMastered && (
+                    <ExitLink
+                      href={classicUrl}
+                      label="Now lock it in"
+                      showIcon={false}
+                      onNavigate={disconnect}
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
+                    />
+                  )}
                   <ExitLink
                     href={boardUrl}
                     label="Back to board"
                     onNavigate={disconnect}
-                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-700 py-3.5 text-sm font-bold text-white hover:bg-slate-600 transition-colors"
+                    className={alreadyMastered
+                      ? "w-full flex items-center justify-center gap-2 rounded-2xl bg-slate-700 py-3.5 text-sm font-bold text-white hover:bg-slate-600 transition-colors"
+                      : "w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700 py-3 text-sm font-semibold text-slate-300 hover:text-slate-100 hover:border-slate-600 transition-colors"}
                   />
                   <button
                     onClick={() => void sendToReview()}

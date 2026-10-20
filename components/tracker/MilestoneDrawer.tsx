@@ -983,7 +983,7 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
                             <div className="flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-500/5 px-4 py-3">
                               <OctagonAlert size={15} className="shrink-0 mt-0.5 text-red-400" />
                               <p className="text-sm text-slate-300 leading-relaxed">
-                                This card is not yet confirmed. Profess your mastery in a short voice conversation to lock it in.
+                                This card is not yet confirmed. Pass a short spoken mastery check to lock it in.
                               </p>
                             </div>
 

@@ -8841,3 +8841,20 @@ purely additive, so applying it early breaks nothing.
 
 Learn's registry test count is now 24 (the new grading test). Mastery's is
 unchanged at 8: the route tests joined `lib/mastery/resultRoutes.test.ts`.
+
+## 2026-10-20 - The reflection now ends with a way to lock the card in
+
+Travis ran the Realtime voice path (admin only, behind its flag) and found the
+card still unconfirmed. Nothing was broken: that path is the unmarked Guided
+Reflection and never scores, so nothing was graded. The confusion was the
+copy. The drawer promised a "voice conversation to lock it in", while the
+reflection's own intro said "no test, no score".
+
+- The drawer now says to "pass a short spoken mastery check to lock it in",
+  which is true of both paths.
+- The reflection's intro says it does not confirm the card.
+- Its recap leads with "Now lock it in", which goes to the scripted check that
+  the server grades and records. It shows only when the card is not yet
+  confirmed.
+
+Learners were never affected: they always get the scripted check.
