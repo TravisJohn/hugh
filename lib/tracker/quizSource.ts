@@ -48,6 +48,11 @@ export interface GeneratedQuestion {
   explanation:  string;
   /** Verbatim span from the learner's notes that supports the answer. */
   source:       string;
+  /**
+   * On a course card, the syllabus key point this question tests
+   * (`conceptId:n`, lib/packs/grounding.ts). Absent on any other card.
+   */
+  keyPoint?:    string;
 }
 
 export const MIN_QUESTIONS = 2;
@@ -125,8 +130,24 @@ export function isWellFormed(q: unknown): q is GeneratedQuestion {
     Array.isArray(c.options) && c.options.length === 4 &&
     c.options.every(o => typeof o === "string" && o.trim().length > 0) &&
     typeof c.correctIndex === "number" &&
-    Number.isInteger(c.correctIndex) && c.correctIndex >= 0 && c.correctIndex <= 3
+    Number.isInteger(c.correctIndex) && c.correctIndex >= 0 && c.correctIndex <= 3 &&
+    (c.keyPoint === undefined || typeof c.keyPoint === "string")
   );
+}
+
+/**
+ * On a course card, keep only questions that name one of the card's own key
+ * points (PRD-narrow-learn.md, row 4). A question that tests nothing on the
+ * syllabus, or names a key point the card does not have, is dropped: a quiz on
+ * a course card checks the course, not whatever else the notes mention.
+ */
+export function keepSyllabusQuestions(
+  questions: readonly GeneratedQuestion[],
+  keyPointRefs: readonly string[],
+): { kept: GeneratedQuestion[]; offSyllabus: number } {
+  const refs = new Set(keyPointRefs);
+  const kept = questions.filter(q => q.keyPoint !== undefined && refs.has(q.keyPoint));
+  return { kept, offSyllabus: questions.length - kept.length };
 }
 
 export interface GroundingResult {

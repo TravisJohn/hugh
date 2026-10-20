@@ -21,29 +21,57 @@ export const MASTERY_RUBRIC: readonly string[] = [
 // the existing mastery_validated gate).
 export const PASS_THRESHOLD = 7;
 
-export interface MasteryCriteria {
-  topicTitle:    string;
-  concepts:      string[];   // authoritative — from the card's learning points
-  summary:       string;     // authoritative — the card's own summary
-  rubric:        readonly string[];
-  passThreshold: number;
+/** A wrong belief the learner must not leave standing (narrow Learn, PRD row 4). */
+export interface CriteriaMisconception {
+  ref:        string;
+  claim:      string;
+  correction: string;
 }
 
-export function buildCriteria(card: {
-  title:          string;
-  summary?:       string | null;
-  learningPoints?: LearningPoint[] | null;
-}): MasteryCriteria {
-  const concepts = (card.learningPoints ?? [])
-    .map((p) => p.text?.trim())
-    .filter((t): t is string => !!t);
+/**
+ * A course card's syllabus, as plain data (lib/packs/grounding.ts supplies it;
+ * this module does not import packs). When given, it is the whole authority.
+ */
+export interface CriteriaSyllabus {
+  keyPoints:      string[];
+  misconceptions: CriteriaMisconception[];
+}
+
+export interface MasteryCriteria {
+  topicTitle:     string;
+  /** Authoritative: the course's key points, or else the card's learning points. */
+  concepts:       string[];
+  summary:        string;     // authoritative — the card's own summary
+  rubric:         readonly string[];
+  passThreshold:  number;
+  /** A course card's listed wrong beliefs. Empty on any other card. */
+  misconceptions: CriteriaMisconception[];
+}
+
+export function buildCriteria(
+  card: {
+    title:          string;
+    summary?:       string | null;
+    learningPoints?: LearningPoint[] | null;
+  },
+  syllabus?: CriteriaSyllabus,
+): MasteryCriteria {
+  // A course card is judged against its source-checked key points ONLY.
+  // `learning_points` stays learner-writable (058 grants it for the coverage
+  // checklist), so it must never be what a course card is scored against.
+  const concepts = syllabus
+    ? syllabus.keyPoints.map(t => t.trim()).filter(t => t.length > 0)
+    : (card.learningPoints ?? [])
+        .map((p) => p.text?.trim())
+        .filter((t): t is string => !!t);
 
   return {
-    topicTitle:    card.title,
+    topicTitle:     card.title,
     concepts,
-    summary:       (card.summary ?? "").trim(),
-    rubric:        MASTERY_RUBRIC,
-    passThreshold: PASS_THRESHOLD,
+    summary:        (card.summary ?? "").trim(),
+    rubric:         MASTERY_RUBRIC,
+    passThreshold:  PASS_THRESHOLD,
+    misconceptions: syllabus?.misconceptions ?? [],
   };
 }
 
@@ -58,6 +86,14 @@ export function renderCriteriaForPrompt(c: MasteryCriteria): string {
     ? `\nCard summary (authoritative):\n${c.summary}\n`
     : "";
 
+  const misconceptionBlock = c.misconceptions.length
+    ? [
+        ``,
+        `Known wrong beliefs (if the learner states one and does not correct it, they have not mastered this card):`,
+        ...c.misconceptions.map((m) => `- [${m.ref}] ${m.claim}\n  Correction: ${m.correction}`),
+      ].join("\n")
+    : "";
+
   return [
     `Topic: "${c.topicTitle}"`,
     ``,
@@ -66,6 +102,7 @@ export function renderCriteriaForPrompt(c: MasteryCriteria): string {
     summaryBlock,
     `They should be able to:`,
     c.rubric.map((r) => `- ${r}`).join("\n"),
+    misconceptionBlock,
   ].join("\n");
 }
 

@@ -277,6 +277,17 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   `packId:conceptId`. Grounding keys off it, so no learner grant ever includes
   it. Never ground a card in `learning_goals.pack_id`: learners can write
   `learning_goals`, so that column is display only.
+- **A course card is judged against its syllabus.** `lib/packs/grounding.ts`
+  is the one place a card's pack is read. Ask (`learn/chat`, given the
+  card's `milestoneId`), scripted mastery, the Realtime reflection, the diary
+  check and the review quiz all take the card's syllabus from it, rendered
+  by `renderCardSyllabus` or as plain data; none of them imports a pack. On
+  a course card, mastery criteria come from the pack's key points, never
+  `learning_points`. A listed wrong belief left uncorrected fails the card
+  whatever the score, and the feedback quotes the pack's correction and
+  source. A card with no `concept_ids` keeps every old behaviour. A course
+  card whose pack can't be loaded is refused with its own message, never
+  taught ungrounded.
 - **The review answer key never reaches the browser.** Since migration 059 the
   quiz route stores each quiz with its key in `review_quizzes` and sends the
   questions only. `tracker/review/answer` locks one answer per question (the

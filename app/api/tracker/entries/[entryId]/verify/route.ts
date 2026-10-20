@@ -7,6 +7,7 @@ import { checkUsageAllowed, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 import { writeOutcome } from "@/lib/supabase/writeResult";
+import { cardGrounding, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -54,13 +55,23 @@ export async function POST(
   // Resolve milestone title + track topic for grounding
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("title, tracks!track_id!inner(topic_description)")
+    .select("title, concept_ids, tracks!track_id!inner(topic_description)")
     .eq("id", entry.milestone_id)
     .single();
 
+  // A course card's note is judged against its syllabus, not the model's
+  // general knowledge (PRD-narrow-learn.md, row 4). A course card whose pack
+  // can't be taught is refused in its own words, not checked ungrounded.
+  const grounding = cardGrounding((milestone?.concept_ids as string[] | null | undefined) ?? null);
+  if (grounding.kind === "refused") {
+    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+  }
+  const course = grounding.kind === "ok" ? grounding.ground : null;
+
   const title = (milestone?.title as string) ?? "this topic";
-  const topic =
-    (milestone?.tracks as { topic_description?: string } | null)?.topic_description ?? title;
+  const topic = course?.subject
+    ?? (milestone?.tracks as { topic_description?: string } | null)?.topic_description ?? title;
+  const syllabus = course ? renderCardSyllabus(course) : undefined;
 
   const startedAt = Date.now();
 
@@ -68,7 +79,7 @@ export async function POST(
     const res = await anthropic.messages.create({
       model:      MODEL,
       max_tokens: 700,
-      messages:   [{ role: "user", content: factCheckEntryPrompt(topic, title, entry.body as string) }],
+      messages:   [{ role: "user", content: factCheckEntryPrompt(topic, title, entry.body as string, syllabus) }],
     });
 
     // Logged before the parse below, which can throw on a malformed reply.

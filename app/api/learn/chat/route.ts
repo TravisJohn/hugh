@@ -8,6 +8,9 @@ import { parseChatResponse } from "@/lib/askcode/parse";
 import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
+import { createClient } from "@/lib/supabase/server";
+import { cardGrounding, GROUNDING_REFUSAL_MESSAGE } from "@/lib/packs/grounding";
+import { courseAskSystemPrompt } from "@/lib/packs/askPrompt";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -29,11 +32,16 @@ export async function POST(request: NextRequest) {
   if (input.response) return input.response;
   const body = input.body;
 
-  const { topic, messages, focusMode, codeModeRequested } = body;
+  const { topic, messages, focusMode, codeModeRequested, milestoneId } = body;
 
   if (!topic?.trim() || !Array.isArray(messages) || messages.length === 0) {
     return NextResponse.json({ error: "topic and messages are required" }, { status: 400 });
   }
+
+  // A course card's prompt is built here from its syllabus; any other card
+  // keeps the browser's topic, as before.
+  const system = await systemPromptFor(milestoneId, topic.trim(), userId);
+  if (system instanceof NextResponse) return system;
 
   // Validated, bounded transcript; copy before adding the server reminder.
   const capped = [...messages];
@@ -56,7 +64,7 @@ export async function POST(request: NextRequest) {
     const res = await createTextMessage(anthropic, userId, "learn/chat", {
       model:      MODEL,
       max_tokens: 1024,
-      system:     focusedLearningSystemPrompt(topic.trim()),
+      system,
       messages:   capped,
       // Prompt caching: auto-place a breakpoint on the last message, so the
       // system prompt + prior conversation prefix is reused across turns of the
@@ -115,4 +123,44 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ error: "Failed to generate response" }, { status: 502 });
   }
+}
+
+/**
+ * The tutor's system prompt for this conversation, or the response to send
+ * instead.
+ *
+ * A card whose `concept_ids` name a course (migration 060, which learners
+ * cannot write) is taught from its syllabus, and the browser's topic is not
+ * used: the server decides what the tutor teaches. A card with no concepts,
+ * or no card at all, keeps today's prompt. A course card whose pack can't be
+ * taught gets that refusal's own message, never a silent fallback to the
+ * ungrounded tutor.
+ */
+async function systemPromptFor(
+  milestoneId: string | undefined,
+  topic:       string,
+  userId:      string,
+): Promise<string | NextResponse> {
+  if (!milestoneId) return focusedLearningSystemPrompt(topic);
+
+  const { data: card, error } = await (await createClient())
+    .from("milestones")
+    .select("id, title, concept_ids, tracks!track_id!inner(user_id)")
+    .eq("id", milestoneId)
+    .maybeSingle<{ id: string; title: string; concept_ids: string[] | null; tracks: { user_id: string } }>();
+
+  if (error) {
+    logSafeError("learn/chat card lookup", error);
+    return NextResponse.json({ error: "Hugh couldn't load this card. Please try again." }, { status: 500 });
+  }
+  if (!card || card.tracks?.user_id !== userId) {
+    return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
+  }
+
+  const grounding = cardGrounding(card.concept_ids);
+  if (grounding.kind === "none") return focusedLearningSystemPrompt(topic);
+  if (grounding.kind === "refused") {
+    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+  }
+  return courseAskSystemPrompt(grounding.ground, card.title);
 }

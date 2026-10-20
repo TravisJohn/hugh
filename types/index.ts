@@ -203,6 +203,9 @@ export interface Milestone {
   mastery_score:     number | null;
   learning_points:   LearningPoint[] | null;
   coverage:          MilestoneCoverage | null;
+  // The reference-pack concepts a course card teaches, as packId:conceptId
+  // (migration 060). Empty or absent on any other card. Server-written only.
+  concept_ids?:      string[] | null;
   priority_rank:     number | null;
   priority_reason:   string | null;
   mastery_feedback:  string | null;
