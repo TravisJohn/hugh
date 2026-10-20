@@ -9037,3 +9037,12 @@ No schema or validator change was needed. Two authoring notes: FPP3's
 chapter pages are single long pages, so start anchors needed 5 or 6 words to
 be unique; and formula blocks eat into the 600-character gap, so two passages
 were split at a formula.
+
+## 2026-10-20 - Time series forecasting joins the catalog
+
+Travis approved the 13-card order as drafted: evaluation (benchmarks,
+residuals, honest testing) comes before exponential smoothing and ARIMA, as
+in Forecasting: Principles and Practice. The pack is in the catalog under the
+Statistics region. `content/packs/ids/time-series-forecasting.json` locks its
+27 concept ids and 13 card ids. The catalog now has three courses: Linear
+Regression, A/B testing, and Time series forecasting.
