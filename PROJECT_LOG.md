@@ -8858,3 +8858,16 @@ reflection's own intro said "no test, no score".
   confirmed.
 
 Learners were never affected: they always get the scripted check.
+## 2026-10-20 - Narrow Learn PRD drafted
+
+`PRD-narrow-learn.md` specifies how Learn builds tracks from reference packs
+instead of open topics. It opens with a decisions table of 12 rows, each with
+a recommended answer, so it can be approved in one reply. The main
+recommendations: launch with the two packs that exist; build tracks
+deterministically from a new authored `cards` list in each pack (pack format
+v1.2), with no model call; ground Ask, the diary check, the quiz and mastery
+in the card's key points and misconceptions, loaded on the server; keep the 9
+existing open-topic goals read-only; and retire the open-input machinery in
+three phases (behind a flag, then 410, then delete). One correction to the
+earlier notes: the cache minimum on Haiku 4.5, which Ask uses, is 4,096
+tokens, not 2,048. No code yet; it waits on Travis's approval.
