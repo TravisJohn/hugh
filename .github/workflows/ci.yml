@@ -73,6 +73,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_059_review_quizzes_test
       - name: Test that the review answer key is server-only
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_059_review_quizzes_test -f /tmp/hugh-s1/tests/059_review_quizzes.sql
+      - name: Create disposable pack-tracks database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_060_pack_tracks_test
+      - name: Test that pack tracks record their concepts where learners cannot write
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_060_pack_tracks_test -f /tmp/hugh-s1/tests/060_pack_tracks.sql
 
   verify:
     name: lint · typecheck · test · audit · build
