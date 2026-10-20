@@ -8996,3 +8996,26 @@ Regression. `content/packs/ids/ab-testing.json` locks its 18 concept ids and
 9 card ids. A new catalog-wide test checks that every course builds a board
 teaching each live concept exactly once. Time series forecasting is being
 authored in a separate session.
+
+## 2026-10-21 - Clustering pack machine-checked; cards await approval
+
+`content/packs/clustering.json` 1.0.0 is machine-checked: 24 concepts, 107 key
+points, 9 misconceptions, 33 prerequisites, 18 sources. All of them are HTML,
+so there are no manual PDF checks: scikit-learn's user guide (BSD License),
+Penn State STAT 505 Lessons 11 and 14 and STAT 508 Lessons 7 and 13 (CC BY-NC
+4.0), and Google's Machine Learning clustering course (CC BY 4.0).
+
+- **Google pages are pinned to `?hl=en`.** Without it, Google served one page
+  as an AI translation into Italian. An anchor written against one language
+  fails whenever Google picks another.
+- **Anchors avoid Google's "Page Summary" boxes.** They are generated, can
+  change at any time, and repeat body sentences, which made two starts
+  ambiguous.
+- **Judge runs.** Both were blind Opus 5.5 runs with instructions v1, judging
+  116 real items and 14 planted errors. Run 1: 101/116 supported, 14/14
+  caught. All 15 flags were sentences naming something (DBSCAN, EM, k-means,
+  Penn State) that their passage did not, so 6 anchors were widened and 9
+  sentences trimmed. Run 2: 116/116 supported, 14/14 caught, recorded.
+- **Cards.** Ten cards are drafted and validator-accepted, but **not yet
+  approved**. The pack is not in `lib/packs/catalog.ts` and has no `ids/`
+  file; both follow Travis's approval of the card order.
