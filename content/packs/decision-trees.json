@@ -1,7 +1,7 @@
 {
   "id": "decision-trees",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Decision trees and tree ensembles for classification and regression",
   "outOfScope": [
     "The mathematics of gradient boosting in depth, such as loss gradients, pseudo-residuals and Newton steps",
@@ -2053,5 +2053,15 @@
         "trees_vs_linear"
       ]
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-21",
+    "itemsJudged": 135,
+    "itemsSupported": 135,
+    "errorsPlanted": 18,
+    "errorsCaught": 18,
+    "fingerprint": "sha256:a047f7fa06250e36a2b0f3bdda8e4633"
+  }
 }
