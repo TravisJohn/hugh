@@ -1,7 +1,7 @@
 {
   "id": "bayesian-inference",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Bayesian inference: updating beliefs about unknown quantities with data, using priors, likelihoods and posteriors",
   "outOfScope": [
     "The internals of MCMC algorithms, such as the mathematics of Metropolis-Hastings and Hamiltonian Monte Carlo",
@@ -272,7 +272,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A positive screening result can still leave a disease unlikely: in one worked example it raised the chance only from 1% to 16%. That is typical when the disease is uncommon, and the test is still informative.",
+          "text": "A positive screening result can still leave a disease unlikely: in one worked example it raised the chance only from 1% to 16%. That is typical when the disease is fairly unusual, and is no reason to discard the test.",
           "sourceId": "psu414-06",
           "locator": "6.3 Another Example",
           "anchor": {
@@ -299,7 +299,7 @@
           }
         },
         {
-          "text": "Retesting after a positive result changes the base rate: for the second test the population of interest is no longer everyone, but the people who already tested positive once.",
+          "text": "Retesting after a positive result changes the starting point: for the second test the population of interest is not everyone, but the people who already tested positive once.",
           "sourceId": "psu414-06",
           "locator": "6.3 Another Example",
           "anchor": {
@@ -471,7 +471,7 @@
       "misconceptions": [
         {
           "claim": "The likelihoods of the data under all the possible hypotheses must add up to 1, like any probability distribution.",
-          "correction": "Only the prior probabilities must add up to 1. The likelihood is not a probability function: it is a way to compare how compatible the data are with each hypothesis.",
+          "correction": "The prior probabilities add up to 1, but the likelihoods do not: the likelihood is not a probability function, but a way to compare how compatible the data are with each hypothesis.",
           "sourceId": "br-02",
           "locator": "2.1.2 Conditional probability & likelihood",
           "anchor": {
@@ -495,7 +495,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The evidence is the total probability of the observed data across all possible parameter values: the likelihood at each value, weighted by that value's prior probability, then added up (the law of total probability).",
+          "text": "The total probability of the observed data across all possible parameter values comes from the law of total probability: the likelihood at each value, weighted by that value's prior probability, added up.",
           "sourceId": "br-02",
           "locator": "2.3.4 Normalizing constant",
           "anchor": {
@@ -504,7 +504,7 @@
           }
         },
         {
-          "text": "The normalising constant is the same for every parameter value. Its only purpose is to scale the posterior probabilities so that they sum to one.",
+          "text": "The normalising constant's only purpose is to scale the posterior probabilities so that they sum to one.",
           "sourceId": "br-02",
           "locator": "2.3.6 Posterior shortcut",
           "anchor": {
@@ -622,7 +622,7 @@
           }
         },
         {
-          "text": "Larger, equal shape parameters concentrate a beta around 0.5: a Beta(20,20) has less variability than a Beta(5,5).",
+          "text": "A Beta(20,20) has values closer to its mean of 0.5, and so less variability, than a Beta(5,5).",
           "sourceId": "br-03",
           "locator": "3.1.1 Beta foundations",
           "anchor": {
@@ -944,12 +944,12 @@
           }
         },
         {
-          "text": "Prior information may be inaccurate and lead to misleading conclusions, the way it is put in may be wrong, and there is no one correct way of putting it in.",
+          "text": "Prior information may be inaccurate and lead to misleading conclusions, the choice of prior may be wrong, and there is no one correct way to put prior information in: different approaches can give different results.",
           "sourceId": "nist-bayes",
           "locator": "Pro's and con's for using Bayesian methods",
           "anchor": {
             "start": "Prior information may not be accurate",
-            "end": "of inputting prior information"
+            "end": "approaches can give different results"
           }
         },
         {
@@ -1150,7 +1150,7 @@
           }
         },
         {
-          "text": "The 95% level is common but somewhat arbitrary, ingrained by tradition; other levels such as 50% or 80% may suit the context better.",
+          "text": "The 95% level is common but somewhat arbitrary, ingrained by tradition. There is no one right credible level; 50%, 80% or 95% may be used, depending on the context.",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1180,11 +1180,11 @@
       ],
       "keyPoints": [
         {
-          "text": "The proper reading of a 95% confidence interval is about the procedure: in the long run, intervals made this way contain the true population value 95% of the time.",
+          "text": "A confidence interval is read as a procedure that is right with a given probability in the long run: a 95% confidence interval is one that will contain the true population mean 95% of the time.",
           "sourceId": "st21-10",
           "locator": "10.1 Confidence intervals",
           "anchor": {
-            "start": "Thus, the proper interpretation of the",
+            "start": "Instead, we have to view the",
             "end": "95% of the time"
           }
         },
@@ -1278,12 +1278,12 @@
           }
         },
         {
-          "text": "For a two-sided test of a single value, it is best to decide before seeing any data how far from that value counts as meaningfully different, which adds a buffer around it.",
+          "text": "What counts as substantially different from a hypothesised value depends on context, so it is best defined before seeing any data, for example as any value outside a 0.05 window around it.",
           "sourceId": "br-08",
           "locator": "8.2.2 Two-sided tests",
           "anchor": {
-            "start": "it is best practice to define",
-            "end": "a little buffer into our hypotheses"
+            "start": "Yet what's \"substantial\" or clear",
+            "end": "meaningfully different from 0.3"
           }
         }
       ],
@@ -1335,7 +1335,7 @@
           "locator": "8.2.1 One-sided tests",
           "anchor": {
             "start": "As a ratio, it's meaningful to",
-            "end": "in light of the observed data"
+            "end": "decreased in light of the"
           }
         },
         {
@@ -1476,7 +1476,7 @@
           "locator": "10.2.2 Dealing with wrong models",
           "anchor": {
             "start": "Even if we hadn't seen this",
-            "end": "exhibit higher central tendency and variability"
+            "end": "and variability than the observed"
           }
         },
         {
@@ -1503,7 +1503,7 @@
       ],
       "keyPoints": [
         {
-          "text": "For a binary-outcome test, such as a test of conversion rates, a Bayesian analysis can give the probability that B will beat A in the long run.",
+          "text": "For a binary-outcome test, such as a test of conversion rates, the probability that B will beat A in the long run can be calculated.",
           "sourceId": "miller-bayes-ab",
           "locator": "A/B testing: binary outcomes",
           "anchor": {
@@ -1539,7 +1539,7 @@
           }
         },
         {
-          "text": "These formulas can also use an informative prior instead of a non-informative one, as long as the beta parameters stay whole numbers.",
+          "text": "An informative prior can also be used, provided its beta parameters remain whole numbers.",
           "sourceId": "miller-bayes-ab",
           "locator": "Footnote 1",
           "anchor": {
