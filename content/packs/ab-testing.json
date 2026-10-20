@@ -1,7 +1,7 @@
 {
   "id": "ab-testing",
   "version": "1.1.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "A/B testing: randomised controlled experiments that compare two versions of a product",
   "outOfScope": [
     "Bayesian A/B testing, such as posterior probabilities and credible intervals",
@@ -1195,5 +1195,15 @@
       "after": "segments_and_time",
       "reason": "Each segment read is one more comparison."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-20",
+    "itemsJudged": 79,
+    "itemsSupported": 79,
+    "errorsPlanted": 14,
+    "errorsCaught": 14,
+    "fingerprint": "sha256:80133bb9141ccfb6b53ec86e0a2adf45"
+  }
 }

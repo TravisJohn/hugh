@@ -8731,3 +8731,22 @@ Two loose ends:
   Whichever branch merges second must set it to the true total.
 - The A/B testing pack, on `feat/ab-testing-pack`, has not been judged. It
   needs that branch together with this one.
+
+## 2026-10-20 - A/B testing pack passes the machine check
+
+The A/B testing pack (merged from `feat/ab-testing-pack`) got its planted
+errors (one of each corruption kind; with its 9 misconception claims, 14 in
+all) and four blind Claude Opus 5.5 runs. Real items supported, out of 79:
+69, then 74, then 78, then 79. Every run caught 14 of 14 planted errors.
+Fifteen items were reworked along the way. Most widened an anchor to
+definitions sitting just beside it (power = 1 - beta, Twyman's law, the
+200-versus-20 comparison). Others trimmed corrections that added reasoning
+their source did not give, such as remedies Evan Miller's peeking passage
+never prescribes, or "segments" where NIST discusses factor contrasts. The
+pack is now 1.1.0 and `machine-checked`.
+
+This confirms the run-to-run variance seen on Linear Regression. Each run's
+new flags were items an earlier run had supported, so a pass took four runs
+here and three there. The flags were still fair, and each named a real
+stretch. Both packs now meet the v1.1 success criterion; the remaining v1.1
+check is Travis's first audit.
