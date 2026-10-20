@@ -155,3 +155,100 @@ the surfaces table.
    check the card order, ask the 10 scripted questions, state the VIF
    misconception in mastery, and open three source links.
 7. **A/B testing** goes through the same steps (cards only). Then phase 2.
+
+## Phase 1 architecture (PROPOSED, awaiting Travis's approval)
+
+Phase 1 is the Linear Regression proof behind a flag. The open-topic path is
+untouched, and no learner sees anything new.
+
+### Modules
+
+**Pack format v1.2** (`types/pack.ts`, `lib/packs/validate.ts`)
+- `cards: PackCard[]`, each `{ id, title, conceptIds }`, in teaching order.
+- `retired?: true` on a concept (row 12). Retired concepts are kept, never
+  deleted.
+- New validator rules: 8 to 14 cards; 1 to 4 concepts per card; every live
+  concept on exactly one card; card order respects prerequisites; card and
+  concept ids unique. Ids are permanent, so a test compares them against the
+  previous version of each pack.
+- The machine-check fingerprint covers key points and misconceptions only.
+  Adding cards must leave it unchanged, and a test proves that.
+
+**Pure modules, each with tests** (`lib/packs/`)
+- `catalog.ts`: the live packs, imported statically so they are bundled on
+  Vercel. `loadPack(id)` returns the pack, or `unknown` / `below-status`, each
+  with its own error copy (Rule 5). It also supplies each pack's `region`.
+- `track.ts`: turns a pack into card rows (`title`, `summary`, `concept_ids`,
+  `learning_points`, `kanban_column`, `position`). The first card starts in
+  Learn and the rest in Backlog. No model is involved.
+- `grounding.ts`: given a card's qualified concept ids
+  (`linear-regression:ols`), returns its concepts, key points,
+  misconceptions, sources, and a one-line outline of the rest of the pack.
+  This is the ONE place Ask, mastery, the diary check and the quiz read a
+  pack from (DRY).
+- `askPrompt.ts`: the Ask system prompt, built from the grounding. Stable
+  text goes first, so the prompt cache can hit.
+
+**Migration 060** (additive; Travis applies it before the code deploys)
+- `milestones.concept_ids text[]`. Learners cannot write it: since 058 they
+  hold only named column grants, and new columns are not granted. Grounding
+  keys off this column.
+- `learning_goals.pack_id`, `pack_version`. These are for display and for
+  listing only. Grounding never trusts them, because learners can write
+  `learning_goals`.
+- Widen `track_generations.source_kind` to allow `'pack'`. Today the CHECK
+  allows only `qa` and `document`, so a pack build's provenance row would be
+  refused.
+- `topic_requests` stays in phase 2, when the request box ships.
+- A SQL test beside 058's and 059's, run in CI.
+
+**Wiring (server)**
+- `generateTrack` takes a source: `{ kind: "topic", ... }` as today, or
+  `{ kind: "pack", packId }`. The track and milestone writes, the partial
+  insert check, and the provenance record stay one shared path. The pack
+  branch skips the model calls and the ranking call. Rule 3 holds: one
+  machine, no new route.
+- `dashboard/goals` and `goals/[id]/retry` accept `packId` when the flag
+  allows. There is no topic gate on this path; the catalog is the gate.
+- `learn/chat` accepts `milestoneId`. A pack card gets the server-built
+  prompt; a legacy card keeps today's `topic` path until phase 2.
+- `buildCriteria` (mastery evaluate, session and realtime), the diary check
+  (`entries/[id]/verify`) and the review quiz (`review/quiz`) read
+  `grounding.ts` for pack cards. A test proves mastery criteria for a pack
+  card cannot come from `learning_points`.
+- The coverage route already skips its model call when `learning_points` is
+  non-empty, and pack cards are built with theirs.
+
+**UI**
+- `/home/learn`: a "Courses" section above today's picker, for the flagged
+  user only.
+- Card drawer: a Sources list for pack cards (key point, publisher, highlight
+  link), passed in by the board page. The browser never builds links.
+
+**Flag**
+- `PACK_LEARN_ENABLED`, admin-only in production, using the same pattern as
+  `canUseRealtime`. Travis can test on the live site, and learners see
+  nothing.
+
+### Build order: two PRs
+- **PR A, "a pack becomes a board":** v1.2 format plus the Linear Regression
+  cards (drafted offline, Travis glances at the order); `catalog`, `track`;
+  060 plus its SQL test; the `generateTrack` pack branch; the goals and retry
+  routes; the picker section. Travis's check: pick Linear Regression and get
+  a ready board in under 5 seconds with no `tracker/*` usage rows.
+- **PR B, "everything reads the pack":** `grounding`, `askPrompt`; Ask,
+  mastery, the diary check and the quiz; card sources. Travis's check: the
+  10 scripted Ask questions, the VIF misconception failing mastery, three
+  source links.
+- **Then** A/B testing gets its cards (format only), and phase 2 is planned
+  separately.
+
+### Decisions in this architecture
+1. **The flag is admin-only in production.** The alternative, a separate
+   preview environment, costs a second Supabase project.
+2. **Pack builds skip the token usage gate,** because they spend nothing.
+   Goal creation keeps its existing limits. CLAUDE.md Rule 3 ("each must gate
+   usage") is reworded to "each must gate the spend it causes".
+3. **Grounding keys off `milestones.concept_ids`, not `learning_goals.pack_id`,**
+   for the reason in migration 060 above.
+4. **Two PRs, not one,** so each can be checked on the live site on its own.
