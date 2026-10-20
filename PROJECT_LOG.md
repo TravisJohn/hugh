@@ -8936,3 +8936,24 @@ nothing new, and the open-topic path is unchanged.
 
 DEPLOY ORDER: apply 060 before this code deploys. Then set
 `PACK_LEARN_ENABLED=true` in Vercel to see the course.
+
+## 2026-10-20 - A/B testing joins the catalog
+
+A/B testing 1.2.0 carries the 9 cards Travis approved:
+1. framing the test and its metrics
+2. random assignment
+3. hypotheses and the p-value
+4. comparing the two groups
+5. errors, and significant versus meaningful
+6. power and sample size
+7. peeking (on its own card)
+8. many metrics, segments and time
+9. trusting the result
+
+All 18 concepts are covered and all 15 prerequisites respected. Cards are not
+judged, so the machine-check fingerprint is unchanged and the pack stays
+machine-checked. It is filed under the Statistics region with Linear
+Regression. `content/packs/ids/ab-testing.json` locks its 18 concept ids and
+9 card ids. A new catalog-wide test checks that every course builds a board
+teaching each live concept exactly once. Time series forecasting is being
+authored in a separate session.
