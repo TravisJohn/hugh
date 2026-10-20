@@ -43,6 +43,7 @@ export type OperationId =
   | "track.summary"
   | "topic.gate"
   | "quiz.generate"
+  | "quiz.submit"
   | "mastery.evaluate"
   | "mastery.recap"
   | "mastery.session"
@@ -147,6 +148,16 @@ export const OPERATIONS: readonly OperationDefinition[] = [
     failureIsSilent:  false,
     description:
       "Building a diary-grounded review quiz for a milestone.",
+  },
+  {
+    id:               "quiz.submit",
+    domain:           "quiz",
+    label:            "Grade review quiz",
+    clientReportable: false,
+    failureIsSilent:  false,
+    description:
+      "Grading a review quiz from its locked answers and recording a pass. " +
+      "A pass that could not be saved is 'failed', with stage 'record'.",
   },
   {
     id:               "mastery.evaluate",

@@ -8799,3 +8799,45 @@ c606cf3. The integrity-fix branch then took main in. Both branches had set
 Learn's registry test count to 22, so the line merged with no conflict and was
 still wrong: the registry guard found 23 on disk, and the count is now 23. The
 log's only conflict was the two branches' entries, kept in date order.
+
+## 2026-10-20 - Review passes are recorded by the server (integrity fix, part 2)
+
+The second half of the 2026-10-17 integrity hole. The review quiz was graded
+in the browser: the quiz route sent the answer key with the questions, and on
+a pass the page told the milestone PATCH route to set review_validated. 058
+had already closed the column to learners' own sessions; the PATCH route was
+the remaining way in, and it now refuses every result.
+
+How it works now:
+- Migration 059 adds `review_quizzes` (the quiz with its answer key) and
+  `review_quiz_answers` (one locked answer per question). RLS on, no learner
+  policy, no learner privilege: service role only. A SQL fixture beside 058's
+  proves a learner cannot read the key, forge a quiz, or change or delete a
+  locked answer, and it runs in CI the same way.
+- The quiz route stores the quiz and sends the browser the questions only.
+- `tracker/review/answer` locks an answer and only then reveals that one
+  question's key. The (quiz_id, question_index) primary key is the lock, so
+  parallel requests for one question cannot race a second choice in.
+- `tracker/review/submit` grades the locked answers (`lib/tracker/reviewGrading.ts`,
+  pure and tested) and writes the pass with the service role. Submitting again
+  is safe and is the page's "Try saving again".
+
+Decisions:
+- Per-question feedback is kept. A literal "submit everything at the end" would
+  have moved the correct answer, explanation and "From your notes" line to the
+  end of the quiz. Locking before revealing keeps it safe.
+- The 45-second timer stays client-side. A learner who stretches it can only
+  look at their own notes, which the quiz is about anyway. Not enforced.
+- Stored quizzes expire after 7 days (pg_cron, in 059; `lib/retention.ts` and
+  /privacy updated, the retention test now reads both migrations). The
+  learner's quiz answers are treated as a system record, not "what a learner
+  made": they are option clicks on a generated quiz, and the outcome that
+  matters (review_validated) stays on the card. Revisit if that reading is wrong.
+- The quiz route's two unchecked reads (card, diary) now fail as errors rather
+  than as "not found" and "no entries".
+
+DEPLOY ORDER is the reverse of 058: apply 059 BEFORE this code deploys. 059 is
+purely additive, so applying it early breaks nothing.
+
+Learn's registry test count is now 24 (the new grading test). Mastery's is
+unchanged at 8: the route tests joined `lib/mastery/resultRoutes.test.ts`.

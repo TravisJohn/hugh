@@ -3,15 +3,14 @@
 // from the request body into the row, so a learner could mark their own cards
 // reviewed or mastered. This decides what a request may write instead. Pure.
 //
-// - Mastery results are never accepted here. The mastery session route records
-//   them after it scores the learner (lib/mastery/outcome.ts).
+// - Results are never accepted here. The mastery session route records a
+//   mastery result after it scores the learner (lib/mastery/outcome.ts), and
+//   tracker/review/submit records a review pass after it grades the stored
+//   quiz (lib/tracker/reviewGrading.ts).
 // - Moving a card into a stage means it has to earn that stage again, so a
 //   move into `review` clears review_validated and a move into `done` clears
 //   mastery_validated. The server derives those resets; the client no longer
 //   sends them.
-// - A review result is still accepted from the browser on its own, for now:
-//   the review quiz is graded in the browser until it moves to the server.
-//   That is the next fix, and it removes this path.
 
 import type { KanbanColumn } from "@/types";
 
@@ -19,7 +18,7 @@ export const VALID_COLUMNS: readonly KanbanColumn[] = ["backlog", "learn", "revi
 
 export interface MilestonePatchWrite {
   kanban_column?:     KanbanColumn;
-  review_validated?:  boolean;
+  review_validated?:  false;
   mastery_validated?: false;
 }
 
@@ -56,9 +55,9 @@ export function buildMilestonePatch(body: unknown): MilestonePatch {
     return { ok: true, write };
   }
 
+  // On its own, a review flag is a result, and results are the server's.
   if (b.reviewValidated !== undefined) {
-    if (typeof b.reviewValidated !== "boolean") return { ok: false, error: "reviewValidated must be true or false" };
-    return { ok: true, write: { review_validated: b.reviewValidated } };
+    return { ok: false, error: "Review results cannot be set through this route" };
   }
 
   return { ok: false, error: "No valid fields to update" };

@@ -34,6 +34,7 @@ const EVERY_OPERATION: Record<OperationId, true> = {
   "track.summary":    true,
   "topic.gate":       true,
   "quiz.generate":    true,
+  "quiz.submit":      true,
   "mastery.evaluate": true,
   "mastery.recap":    true,
   "mastery.session":  true,

@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { checkUsageAllowed, logUsage } from "@/lib/usage";
 import { messageForDenial, statusForDenial } from "@/lib/tokenBudget";
@@ -10,6 +11,7 @@ import {
   buildEntriesText, sourceCharCount, questionTarget, keepGroundedQuestions,
   MIN_QUESTIONS, type DiaryEntry,
 } from "@/lib/tracker/quizSource";
+import { toPublicQuestions } from "@/lib/tracker/reviewGrading";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -50,12 +52,17 @@ export async function POST(request: NextRequest) {
 
   // Ownership: RLS already scopes this read, but the check is asserted here too
   // rather than left implicit — a quiz is generated from private notes.
-  const { data: milestone } = await supabase
+  const { data: milestone, error: milestoneError } = await supabase
     .from("milestones")
     .select("id, title, tracks!track_id!inner(user_id)")
     .eq("id", body.milestoneId)
-    .single<{ id: string; title: string; tracks: { user_id: string } }>();
+    .maybeSingle<{ id: string; title: string; tracks: { user_id: string } }>();
 
+  // A failed read is not a missing card (rule 5): say it broke, don't say 404.
+  if (milestoneError) {
+    console.error("[review/quiz] milestone lookup failed:", milestoneError.message);
+    return NextResponse.json({ error: "Failed to generate quiz. Please try again." }, { status: 500 });
+  }
   if (!milestone || milestone.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
   }
@@ -64,13 +71,19 @@ export async function POST(request: NextRequest) {
   // quizzed either — otherwise the quiz asks about notes they cannot re-read.
   // `covered` is what the session actually established; `body` is the narrative
   // fallback for entries written before migration 035 or written by hand.
-  const { data: entries } = await supabase
+  const { data: entries, error: entriesError } = await supabase
     .from("milestone_entries")
     .select("title, body, covered")
     .eq("milestone_id", body.milestoneId)
     .is("archived_at", null)
     .order("created_at", { ascending: true })
     .returns<DiaryEntry[]>();
+
+  // Without this, a dropped read became "you have no diary entries".
+  if (entriesError) {
+    console.error("[review/quiz] diary lookup failed:", entriesError.message);
+    return NextResponse.json({ error: "Failed to generate quiz. Please try again." }, { status: 500 });
+  }
 
   if (!entries || entries.length === 0) {
     return NextResponse.json(
@@ -160,11 +173,31 @@ Return ONLY a valid JSON array — no markdown, no commentary:
       );
     }
 
+    // The quiz is stored WITH its answer key, and only the questions go to the
+    // browser. The key comes back one question at a time, after the learner
+    // has locked an answer (tracker/review/answer), and the pass is decided
+    // and recorded by tracker/review/submit. No learner policy exists on this
+    // table (059), so the write is the service role's.
+    const { data: stored, error: storeError } = await createServiceClient()
+      .from("review_quizzes")
+      .insert({ user_id: userId, milestone_id: milestone.id, questions: kept })
+      .select("id")
+      .single<{ id: string }>();
+
+    if (storeError || !stored) {
+      console.error("[review/quiz] Failed to store quiz:", storeError?.message ?? "no row returned");
+      void recordOperation({
+        userId, operation: "quiz.generate", outcome: "failed",
+        durationMs: Date.now() - startedAt, detail: { stage: "store" },
+      });
+      return NextResponse.json({ error: "Failed to generate quiz. Please try again." }, { status: 500 });
+    }
+
     void recordOperation({
       userId, operation: "quiz.generate", outcome: "ok",
       durationMs: Date.now() - startedAt, detail: { questions: kept.length },
     });
-    return NextResponse.json({ questions: kept });
+    return NextResponse.json({ quizId: stored.id, questions: toPublicQuestions(kept) });
   } catch (err) {
     console.error("[review/quiz] Generation failed:", err);
     void recordOperation({

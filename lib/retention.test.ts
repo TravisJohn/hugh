@@ -8,10 +8,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { RETENTION_DAYS } from "./retention";
 
-const MIGRATION = readFileSync(
-  join(process.cwd(), "supabase", "migrations", "052_retention_jobs.sql"),
-  "utf8",
-);
+// Every migration that schedules a retention job. Migrations are forward-only,
+// so a new expiry lands in a new file rather than an edit to 052.
+const RETENTION_MIGRATIONS = ["052_retention_jobs.sql", "059_review_quizzes.sql"];
+const MIGRATION = RETENTION_MIGRATIONS
+  .map(f => readFileSync(join(process.cwd(), "supabase", "migrations", f), "utf8"))
+  .join("\n");
 
 /** The body of one cron.schedule call, found by its job name. */
 function jobBody(jobName: string): string {
@@ -19,7 +21,7 @@ function jobBody(jobName: string): string {
     new RegExp(`cron\\.schedule\\(\\s*'${jobName}'[\\s\\S]*?\\$\\$([\\s\\S]*?)\\$\\$`),
   );
   if (!match) {
-    throw new Error(`052_retention_jobs.sql has no cron.schedule for '${jobName}'.`);
+    throw new Error(`No retention migration has a cron.schedule for '${jobName}'.`);
   }
   return match[1];
 }
@@ -33,14 +35,15 @@ function intervalDays(body: string): number {
 const JOBS = [
   { job: "retention-pending-document-extractions", table: "public.pending_document_extractions", days: RETENTION_DAYS.pendingDocumentExtractions },
   { job: "retention-operation-events",             table: "public.operation_events",             days: RETENTION_DAYS.operationEvents },
+  { job: "retention-review-quizzes",               table: "public.review_quizzes",               days: RETENTION_DAYS.reviewQuizzes },
 ] as const;
 
-describe("retention windows agree between lib/retention.ts and migration 052", () => {
+describe("retention windows agree between lib/retention.ts and the pg_cron migrations", () => {
   for (const { job, table, days } of JOBS) {
     it(`${job} deletes from ${table} after exactly ${days} days, as /privacy tells learners`, () => {
       const body = jobBody(job);
       expect(body, `${job} must delete from ${table}`).toContain(`DELETE FROM ${table}`);
-      expect(intervalDays(body), `update the interval in 052 or RETENTION_DAYS — they must match`).toBe(days);
+      expect(intervalDays(body), `update the interval in the migration or RETENTION_DAYS — they must match`).toBe(days);
     });
   }
 

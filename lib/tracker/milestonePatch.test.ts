@@ -47,13 +47,13 @@ describe("buildMilestonePatch: moving a card", () => {
   });
 });
 
-describe("buildMilestonePatch: a review result on its own (interim, until the quiz is graded on the server)", () => {
-  it("records a review pass reported by the quiz", () => {
-    expect(buildMilestonePatch({ reviewValidated: true })).toEqual({ ok: true, write: { review_validated: true } });
-  });
-
-  it("refuses a review result that is not a boolean", () => {
-    expect(buildMilestonePatch({ reviewValidated: "yes" })).toEqual({ ok: false, error: "reviewValidated must be true or false" });
+describe("buildMilestonePatch: review results", () => {
+  it.each([
+    ["a pass", { reviewValidated: true }],
+    ["a reset", { reviewValidated: false }],
+    ["a value that is not a boolean", { reviewValidated: "yes" }],
+  ])("refuses %s on its own, because only the graded quiz may record a review", (_label, body) => {
+    expect(buildMilestonePatch(body)).toEqual({ ok: false, error: "Review results cannot be set through this route" });
   });
 });
 

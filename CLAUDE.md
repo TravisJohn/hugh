@@ -257,15 +257,23 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   cannot write `milestones.review_validated`, `mastery_validated`,
   `mastery_score` or `mastery_feedback`. The server records them with the
   service role after it grades (`lib/mastery/outcome.ts`,
-  `lib/tracker/milestonePatch.ts`). A learner's session may only UPDATE
-  `kanban_column`, `position`, `learning_points`, `coverage` and
-  `summary_doc(_at)`, and INSERT a card's basic fields. If a learner-written
-  write starts failing, grant that one column in a new migration; never grant
-  the table back. Until the review quiz is graded on the server, the PATCH
-  route still accepts a review pass from the browser.
+  `lib/tracker/reviewGrading.ts`, `lib/tracker/milestonePatch.ts`). A
+  learner's session may only UPDATE `kanban_column`, `position`,
+  `learning_points`, `coverage` and `summary_doc(_at)`, and INSERT a card's
+  basic fields. If a learner-written write starts failing, grant that one
+  column in a new migration; never grant the table back. The milestone PATCH
+  route accepts no results at all.
+- **The review answer key never reaches the browser.** Since migration 059 the
+  quiz route stores each quiz with its key in `review_quizzes` and sends the
+  questions only. `tracker/review/answer` locks one answer per question (the
+  primary key is the lock) and only then reveals that question's key;
+  `tracker/review/submit` grades the locked answers and writes the pass. Both
+  tables have RLS on, no learner policy and no learner privilege — service
+  role only. Do not add a learner read policy "for convenience"; it would
+  publish the key.
 - **Retention:** what a learner made (including `goal_answers`) is kept until
   they delete it. Only temporary or system records expire, by pg_cron jobs in
-  migration 052. The windows live in `lib/retention.ts`, which `/privacy` renders
+  migrations 052 and 059. The windows live in `lib/retention.ts`, which `/privacy` renders
   and a test holds equal to the SQL — adding an expiry means changing both.
 
 ## Persona Configuration

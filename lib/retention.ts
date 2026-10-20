@@ -10,9 +10,9 @@
 // is improving, and the learner can already read and delete it from the goal
 // card. Expiring it would trade that away for a control that already exists.
 //
-// The deletion itself runs in the database, as pg_cron jobs in migration 052.
-// SQL cannot import these numbers, so `retention.test.ts` reads that migration
-// and fails the build if the two disagree. Change both, or neither.
+// The deletion itself runs in the database, as pg_cron jobs in migrations 052
+// and 059. SQL cannot import these numbers, so `retention.test.ts` reads those
+// migrations and fails the build if the two disagree. Change both, or neither.
 
 export const RETENTION_DAYS = {
   /**
@@ -26,4 +26,12 @@ export const RETENTION_DAYS = {
    * more than privacy. /admin/observability looks back 30 days, well inside it.
    */
   operationEvents: 180,
+
+  /**
+   * A generated review quiz with its answer key, and the answers locked to it
+   * (migration 059). The server grades from these; the outcome that matters is
+   * `milestones.review_validated`, which is kept. A quiz is a few minutes of
+   * use, so a week only covers a learner who comes back to a stalled save.
+   */
+  reviewQuizzes: 7,
 } as const;
