@@ -53,3 +53,38 @@ describe("masteryOutcome", () => {
     expect(out.write).not.toHaveProperty("mastery_validated");
   });
 });
+
+describe("a held misconception on a course card (narrow Learn, PRD row 4)", () => {
+  const known = ["collinearity:m1", "collinearity:m2"];
+
+  it("fails the card whatever the score, so a confident wrong belief cannot pass", () => {
+    const evaluation = parseEvaluation({ score: 9, feedback: "Fluent.", misconceptionsHeld: ["collinearity:m1"] }, known)!;
+    expect(masteryOutcome(evaluation, false)).toEqual({ passed: false, write: null });
+  });
+
+  it("passes a high score when no wrong belief was left standing", () => {
+    const evaluation = parseEvaluation({ score: 8, feedback: "Clear.", misconceptionsHeld: [] }, known)!;
+    expect(masteryOutcome(evaluation, false).passed).toBe(true);
+  });
+
+  it("never revokes a card already mastered, but still records the run", () => {
+    const evaluation = parseEvaluation({ score: 9, feedback: "Slipped.", misconceptionsHeld: ["collinearity:m2"] }, known)!;
+    expect(masteryOutcome(evaluation, true)).toEqual({ passed: false, write: { mastery_score: 9, mastery_feedback: "Slipped." } });
+  });
+
+  it("refuses an evaluation with no list on a course card, rather than reading silence as 'held none'", () => {
+    expect(parseEvaluation({ score: 9, feedback: "Fluent." }, known)).toBeNull();
+    expect(parseEvaluation({ score: 9, feedback: "Fluent.", misconceptionsHeld: "collinearity:m1" }, known)).toBeNull();
+    expect(parseEvaluation({ score: 9, feedback: "Fluent.", misconceptionsHeld: [3] }, known)).toBeNull();
+  });
+
+  it("ignores a ref that is not on this card, so nobody fails on a belief the syllabus never listed", () => {
+    const evaluation = parseEvaluation({ score: 8, feedback: "Clear.", misconceptionsHeld: ["made_up:m9"] }, known)!;
+    expect(evaluation.misconceptionsHeld).toEqual([]);
+    expect(masteryOutcome(evaluation, false).passed).toBe(true);
+  });
+
+  it("does not ask for the list on any other card", () => {
+    expect(parseEvaluation({ score: 8, feedback: "Clear." })).toEqual({ score: 8, feedback: "Clear." });
+  });
+});
