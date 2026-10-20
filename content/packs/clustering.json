@@ -1,7 +1,7 @@
 {
   "id": "clustering",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Clustering: finding groups in unlabelled data",
   "outOfScope": [
     "Spectral clustering in depth, beyond the idea of reducing dimensions before clustering",
@@ -292,7 +292,7 @@
       "misconceptions": [
         {
           "claim": "Whatever clusters an algorithm returns are meaningful groups in the data.",
-          "correction": "Clustering gives no ground truth to verify its output against, so a result can look odd or low-quality; check it against expectations and repeat the earlier steps until it meets your needs.",
+          "correction": "With no ground truth to verify the output, check the result against your expectations; if it looks odd or low-quality, rework the earlier steps until it meets your needs.",
           "sourceId": "g-workflow",
           "locator": "Interpret results and adjust",
           "anchor": {
@@ -397,7 +397,7 @@
           }
         },
         {
-          "text": "The choice of binary coefficient affects the results; one approach repeats the analysis with several coefficients and keeps the one giving the most easily interpreted result.",
+          "text": "The choice of similarity coefficient affects the results; one approach repeats the analysis with several coefficients and keeps the one giving the most easily interpreted result.",
           "sourceId": "psu505-14",
           "locator": "14.2 Measures of Association for Binary Variables",
           "anchor": {
@@ -661,7 +661,7 @@
           }
         },
         {
-          "text": "The simplest start uses randomly chosen data points as the initial centroids; people often try several starts and keep the one with the lowest objective value.",
+          "text": "The simplest start uses randomly chosen data points as the initial centroids; people sometimes try several starts and keep the one with the lowest objective value.",
           "sourceId": "psu508-13",
           "locator": "13.4 Example: K-means",
           "anchor": {
@@ -712,7 +712,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Inertia assumes clusters are convex and isotropic, so k-means responds poorly to elongated clusters or irregularly shaped ones.",
+          "text": "Inertia assumes clusters are convex and isotropic, which is not always true, so it responds poorly to elongated clusters or irregularly shaped manifolds.",
           "sourceId": "sk-clustering",
           "locator": "2.3.2 K-means",
           "anchor": {
@@ -769,11 +769,11 @@
       ],
       "keyPoints": [
         {
-          "text": "K-means needs the number of clusters to be specified before it runs.",
+          "text": "K-means groups samples by minimising inertia, and it needs the number of clusters to be specified.",
           "sourceId": "sk-clustering",
           "locator": "2.3.2 K-means",
           "anchor": {
-            "start": "This algorithm requires the number",
+            "start": "The KMeans algorithm clusters data by",
             "end": "to be specified."
           }
         },
@@ -838,11 +838,11 @@
           }
         },
         {
-          "text": "Each sample's silhouette compares a, its mean distance to the other points in its own cluster, with b, its mean distance to the points in the next nearest cluster.",
+          "text": "The silhouette coefficient is defined for each sample from two scores: a, its mean distance to the other points in its own class, and b, its mean distance to the points in the next nearest cluster.",
           "sourceId": "sk-clustering",
           "locator": "2.3.11.5 Silhouette Coefficient",
           "anchor": {
-            "start": "defined for each sample and is",
+            "start": "Silhouette Coefficient is defined for each",
             "end": "next nearest cluster."
           }
         },
@@ -972,7 +972,7 @@
           }
         },
         {
-          "text": "None of the linkage methods is uniformly best; in practice, try several and compare the results before judging the final clusters.",
+          "text": "None of the four methods is uniformly best; in practice, try several and compare the results to form an overall judgement about the final clusters.",
           "sourceId": "psu505-14",
           "locator": "14.3 Agglomerative Hierarchical Clustering",
           "anchor": {
@@ -1041,7 +1041,7 @@
           }
         },
         {
-          "text": "In Penn State's Ward example, a large break between the first and second branches of the tree pointed to two very well-defined clusters.",
+          "text": "A large break between the first and second branches of a tree can point to two very well-defined clusters.",
           "sourceId": "psu505-14",
           "locator": "14.6 Ward's Method",
           "anchor": {
@@ -1091,7 +1091,7 @@
           }
         },
         {
-          "text": "min_samples mainly controls how tolerant DBSCAN is of noise; on noisy, large datasets it may help to increase it.",
+          "text": "The min_samples parameter mainly controls how tolerant the algorithm is of noise; on noisy, large datasets it may help to increase it.",
           "sourceId": "sk-clustering",
           "locator": "2.3.7 DBSCAN",
           "anchor": {
@@ -1157,7 +1157,7 @@
           "sourceId": "sk-mixture",
           "locator": "Estimation algorithm expectation-maximization",
           "anchor": {
-            "start": "Repeating this process is guaranteed",
+            "start": "Expectation-maximization is a well-founded",
             "end": "to a local optimum."
           }
         },
@@ -1214,7 +1214,7 @@
           }
         },
         {
-          "text": "Cluster cardinality is the number of examples in a cluster and cluster magnitude the sum of distances from its examples to its centroid; plot both and investigate clusters that are outliers.",
+          "text": "Cluster cardinality is the number of examples in a cluster: plot it for all clusters and investigate major outliers. Cluster magnitude is the sum of distances from a cluster's examples to its centroid.",
           "sourceId": "g-kmeans-evaluate-results",
           "locator": "Cluster cardinality",
           "anchor": {
@@ -1294,7 +1294,7 @@
           "sourceId": "sk-clustering",
           "locator": "2.3.11.1 Rand index",
           "anchor": {
-            "start": "used to compare all kinds of",
+            "start": "Rand index can be used to",
             "end": "\"folded\" shapes."
           }
         }
@@ -1341,7 +1341,7 @@
           }
         },
         {
-          "text": "Different linkage methods can partition the same data very differently: in Penn State's forest example, several methods left many clusters of one or two sites, while complete linkage gave the most satisfactory result.",
+          "text": "Different linkage methods can partition the same data very differently: in one example, average, centroid and single linkage left several clusters of only one or two sites, while complete linkage gave the most satisfactory result.",
           "sourceId": "psu505-14",
           "locator": "Applying the Cluster Analysis Process",
           "anchor": {
@@ -1398,7 +1398,7 @@
           }
         },
         {
-          "text": "How cleanly clusters can be described can favour one method: in Penn State's example, Ward's clusters read more cleanly than complete linkage's, suggesting Ward's method may be preferred for that data.",
+          "text": "When Ward's method gave a cleaner interpretation of the clusters than complete linkage did, that suggested Ward's method may be preferred for that data.",
           "sourceId": "psu505-14",
           "locator": "14.6 Ward's Method",
           "anchor": {
@@ -1449,7 +1449,7 @@
           "sourceId": "g-clustering-algorithms",
           "locator": "Density-based clustering",
           "anchor": {
-            "start": "These algorithms have difficulty with",
+            "start": "Density-based clustering connects contiguous",
             "end": "with high dimensions."
           }
         }
@@ -1691,5 +1691,15 @@
       "after": "pca_before_clustering",
       "reason": "PCA needs standardised variables when units differ."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-21",
+    "itemsJudged": 116,
+    "itemsSupported": 116,
+    "errorsPlanted": 14,
+    "errorsCaught": 14,
+    "fingerprint": "sha256:a1ccbaa8a0204ce323381d971ca1d4d9"
+  }
 }
