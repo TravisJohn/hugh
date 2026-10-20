@@ -1692,6 +1692,92 @@
       "reason": "PCA needs standardised variables when units differ."
     }
   ],
+  "cards": [
+    {
+      "id": "what-clustering-is",
+      "title": "What clustering is",
+      "conceptIds": [
+        "what_is_clustering",
+        "unsupervised_vs_supervised",
+        "clustering_workflow"
+      ]
+    },
+    {
+      "id": "measuring-similarity",
+      "title": "Measuring similarity",
+      "conceptIds": [
+        "distance_measures",
+        "categorical_similarity",
+        "feature_scaling"
+      ]
+    },
+    {
+      "id": "how-k-means-works",
+      "title": "How k-means works",
+      "conceptIds": [
+        "algorithm_families",
+        "kmeans_objective",
+        "kmeans_algorithm"
+      ]
+    },
+    {
+      "id": "k-means-in-practice",
+      "title": "K-means in practice",
+      "conceptIds": [
+        "kmeans_initialisation",
+        "kmeans_assumptions"
+      ]
+    },
+    {
+      "id": "choosing-k",
+      "title": "Choosing the number of clusters",
+      "conceptIds": [
+        "choosing_k",
+        "silhouette"
+      ]
+    },
+    {
+      "id": "hierarchical-clustering",
+      "title": "Hierarchical clustering",
+      "conceptIds": [
+        "hierarchical_clustering",
+        "linkage_methods",
+        "dendrograms"
+      ]
+    },
+    {
+      "id": "beyond-k-means",
+      "title": "Beyond k-means: DBSCAN and Gaussian mixtures",
+      "conceptIds": [
+        "dbscan",
+        "gaussian_mixtures"
+      ]
+    },
+    {
+      "id": "evaluating-clusters",
+      "title": "Evaluating clusters",
+      "conceptIds": [
+        "internal_evaluation",
+        "external_evaluation"
+      ]
+    },
+    {
+      "id": "stability-and-profiling",
+      "title": "Stability and interpreting clusters",
+      "conceptIds": [
+        "cluster_stability",
+        "profiling_clusters"
+      ]
+    },
+    {
+      "id": "high-dimensional-data",
+      "title": "High-dimensional data and PCA",
+      "conceptIds": [
+        "curse_of_dimensionality",
+        "pca_before_clustering"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
