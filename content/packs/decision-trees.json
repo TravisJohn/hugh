@@ -1952,5 +1952,106 @@
       "after": "trees_vs_linear",
       "reason": "The data-type advice is about decision forests."
     }
+  ],
+  "cards": [
+    {
+      "id": "what-a-tree-is",
+      "title": "What a decision tree is",
+      "conceptIds": [
+        "what_is_a_tree",
+        "tree_predictions",
+        "split_conditions"
+      ]
+    },
+    {
+      "id": "scoring-splits",
+      "title": "Scoring a split: impurity, gain and squared error",
+      "conceptIds": [
+        "impurity",
+        "information_gain",
+        "regression_splits"
+      ]
+    },
+    {
+      "id": "growing-and-reading",
+      "title": "Growing a tree, and reading one",
+      "conceptIds": [
+        "greedy_partitioning",
+        "interpreting_trees",
+        "tree_practical_properties"
+      ]
+    },
+    {
+      "id": "overfitting",
+      "title": "Overfitting, depth and stopping rules",
+      "conceptIds": [
+        "overfitting_and_depth",
+        "stopping_rules"
+      ]
+    },
+    {
+      "id": "honest-evaluation",
+      "title": "Cross-validation and tuning",
+      "conceptIds": [
+        "cross_validation",
+        "hyperparameter_search"
+      ]
+    },
+    {
+      "id": "pruning",
+      "title": "Pruning a tree back",
+      "conceptIds": [
+        "pruning",
+        "cost_complexity_pruning"
+      ]
+    },
+    {
+      "id": "why-many-trees",
+      "title": "Why one tree wobbles, and why many help",
+      "conceptIds": [
+        "tree_instability",
+        "ensembles"
+      ]
+    },
+    {
+      "id": "bagging-and-forests",
+      "title": "Bagging and random forests",
+      "conceptIds": [
+        "bagging",
+        "random_forests"
+      ]
+    },
+    {
+      "id": "checking-a-forest",
+      "title": "Out-of-bag checks and tuning a forest",
+      "conceptIds": [
+        "out_of_bag",
+        "forest_tuning"
+      ]
+    },
+    {
+      "id": "boosting",
+      "title": "Boosting",
+      "conceptIds": [
+        "boosting",
+        "boosting_tuning"
+      ]
+    },
+    {
+      "id": "feature-importance",
+      "title": "Feature importance and how to read it",
+      "conceptIds": [
+        "impurity_importance",
+        "permutation_importance",
+        "comparing_importances"
+      ]
+    },
+    {
+      "id": "trees-or-linear",
+      "title": "Trees or a linear model?",
+      "conceptIds": [
+        "trees_vs_linear"
+      ]
+    }
   ]
 }
