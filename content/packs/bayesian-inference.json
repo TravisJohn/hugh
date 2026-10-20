@@ -1877,5 +1877,110 @@
     "errorsPlanted": 18,
     "errorsCaught": 18,
     "fingerprint": "sha256:85ba7aafbe99358629c21868c5ab58c2"
-  }
+  },
+  "cards": [
+    {
+      "id": "conditional-probability",
+      "title": "Conditional probability and Bayes' theorem",
+      "conceptIds": [
+        "conditional_probability",
+        "bayes_theorem"
+      ]
+    },
+    {
+      "id": "base-rates",
+      "title": "Base rates and screening tests",
+      "conceptIds": [
+        "base_rate_fallacy"
+      ]
+    },
+    {
+      "id": "bayesian-view",
+      "title": "The Bayesian view and the prior",
+      "conceptIds": [
+        "bayesian_vs_frequentist",
+        "prior"
+      ]
+    },
+    {
+      "id": "likelihood-and-evidence",
+      "title": "The likelihood and the evidence",
+      "conceptIds": [
+        "likelihood",
+        "evidence"
+      ]
+    },
+    {
+      "id": "the-posterior",
+      "title": "The posterior",
+      "conceptIds": [
+        "posterior"
+      ]
+    },
+    {
+      "id": "beta-binomial",
+      "title": "Beta priors and the beta-binomial model",
+      "conceptIds": [
+        "beta_distribution",
+        "beta_binomial",
+        "conjugate_priors"
+      ]
+    },
+    {
+      "id": "prior-and-data",
+      "title": "How prior and data share the posterior",
+      "conceptIds": [
+        "prior_data_balance",
+        "sequential_updating"
+      ]
+    },
+    {
+      "id": "choosing-priors",
+      "title": "Choosing a prior, and prior sensitivity",
+      "conceptIds": [
+        "prior_types",
+        "prior_sensitivity"
+      ]
+    },
+    {
+      "id": "summarising-posterior",
+      "title": "Summarising the posterior",
+      "conceptIds": [
+        "posterior_point_estimates",
+        "credible_intervals",
+        "credible_vs_confidence"
+      ]
+    },
+    {
+      "id": "testing-hypotheses",
+      "title": "Testing hypotheses and Bayes factors",
+      "conceptIds": [
+        "posterior_hypothesis_testing",
+        "bayes_factors"
+      ]
+    },
+    {
+      "id": "bayesian-ab",
+      "title": "Bayesian A/B testing",
+      "conceptIds": [
+        "bayesian_ab_testing"
+      ]
+    },
+    {
+      "id": "simulating-posterior",
+      "title": "Simulating the posterior with MCMC",
+      "conceptIds": [
+        "posterior_simulation",
+        "mcmc_diagnostics"
+      ]
+    },
+    {
+      "id": "prediction-and-checks",
+      "title": "Prediction and posterior predictive checks",
+      "conceptIds": [
+        "posterior_predictive",
+        "posterior_predictive_checks"
+      ]
+    }
+  ]
 }
