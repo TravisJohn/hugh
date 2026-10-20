@@ -1,7 +1,7 @@
 {
   "id": "bayesian-inference",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Bayesian inference: updating beliefs about unknown quantities with data, using priors, likelihoods and posteriors",
   "outOfScope": [
     "The internals of MCMC algorithms, such as the mathematics of Metropolis-Hastings and Hamiltonian Monte Carlo",
@@ -739,11 +739,11 @@
           }
         },
         {
-          "text": "With a non-conjugate prior it can be hard to see how the posterior balances the prior and the data, and summaries such as its mean need further integration.",
+          "text": "With one particular non-conjugate prior, it was hard to see how the posterior balanced the prior and the data, and summaries such as its mean would need even more integration.",
           "sourceId": "br-05",
           "locator": "5.1 Revisiting choice of prior",
           "anchor": {
-            "start": "It is difficult to derive any",
+            "start": "Consider a few characteristics about the",
             "end": "would require even more integration"
           }
         },
@@ -957,7 +957,7 @@
           "sourceId": "br-01",
           "locator": "1.2 A quick history lesson",
           "anchor": {
-            "start": "label can be stamped on all",
+            "start": "First, the \"subjective\" label can",
             "end": "and how we model it"
           }
         }
@@ -1867,5 +1867,15 @@
       "after": "bayesian_ab_testing",
       "reason": "The probability that B beats A is a posterior probability of a hypothesis."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-21",
+    "itemsJudged": 129,
+    "itemsSupported": 129,
+    "errorsPlanted": 18,
+    "errorsCaught": 18,
+    "fingerprint": "sha256:85ba7aafbe99358629c21868c5ab58c2"
+  }
 }
