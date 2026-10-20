@@ -1,6 +1,6 @@
 {
   "id": "ab-testing",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "status": "machine-checked",
   "subject": "A/B testing: randomised controlled experiments that compare two versions of a product",
   "outOfScope": [
@@ -1194,6 +1194,80 @@
       "before": "multiple_testing",
       "after": "segments_and_time",
       "reason": "Each segment read is one more comparison."
+    }
+  ],
+  "cards": [
+    {
+      "id": "framing-the-test",
+      "title": "Framing the test and its metrics",
+      "conceptIds": [
+        "experiment_hypothesis",
+        "metrics",
+        "oec_and_guardrails"
+      ]
+    },
+    {
+      "id": "random-assignment",
+      "title": "Random assignment",
+      "conceptIds": [
+        "randomization",
+        "randomization_unit"
+      ]
+    },
+    {
+      "id": "hypotheses-and-p",
+      "title": "Hypotheses and the p-value",
+      "conceptIds": [
+        "null_and_alternative",
+        "p_value"
+      ]
+    },
+    {
+      "id": "comparing-groups",
+      "title": "Comparing the two groups",
+      "conceptIds": [
+        "comparing_two_groups",
+        "ci_difference"
+      ]
+    },
+    {
+      "id": "errors-and-meaning",
+      "title": "Errors, and significant versus meaningful",
+      "conceptIds": [
+        "type_i_ii_errors",
+        "statistical_vs_practical"
+      ]
+    },
+    {
+      "id": "power-and-sample-size",
+      "title": "Power and sample size",
+      "conceptIds": [
+        "power",
+        "sample_size"
+      ]
+    },
+    {
+      "id": "peeking",
+      "title": "Peeking and stopping early",
+      "conceptIds": [
+        "peeking"
+      ]
+    },
+    {
+      "id": "many-comparisons",
+      "title": "Many metrics, segments and time",
+      "conceptIds": [
+        "multiple_testing",
+        "segments_and_time"
+      ]
+    },
+    {
+      "id": "trusting-the-result",
+      "title": "Trusting the result",
+      "conceptIds": [
+        "sample_ratio_mismatch",
+        "validating_results"
+      ]
     }
   ],
   "machineCheck": {

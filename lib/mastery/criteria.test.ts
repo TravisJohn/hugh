@@ -68,3 +68,33 @@ describe("prepareDiaryContext", () => {
     expect(prepareDiaryContext([{ body: "   " }], 100)).toBe("");
   });
 });
+
+describe("buildCriteria on a course card (narrow Learn, PRD row 4)", () => {
+  const syllabus = {
+    keyPoints: ["Collinear predictors inflate the variance of their coefficient estimates.", "VIF measures that inflation."],
+    misconceptions: [{ ref: "collinearity:m1", claim: "VIF removes multicollinearity.", correction: "VIF only measures it." }],
+  };
+
+  it("judges a course card against its source-checked key points, never its learner-editable learning points", () => {
+    const criteria = buildCriteria(
+      { title: "Multicollinearity", learningPoints: [{ id: "p1", text: "Anything the learner typed here" }] },
+      syllabus,
+    );
+    expect(criteria.concepts).toEqual(syllabus.keyPoints);
+    expect(criteria.concepts.join(" ")).not.toContain("Anything the learner typed here");
+  });
+
+  it("carries the card's wrong beliefs into the prompt, with what a held one means", () => {
+    const text = renderCriteriaForPrompt(buildCriteria({ title: "Multicollinearity" }, syllabus));
+    expect(text).toContain("[collinearity:m1] VIF removes multicollinearity.");
+    expect(text).toContain("Correction: VIF only measures it.");
+    expect(text).toMatch(/does not correct it, they have not mastered this card/);
+  });
+
+  it("leaves every other card exactly as before: learning points, and no misconceptions", () => {
+    const criteria = buildCriteria({ title: "SQL joins", learningPoints: [{ id: "p1", text: "Inner joins keep matches" }] });
+    expect(criteria.concepts).toEqual(["Inner joins keep matches"]);
+    expect(criteria.misconceptions).toEqual([]);
+    expect(renderCriteriaForPrompt(criteria)).not.toContain("Known wrong beliefs");
+  });
+});

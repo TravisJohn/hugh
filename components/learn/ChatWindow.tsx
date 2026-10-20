@@ -171,7 +171,8 @@ export default function ChatWindow({ topic, goalId, milestoneId, milestoneTitle,
       const res  = await fetch("/api/learn/chat", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ topic, messages: recentTextMessages(apiMessages, 20), focusMode: pomo.focusActive, codeModeRequested }),
+        // milestoneId lets the server teach a course card from its syllabus.
+        body:    JSON.stringify({ topic, messages: recentTextMessages(apiMessages, 20), focusMode: pomo.focusActive, codeModeRequested, ...(milestoneId ? { milestoneId } : {}) }),
       });
       const data = await res.json().catch(() => null) as (Partial<ChatResponse> & { error?: string }) | null;
 

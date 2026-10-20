@@ -5,6 +5,7 @@ import {
   catalogIds, catalogListing, courseSummary, loadEntry, loadPack,
   PACK_REFUSAL_MESSAGE, refusalStatus,
 } from "./catalog";
+import { packTrack } from "./track";
 import linearRegression from "@/content/packs/linear-regression.json";
 import type { ReferencePack } from "@/types/pack";
 
@@ -19,6 +20,15 @@ describe("the catalog CI guard (PRD row 11)", () => {
   it.each(catalogIds())("%s loads: machine-checked or better, with cards, and passes every offline rule", id => {
     const result = loadPack(id);
     expect(result.ok ? "ok" : result.reason).toBe("ok");
+  });
+
+  it.each(catalogIds())("%s builds a board that teaches every live concept exactly once", id => {
+    const result = loadPack(id);
+    if (!result.ok) throw new Error(`${id} did not load`);
+    const taught = packTrack(result.pack).rows.flatMap(r => r.concept_ids);
+    const live   = result.pack.concepts.filter(c => !c.retired).map(c => `${id}:${c.id}`);
+    expect(new Set(taught).size).toBe(taught.length);
+    expect([...taught].sort()).toEqual([...live].sort());
   });
 
   it.each(catalogIds())("%s never drops a concept or card id a learner's board may hold", id => {

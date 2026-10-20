@@ -8937,6 +8937,66 @@ nothing new, and the open-topic path is unchanged.
 DEPLOY ORDER: apply 060 before this code deploys. Then set
 `PACK_LEARN_ENABLED=true` in Vercel to see the course.
 
+## 2026-10-20 - Narrow Learn PR B: everything reads the pack
+
+A course card (one whose `milestones.concept_ids` name a reference pack) is
+now taught, checked, quizzed and scored against its source-checked syllabus.
+Every other card is unchanged.
+
+- **`lib/packs/grounding.ts`** is the one place a card's pack is read. It
+  grounds a card from its concept ids. A card with no ids returns "none"; a
+  card naming two courses, an unknown concept, or a pack that won't load is
+  refused, each with its own message. It renders the syllabus block every
+  model sees and builds each card's Sources list. A PDF source links plainly
+  and shows its page.
+- **Ask:** `learn/chat` takes the card's `milestoneId` (`ChatWindow` already
+  had it). A course card's prompt is today's tutor prompt plus the course
+  rules and syllabus (`askPrompt.ts`), built on the server; the browser's
+  topic is no longer what the tutor teaches. Rules: answer from the key
+  points, correct a listed wrong belief, name the card that covers a
+  question, label anything outside the syllabus "Outside this course's
+  source-checked syllabus:", and never write links.
+- **Mastery:** the scripted session's three prompts carry the syllabus, and
+  the evaluator judges accuracy against it, not just the learner's notes.
+  It must return `misconceptionsHeld`. A missing list fails the evaluation;
+  it is never read as "none". Any held wrong belief fails the card whatever
+  the score, and the server appends the pack's own correction and source
+  link to the feedback. `buildCriteria` takes the syllabus as plain data and
+  then ignores `learning_points` (the Realtime reflection and
+  `mastery/evaluate` use it).
+- **The diary check** judges a course card's note against the syllabus
+  alone; anything the syllabus doesn't address is not an error.
+- **The review quiz** still quotes the notes, and on a course card each
+  question must also name the key point it tests. Off-syllabus questions
+  are dropped before the "too few questions" refusal.
+- **Card drawer:** a collapsed "Sources" section lists each key point and
+  correction with a link that opens the passage highlighted. It is built on
+  the server; the browser never loads a pack.
+
+No migration. 13 route tests prove each surface end to end, and that open-topic
+cards are untouched.
+
+## 2026-10-20 - A/B testing joins the catalog
+
+A/B testing 1.2.0 carries the 9 cards Travis approved:
+1. framing the test and its metrics
+2. random assignment
+3. hypotheses and the p-value
+4. comparing the two groups
+5. errors, and significant versus meaningful
+6. power and sample size
+7. peeking (on its own card)
+8. many metrics, segments and time
+9. trusting the result
+
+All 18 concepts are covered and all 15 prerequisites respected. Cards are not
+judged, so the machine-check fingerprint is unchanged and the pack stays
+machine-checked. It is filed under the Statistics region with Linear
+Regression. `content/packs/ids/ab-testing.json` locks its 18 concept ids and
+9 card ids. A new catalog-wide test checks that every course builds a board
+teaching each live concept exactly once. Time series forecasting is being
+authored in a separate session.
+
 ## 2026-10-20 - Time series forecasting pack: machine-checked, cards awaiting approval
 
 The first new pack after the two proof packs, picked by Travis because it is

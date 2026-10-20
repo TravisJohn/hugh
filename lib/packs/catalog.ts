@@ -13,6 +13,7 @@
 import type { ReferencePack } from "@/types/pack";
 import { checkPack, parsePack } from "./validate";
 import linearRegression from "@/content/packs/linear-regression.json";
+import abTesting from "@/content/packs/ab-testing.json";
 
 export interface CatalogEntry {
   id:     string;
@@ -23,6 +24,7 @@ export interface CatalogEntry {
 
 const CATALOG: readonly CatalogEntry[] = [
   { id: "linear-regression", region: "stats", raw: linearRegression },
+  { id: "ab-testing",        region: "stats", raw: abTesting },
 ];
 
 /** The statuses Hugh may teach from. */
