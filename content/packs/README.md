@@ -47,6 +47,16 @@ the passage that supports each key point. It never stores a source's text.
    passages. If he agrees, record the review with `agreedWithJudge: true` and
    set `approved`. If he disagrees, the pack goes back to `provisional`.
 
+9. **Lay out the cards (spec v1.2), before the catalog.** Add `cards`: 8–14
+   cards in teaching order, each `{ id, title, conceptIds }` with 1–4
+   concepts. Every live concept goes on exactly one card, and no card may
+   teach a concept before one of its prerequisites (the same card is fine).
+   Travis approves the order. Cards are not judged, so adding them does not
+   disturb the machine check. To list the pack, add it to
+   `lib/packs/catalog.ts` and record its ids in `ids/<id>.json`. From then on
+   an id is permanent: retire a concept (`"retired": true`, off every card)
+   instead of deleting it, because learners' boards store these ids.
+
 Editing any key point or misconception after a machine check makes the
 recorded fingerprint stop matching. The offline tests then fail until the pack
 is set back to `provisional` and judged again.
@@ -59,5 +69,5 @@ pack or its sources change.
 
 | Pack | Status | Concepts | Sources |
 |---|---|---|---|
-| `linear-regression` 2.1.0 | machine-checked (Opus 5.5, 2026-10-20: 77/77 supported, 14/14 planted errors caught) | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
+| `linear-regression` 2.2.0 | machine-checked (Opus 5.5, 2026-10-20: 77/77 supported, 14/14 planted errors caught); 12 cards; **in the catalog** | 28 | Penn State STAT 501 (11 lessons), scikit-learn (4 guides), ISLR slides (2), CS229 notes |
 | `ab-testing` 1.1.0 | machine-checked (Opus 5.5, 2026-10-20: 79/79 supported, 14/14 planted errors caught) | 18 | Penn State STAT 200 (4 lessons), STAT 500 (1), STAT 509 (4), NIST/SEMATECH e-Handbook (1), Microsoft Experimentation Platform (3 articles), Evan Miller, ASA p-value statement (PDF) |

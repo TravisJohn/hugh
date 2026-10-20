@@ -64,6 +64,24 @@ export interface PackConcept {
   keyPoints:       PackKeyPoint[];
   misconceptions?: PackMisconception[];
   aliases?:        string[];
+  /**
+   * Spec v1.2. A concept is never deleted, because a learner's card may still
+   * point at it; it is retired instead, and taken off every card.
+   */
+  retired?: true;
+}
+
+/**
+ * One card on the learner's board (spec v1.2): one to four concepts taught
+ * together. A pack's cards, in order, ARE the track. No model chooses or
+ * orders them; see PRD-narrow-learn.md, row 2.
+ */
+export interface PackCard {
+  /** Permanent: a learner's board stores it. Lowercase letters, digits, - or _. */
+  id:         string;
+  title:      string;
+  /** Concepts taught on this card, in the order they are taught. */
+  conceptIds: string[];
 }
 
 export interface PackPrerequisite {
@@ -116,6 +134,8 @@ export interface ReferencePack {
   sources:       PackSource[];
   concepts:      PackConcept[];
   prerequisites: PackPrerequisite[];
+  /** Spec v1.2. Required before a pack can be listed in the catalog. */
+  cards?:        PackCard[];
   machineCheck?: PackMachineCheck;
   review?:       PackReview;
 }

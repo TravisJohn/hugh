@@ -8,7 +8,7 @@
 
 import {
   isPackStatus,
-  type PackAnchor, type PackConcept, type PackKeyPoint, type PackMachineCheck, type PackMisconception,
+  type PackAnchor, type PackCard, type PackConcept, type PackKeyPoint, type PackMachineCheck, type PackMisconception,
   type PackPrerequisite, type PackReview, type PackSource, type ReferencePack,
 } from "@/types/pack";
 import { wordCount } from "./anchor";
@@ -21,6 +21,12 @@ export const KEY_POINT_MAX_WORDS = 40;
 export const ANCHOR_MIN_WORDS   = 2;
 export const ANCHOR_MAX_WORDS   = 6;
 export const REVIEW_MIN_SAMPLE  = 5;
+// Spec v1.2: a board of 8-14 cards fits the no-scroll track board, and 1-4
+// concepts keeps one card one sitting.
+export const CARDS_MIN          = 8;
+export const CARDS_MAX          = 14;
+export const CARD_CONCEPTS_MIN  = 1;
+export const CARD_CONCEPTS_MAX  = 4;
 
 export interface PackIssue {
   level:   "error" | "warning";
@@ -111,12 +117,21 @@ class ShapeReader {
     const keyPoints = this.list(v, "keyPoints", p, this.keyPoint);
     const misconceptions = this.optList(v, "misconceptions", p, this.misconception);
     const aliases = this.optList(v, "aliases", p, this.string);
-    if (id === null || title === null || outcome === null || keyPoints === null || misconceptions === null || aliases === null) return null;
+    const retired = v.retired === undefined || v.retired === true ? v.retired : this.fail(`${p}.retired`, "is either true or left out");
+    if (id === null || title === null || outcome === null || keyPoints === null || misconceptions === null || aliases === null || retired === null) return null;
     return {
       id, title, outcome, keyPoints,
       ...(misconceptions !== undefined ? { misconceptions } : {}),
       ...(aliases !== undefined ? { aliases } : {}),
+      ...(retired === true ? { retired } : {}),
     };
+  };
+
+  card = (v: unknown, p: string): PackCard | null => {
+    if (!isObj(v)) return this.fail(p, "must be an object");
+    const id = this.str(v, "id", p), title = this.str(v, "title", p);
+    const conceptIds = this.list(v, "conceptIds", p, this.string);
+    return id !== null && title !== null && conceptIds !== null ? { id, title, conceptIds } : null;
   };
 
   prerequisite = (v: unknown, p: string): PackPrerequisite | null => {
@@ -170,16 +185,18 @@ export function parsePack(raw: unknown): { pack: ReferencePack | null; issues: P
   const sources       = r.list(raw, "sources", "$", r.source);
   const concepts      = r.list(raw, "concepts", "$", r.concept);
   const prerequisites = r.list(raw, "prerequisites", "$", r.prerequisite);
+  const cards         = r.optList(raw, "cards", "$", r.card);
   const machineCheck = raw.machineCheck === undefined ? undefined : r.machineCheck(raw.machineCheck, "$.machineCheck");
   const review = raw.review === undefined ? undefined : r.review(raw.review, "$.review");
 
   if (id === null || version === null || subject === null || status === null || outOfScope === null ||
-      sources === null || concepts === null || prerequisites === null || machineCheck === null || review === null) {
+      sources === null || concepts === null || prerequisites === null || cards === null || machineCheck === null || review === null) {
     return { pack: null, issues: r.issues };
   }
   return {
     pack: {
       id, version, status, subject, outOfScope, sources, concepts, prerequisites,
+      ...(cards !== undefined ? { cards } : {}),
       ...(machineCheck !== undefined ? { machineCheck } : {}),
       ...(review !== undefined ? { review } : {}),
     },
@@ -286,6 +303,47 @@ function duplicates(ids: readonly string[]): string[] {
 }
 
 /**
+ * Spec v1.2: the cards are the track, so they must cover the syllabus exactly
+ * and never teach a concept before something it depends on. A prerequisite
+ * may sit on the same card as its dependant: the card teaches them in order.
+ */
+function checkCards(pack: ReferencePack, cards: readonly PackCard[], error: (path: string, message: string) => void): void {
+  if (cards.length < CARDS_MIN || cards.length > CARDS_MAX) {
+    error("$.cards", `needs ${CARDS_MIN}-${CARDS_MAX} cards, has ${cards.length}`);
+  }
+  for (const id of duplicates(cards.map(c => c.id))) error("$.cards", `duplicate card id "${id}"`);
+
+  const concepts = new Map(pack.concepts.map(c => [c.id, c]));
+  const cardOf   = new Map<string, number>();
+
+  cards.forEach((card, ci) => {
+    const p = `cards[${ci}]`;
+    if (!ID.test(card.id)) error(`${p}.id`, "must be lowercase letters, digits, - or _");
+    if (card.conceptIds.length < CARD_CONCEPTS_MIN || card.conceptIds.length > CARD_CONCEPTS_MAX) {
+      error(`${p}.conceptIds`, `needs ${CARD_CONCEPTS_MIN}-${CARD_CONCEPTS_MAX} concepts, has ${card.conceptIds.length}`);
+    }
+    for (const id of card.conceptIds) {
+      const concept = concepts.get(id);
+      if (!concept)        { error(`${p}.conceptIds`, `"${id}" is not a concept`); continue; }
+      if (concept.retired) error(`${p}.conceptIds`, `"${id}" is retired and cannot be taught`);
+      if (cardOf.has(id))  error(`${p}.conceptIds`, `"${id}" is already on cards[${cardOf.get(id)}]`);
+      else cardOf.set(id, ci);
+    }
+  });
+
+  for (const c of pack.concepts) {
+    if (!c.retired && !cardOf.has(c.id)) error("$.cards", `concept "${c.id}" is on no card`);
+  }
+
+  for (const e of pack.prerequisites) {
+    const before = cardOf.get(e.before), after = cardOf.get(e.after);
+    if (before !== undefined && after !== undefined && before > after) {
+      error("$.cards", `"${e.before}" (cards[${before}]) must come before "${e.after}" (cards[${after}])`);
+    }
+  }
+}
+
+/**
  * Check a parsed pack against the spec's offline rules. Errors block the pack
  * from leaving draft; warnings are worth a look but do not.
  */
@@ -355,6 +413,8 @@ export function checkPack(pack: ReferencePack): PackIssue[] {
   });
   const order = learningOrder(conceptIds, pack.prerequisites);
   if (!order.ok) error("$.prerequisites", `form a loop through: ${order.cycle.join(", ")}`);
+
+  if (pack.cards) checkCards(pack, pack.cards, error);
 
   // Spec v1.1: from machine-checked up, a pack must carry a passed machine
   // check that still matches what it says. An edit after the check makes the
