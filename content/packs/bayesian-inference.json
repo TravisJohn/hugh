@@ -1,0 +1,138 @@
+{
+  "id": "bayesian-inference",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Bayesian inference: updating beliefs about unknown quantities with data, using priors, likelihoods and posteriors",
+  "outOfScope": [
+    "The internals of MCMC algorithms, such as the mathematics of Metropolis-Hastings and Hamiltonian Monte Carlo",
+    "Variational inference and other approximate inference methods",
+    "Hierarchical and multilevel models in depth",
+    "Specific Bayesian software, such as PyMC, Stan or rstanarm",
+    "Bayesian regression and generalised linear models beyond the idea of a posterior predictive check",
+    "Bayesian deep learning and Bayesian neural networks",
+    "Deriving conjugate posteriors by hand beyond the beta-binomial case",
+    "Multi-armed bandits and Thompson sampling"
+  ],
+  "sources": [
+    {
+      "id": "psu414-04",
+      "title": "STAT 414 Lesson 4: Conditional Probability",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "psu415-11",
+      "title": "STAT 415 Lesson 11: Bayesian Methods",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat415/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-01",
+      "title": "Bayes Rules! Chapter 1: The Big (Bayesian) Picture",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-1",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-02",
+      "title": "Bayes Rules! Chapter 2: Bayes’ Rule",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-2",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-03",
+      "title": "Bayes Rules! Chapter 3: The Beta-Binomial Bayesian Model",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-3",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-04",
+      "title": "Bayes Rules! Chapter 4: Balance and Sequentiality in Bayesian Analyses",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-4",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-05",
+      "title": "Bayes Rules! Chapter 5: Conjugate Families",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-5",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-06",
+      "title": "Bayes Rules! Chapter 6: Approximating the Posterior",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-6",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-08",
+      "title": "Bayes Rules! Chapter 8: Posterior Inference & Prediction",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-8",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "br-10",
+      "title": "Bayes Rules! Chapter 10: Evaluating Regression Models",
+      "publisher": "Johnson, Ott and Dogucu, Bayes Rules! (bayesrulesbook.com)",
+      "url": "https://www.bayesrulesbook.com/chapter-10",
+      "license": "CC BY-NC-SA 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "st21-09",
+      "title": "Statistical Thinking for the 21st Century, Chapter 9: Hypothesis testing",
+      "publisher": "Russell A. Poldrack, Statistical Thinking for the 21st Century",
+      "url": "https://statsthinking21.github.io/statsthinking21-core-site/hypothesis-testing.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "st21-10",
+      "title": "Statistical Thinking for the 21st Century, Chapter 10: Quantifying effects and designing studies",
+      "publisher": "Russell A. Poldrack, Statistical Thinking for the 21st Century",
+      "url": "https://statsthinking21.github.io/statsthinking21-core-site/ci-effect-size-power.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "st21-11",
+      "title": "Statistical Thinking for the 21st Century, Chapter 11: Bayesian statistics",
+      "publisher": "Russell A. Poldrack, Statistical Thinking for the 21st Century",
+      "url": "https://statsthinking21.github.io/statsthinking21-core-site/bayesian-statistics.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "nist-bayes",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 8.1.10: How can Bayesian methodology be used for reliability evaluation?",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/apr/section1/apr1a.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "miller-bayes-ab",
+      "title": "Formulas for Bayesian A/B Testing",
+      "publisher": "Evan Miller",
+      "url": "https://www.evanmiller.org/bayesian-ab-testing.html",
+      "accessedAt": "2026-10-21"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
