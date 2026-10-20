@@ -1,6 +1,6 @@
 {
   "id": "linear-regression",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "status": "machine-checked",
   "subject": "Linear regression for a continuous response",
   "outOfScope": [
@@ -1315,6 +1315,108 @@
       "before": "holdout_error",
       "after": "cross_validation",
       "reason": "Cross-validation repeats the hold-out idea across folds."
+    }
+  ],
+  "cards": [
+    {
+      "id": "framing",
+      "title": "Framing a regression problem",
+      "conceptIds": [
+        "problem_frame",
+        "linear_model",
+        "population_vs_estimated"
+      ]
+    },
+    {
+      "id": "least-squares-fit",
+      "title": "Fitting the line, and how good the fit is",
+      "conceptIds": [
+        "least_squares",
+        "residual_standard_error",
+        "r_squared"
+      ]
+    },
+    {
+      "id": "reading-coefficients",
+      "title": "Reading the coefficients",
+      "conceptIds": [
+        "coefficient_interpretation",
+        "association_not_causation"
+      ]
+    },
+    {
+      "id": "slope-inference",
+      "title": "Is the slope real? Inference and intervals",
+      "conceptIds": [
+        "coefficient_inference",
+        "mean_vs_prediction_interval"
+      ]
+    },
+    {
+      "id": "multiple-regression",
+      "title": "More than one predictor",
+      "conceptIds": [
+        "multiple_regression",
+        "overall_f_test"
+      ]
+    },
+    {
+      "id": "checking-the-model",
+      "title": "Checking the model",
+      "conceptIds": [
+        "assumptions",
+        "residual_diagnostics",
+        "influence"
+      ]
+    },
+    {
+      "id": "categories-interactions",
+      "title": "Categories and interactions",
+      "conceptIds": [
+        "categorical_predictors",
+        "interactions"
+      ]
+    },
+    {
+      "id": "curved-relationships",
+      "title": "Curved relationships",
+      "conceptIds": [
+        "polynomial_terms",
+        "transformations"
+      ]
+    },
+    {
+      "id": "multicollinearity",
+      "title": "Multicollinearity",
+      "conceptIds": [
+        "collinearity"
+      ]
+    },
+    {
+      "id": "unseen-data",
+      "title": "Testing on unseen data",
+      "conceptIds": [
+        "holdout_error",
+        "cross_validation",
+        "bias_variance"
+      ]
+    },
+    {
+      "id": "choosing-predictors",
+      "title": "Choosing and shrinking predictors",
+      "conceptIds": [
+        "variable_selection",
+        "regularization",
+        "feature_scaling"
+      ]
+    },
+    {
+      "id": "computing-the-fit",
+      "title": "How the fit is computed",
+      "conceptIds": [
+        "normal_equation",
+        "gradient_descent"
+      ]
     }
   ],
   "machineCheck": {

@@ -9,13 +9,20 @@ import DashboardPanel from "@/components/dashboard/DashboardPanel";
 import { type LearningGoal } from "@/types";
 import { checkSessionQuota, FREE_SESSION_LIMIT } from "@/lib/quota";
 import { documentUploadEnabled } from "@/lib/learn/documentPath";
+import { canUsePackLearn } from "@/lib/packs/access";
+import { catalogListing } from "@/lib/packs/catalog";
 
 // "What do you want to learn?" — the learning dashboard. Reached by picking
 // "Learn" on the top-level activity picker (/home). Opening a goal here jumps
 // straight to that goal's Track board.
 export default async function LearnDashboardPage() {
   const supabase = await createClient();
-  const { user } = await verifyUserAccess(supabase);
+  const { user, profile } = await verifyUserAccess(supabase);
+
+  // Narrow Learn, phase 1: courses are an administrator preview. Decided here,
+  // on the server, from the protected profile row; a learner gets an empty
+  // list and an unchanged screen.
+  const courses = canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile) ? catalogListing() : [];
 
 
   const [{ data: goals, error: goalsError }, quota] = await Promise.all([
@@ -162,6 +169,7 @@ export default async function LearnDashboardPage() {
             <DashboardPanel
               initialGoals={(goals ?? []) as LearningGoal[]}
               documentUpload={documentUploadEnabled()}
+              courses={courses}
             />
           )}
         </div>

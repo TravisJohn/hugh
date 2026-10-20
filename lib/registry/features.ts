@@ -156,7 +156,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 24,
+    tests: 27,
   },
   {
     id:    "ask",
@@ -532,6 +532,8 @@ export interface ImportEdge {
 export const ALLOWED_LIB_EDGES: readonly ImportEdge[] = [
   { from: "tracker", to: "learn",
     reason: "Track generation runs the topic-domain gate before it spends." },
+  { from: "tracker", to: "packs",
+    reason: "A course track is laid out from its reference pack's cards (narrow Learn)." },
   { from: "code", to: "case-lab",
     reason: "The Case Lab notebook reuses the Pyodide session client." },
 ] as const;

@@ -359,7 +359,7 @@ describe("boundary guard: features stay independent", () => {
       .map(e => `${e.file} imports @/lib/${e.to}`);
     expect(
       [...new Set(violations)],
-      `Undeclared cross-feature import. Hugh has exactly two of these in lib/, ` +
+      `Undeclared cross-feature import. Hugh has only a handful of these in lib/, each written down, ` +
       `and that independence is why it ships as one deployable rather than ` +
       `several. If this import is genuinely right, add it to ALLOWED_LIB_EDGES ` +
       `with a reason. If it is not, move the shared code into lib/ infrastructure.`,

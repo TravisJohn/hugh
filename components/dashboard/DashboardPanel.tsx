@@ -13,6 +13,9 @@ import LearningCuriosityCarousel from "./LearningCuriosityCarousel";
 import ThoughtTrail, { type Thought } from "./ThoughtTrail";
 import { type RefinementPhase } from "@/lib/learn/network";
 import DocumentUploadFlow, { ACCEPT as DOCUMENT_ACCEPT } from "./DocumentUploadFlow";
+import CourseCatalog from "./CourseCatalog";
+import type { CourseListing } from "@/lib/packs/catalog";
+import { addDays } from "@/utils/dates";
 
 type InputMode = "qa" | "document";
 
@@ -24,6 +27,12 @@ interface Props {
    * whether the learner is offered a door that would not open.
    */
   documentUpload: boolean;
+  /**
+   * Narrow Learn courses (phase 1). Empty unless the server decided this
+   * viewer is an administrator with PACK_LEARN_ENABLED on, so a learner's
+   * screen is unchanged.
+   */
+  courses: CourseListing[];
 }
 
 type DurationChip = "2w" | "1m" | "3m" | "custom";
@@ -47,18 +56,12 @@ const CHIPS: { id: DurationChip; label: string; days: number | null }[] = [
   { id: "custom", label: "Custom",   days: null },
 ];
 
-function addDays(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split("T")[0]!;
-}
-
 function todayStr(): string {
   return new Date().toISOString().split("T")[0]!;
 }
 
 export default function DashboardPanel({
-  initialGoals, documentUpload,
+  initialGoals, documentUpload, courses,
 }: Props) {
   const [goals, setGoals]       = useState<LearningGoal[]>(initialGoals);
   const [topic, setTopic]       = useState("");
@@ -318,6 +321,11 @@ export default function DashboardPanel({
 
       {/* ── The form and the library ─────────────────────────────────── */}
       <div className="flex w-full min-w-0 max-w-2xl flex-col gap-6 sm:gap-10 2xl:flex-[0_1_42rem]">
+
+      {/* ── Courses (admin preview) ──────────────────────────────────── */}
+      {courses.length > 0 && !refining && !uploadingDoc && (
+        <CourseCatalog courses={courses} onGoalCreated={handleGoalCreated} />
+      )}
 
       {/* ── Add goal ───────────────────────────────────────────────── */}
       <section>

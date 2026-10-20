@@ -221,6 +221,96 @@ describe("checkPack: the machine check (spec v1.1)", () => {
   });
 });
 
+// Eight concepts, one card each: the smallest board the rules allow.
+const EIGHT = ["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];
+function carded(over: Partial<ReferencePack> = {}): ReferencePack {
+  return pack({
+    concepts:      EIGHT.map(id => concept(id)),
+    prerequisites: [{ before: "c1", after: "c2", reason: "c2 builds on c1." }],
+    cards:         EIGHT.map(id => ({ id: `card-${id}`, title: `Card ${id}`, conceptIds: [id] })),
+    ...over,
+  });
+}
+const cardErrors = (p: ReferencePack) => errors(checkPack(p)).filter(i => i.path.startsWith("$.cards") || i.path.startsWith("cards["));
+
+describe("checkPack: cards (spec v1.2)", () => {
+  it("accepts cards that cover every concept once, in an order the prerequisites allow", () => {
+    expect(errors(checkPack(carded()))).toEqual([]);
+  });
+
+  it("reads cards and a retired flag back unchanged, so the format round-trips", () => {
+    const p = carded({ concepts: [...EIGHT.map(id => concept(id)), concept("old", { retired: true })] });
+    expect(parsePack(JSON.parse(JSON.stringify(p)))).toEqual({ pack: p, issues: [] });
+  });
+
+  it("rejects a retired flag that is anything but true, so 'retired: false' cannot hide a typo", () => {
+    const raw = JSON.parse(JSON.stringify(carded()));
+    raw.concepts[0].retired = false;
+    expect(parsePack(raw).issues.map(i => i.path)).toContain("$.concepts[0].retired");
+  });
+
+  it("needs 8 to 14 cards, so a board fits the no-scroll track screen", () => {
+    const seven = carded();
+    seven.cards = [{ id: "both", title: "Both", conceptIds: ["c1", "c2"] }, ...seven.cards!.slice(2)];
+    expect(cardErrors(seven).map(e => e.message)).toContain("needs 8-14 cards, has 7");
+  });
+
+  it("caps a card at four concepts and refuses an empty one, so a card stays one sitting", () => {
+    const p = carded();
+    p.cards![0] = { id: "card-c1", title: "Too many", conceptIds: ["c1", "c2", "c3", "c4", "c5"] };
+    p.cards![1] = { id: "card-c2", title: "Empty", conceptIds: [] };
+    const messages = cardErrors(p).map(e => e.message);
+    expect(messages).toContain("needs 1-4 concepts, has 5");
+    expect(messages).toContain("needs 1-4 concepts, has 0");
+  });
+
+  it("refuses a concept on two cards, because a card's progress must belong to one place", () => {
+    const p = carded();
+    p.cards![2] = { id: "card-c3", title: "Card c3", conceptIds: ["c3", "c1"] };
+    expect(cardErrors(p).map(e => e.message)).toContain(`"c1" is already on cards[0]`);
+  });
+
+  it("refuses a live concept left off every card, so the track teaches the whole syllabus", () => {
+    const p = carded({ concepts: [...EIGHT.map(id => concept(id)), concept("orphan")] });
+    expect(cardErrors(p).map(e => e.message)).toContain(`concept "orphan" is on no card`);
+  });
+
+  it("refuses a card that teaches a concept before its prerequisite", () => {
+    const p = carded();
+    p.cards = [p.cards![1]!, p.cards![0]!, ...p.cards!.slice(2)];
+    expect(cardErrors(p).map(e => e.message)).toContain(`"c1" (cards[1]) must come before "c2" (cards[0])`);
+  });
+
+  it("allows a prerequisite and its dependant on the same card, taught in order", () => {
+    const p = carded({ concepts: [...EIGHT.map(id => concept(id)), concept("c9")] });
+    p.prerequisites.push({ before: "c8", after: "c9", reason: "c9 builds on c8." });
+    p.cards![7] = { id: "card-c8", title: "Card c8", conceptIds: ["c8", "c9"] };
+    expect(cardErrors(p)).toEqual([]);
+  });
+
+  it("keeps a retired concept off every card, and does not demand a card for it", () => {
+    const retired = carded({ concepts: [...EIGHT.map(id => concept(id)), concept("old", { retired: true })] });
+    expect(cardErrors(retired)).toEqual([]);
+    retired.cards![0] = { id: "card-c1", title: "Card c1", conceptIds: ["c1", "old"] };
+    expect(cardErrors(retired).map(e => e.message)).toContain(`"old" is retired and cannot be taught`);
+  });
+
+  it("refuses an unknown concept and a duplicate card id", () => {
+    const p = carded();
+    p.cards![0] = { id: "card-c2", title: "Card c1", conceptIds: ["c1", "ghost"] };
+    const messages = cardErrors(p).map(e => e.message);
+    expect(messages).toContain(`"ghost" is not a concept`);
+    expect(messages).toContain(`duplicate card id "card-c2"`);
+  });
+
+  it("leaves the machine-check fingerprint alone, so adding cards keeps a judged pack judged", () => {
+    const bare = carded();
+    delete bare.cards;
+    expect(fingerprint(carded())).toBe(fingerprint(bare));
+    expect(errors(checkPack(checked(carded({ status: "machine-checked" }))))).toEqual([]);
+  });
+});
+
 describe("learningOrder", () => {
   it("honours prerequisites and otherwise keeps the pack's own order", () => {
     const order = learningOrder(["c", "b", "a"], [{ before: "a", after: "c", reason: "r" }]);

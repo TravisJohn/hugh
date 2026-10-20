@@ -34,8 +34,19 @@ checking against sources.
 
 **Pack:** `id`, `version` (semver), `status` (`draft` → `provisional` →
 `machine-checked` → `approved`), `subject`, `outOfScope[]`, `sources[]`,
-`concepts[]`, `prerequisites[]`, `machineCheck` (filled in by the machine
-check, v1.1) and `review` (filled in by a human audit).
+`concepts[]`, `prerequisites[]`, `cards[]` (v1.2), `machineCheck` (filled in
+by the machine check, v1.1) and `review` (filled in by a human audit).
+
+**v1.2 (2026-10-20, from PRD-narrow-learn.md):** `cards[]` lays a pack out as
+a track: 8 to 14 cards, each `{ id, title, conceptIds }` with 1 to 4
+concepts, in teaching order. Every live concept sits on exactly one card, and
+no card teaches a concept before one of its prerequisites (the same card is
+fine). A concept may be marked `retired: true` and taken off every card; it is
+never deleted. Card and concept ids are permanent once a pack is in the
+catalog, and `content/packs/ids/<id>.json` records every id it has published;
+a test fails if one disappears. Cards are not judged, so adding them leaves
+the machine-check fingerprint unchanged. A pack must have cards to be listed
+in the catalog.
 
 **Source:** `id`, `title`, `publisher`, `url`, `license` (when the publisher
 states one), `accessedAt`.

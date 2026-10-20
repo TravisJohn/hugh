@@ -52,10 +52,27 @@ export interface TextBodies {
   cloud: { provider: string; serviceId: string; messages: TextMessage[] };
   summary: { topic: string; messages: TextMessage[] };
   refine: AnswersBody;
-  goals: AnswersBody & { end_date: string };
+  /** A typed topic with its refinement answers, or (narrow Learn) a catalog course. */
+  goals: (AnswersBody & { end_date: string }) | PackGoalBody;
   session: { milestoneId: string; scenario: "interview" | "client" | "huddle" | "teaching"; phase: "open" | "respond" | "evaluate"; messages: SessionMessage[] };
 }
 export type TextRoute = keyof TextBodies;
+
+/** Start a course from the catalog. The route checks the id against the catalog. */
+export interface PackGoalBody { packId: string; end_date: string }
+
+export function isPackGoalBody(body: TextBodies["goals"]): body is PackGoalBody {
+  return "packId" in body;
+}
+
+/** A catalog id: lowercase letters, digits, - or _ (lib/packs/validate.ts). */
+const PACK_ID = /^[a-z0-9][a-z0-9_-]{0,63}$/;
+
+function endDate(b: Record<string, unknown>): string {
+  const end_date = string(b.end_date, "End date", 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(end_date) || !Number.isFinite(Date.parse(end_date)) || new Date(end_date).toISOString().slice(0, 10) !== end_date) throw new TextInputError("End date must be a valid YYYY-MM-DD date.");
+  return end_date;
+}
 
 function messages(value: unknown, max: number, session = false, allowEmpty = false): TextMessage[] | SessionMessage[] {
   if (!Array.isArray(value) || (!allowEmpty && value.length === 0)) throw new TextInputError("messages must be a non-empty array.");
@@ -107,10 +124,15 @@ function parse(kind: TextRoute, value: unknown): TextBodies[TextRoute] {
       fields(b, ["topic", "answers"]);
       return answers(b);
     case "goals": {
+      // A course start carries no free text at all: a catalog id and a date.
+      if ("packId" in b) {
+        fields(b, ["packId", "end_date"]);
+        const packId = string(b.packId, "Course", 64);
+        if (!PACK_ID.test(packId)) throw new TextInputError("Course must be a catalog id.");
+        return { packId, end_date: endDate(b) };
+      }
       fields(b, ["topic", "answers", "end_date"]);
-      const end_date = string(b.end_date, "End date", 10);
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(end_date) || !Number.isFinite(Date.parse(end_date)) || new Date(end_date).toISOString().slice(0, 10) !== end_date) throw new TextInputError("End date must be a valid YYYY-MM-DD date.");
-      return { ...answers(b), end_date };
+      return { ...answers(b), end_date: endDate(b) };
     }
     case "session": {
       fields(b, ["milestoneId", "scenario", "phase", "messages"]);

@@ -15,7 +15,25 @@ import { answerChars, contextUptake, type QAPair } from "@/lib/learn/contextUpta
 import { logUsage } from "@/lib/usage";
 import { logSafeError } from "@/lib/observability/log";
 import { errorClassOf } from "@/lib/observability/sanitize";
+import { loadPack, PACK_REFUSAL_MESSAGE } from "@/lib/packs/catalog";
+import { packTrack } from "@/lib/packs/track";
 import { type KanbanColumn } from "@/types";
+
+/**
+ * Build from a reference pack's authored cards instead of a model
+ * (PRD-narrow-learn.md, row 2). The same machine, the same writes, the same
+ * provenance row; only where the milestones come from differs.
+ */
+export interface PackTrackSource {
+  kind:   "pack";
+  packId: string;
+}
+
+/**
+ * What `track_generations.model` says for a pack build. No model is involved,
+ * and the column is NOT NULL, so it says so plainly rather than naming one.
+ */
+export const PACK_BUILD_MODEL = "pack";
 
 /** A track could not be built. Distinct from a Claude/parse error so the
  *  caller can tell "the model misbehaved" from "the database refused". */
@@ -106,11 +124,12 @@ interface GenerationRecord {
   user_id:            string;
   goal_id:            string | null;
   track_id:           string | null;
-  source_kind:        "qa" | "document";
+  source_kind:        "qa" | "document" | "pack";
   model:              string;
   prompt_version:     string;
   prompt_fingerprint: string;
-  max_tokens:         number;
+  /** Null for a pack build: no model call, so no token limit. */
+  max_tokens:         number | null;
   input_topic:        string;
   answer_count:       number;
   context_used:       boolean;
@@ -150,14 +169,99 @@ async function writeGenerationRecord(
   }
 }
 
-export async function generateTrack(
+/** One milestone to write, before it belongs to a track. */
+interface BoardRow {
+  title:            string;
+  summary:          string;
+  kanban_column:    KanbanColumn;
+  position:         number;
+  concept_ids?:     string[];
+  learning_points?: Array<{ id: string; text: string }>;
+}
+
+/**
+ * Write a track and its milestones: the one write path every build shares,
+ * whatever produced the milestones.
+ *
+ * The insert is checked, and the returned rows are counted. Dropping either
+ * check is what produced a "ready" track with an empty board and no error on
+ * any surface — the failure the learner could see but the system could not.
+ * `position` comes back too, because the snapshot has to join each row's rank
+ * to its place and insert order is not a promise.
+ */
+async function insertBoard(
+  supabase: SupabaseClient,
+  track:    { userId: string; goalId?: string; title: string; topicDescription: string },
+  rows:     readonly BoardRow[],
+): Promise<{ trackId: string; inserted: Array<{ id: string; position: number }> }> {
+  const trackRow: Record<string, unknown> = {
+    user_id:           track.userId,
+    title:             track.title,
+    topic_description: track.topicDescription,
+  };
+  if (track.goalId) trackRow.goal_id = track.goalId;
+
+  const { data: created, error: trackError } = await supabase
+    .from("tracks")
+    .insert(trackRow)
+    .select("id")
+    .single();
+
+  if (trackError || !created) {
+    throw new TrackGenerationError(trackError?.message ?? "Failed to create track");
+  }
+
+  const trackId = created.id as string;
+
+  const { data: inserted, error: milestoneError } = await supabase
+    .from("milestones")
+    .insert(rows.map(r => ({ track_id: trackId, ...r })))
+    .select("id, position");
+
+  if (milestoneError) {
+    await deleteOrphanTrack(supabase, trackId);
+    throw new TrackGenerationError(`Failed to save milestones: ${milestoneError.message}`);
+  }
+
+  if (!inserted || inserted.length !== rows.length) {
+    await deleteOrphanTrack(supabase, trackId);
+    throw new TrackGenerationError(
+      `Milestone insert was partial: expected ${rows.length}, saved ${inserted?.length ?? 0}`,
+    );
+  }
+
+  return { trackId, inserted: inserted as Array<{ id: string; position: number }> };
+}
+
+/**
+ * Build a track. The one function every route's `after()` calls (CLAUDE.md
+ * Rule 3): a topic goes to the model, a pack source is laid out from the
+ * pack's cards. Both share the board writer and the provenance row.
+ */
+export function generateTrack(
+  supabase: SupabaseClient,
+  userId:   string,
+  source:   PackTrackSource,
+  goalId?:  string,
+): Promise<string>;
+export function generateTrack(
   supabase:      SupabaseClient,
   userId:        string,
   topic:         string,
   goalId?:       string,
   documentText?: string,
+  options?:      GenerationOptions,
+): Promise<string>;
+export async function generateTrack(
+  supabase:      SupabaseClient,
+  userId:        string,
+  topicOrSource: string | PackTrackSource,
+  goalId?:       string,
+  documentText?: string,
   options:       GenerationOptions = {},
 ): Promise<string> {
+  if (typeof topicOrSource !== "string") return generateFromPack(supabase, userId, topicOrSource.packId, goalId);
+  const topic     = topicOrSource;
   const startedAt = Date.now();
   const promptId  = milestonePromptId(documentText);
 
@@ -226,25 +330,6 @@ export async function generateTrack(
     // answers — that comparison is the point of the control arm.
     record.context_uptake = contextUptake(answers, parsed.milestones);
 
-    const trackRow: Record<string, unknown> = {
-      user_id:           userId,
-      title:             parsed.trackTitle,
-      topic_description: topic,
-    };
-    if (goalId) trackRow.goal_id = goalId;
-
-    const { data: track, error: trackError } = await supabase
-      .from("tracks")
-      .insert(trackRow)
-      .select("id")
-      .single();
-
-    if (trackError || !track) {
-      throw new TrackGenerationError(trackError?.message ?? "Failed to create track");
-    }
-
-    const trackId = track.id as string;
-
     const validCols: KanbanColumn[] = ["backlog", "learn", "review", "done"];
     const milestoneRows = parsed.milestones.map((m, i) => {
       const valid = validCols.includes(m.column as KanbanColumn);
@@ -253,7 +338,6 @@ export async function generateTrack(
       // what the model meant and what the learner was shown.
       if (!valid) record.columns_coerced++;
       return {
-        track_id:      trackId,
         title:         m.title,
         summary:       m.summary,
         kanban_column: valid ? (m.column as KanbanColumn) : "backlog",
@@ -261,27 +345,9 @@ export async function generateTrack(
       };
     });
 
-    // The insert is checked, and the returned rows are counted. Dropping either
-    // check is what produced a "ready" track with an empty board and no error on
-    // any surface — the failure the learner could see but the system could not.
-    // `position` comes back too, because the snapshot has to join each row's
-    // rank to its place and insert order is not a promise.
-    const { data: inserted, error: milestoneError } = await supabase
-      .from("milestones")
-      .insert(milestoneRows)
-      .select("id, position");
-
-    if (milestoneError) {
-      await deleteOrphanTrack(supabase, trackId);
-      throw new TrackGenerationError(`Failed to save milestones: ${milestoneError.message}`);
-    }
-
-    if (!inserted || inserted.length !== milestoneRows.length) {
-      await deleteOrphanTrack(supabase, trackId);
-      throw new TrackGenerationError(
-        `Milestone insert was partial: expected ${milestoneRows.length}, saved ${inserted?.length ?? 0}`,
-      );
-    }
+    const { trackId, inserted } = await insertBoard(
+      supabase, { userId, goalId, title: parsed.trackTitle, topicDescription: topic }, milestoneRows,
+    );
 
     record.track_id        = trackId;
     record.milestone_count = milestoneRows.length;
@@ -318,6 +384,76 @@ export async function generateTrack(
     record.milestones_out = buildServedBoard(milestoneRows, inserted, assignments);
     record.outcome        = "ok";
 
+    return trackId;
+  } catch (err) {
+    record.error_class = errorClassOf(err);
+    throw err;
+  } finally {
+    record.generation_ms = Date.now() - startedAt;
+    await writeGenerationRecord(supabase, record);
+  }
+}
+
+/**
+ * The pack branch. No model call, so nothing to log to `usage_logs` and no
+ * budget to gate: success criterion 1 is a ready board with no `tracker/*`
+ * usage rows. The provenance row is still written, from the same `finally`,
+ * naming the pack, its version and its machine-check fingerprint, so "what
+ * did this learner's board come from?" has the same answer shape as a model
+ * build.
+ */
+async function generateFromPack(
+  supabase: SupabaseClient,
+  userId:   string,
+  packId:   string,
+  goalId?:  string,
+): Promise<string> {
+  const startedAt = Date.now();
+  const loaded    = loadPack(packId);
+
+  const record: GenerationRecord = {
+    user_id:            userId,
+    goal_id:            goalId ?? null,
+    track_id:           null,
+    source_kind:        "pack",
+    model:              PACK_BUILD_MODEL,
+    prompt_version:     `${packId}@${loaded.ok ? loaded.pack.version : "unloaded"}`,
+    prompt_fingerprint: loaded.ok ? (loaded.pack.machineCheck?.fingerprint ?? "unchecked") : "unloaded",
+    max_tokens:         null,
+    input_topic:        packId,
+    answer_count:       0,
+    context_used:       false,
+    answer_chars:       0,
+    context_uptake:     null,
+    milestones_out:     null,
+    milestone_count:    null,
+    ranked:             false,
+    rank_model:         null,
+    rank_fingerprint:   null,
+    columns_coerced:    0,
+    outcome:            "failed",
+    error_class:        null,
+    attempts:           0,
+    generation_ms:      null,
+    tokens_in:          0,
+    tokens_out:         0,
+    is_replay:          false,
+  };
+
+  try {
+    if (!loaded.ok) throw new TrackGenerationError(PACK_REFUSAL_MESSAGE[loaded.reason]);
+
+    const { trackTitle, rows } = packTrack(loaded.pack);
+    if (rows.length === 0) throw new TrackGenerationError(PACK_REFUSAL_MESSAGE["no-cards"]);
+
+    const { trackId, inserted } = await insertBoard(
+      supabase, { userId, goalId, title: trackTitle, topicDescription: loaded.pack.subject }, rows,
+    );
+
+    record.track_id        = trackId;
+    record.milestone_count = rows.length;
+    record.milestones_out  = buildServedBoard(rows, inserted, []);
+    record.outcome         = "ok";
     return trackId;
   } catch (err) {
     record.error_class = errorClassOf(err);
