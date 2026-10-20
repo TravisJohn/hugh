@@ -1,11 +1,19 @@
 # PRD: Narrow Learn (tracks from reference packs)
 
-Status: **draft for Travis's approval**, 2026-10-20. No code until approved.
-Builds on `PRD-reference-packs.md` (the pack format and the machine check).
-The review-quiz grading work is a separate session; this PRD defines only
-what the quiz reads from a pack.
+Status: **APPROVED by Travis, 2026-10-20**, as recommended, with three
+corrections made on approval (below). Phase 1 architecture must be approved
+before any code. Builds on `PRD-reference-packs.md` (the pack format and the
+machine check).
 
-## Decisions (reply "approved", or "approved, except row N: ...")
+**Corrections made on approval.** The draft was written while the
+server-graded review quiz (#26) was still in progress, and three facts moved:
+1. This PRD's migration is **060**; 059 became the review-quiz migration.
+2. Row 9 ships the **full** approved sentence: the server-graded quiz is live.
+3. Grounding the quiz in the pack is **part of this work**. The quiz is
+   generated and stored on the server since #26, so the pack's key points
+   and misconceptions go into that same route.
+
+## Decisions
 
 | # | Decision | Recommended answer | Why |
 |---|---|---|---|
@@ -17,7 +25,7 @@ what the quiz reads from a pack.
 | 6 | Request-a-topic box | Keep one on the picker. It saves up to 120 characters to a `topic_requests` table that Travis reads in `/admin`. It makes no model call and builds nothing. It is kept with the account and deleted with it. | Demand data for choosing the next packs at no token cost, and no new route into track generation. |
 | 7 | Course from document | Retire it. It is already behind `DOCUMENT_UPLOAD_ENABLED`. Park the "map a syllabus or job description onto pack concepts" idea as its own PRD once the catalog has about 10 packs, and tag the code `parked/course-from-document` before deleting it. | With 2 packs, any mapping answers "both". The 5-layer prompt-injection defence is costly to keep for a feature with nothing to map onto. |
 | 8 | Retiring open-input machinery | Three phases: **(1) Proof:** the pack path ships behind `PACK_LEARN_ENABLED`, and the open path is untouched. **(2) Launch:** the picker becomes the catalog, `POST /dashboard/goals` accepts only a pack id, and the open-input routes return 410. **(3) Delete,** after a week in production with no 410s from real use. See "What is retired". | Each phase can be undone by the one before it. Nothing is deleted while it can still be reached. |
-| 9 | Copy | Page title: "Hugh: learn data and analytics by conversation". Hero: "Learn data and analytics by talking it through." Subtext: Travis's approved sentence. `/home/learn` heading: "Choose a course". The landing page's Learn pillar is updated to match. Ships in phase 2, and only if the server-graded quiz is live by then; until it is, drop the final clause ("counts something as learned..."). | "You can learn anything" stops being true at phase 2. The approved sentence is true only when both halves of the integrity work are live. |
+| 9 | Copy | Page title: "Hugh: learn data and analytics by conversation". Hero: "Learn data and analytics by talking it through." Subtext: Travis's approved sentence. `/home/learn` heading: "Choose a course". The landing page's Learn pillar is updated to match. Ships in phase 2, with the full sentence: both halves of the integrity work are live (#24 + 058, #26 + 059). | "You can learn anything" stops being true at phase 2. The approved sentence is true only when both halves of the integrity work are live, and they are. |
 | 10 | Token cost | Track builds cost nothing, because packs remove the refine, gate, generate, rank and per-card learning-point calls. Ask carries about 2,000 more input tokens of pack context. Stable text goes first (rules, then the pack outline, then the card's concepts), with no per-request values ahead of the messages. Don't pad the prompt to reach the cache minimum. Measure on the first 20 conversations. | Estimates are below. The cache minimum on Haiku 4.5 (what Ask uses) is **4,096 tokens**, not 2,048, so short chats stay uncached either way. |
 | 11 | Only machine-checked packs | A catalog file lists the live packs. CI fails if a listed pack is below `machine-checked`, and the server refuses to load one (that failure gets its own error copy, per Rule 5). To pull a pack, Travis takes it off the catalog, and its tracks go read-only like row 5. | It's enforced before deploy, so learners never meet a pack that drops a status mid-track. |
 | 12 | Pack updates for learners mid-track | Tracks always read the current pack. Concept ids are permanent: a concept is marked retired, never deleted, and the validator enforces that. The goal records the pack version it was built from. | A correction to a key point should reach the learners already studying it. That is the point of checking against sources. |
@@ -63,7 +71,7 @@ and misconceptions instead of a model's own judgement.
    `learning_points`.
 5. **Sources on every card**: each key point's source, with its
    `#:~:text=` highlight link, rendered from the pack.
-6. **One migration (059)**: `learning_goals.pack_id` and `pack_version`
+6. **One migration (060)**: `learning_goals.pack_id` and `pack_version`
    (empty means a legacy goal), `milestones.concept_ids`, and
    `topic_requests` with row-level security and account-deletion coverage.
    Travis applies it before the code deploys.
@@ -134,14 +142,15 @@ the surfaces table.
 1. **Pack v1.2:** add `cards` to the format and to the Linear Regression pack
    (offline), with validator rules and tests. Confirm the machine-check
    fingerprint is unchanged, because cards are not key points.
-2. **Migration 059**, written and handed to Travis to apply.
+2. **Migration 060**, written and handed to Travis to apply.
 3. **Pure modules with tests:** `lib/packs/catalog.ts` (live packs, load by
    id, the status gate), `lib/packs/track.ts` (pack to card rows), and the Ask
    prompt builder.
 4. **Pack branch in `generateTrack`,** plus the goals and retry routes, all
    behind `PACK_LEARN_ENABLED`.
-5. **Ask, mastery and diary check** read the pack. Hand the quiz interface
-   (key point ids and misconceptions per card) to the quiz session.
+5. **Ask, mastery, the diary check and the review quiz** read the pack. The
+   quiz route (server-stored since #26) tags each question with the key point
+   it tests and may draw wrong options from the card's misconceptions.
 6. **Travis's test checklist** (he drives the browser): pick the course,
    check the card order, ask the 10 scripted questions, state the VIF
    misconception in mastery, and open three source links.
