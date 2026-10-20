@@ -1,0 +1,187 @@
+{
+  "id": "decision-trees",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Decision trees and tree ensembles for classification and regression",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "skl-tree",
+      "title": "scikit-learn User Guide 1.10: Decision Trees",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/tree.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "skl-ensemble",
+      "title": "scikit-learn User Guide 1.11: Ensembles: Gradient boosting, random forests, bagging, voting, stacking",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/ensemble.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "skl-permutation",
+      "title": "scikit-learn User Guide 5.2: Permutation feature importance",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/permutation_importance.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "skl-pi-example",
+      "title": "scikit-learn example: Permutation Importance vs Random Forest Feature Importance (MDI)",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "skl-grid-search",
+      "title": "scikit-learn User Guide 3.2: Tuning the hyper-parameters of an estimator",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/grid_search.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "skl-cv",
+      "title": "scikit-learn User Guide 3.1: Cross-validation: evaluating estimator performance",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/cross_validation.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu508-12",
+      "title": "STAT 508 Lesson 12: Tree-based Methods",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat508/Lesson12.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-intro",
+      "title": "Decision Forests: Introduction to decision forests",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/intro-to-decision-forests?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-appropriate",
+      "title": "Decision Forests: Appropriate data for decision forests",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/appropriate-data?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-trees",
+      "title": "Decision Forests: Decision trees",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/decision-trees?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-conditions",
+      "title": "Decision Forests: Types of conditions",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/conditions?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-growing",
+      "title": "Decision Forests: Growing decision trees",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/growing?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-binary",
+      "title": "Decision Forests: Exact splitter for binary classification with numerical features",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/binary-classification?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-overfitting",
+      "title": "Decision Forests: Overfitting and pruning",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/overfitting-and-pruning?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-importance",
+      "title": "Decision Forests: Variable importances",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/variable-importances?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-rf",
+      "title": "Decision Forests: Random Forest",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/random-forests?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-oob",
+      "title": "Decision Forests: Out-of-bag evaluation",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/out-of-bag?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-gbdt",
+      "title": "Decision Forests: Gradient boosted decision trees",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/intro-to-gbdt?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-gb",
+      "title": "Decision Forests: Gradient boosting (optional unit)",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/gradient-boosting?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-overfitting-gbdt",
+      "title": "Decision Forests: Overfitting, regularization, and early stopping",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/overfitting-gbdt?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-other",
+      "title": "Decision Forests: Other topics",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/other-topics?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "gdf-summary",
+      "title": "Decision Forests: Summary",
+      "publisher": "Google for Developers, Decision Forests course",
+      "url": "https://developers.google.com/machine-learning/decision-forests/summary?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
