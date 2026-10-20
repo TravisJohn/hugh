@@ -1,9 +1,18 @@
 {
   "id": "decision-trees",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Decision trees and tree ensembles for classification and regression",
-  "outOfScope": [],
+  "outOfScope": [
+    "The mathematics of gradient boosting in depth, such as loss gradients, pseudo-residuals and Newton steps",
+    "Library internals and tuning specifics of XGBoost, LightGBM, CatBoost and YDF",
+    "SHAP and the full theory of Shapley-value explanations, beyond naming SHAP as another way to explain forests",
+    "Neural networks, and workarounds for feeding images or text to tree models",
+    "Algorithm variants beyond naming them: ID3, C4.5, C5.0, extremely randomized trees, oblique and multivariate trees",
+    "AdaBoost, stacking and voting ensembles",
+    "The proofs behind cost-complexity pruning, such as nested optimal subtrees",
+    "Computational complexity and implementation tricks such as histogram binning"
+  ],
   "sources": [
     {
       "id": "skl-tree",
@@ -26,14 +35,6 @@
       "title": "scikit-learn User Guide 5.2: Permutation feature importance",
       "publisher": "scikit-learn developers",
       "url": "https://scikit-learn.org/stable/modules/permutation_importance.html",
-      "license": "BSD-3-Clause",
-      "accessedAt": "2026-10-20"
-    },
-    {
-      "id": "skl-pi-example",
-      "title": "scikit-learn example: Permutation Importance vs Random Forest Feature Importance (MDI)",
-      "publisher": "scikit-learn developers",
-      "url": "https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html",
       "license": "BSD-3-Clause",
       "accessedAt": "2026-10-20"
     },
@@ -150,14 +151,6 @@
       "accessedAt": "2026-10-20"
     },
     {
-      "id": "gdf-gb",
-      "title": "Decision Forests: Gradient boosting (optional unit)",
-      "publisher": "Google for Developers, Decision Forests course",
-      "url": "https://developers.google.com/machine-learning/decision-forests/gradient-boosting?hl=en",
-      "license": "CC BY 4.0",
-      "accessedAt": "2026-10-20"
-    },
-    {
       "id": "gdf-overfitting-gbdt",
       "title": "Decision Forests: Overfitting, regularization, and early stopping",
       "publisher": "Google for Developers, Decision Forests course",
@@ -172,16 +165,1792 @@
       "url": "https://developers.google.com/machine-learning/decision-forests/other-topics?hl=en",
       "license": "CC BY 4.0",
       "accessedAt": "2026-10-20"
-    },
-    {
-      "id": "gdf-summary",
-      "title": "Decision Forests: Summary",
-      "publisher": "Google for Developers, Decision Forests course",
-      "url": "https://developers.google.com/machine-learning/decision-forests/summary?hl=en",
-      "license": "CC BY 4.0",
-      "accessedAt": "2026-10-20"
     }
   ],
-  "concepts": [],
-  "prerequisites": []
+  "concepts": [
+    {
+      "id": "what_is_a_tree",
+      "title": "What a decision tree is",
+      "outcome": "Describe a decision tree's parts (root, conditions, leaves) and trace how it routes an example to a prediction.",
+      "aliases": [
+        "CART",
+        "classification tree",
+        "node",
+        "leaf",
+        "root"
+      ],
+      "keyPoints": [
+        {
+          "text": "A decision tree is a model made of questions, called conditions, splits or tests, arranged hierarchically as a tree: every non-leaf node holds a condition and every leaf holds a prediction.",
+          "sourceId": "gdf-trees",
+          "locator": "The model",
+          "anchor": {
+            "start": "decision tree is a model composed",
+            "end": "each leaf node contains a prediction"
+          }
+        },
+        {
+          "text": "To predict, an example is routed from the root down to one leaf according to the conditions; the value of the leaf it reaches is the tree's prediction.",
+          "sourceId": "gdf-trees",
+          "locator": "The model",
+          "anchor": {
+            "start": "Inference of a decision tree model",
+            "end": "is the decision tree's prediction"
+          }
+        },
+        {
+          "text": "Classification trees partition the feature space hierarchically: they start from the whole space, recursively divide it into smaller regions, and assign every final region a class label.",
+          "sourceId": "psu508-12",
+          "locator": "Overview",
+          "anchor": {
+            "start": "Classification trees are a hierarchical way",
+            "end": "assigned to a class label"
+          }
+        },
+        {
+          "text": "Each node stands for a region of the original space; a parent's two children split its region between them, and a test point gets the class of the leaf it lands in.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "One thing that we need to",
+            "end": "the leaf node it lands in"
+          }
+        },
+        {
+          "text": "Decision trees are a non-parametric supervised learning method for classification and regression; they predict a target by learning simple decision rules from the data's features.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "Decision Trees (DTs) are a non-parametric",
+            "end": "inferred from the data features"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tree_predictions",
+      "title": "What a leaf predicts",
+      "outcome": "Say what a leaf of a classification tree and of a regression tree outputs, including class probabilities.",
+      "aliases": [
+        "predict_proba",
+        "leaf value"
+      ],
+      "keyPoints": [
+        {
+          "text": "In a classification tree each leaf holds a class. Trees can also predict numerical values, by labelling their leaves with numerical predictions instead.",
+          "sourceId": "gdf-trees",
+          "locator": "The model",
+          "anchor": {
+            "start": "In the previous example, the leaves",
+            "end": "predictions (numerical values)"
+          }
+        },
+        {
+          "text": "Instead of a single class, a classification tree can output the probability of each class, which is the fraction of the leaf's training samples that belong to that class.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.1 Classification",
+          "anchor": {
+            "start": "As an alternative to outputting a",
+            "end": "of the class in a leaf"
+          }
+        },
+        {
+          "text": "One class may occupy several leaves of a tree, and occasionally no leaf at all.",
+          "sourceId": "psu508-12",
+          "locator": "12.4 Example: Digit Recognition",
+          "anchor": {
+            "start": "In general, one class may occupy",
+            "end": "occasionally no leaf node"
+          }
+        },
+        {
+          "text": "Because every leaf has estimated class probabilities, a tree can estimate the chance of misclassifying a point from the leaf the point lands in.",
+          "sourceId": "psu508-12",
+          "locator": "12.5 Advantages of the Tree-Structured Approach",
+          "anchor": {
+            "start": "They provide an estimate of the",
+            "end": "using the estimated class posterior"
+          }
+        }
+      ]
+    },
+    {
+      "id": "split_conditions",
+      "title": "Split conditions",
+      "outcome": "Recognise the kinds of condition a tree can split on, and explain which candidate thresholds a tree actually tests.",
+      "aliases": [
+        "threshold",
+        "axis-aligned split",
+        "oblique split",
+        "binary split"
+      ],
+      "keyPoints": [
+        {
+          "text": "An axis-aligned condition tests a single feature, while an oblique condition combines several. Trees are often trained with axis-aligned conditions only; oblique splits can express more complex patterns but cost more to train and run.",
+          "sourceId": "gdf-conditions",
+          "locator": "Axis-aligned vs. oblique conditions",
+          "anchor": {
+            "start": "An axis-aligned condition involves only",
+            "end": "higher training and inference costs"
+          }
+        },
+        {
+          "text": "Conditions with more than two outcomes have more discriminating power, and conditions with too much power are more likely to overfit, so decision forests generally use binary trees.",
+          "sourceId": "gdf-conditions",
+          "locator": "Binary vs. non-binary conditions",
+          "anchor": {
+            "start": "Non-binary conditions have more than",
+            "end": "generally use binary decision trees"
+          }
+        },
+        {
+          "text": "For an ordered variable, the candidate splits ask whether the variable is less than or equal to a threshold, for every possible threshold value.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "If we have an ordered variable",
+            "end": "for all real-valued c"
+          }
+        },
+        {
+          "text": "Because the training set is finite, only finitely many thresholds give distinct splits. A categorical variable is split by asking whether its value is in some subset of its categories.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "Since the training data set is",
+            "end": "form the pool of candidate splits"
+          }
+        },
+        {
+          "text": "A classical approach sorts a numerical feature's values and tests a threshold halfway between each pair of consecutive sorted values.",
+          "sourceId": "gdf-binary",
+          "locator": "Exact splitter",
+          "anchor": {
+            "start": "A classical approach is to sort",
+            "end": "would be 8.6"
+          }
+        }
+      ]
+    },
+    {
+      "id": "impurity",
+      "title": "Node impurity: Gini and entropy",
+      "outcome": "Explain what an impurity measure rewards and name the common ones, including Gini and entropy.",
+      "aliases": [
+        "Gini index",
+        "Gini impurity",
+        "entropy",
+        "log loss",
+        "purity"
+      ],
+      "keyPoints": [
+        {
+          "text": "A split is chosen with a goodness-of-split measure built on an impurity function. The aim is pure regions, where most points come from the same class.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "The way we choose the question",
+            "end": "that is, one class dominates"
+          }
+        },
+        {
+          "text": "An impurity function is largest only when every class is equally likely, smallest only when a node holds a single class, and unchanged if the classes are relabelled.",
+          "sourceId": "psu508-12",
+          "locator": "12.2 The Impurity Function",
+          "anchor": {
+            "start": "Definition: An impurity function is a",
+            "end": "remains constant"
+          }
+        },
+        {
+          "text": "Whichever impurity function is chosen, a tree uses it in the same way; the possible choices include entropy, the misclassification rate and the Gini index.",
+          "sourceId": "psu508-12",
+          "locator": "12.2 The Impurity Function",
+          "anchor": {
+            "start": "It should be understood that no",
+            "end": "Gini index"
+          }
+        },
+        {
+          "text": "Shannon entropy measures disorder. For a binary label it is at its maximum when the two classes are balanced 50/50, and zero when a node is pure.",
+          "sourceId": "gdf-binary",
+          "locator": "Exact splitter",
+          "anchor": {
+            "start": "Shannon entropy is a measure",
+            "end": "100% blue or 100% orange"
+          }
+        }
+      ]
+    },
+    {
+      "id": "information_gain",
+      "title": "Choosing a split: impurity decrease and information gain",
+      "outcome": "Compute, in words, how a candidate split is scored, and say what makes one split better than another.",
+      "aliases": [
+        "information gain",
+        "impurity decrease",
+        "goodness of split"
+      ],
+      "keyPoints": [
+        {
+          "text": "A split's goodness is the parent node's impurity minus the weighted sum of its two children's impurities, each weighted by the share of the node's samples that goes to that child.",
+          "sourceId": "psu508-12",
+          "locator": "12.2 The Impurity Function",
+          "anchor": {
+            "start": "we define the goodness of split",
+            "end": "and the left node"
+          }
+        },
+        {
+          "text": "The tree algorithm goes through all the candidate splits and selects the one with the largest decrease in impurity.",
+          "sourceId": "psu508-12",
+          "locator": "12.2 The Impurity Function",
+          "anchor": {
+            "start": "The classification tree algorithm goes through",
+            "end": "maximum Δi(s, t)"
+          }
+        },
+        {
+          "text": "Information gain is the entropy of the whole set minus the size-weighted entropy of the two subsets a split creates. A good split leaves low entropy and so has high information gain.",
+          "sourceId": "gdf-binary",
+          "locator": "Exact splitter",
+          "anchor": {
+            "start": "Formally, we want to find a",
+            "end": "the information gain high"
+          }
+        },
+        {
+          "text": "Information gain is never negative. It is zero when a threshold sends every example to one side, and also when both children keep the parent's entropy.",
+          "sourceId": "gdf-binary",
+          "locator": "Exact splitter",
+          "anchor": {
+            "start": "The information gain is always positive",
+            "end": "the information gain is zero"
+          }
+        },
+        {
+          "text": "The score a splitter maximises depends on the task: information gain and Gini are common for classification, and mean squared error for regression.",
+          "sourceId": "gdf-growing",
+          "locator": "Growing decision trees",
+          "anchor": {
+            "start": "The score maximized by the splitter",
+            "end": "commonly used for regression"
+          }
+        }
+      ]
+    },
+    {
+      "id": "regression_splits",
+      "title": "Regression trees: splitting on squared error",
+      "outcome": "Explain how a regression tree chooses splits and what number each leaf predicts.",
+      "aliases": [
+        "regression tree",
+        "variance reduction",
+        "mean squared error criterion",
+        "DecisionTreeRegressor"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a continuous target, splits minimise a criterion such as mean squared error, Poisson deviance or mean absolute error. Under squared error or Poisson deviance a leaf predicts its mean value; under absolute error, its median.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.7.2 Regression criteria",
+          "anchor": {
+            "start": "If the target is a continuous",
+            "end": "terminal nodes to the median"
+          }
+        },
+        {
+          "text": "A regression tree picks each split to give the largest reduction in the error sum of squares. Overfitting is a concern, especially because outliers can sway the fit when the response is numeric.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "Recall that a regression tree maximizes",
+            "end": "when the response variable is quantitative"
+          }
+        },
+        {
+          "text": "A tree can approximate a curve, such as a sine wave, with a set of if-then-else rules. The deeper the tree, the more complex the rules and the more closely the model fits.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "For instance, in the example below",
+            "end": "and the fitter the model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "greedy_partitioning",
+      "title": "Greedy recursive partitioning",
+      "outcome": "Describe how a tree is grown one node at a time, and explain why that greedy procedure does not guarantee the best tree.",
+      "aliases": [
+        "recursive partitioning",
+        "divide and conquer",
+        "top-down induction"
+      ],
+      "keyPoints": [
+        {
+          "text": "Training the optimal decision tree is an NP-hard problem, so trees are trained with heuristics that give a tree that is not optimal but close to it.",
+          "sourceId": "gdf-growing",
+          "locator": "Growing decision trees",
+          "anchor": {
+            "start": "The optimal training of a decision",
+            "end": "close to optimal, decision tree"
+          }
+        },
+        {
+          "text": "Most algorithms grow a tree greedily, starting from a single root node. At each node every possible condition is scored, and the highest-scoring condition is chosen.",
+          "sourceId": "gdf-growing",
+          "locator": "Growing decision trees",
+          "anchor": {
+            "start": "Most algorithms used to train decision",
+            "end": "selected to maximize that metric"
+          }
+        },
+        {
+          "text": "The algorithm then repeats independently on each child. When no satisfying condition is found, the node becomes a leaf, predicting the most representative label among its examples.",
+          "sourceId": "gdf-growing",
+          "locator": "Growing decision trees",
+          "anchor": {
+            "start": "The algorithm then repeats recursively and",
+            "end": "label value in the examples"
+          }
+        },
+        {
+          "text": "Growing a tree is greedy because each step looks only one step ahead; a split that looks bad now might still pay off a few steps later.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "This process of growing the tree",
+            "end": "you might actually gain something"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Because each split is the best one available at its node, the finished tree is the best possible tree for the data.",
+          "correction": "Each split is only locally optimal. Learning an optimal tree is NP-complete, so greedy learners cannot guarantee the globally optimal tree.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "The problem of learning an optimal",
+            "end": "the globally optimal decision tree"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overfitting_and_depth",
+      "title": "Overfitting and tree depth",
+      "outcome": "Explain why a fully grown tree overfits, and why training error cannot tell you how big a tree should be.",
+      "aliases": [
+        "max_depth",
+        "resubstitution error",
+        "training error"
+      ],
+      "keyPoints": [
+        {
+          "text": "Grown with no limits, a tree can classify every training example perfectly when the examples are separable; if the data are noisy, that tree overfits and does poorly on test data.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Overfitting and pruning",
+          "anchor": {
+            "start": "Using the algorithm described above, we",
+            "end": "show poor test accuracy"
+          }
+        },
+        {
+          "text": "Splitting a node never makes the training (resubstitution) error rate worse, so judged on training data more splits always look better, and that estimate is biased toward bigger trees.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "One thing that we should spend",
+            "end": "always biased towards a bigger tree"
+          }
+        },
+        {
+          "text": "In one example, training error rose steadily as the tree was cut back, while test error fell as the tree grew, bottomed out at 10 leaves, then rose again.",
+          "sourceId": "psu508-12",
+          "locator": "12.8 Right Sized Tree via Pruning",
+          "anchor": {
+            "start": "error rate \\(R(T)\\) becomes monotonically",
+            "end": "when the tree further grows"
+          }
+        },
+        {
+          "text": "The number of samples needed to populate a tree doubles with each extra level, so max_depth is used to control the tree's size and prevent overfitting.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.5 Tips on practical use",
+          "anchor": {
+            "start": "Remember that the number of samples",
+            "end": "the tree to prevent overfitting"
+          }
+        },
+        {
+          "text": "Trees tend to overfit data with many features: a tree with few samples in a high-dimensional space is very likely to overfit.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.5 Tips on practical use",
+          "anchor": {
+            "start": "Decision trees tend to overfit on",
+            "end": "is very likely to overfit"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A deeper decision tree is always more accurate.",
+          "correction": "Growing a tree too big can push its training error far below its error on test data. Pruning and cross-validation help avoid that overfitting.",
+          "sourceId": "psu508-12",
+          "locator": "12.4 Example: Digit Recognition",
+          "anchor": {
+            "start": "Here pruning and cross-validation effectively",
+            "end": "based on the test data set"
+          }
+        },
+        {
+          "claim": "A tree's error on its own training data is a fair guide to how big the tree should be.",
+          "correction": "Training error is biased downward: a split never makes it worse, so minimising it always prefers a bigger tree and gives no defence against overfitting.",
+          "sourceId": "psu508-12",
+          "locator": "12.8 Right Sized Tree via Pruning",
+          "anchor": {
+            "start": "We also mentioned in the last",
+            "end": "no defense against overfitting"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stopping_rules",
+      "title": "Stopping rules (pre-pruning)",
+      "outcome": "Name the usual stopping rules, say what each trades off, and explain why stopping early is not a complete answer.",
+      "aliases": [
+        "pre-pruning",
+        "early stopping",
+        "min_samples_leaf",
+        "min_samples_split",
+        "max_depth"
+      ],
+      "keyPoints": [
+        {
+          "text": "Two common limits curb overfitting while a tree grows: a maximum depth, and a minimum number of examples, below which a leaf will not be considered for splitting.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Overfitting and pruning",
+          "anchor": {
+            "start": "To limit overfitting a decision tree",
+            "end": "not be considered for splitting"
+          }
+        },
+        {
+          "text": "Splitting continues recursively until a stopping condition is met, such as reaching the maximum depth, a node having fewer samples than min_samples_split, or a split's impurity decrease falling below min_impurity_decrease.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.7 Mathematical formulation",
+          "anchor": {
+            "start": "After choosing the optimal split",
+            "end": "smaller than min_impurity_decrease"
+          }
+        },
+        {
+          "text": "Requiring a minimum number of samples per split or leaf makes several samples inform every decision. Too small a minimum usually overfits; too large a minimum stops the tree learning the data.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.5 Tips on practical use",
+          "anchor": {
+            "start": "Use min_samples_split or min_samples_leaf to",
+            "end": "tree from learning the data"
+          }
+        },
+        {
+          "text": "Stopping when the best split's weighted impurity decrease falls below a preset threshold is not a satisfactory way to decide a tree's size.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "A simple criterion is as follows",
+            "end": "is not a satisfactory strategy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pruning",
+      "title": "Pruning a grown tree",
+      "outcome": "Explain post-pruning, how a validation set can guide it, and why trees are usually grown large first.",
+      "aliases": [
+        "post-pruning",
+        "reduced-error pruning"
+      ],
+      "keyPoints": [
+        {
+          "text": "A tree can also be regularised after training by pruning: turning some non-leaf nodes into leaves. A common approach removes a branch if that improves the model's quality on a validation set.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Overfitting and pruning",
+          "anchor": {
+            "start": "You can also regularize after training",
+            "end": "then the branch is removed"
+          }
+        },
+        {
+          "text": "Holding out a validation set for pruning reduces the number of examples available to train the tree in the first place.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Overfitting and pruning",
+          "anchor": {
+            "start": "Note that using a validation dataset",
+            "end": "initial training of the decision tree"
+          }
+        },
+        {
+          "text": "The usual practice is to grow the tree to a large size first and prune it back later; as long as the starting tree is big enough, exactly when its growth stopped hardly matters.",
+          "sourceId": "psu508-12",
+          "locator": "12.8.1 Preliminaries for Pruning",
+          "anchor": {
+            "start": "First, we would grow the tree",
+            "end": "initial tree is not critical"
+          }
+        },
+        {
+          "text": "However many steps ahead growth looks, it is still greedy; looking further ahead does not fix that, which is why trees need pruning.",
+          "sourceId": "psu508-12",
+          "locator": "12.1 Construct the Tree",
+          "anchor": {
+            "start": "No matter how many steps we",
+            "end": "This is why we need pruning"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cost_complexity_pruning",
+      "title": "Cost-complexity pruning",
+      "outcome": "Explain how the complexity parameter alpha trades training error against tree size, and how its value is chosen.",
+      "aliases": [
+        "ccp_alpha",
+        "complexity parameter",
+        "weakest-link pruning",
+        "minimal cost-complexity pruning"
+      ],
+      "keyPoints": [
+        {
+          "text": "Cost-complexity pruning adds a penalty to the training error to favour smaller trees: a complexity parameter, alpha, multiplied by the tree's number of leaves.",
+          "sourceId": "psu508-12",
+          "locator": "12.8.2 Minimal Cost-Complexity Pruning",
+          "anchor": {
+            "start": "We need to add a complexity",
+            "end": "R(T) +\\alpha| \\tilde{T}|"
+          }
+        },
+        {
+          "text": "Which subtree is chosen depends on alpha. At alpha zero the penalty disappears and the biggest tree is chosen; as alpha grows without limit, the tree shrinks to a single root node.",
+          "sourceId": "psu508-12",
+          "locator": "12.8.2 Minimal Cost-Complexity Pruning",
+          "anchor": {
+            "start": "Which subtree is selected eventually depends",
+            "end": "will be selected"
+          }
+        },
+        {
+          "text": "Pruning repeatedly removes the weakest link, the non-terminal node with the smallest effective alpha, and stops once the smallest effective alpha left is greater than the chosen ccp_alpha.",
+          "sourceId": "skl-tree",
+          "locator": "1.10.9 Minimal Cost-Complexity Pruning",
+          "anchor": {
+            "start": "A non-terminal node with the smallest",
+            "end": "greater than the ccp_alpha parameter"
+          }
+        },
+        {
+          "text": "When cross-validating a pruned tree, the key is choosing the right complexity parameter alpha, rather than trying to say which tree is best.",
+          "sourceId": "psu508-12",
+          "locator": "12.8.3 Best Pruned Subtree",
+          "anchor": {
+            "start": "The key strategy in a classification",
+            "end": "the best complexity parameter"
+          }
+        }
+      ]
+    },
+    {
+      "id": "interpreting_trees",
+      "title": "Reading and interpreting a tree",
+      "outcome": "Read a fitted tree as a set of rules and say what it does, and does not, tell you about the data.",
+      "aliases": [
+        "interpretability",
+        "white box",
+        "decision rules"
+      ],
+      "keyPoints": [
+        {
+          "text": "A big advantage of decision trees is that the classifier they produce is highly interpretable, which is especially welcome to users such as physicians.",
+          "sourceId": "psu508-12",
+          "locator": "Overview",
+          "anchor": {
+            "start": "One big advantage of decision trees",
+            "end": "an especially desirable feature"
+          }
+        },
+        {
+          "text": "In one example the classifier looks at only three measurements, and for some patients a single measurement decides the result.",
+          "sourceId": "psu508-12",
+          "locator": "Overview",
+          "anchor": {
+            "start": "Only three measurements are looked at",
+            "end": "determines the final result"
+          }
+        },
+        {
+          "text": "A tree is a white-box model: the reason behind a prediction can be explained with boolean logic, whereas results from a black box such as a neural network may be harder to interpret.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "Uses a white box model",
+            "end": "more difficult to interpret"
+          }
+        },
+        {
+          "text": "A tree may never use some of the variables, so classification trees sometimes achieve dimension reduction as a by-product.",
+          "sourceId": "psu508-12",
+          "locator": "12.4 Example: Digit Recognition",
+          "anchor": {
+            "start": "Another interesting aspect about the tree",
+            "end": "dimension reduction as a by-product"
+          }
+        },
+        {
+          "text": "Because a tree partitions the training examples, it can be used to interpret the dataset itself, not only the model: each leaf represents a particular corner of the data.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Direct decision tree interpretation",
+          "anchor": {
+            "start": "Because of the way decision trees",
+            "end": "a particular corner of the dataset"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tree_instability",
+      "title": "Instability: why one tree has high variance",
+      "outcome": "Explain why small changes in the data can produce a very different tree, and what that means for reading one.",
+      "aliases": [
+        "high variance",
+        "unstable"
+      ],
+      "keyPoints": [
+        {
+          "text": "Decision trees can be unstable: small variations in the data might produce a completely different tree. Using trees within an ensemble mitigates this.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "Decision trees can be unstable because",
+            "end": "within an ensemble"
+          }
+        },
+        {
+          "text": "Trees are easy to interpret, but changing even a few examples can completely change a tree's structure, and therefore its interpretation.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Direct decision tree interpretation",
+          "anchor": {
+            "start": "Decision trees are easily interpretable. That",
+            "end": "of the decision tree"
+          }
+        },
+        {
+          "text": "When a dataset has many fairly similar features, the learned tree is only one of several more-or-less equivalent trees that fit the data.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Direct decision tree interpretation",
+          "anchor": {
+            "start": "Especially when the dataset contains many",
+            "end": "trees that fit the data"
+          }
+        },
+        {
+          "text": "Trees grown on different bootstrap samples of the same data can look very different. Small samples, highly correlated predictors or mixed leaves can cause this.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "The following three figures are three",
+            "end": "or heterogeneous terminal nodes"
+          }
+        },
+        {
+          "text": "An unstable tree does not mean an unstable classifier: two trees that look very different can make similar classification decisions.",
+          "sourceId": "psu508-12",
+          "locator": "12.8.3 Best Pruned Subtree",
+          "anchor": {
+            "start": "However, although we said that the",
+            "end": "similar decisions for classification"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If a tree fits the data well, its structure shows the true rules behind the data.",
+          "correction": "When trees vary like this, interpreting a single tree's structure is risky, even though the classes it assigns may stay fairly stable.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "Interpretations from the results of a",
+            "end": "the tree structure is not"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tree_practical_properties",
+      "title": "What trees handle well, and what they do not",
+      "outcome": "Judge whether a dataset suits a tree: preprocessing needs, monotone transformations, outliers, missing values and hard patterns.",
+      "aliases": [
+        "feature scaling",
+        "surrogate split",
+        "missing values",
+        "outliers"
+      ],
+      "keyPoints": [
+        {
+          "text": "Trees need little data preparation, where other techniques often need normalised data, dummy variables and blank values removed.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "Requires little data preparation. Other techniques",
+            "end": "blank values to be removed"
+          }
+        },
+        {
+          "text": "Because they split by thresholds, classification trees are unchanged by any monotone transformation of an ordered variable, and fairly robust to outliers and mislabelled training points.",
+          "sourceId": "psu508-12",
+          "locator": "12.5 Advantages of the Tree-Structured Approach",
+          "anchor": {
+            "start": "Classification trees are invariant under all",
+            "end": "from the data points themselves"
+          }
+        },
+        {
+          "text": "Trees can handle a missing value with a surrogate split: a split on another variable that divides the training data as similarly as possible to the best split.",
+          "sourceId": "psu508-12",
+          "locator": "12.7 Missing Values",
+          "anchor": {
+            "start": "Classification trees have a nice way",
+            "end": "most similar to the optimal split"
+          }
+        },
+        {
+          "text": "Some concepts are hard for trees to express, such as XOR, parity or multiplexer problems. Trees are also biased if some classes dominate, so balancing the dataset before fitting is recommended.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "There are concepts that are hard",
+            "end": "with the decision tree"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Numerical features must be normalised or scaled before training a decision tree.",
+          "correction": "The split search uses only the order of a feature's values, not their scale or distribution, so a tree's numerical features need no normalising or scaling.",
+          "sourceId": "gdf-binary",
+          "locator": "Exact splitter",
+          "anchor": {
+            "start": "In this algorithm, the value of",
+            "end": "training a decision tree"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ensembles",
+      "title": "Ensembles: why combining models helps",
+      "outcome": "Explain why averaging several models can beat any one of them, and why their independence matters.",
+      "aliases": [
+        "ensemble",
+        "wisdom of the crowd",
+        "model averaging",
+        "decision forest"
+      ],
+      "keyPoints": [
+        {
+          "text": "An ensemble is a set of models whose predictions are averaged or otherwise aggregated. If its models differ enough without being too bad individually, the ensemble is generally better than each model, though it costs more to train and run.",
+          "sourceId": "gdf-intro",
+          "locator": "Introduction to decision forests",
+          "anchor": {
+            "start": "In machine learning, an ensemble",
+            "end": "instead of a single model"
+          }
+        },
+        {
+          "text": "Ensembles work best when their models are independent: ten copies of one model are no better than one. But forcing independence can make models worse, so the two must be balanced.",
+          "sourceId": "gdf-intro",
+          "locator": "Introduction to decision forests",
+          "anchor": {
+            "start": "Informally, for an ensemble to work",
+            "end": "the quality of its sub-models"
+          }
+        },
+        {
+          "text": "In 1906, 787 people guessed an ox's weight. Individual guesses had a median error of 3.1%, but the median of all the guesses was off by only 0.7%.",
+          "sourceId": "gdf-intro",
+          "locator": "Introduction to decision forests",
+          "anchor": {
+            "start": "In 1906, a weight judging competition",
+            "end": "an error of only 0.7%"
+          }
+        },
+        {
+          "text": "Averaging over many fitted models helps avoid overfitting: it tends to cancel out the uncommon features any single model captures, so the aggregated results are more stable.",
+          "sourceId": "psu508-12",
+          "locator": "12.9 Bagging and Random Forests",
+          "anchor": {
+            "start": "Averaging over a collection of fitted",
+            "end": "the aggregated results are more stable"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bagging",
+      "title": "Bagging: bootstrap aggregating",
+      "outcome": "Describe how bagging builds and combines trees, and explain why it reduces variance.",
+      "aliases": [
+        "bootstrap aggregating",
+        "bootstrap sample",
+        "sampling with replacement"
+      ],
+      "keyPoints": [
+        {
+          "text": "For classification, bagging takes a majority vote of trees grown on bootstrap samples: random samples of size N drawn with replacement from the N cases, each grown into a tree that is not pruned.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "In a classification tree, bagging takes",
+            "end": "as usual but do not prune"
+          }
+        },
+        {
+          "text": "In bagging each tree trains on as many examples as the original training set, but drawn from a subset of them, typically 67%, so some examples are reused: training with replacement.",
+          "sourceId": "gdf-rf",
+          "locator": "Bagging",
+          "anchor": {
+            "start": "Bagging is peculiar. Each decision tree",
+            "end": "called training \"with replacement"
+          }
+        },
+        {
+          "text": "Bagging reduces the variance of a base model such as a decision tree by randomising its construction and averaging. It works best with strong, complex models such as fully grown trees, while boosting usually suits weak, shallow ones.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.3 Bagging meta-estimator",
+          "anchor": {
+            "start": "These methods are used as a",
+            "end": "shallow decision trees"
+          }
+        },
+        {
+          "text": "Bagging helps with variance: averaging the fitted values from many bootstrap samples, each low in bias but high in variance, can reduce the bite of the bias-variance trade-off.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "It is not clear how much",
+            "end": "bite of the bias-variance tradeoff"
+          }
+        },
+        {
+          "text": "For a numerical response, each tree assigns an observation the mean of the leaf it falls in, and the bagged prediction is the average of those means across trees.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "Bagging works by the same general",
+            "end": "is the bagged fitted value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "random_forests",
+      "title": "Random forests: bagging plus feature sampling",
+      "outcome": "Explain what a random forest adds to bagging and why decorrelating the trees helps.",
+      "aliases": [
+        "random forest",
+        "feature subsampling",
+        "attribute sampling",
+        "max_features",
+        "decorrelation"
+      ],
+      "keyPoints": [
+        {
+          "text": "A random forest is bagging with one addition: before each node is split, only a random sample of the predictors is considered, for example 5 of 20. As in bagging, the trees are not pruned.",
+          "sourceId": "psu508-12",
+          "locator": "12.12 From Bagging to Random Forests",
+          "anchor": {
+            "start": "Bagging constructs a large number of",
+            "end": "as in bagging, do not prune"
+          }
+        },
+        {
+          "text": "Bootstrapping the samples and sampling features at each split both aim to cut the forest's variance: single trees have high variance and overfit, and averaging trees with partly decoupled errors lets some errors cancel.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.1 Random Forests",
+          "anchor": {
+            "start": "The purpose of these two sources",
+            "end": "some errors can cancel out"
+          }
+        },
+        {
+          "text": "A random forest lowers variance by combining diverse trees, sometimes at the cost of slightly higher bias; in practice the variance reduction is often large enough to give a better model overall.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.1 Random Forests",
+          "anchor": {
+            "start": "Random forests achieve a reduced variance",
+            "end": "an overall better model"
+          }
+        },
+        {
+          "text": "A few dominant predictors would otherwise win most splits and crowd out predictors useful for local features. With feature sampling over enough trees, each predictor gets several chances to define a split.",
+          "sourceId": "psu508-12",
+          "locator": "12.12 From Bagging to Random Forests",
+          "anchor": {
+            "start": "There are often a few predictors",
+            "end": "the predictor defining a split"
+          }
+        },
+        {
+          "text": "The trees in a random forest are trained without pruning, which makes each one overly complex and poor on its own; instead of regularising each tree, the forest relies on ensembling them for accurate predictions.",
+          "sourceId": "gdf-rf",
+          "locator": "Disabling decision tree regularization",
+          "anchor": {
+            "start": "Individual decision trees in a random",
+            "end": "more accurate overall predictions"
+          }
+        }
+      ]
+    },
+    {
+      "id": "forest_tuning",
+      "title": "Tuning a random forest",
+      "outcome": "Choose the number of trees, features per split and tree size for a random forest, and know which settings can and cannot cause overfitting.",
+      "aliases": [
+        "n_estimators",
+        "max_features",
+        "number of trees"
+      ],
+      "keyPoints": [
+        {
+          "text": "A forest's main settings are the number of trees and max_features. More trees are better but take longer, and beyond a critical number the results stop getting significantly better.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.3 Parameters",
+          "anchor": {
+            "start": "The main parameters to adjust when",
+            "end": "beyond a critical number of trees"
+          }
+        },
+        {
+          "text": "max_features is the size of the random feature subset tried at each split: lower values cut variance more but raise bias. Good defaults are all features for regression and the square root of their number for classification.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.3 Parameters",
+          "anchor": {
+            "start": "The latter is the size of",
+            "end": "for classification tasks"
+          }
+        },
+        {
+          "text": "Fully grown trees often give good results, but those settings are usually not optimal and can use a lot of memory; the best parameter values should always be cross-validated.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.3 Parameters",
+          "anchor": {
+            "start": "Good results are often achieved when",
+            "end": "should always be cross-validated"
+          }
+        },
+        {
+          "text": "As trees are added to a random forest its error almost always falls; adding more trees cannot make the forest overfit.",
+          "sourceId": "gdf-rf",
+          "locator": "The clarity of noise",
+          "anchor": {
+            "start": "When training a random forest, as",
+            "end": "the random forest to overfit"
+          }
+        },
+        {
+          "text": "There are three main tuning parameters: leaf size, which can be very small; the number of trees, where 500 is often a good choice; and the predictors sampled per split, where 2 to 5 is often adequate.",
+          "sourceId": "psu508-12",
+          "locator": "12.12 From Bagging to Random Forests",
+          "anchor": {
+            "start": "Random forests include 3 main tuning",
+            "end": "is often adequate"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A random forest cannot overfit, so its trees' depth and leaf size never need limiting or tuning.",
+          "correction": "Pure random forests grow trees with no depth or leaf-size limit, but in practice limiting maximum depth and minimum leaf size is beneficial, and both can be tuned.",
+          "sourceId": "gdf-rf",
+          "locator": "Disabling decision tree regularization",
+          "anchor": {
+            "start": "Pure random forests train without maximum",
+            "end": "You can tune these hyperparameters"
+          }
+        },
+        {
+          "claim": "A random forest with near-100% training accuracy must be overfitted.",
+          "correction": "A random forest's training accuracy is generally much higher than its test accuracy, sometimes 100%; that is normal and does not show the forest is overfitted.",
+          "sourceId": "gdf-rf",
+          "locator": "Disabling decision tree regularization",
+          "anchor": {
+            "start": "We expect the training and test",
+            "end": "the random forest is overfitted"
+          }
+        }
+      ]
+    },
+    {
+      "id": "out_of_bag",
+      "title": "Out-of-bag evaluation",
+      "outcome": "Explain how out-of-bag samples give a forest a built-in test estimate without a separate validation set.",
+      "aliases": [
+        "OOB",
+        "OOB error",
+        "oob_score"
+      ],
+      "keyPoints": [
+        {
+          "text": "For each tree, the observations left out of its bootstrap sample are its out-of-bag observations, and they can be treated as test data and dropped down that tree.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "For each tree, observations not included",
+            "end": "dropped down the tree"
+          }
+        },
+        {
+          "text": "The out-of-bag estimate of prediction error averages each observation's predictions only over the trees that did not use it in fitting.",
+          "sourceId": "psu508-12",
+          "locator": "12.11 Bagging",
+          "anchor": {
+            "start": "To get a better evaluation of",
+            "end": "not used in the fitting process"
+          }
+        },
+        {
+          "text": "Each tree typically trains on about 67% of the examples and never sees the other 33%. Out-of-bag evaluation scores each example using only the trees that did not see it during training.",
+          "sourceId": "gdf-oob",
+          "locator": "Out-of-bag evaluation",
+          "anchor": {
+            "start": "As explained earlier, each decision tree",
+            "end": "the example during training"
+          }
+        },
+        {
+          "text": "Random forests need no separate validation set: most use out-of-bag evaluation, which treats the training set as if it were the test set of a cross-validation.",
+          "sourceId": "gdf-oob",
+          "locator": "Out-of-bag evaluation",
+          "anchor": {
+            "start": "Random forests do not require a",
+            "end": "test set of a cross-validation"
+          }
+        },
+        {
+          "text": "Out-of-bag evaluation can also compute a forest's permutation variable importance: the drop in out-of-bag model quality when a variable is shuffled.",
+          "sourceId": "gdf-oob",
+          "locator": "Out-of-bag evaluation",
+          "anchor": {
+            "start": "OOB evaluation is also effective to",
+            "end": "computed using the OOB evaluation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "boosting",
+      "title": "Boosting: building trees in sequence",
+      "outcome": "Describe, without the mathematics, how gradient boosting builds a model from many small trees and how it differs from a random forest.",
+      "aliases": [
+        "gradient boosting",
+        "GBDT",
+        "gradient boosted trees",
+        "weak learner"
+      ],
+      "keyPoints": [
+        {
+          "text": "In gradient boosting, each step trains a new weak model to predict the current strong model's error, then adds it to the strong model so as to reduce that error.",
+          "sourceId": "gdf-gbdt",
+          "locator": "Gradient boosted decision trees",
+          "anchor": {
+            "start": "In gradient boosting, at each step",
+            "end": "the error of the strong model"
+          }
+        },
+        {
+          "text": "Boosting repeats until a stopping criterion is met, such as a maximum number of iterations, or the strong model starting to overfit as measured on a separate validation set.",
+          "sourceId": "gdf-gbdt",
+          "locator": "Gradient boosted decision trees",
+          "anchor": {
+            "start": "This operation repeats until a stopping",
+            "end": "separate validation dataset"
+          }
+        },
+        {
+          "text": "Random forests rely on deep trees that overfit individually, while boosting builds shallow trees that underfit individually. Boosted trees are built in sequence, each trained to correct the errors of the ones before it.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.1 Random Forests",
+          "anchor": {
+            "start": "Random forests typically rely on deep",
+            "end": "made by the previous ones"
+          }
+        },
+        {
+          "text": "Gradient-boosted decision trees generalise boosting to any differentiable loss function, and are an excellent model for both regression and classification, in particular on tabular data.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.1 Gradient-boosted trees",
+          "anchor": {
+            "start": "Gradient Boosted Decision Trees (GBDT) is",
+            "end": "in particular for tabular data"
+          }
+        },
+        {
+          "text": "Boosted trees must be trained one after another, which can slow training considerably, although the trees being smaller partly offsets the slowdown.",
+          "sourceId": "gdf-overfitting-gbdt",
+          "locator": "Usage and limitations",
+          "anchor": {
+            "start": "The decision trees must be trained",
+            "end": "the decision trees being smaller"
+          }
+        }
+      ]
+    },
+    {
+      "id": "boosting_tuning",
+      "title": "Learning rate, number of trees and overfitting in boosting",
+      "outcome": "Set a boosted model's learning rate, number of trees and tree depth, and explain how they interact.",
+      "aliases": [
+        "learning rate",
+        "shrinkage",
+        "early stopping",
+        "n_estimators"
+      ],
+      "keyPoints": [
+        {
+          "text": "In gradient boosting, n_estimators sets the number of trees and max_depth or max_leaf_nodes each tree's size; the learning rate, between 0 and 1, controls overfitting through shrinkage.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.1.2 GradientBoostingClassifier and GradientBoostingRegressor",
+          "anchor": {
+            "start": "The number of weak learners (i.e.",
+            "end": "controls overfitting via shrinkage"
+          }
+        },
+        {
+          "text": "Shrinkage works like a learning rate: it controls how fast the boosted model learns, which helps limit overfitting. Values closer to 0 reduce overfitting more than values closer to 1.",
+          "sourceId": "gdf-gbdt",
+          "locator": "Shrinkage",
+          "anchor": {
+            "start": "Shrinkage in gradient boosting is analogous",
+            "end": "a shrinkage value closer to 1.0"
+          }
+        },
+        {
+          "text": "Learning rate and number of trees interact: a smaller rate needs more trees for the same training error, small rates tend to give better test error, and a rate of 0.1 or less is recommended.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.1.2.5 Shrinkage via learning rate",
+          "anchor": {
+            "start": "The parameter learning_rate strongly interacts with",
+            "end": "that early stopping applies"
+          }
+        },
+        {
+          "text": "Common regularisation settings for gradient boosted trees are the maximum tree depth, the shrinkage rate, the share of attributes tested at each node, and L1 and L2 penalties on the loss.",
+          "sourceId": "gdf-overfitting-gbdt",
+          "locator": "Overfitting, regularization, and early stopping",
+          "anchor": {
+            "start": "Common regularization parameters for gradient",
+            "end": "coefficient on the loss"
+          }
+        },
+        {
+          "text": "A tree of depth h can capture interactions of order h, so the size of the base trees sets how many variables can interact in a boosted model.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.1.2.2 Controlling the tree size",
+          "anchor": {
+            "start": "The size of the regression tree",
+            "end": "interactions of order h"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Like a random forest, a gradient boosted model cannot overfit, so adding more trees is always safe.",
+          "correction": "Unlike random forests, gradient boosted trees can overfit, so, as with neural networks, regularisation and early stopping on a validation set are used.",
+          "sourceId": "gdf-overfitting-gbdt",
+          "locator": "Overfitting, regularization, and early stopping",
+          "anchor": {
+            "start": "Unlike random forests, gradient boosted trees",
+            "end": "using a validation dataset"
+          }
+        }
+      ]
+    },
+    {
+      "id": "impurity_importance",
+      "title": "Impurity-based feature importance (MDI)",
+      "outcome": "Explain how a tree model scores feature importance from its splits, and the two flaws of that score.",
+      "aliases": [
+        "feature importance",
+        "feature_importances_",
+        "MDI",
+        "mean decrease in impurity",
+        "variable importance"
+      ],
+      "keyPoints": [
+        {
+          "text": "Trees select features as they choose split points, so a feature's importance can be measured by how much it is used in splits; for an ensemble, each tree's impurity-based importance is averaged.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.1.2.7 Interpretation with feature importance",
+          "anchor": {
+            "start": "Individual decision trees intrinsically perform feature",
+            "end": "feature importance of each tree"
+          }
+        },
+        {
+          "text": "Features used near the top of a tree affect the decisions for a larger share of samples. scikit-learn combines that share with the impurity decrease from the feature's splits to estimate its predictive power.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.5 Feature importance evaluation",
+          "anchor": {
+            "start": "Features used at the top of",
+            "end": "predictive power of that feature"
+          }
+        },
+        {
+          "text": "Averaging these estimates over several randomised trees reduces their variance and lets them be used for feature selection; the result is called mean decrease in impurity, or MDI.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.5 Feature importance evaluation",
+          "anchor": {
+            "start": "By averaging the estimates of predictive",
+            "end": "mean decrease in impurity, or MDI"
+          }
+        },
+        {
+          "text": "Trees also have their own specific importances, such as the total split score earned with a variable, the number of nodes using it, and the average depth at which it first appears.",
+          "sourceId": "gdf-importance",
+          "locator": "Variable importances",
+          "anchor": {
+            "start": "Decision trees also have specific variable",
+            "end": "across all the tree paths"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Impurity-based feature importance treats every type of feature fairly.",
+          "correction": "Impurity-based importance for trees is strongly biased toward high-cardinality features, typically numerical ones, over binary or few-category features.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2.2 Relation to impurity-based importance in trees",
+          "anchor": {
+            "start": "Furthermore, impurity-based feature importance for trees",
+            "end": "small number of possible categories"
+          }
+        },
+        {
+          "claim": "A feature with high impurity-based importance must be one that predicts well on new data.",
+          "correction": "Impurity-based importances are computed from training-set statistics, so they do not necessarily show which features matter for good predictions on held-out data.",
+          "sourceId": "skl-ensemble",
+          "locator": "1.11.2.5 Feature importance evaluation",
+          "anchor": {
+            "start": "The impurity-based feature importances computed on",
+            "end": "predictions on held-out dataset"
+          }
+        }
+      ]
+    },
+    {
+      "id": "permutation_importance",
+      "title": "Permutation importance",
+      "outcome": "Compute permutation importance in words, say where to compute it, and read it correctly.",
+      "aliases": [
+        "permutation feature importance",
+        "mean decrease in accuracy",
+        "model-agnostic importance"
+      ],
+      "keyPoints": [
+        {
+          "text": "Permutation importance randomly shuffles one feature's values and measures how much the model's score drops; breaking the link between the feature and the target shows how much the model relies on it.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2 Permutation feature importance",
+          "anchor": {
+            "start": "Permutation feature importance is a model",
+            "end": "relies on such particular feature"
+          }
+        },
+        {
+          "text": "It is model-agnostic, so it can be applied to any fitted model, and repeating it with different shuffles shows how much the importance estimates vary.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2 Permutation feature importance",
+          "anchor": {
+            "start": "One key advantage of permutation feature",
+            "end": "for the specific trained model"
+          }
+        },
+        {
+          "text": "Computed on a held-out set, it shows which features drive the model's ability to generalise; a feature important on the training set but not the held-out set might cause the model to overfit.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2 Permutation feature importance",
+          "anchor": {
+            "start": "Permutation importances can be computed either",
+            "end": "might cause the model to overfit"
+          }
+        },
+        {
+          "text": "Permutation importances, such as mean decrease in accuracy or AUC, can be computed for any model with a validation set; for a random forest, out-of-bag evaluation can stand in for the validation set.",
+          "sourceId": "gdf-other",
+          "locator": "Interpreting random forests",
+          "anchor": {
+            "start": "Permutation variable importance (for example, mean",
+            "end": "with out-of-bag evaluation"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Permutation importance measures how predictive a feature is in itself.",
+          "correction": "It shows how important a feature is to a particular model, not its intrinsic predictive value; a feature unimportant to a poor model could matter a lot to a good one.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2 Permutation feature importance",
+          "anchor": {
+            "start": "Features that are deemed of low",
+            "end": "for a particular model"
+          }
+        },
+        {
+          "claim": "If two features both show low permutation importance, neither matters to the model.",
+          "correction": "When two features are correlated, permuting one leaves the model the other, so both can report low importance even though they might be important.",
+          "sourceId": "skl-permutation",
+          "locator": "5.2.3 Misleading values on strongly correlated features",
+          "anchor": {
+            "start": "When two features are correlated and",
+            "end": "they might actually be important"
+          }
+        }
+      ]
+    },
+    {
+      "id": "comparing_importances",
+      "title": "Comparing importance measures",
+      "outcome": "Read several importance measures side by side and explain what disagreements between them suggest.",
+      "aliases": [
+        "variable importances"
+      ],
+      "keyPoints": [
+        {
+          "text": "Different definitions of variable importance have different scales and can rank the features differently.",
+          "sourceId": "gdf-other",
+          "locator": "Interpreting random forests",
+          "anchor": {
+            "start": "As you see, different definitions of",
+            "end": "in the ranking of the features"
+          }
+        },
+        {
+          "text": "Because different importances describe different aspects of a model, looking at several at once is informative; a feature that is important by every measure is likely important.",
+          "sourceId": "gdf-importance",
+          "locator": "Variable importances",
+          "anchor": {
+            "start": "Because different variable importances inform about",
+            "end": "this feature is likely important"
+          }
+        },
+        {
+          "text": "A feature with a high number-of-nodes importance but a low permutation importance may be hard to generalise and can hurt the model's quality.",
+          "sourceId": "gdf-importance",
+          "locator": "Variable importances",
+          "anchor": {
+            "start": "As another example, if a feature",
+            "end": "can hurt the model quality"
+          }
+        },
+        {
+          "text": "A feature used in many conditions may matter, or the model may be trying and failing to generalise it, as can happen with an example identifier that carries no information to generalise.",
+          "sourceId": "gdf-importance",
+          "locator": "Variable importances",
+          "anchor": {
+            "start": "For example, the number of conditions",
+            "end": "no information to generalize"
+          }
+        },
+        {
+          "text": "A high permutation importance means removing the feature hurts the model, but if the model is robust, removing any one feature might not hurt it.",
+          "sourceId": "gdf-importance",
+          "locator": "Variable importances",
+          "anchor": {
+            "start": "On the other hand, a high",
+            "end": "might not hurt the model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cross_validation",
+      "title": "Cross-validation for honest evaluation",
+      "outcome": "Explain why a model must be scored on data it did not train on, and run k-fold cross-validation in words.",
+      "aliases": [
+        "k-fold",
+        "CV",
+        "held-out set",
+        "validation set",
+        "test set"
+      ],
+      "keyPoints": [
+        {
+          "text": "Training and testing a model on the same data is a methodological mistake: a model that just repeated the labels it had seen would score perfectly yet predict nothing useful. That is overfitting.",
+          "sourceId": "skl-cv",
+          "locator": "3.1 Cross-validation",
+          "anchor": {
+            "start": "Learning the parameters of a prediction",
+            "end": "This situation is called overfitting"
+          }
+        },
+        {
+          "text": "In k-fold cross-validation the training set is split into k folds; each fold in turn validates a model trained on the other k-1 folds, and the reported score is the average.",
+          "sourceId": "skl-cv",
+          "locator": "3.1 Cross-validation",
+          "anchor": {
+            "start": "In the basic approach, called k-fold",
+            "end": "values computed in the loop"
+          }
+        },
+        {
+          "text": "Cross-validation removes the need for a separate validation set, but a test set should still be held out for the final evaluation.",
+          "sourceId": "skl-cv",
+          "locator": "3.1 Cross-validation",
+          "anchor": {
+            "start": "A test set should still be",
+            "end": "no longer needed when doing CV"
+          }
+        },
+        {
+          "text": "With ten partitions, each serves as test data in one analysis and as training data in nine; the model with the smallest cross-validated prediction error is selected.",
+          "sourceId": "psu508-12",
+          "locator": "12.9 Bagging and Random Forests",
+          "anchor": {
+            "start": "The data are split up into",
+            "end": "smallest cross-validation prediction error"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Choosing hyperparameters by their score on the test set still gives an honest estimate of performance on new data.",
+          "correction": "Tweaking settings until the test score peaks lets knowledge of the test set leak into the model, so the test score no longer reports generalisation.",
+          "sourceId": "skl-cv",
+          "locator": "3.1 Cross-validation",
+          "anchor": {
+            "start": "there is still a risk of",
+            "end": "no longer report on generalization performance"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hyperparameter_search",
+      "title": "Tuning hyperparameters with a search",
+      "outcome": "Set up a grid or randomised search with cross-validation for a tree model and evaluate the result honestly.",
+      "aliases": [
+        "grid search",
+        "GridSearchCV",
+        "randomized search",
+        "RandomizedSearchCV",
+        "tuning"
+      ],
+      "keyPoints": [
+        {
+          "text": "Hyperparameters are settings a model does not learn itself; it is recommended to search them for the best cross-validation score.",
+          "sourceId": "skl-grid-search",
+          "locator": "3.2 Tuning the hyper-parameters of an estimator",
+          "anchor": {
+            "start": "Hyper-parameters are parameters that are not",
+            "end": "for the best cross validation score"
+          }
+        },
+        {
+          "text": "A search needs a model, a parameter space, a way to search or sample candidates, a cross-validation scheme and a score. Grid search tries every combination; randomised search samples a set number of candidates.",
+          "sourceId": "skl-grid-search",
+          "locator": "3.2 Tuning the hyper-parameters of an estimator",
+          "anchor": {
+            "start": "A search consists of",
+            "end": "with a specified distribution"
+          }
+        },
+        {
+          "text": "Often only a small subset of a model's hyperparameters has a large effect on its performance, and the rest can be left at their defaults.",
+          "sourceId": "skl-grid-search",
+          "locator": "3.2 Tuning the hyper-parameters of an estimator",
+          "anchor": {
+            "start": "Note that it is common that",
+            "end": "left to their default values"
+          }
+        },
+        {
+          "text": "Trees are usually fast enough to tune with cross-validation: for each candidate setting, such as a maximum depth, train on p-1 groups, evaluate on the remaining one, average, pick the best setting, and retrain on all the data.",
+          "sourceId": "gdf-overfitting",
+          "locator": "Overfitting and pruning",
+          "anchor": {
+            "start": "Decision trees are generally fast enough",
+            "end": "with the selected hyperparameters"
+          }
+        },
+        {
+          "text": "Searching over settings uses the labelled data to 'train' them, so the resulting model should be evaluated on held-out samples the search never saw.",
+          "sourceId": "skl-grid-search",
+          "locator": "3.2.4.4 Model selection: development and evaluation",
+          "anchor": {
+            "start": "Model selection by evaluating various parameter",
+            "end": "to compute performance metrics"
+          }
+        }
+      ]
+    },
+    {
+      "id": "trees_vs_linear",
+      "title": "Trees versus linear models",
+      "outcome": "Choose between a tree-based model and a linear model for a problem, from the shape of its boundary, the need to extrapolate and the type of data.",
+      "aliases": [
+        "linear regression",
+        "logistic regression",
+        "extrapolation",
+        "tabular data"
+      ],
+      "keyPoints": [
+        {
+          "text": "Linear methods such as discriminant analysis and logistic regression use hyperplanes as their classification boundaries.",
+          "sourceId": "psu508-12",
+          "locator": "Overview",
+          "anchor": {
+            "start": "They also differ from linear methods",
+            "end": "hyperplanes as classification boundaries"
+          }
+        },
+        {
+          "text": "Splits parallel to the axes are inefficient when a diagonal line separates the classes well: many splits are needed to approximate what one sloped split achieves.",
+          "sourceId": "psu508-12",
+          "locator": "12.6 Variable combinations",
+          "anchor": {
+            "start": "In the example below, we might",
+            "end": "split using a sloped line"
+          }
+        },
+        {
+          "text": "A tree's predictions are piecewise constant, neither smooth nor continuous, so trees are not good at extrapolation.",
+          "sourceId": "skl-tree",
+          "locator": "1.10 Decision Trees",
+          "anchor": {
+            "start": "Predictions of decision trees are neither",
+            "end": "not good at extrapolation"
+          }
+        },
+        {
+          "text": "Decision forests are most effective on tabular data, the kind kept in a spreadsheet, CSV file or database table, and should be the go-to choice for modelling it.",
+          "sourceId": "gdf-appropriate",
+          "locator": "Appropriate data for decision forests",
+          "anchor": {
+            "start": "Decision forests are most effective when",
+            "end": "solution for modeling it"
+          }
+        },
+        {
+          "text": "Decision forests are not well suited to consuming unstructured data such as images or text directly; workarounds exist, but neural networks generally handle such data better.",
+          "sourceId": "gdf-appropriate",
+          "locator": "Appropriate data for decision forests",
+          "anchor": {
+            "start": "However, decision forests are not well",
+            "end": "handle unstructured data better"
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "what_is_a_tree",
+      "after": "tree_predictions",
+      "reason": "What a leaf predicts presumes knowing what a leaf is."
+    },
+    {
+      "before": "what_is_a_tree",
+      "after": "split_conditions",
+      "reason": "Conditions are what a tree's internal nodes hold."
+    },
+    {
+      "before": "what_is_a_tree",
+      "after": "interpreting_trees",
+      "reason": "Reading a tree as rules presumes knowing its parts."
+    },
+    {
+      "before": "split_conditions",
+      "after": "impurity",
+      "reason": "Impurity scores the regions a candidate condition creates."
+    },
+    {
+      "before": "impurity",
+      "after": "information_gain",
+      "reason": "A split's score is the decrease in impurity it achieves."
+    },
+    {
+      "before": "tree_predictions",
+      "after": "regression_splits",
+      "reason": "Regression splits are judged by what the leaves will predict."
+    },
+    {
+      "before": "information_gain",
+      "after": "regression_splits",
+      "reason": "Squared-error reduction is the regression version of an impurity decrease."
+    },
+    {
+      "before": "information_gain",
+      "after": "greedy_partitioning",
+      "reason": "Greedy growth repeatedly picks the best-scoring split."
+    },
+    {
+      "before": "greedy_partitioning",
+      "after": "overfitting_and_depth",
+      "reason": "Overfitting comes from growing the tree until it fits every training point."
+    },
+    {
+      "before": "overfitting_and_depth",
+      "after": "stopping_rules",
+      "reason": "Stopping rules exist to limit overfitting."
+    },
+    {
+      "before": "greedy_partitioning",
+      "after": "stopping_rules",
+      "reason": "Why early stopping falls short depends on growth being greedy."
+    },
+    {
+      "before": "stopping_rules",
+      "after": "pruning",
+      "reason": "Pruning is the answer to stopping rules being unsatisfactory."
+    },
+    {
+      "before": "pruning",
+      "after": "cost_complexity_pruning",
+      "reason": "Cost-complexity pruning is one way of choosing what to prune."
+    },
+    {
+      "before": "cross_validation",
+      "after": "cost_complexity_pruning",
+      "reason": "The complexity parameter is chosen by cross-validation."
+    },
+    {
+      "before": "overfitting_and_depth",
+      "after": "cross_validation",
+      "reason": "Cross-validation answers the problem that training error is optimistic."
+    },
+    {
+      "before": "overfitting_and_depth",
+      "after": "tree_instability",
+      "reason": "Instability is the high variance of a deep tree."
+    },
+    {
+      "before": "interpreting_trees",
+      "after": "tree_instability",
+      "reason": "Instability matters because it changes how a tree reads."
+    },
+    {
+      "before": "split_conditions",
+      "after": "tree_practical_properties",
+      "reason": "Scale and monotone invariance follow from threshold splits."
+    },
+    {
+      "before": "tree_instability",
+      "after": "ensembles",
+      "reason": "Ensembles are the remedy for a single tree's instability."
+    },
+    {
+      "before": "ensembles",
+      "after": "bagging",
+      "reason": "Bagging is a way of building an ensemble."
+    },
+    {
+      "before": "bagging",
+      "after": "random_forests",
+      "reason": "A random forest is bagging plus feature sampling."
+    },
+    {
+      "before": "random_forests",
+      "after": "forest_tuning",
+      "reason": "Tuning a forest presumes knowing its parts."
+    },
+    {
+      "before": "cross_validation",
+      "after": "forest_tuning",
+      "reason": "Forest settings should be cross-validated."
+    },
+    {
+      "before": "bagging",
+      "after": "out_of_bag",
+      "reason": "Out-of-bag samples are the cases a bootstrap sample leaves out."
+    },
+    {
+      "before": "ensembles",
+      "after": "boosting",
+      "reason": "Boosting is another way of building an ensemble."
+    },
+    {
+      "before": "random_forests",
+      "after": "boosting",
+      "reason": "Boosting is introduced by contrast with random forests."
+    },
+    {
+      "before": "boosting",
+      "after": "boosting_tuning",
+      "reason": "Tuning boosting presumes knowing how it builds trees."
+    },
+    {
+      "before": "cross_validation",
+      "after": "boosting_tuning",
+      "reason": "Early stopping uses a held-out validation set."
+    },
+    {
+      "before": "impurity",
+      "after": "impurity_importance",
+      "reason": "Impurity-based importance sums impurity decreases."
+    },
+    {
+      "before": "random_forests",
+      "after": "impurity_importance",
+      "reason": "MDI averages importance over a forest's trees."
+    },
+    {
+      "before": "cross_validation",
+      "after": "permutation_importance",
+      "reason": "Permutation importance is best computed on held-out data."
+    },
+    {
+      "before": "out_of_bag",
+      "after": "permutation_importance",
+      "reason": "A forest's permutation importance can use out-of-bag data."
+    },
+    {
+      "before": "impurity_importance",
+      "after": "comparing_importances",
+      "reason": "Comparing measures needs both kinds of importance."
+    },
+    {
+      "before": "permutation_importance",
+      "after": "comparing_importances",
+      "reason": "Comparing measures needs both kinds of importance."
+    },
+    {
+      "before": "cross_validation",
+      "after": "hyperparameter_search",
+      "reason": "A search scores each setting by cross-validation."
+    },
+    {
+      "before": "stopping_rules",
+      "after": "hyperparameter_search",
+      "reason": "Depth and leaf-size limits are the settings being searched."
+    },
+    {
+      "before": "split_conditions",
+      "after": "trees_vs_linear",
+      "reason": "The comparison turns on axis-parallel splits."
+    },
+    {
+      "before": "tree_practical_properties",
+      "after": "trees_vs_linear",
+      "reason": "Choosing a model draws on what trees handle well."
+    },
+    {
+      "before": "random_forests",
+      "after": "trees_vs_linear",
+      "reason": "The data-type advice is about decision forests."
+    }
+  ]
 }
