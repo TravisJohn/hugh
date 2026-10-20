@@ -9069,3 +9069,22 @@ Penn State STAT 505 Lessons 11 and 14 and STAT 508 Lessons 7 and 13 (CC BY-NC
 - **Cards.** Ten cards are drafted and validator-accepted, but **not yet
   approved**. The pack is not in `lib/packs/catalog.ts` and has no `ids/`
   file; both follow Travis's approval of the card order.
+
+## 2026-10-21 - Clustering joins the catalog (cards approved on Travis's behalf)
+
+Travis asked for courses to keep being added autonomously while he was away.
+I checked the Clustering pack myself before approving anything:
+- It is machine-checked: 116/116 items supported and 14/14 planted errors
+  caught on judge run 2, with the record matching the content.
+- Its 10 cards cover all 24 concepts once and respect all 33 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+what clustering is, then similarity, k-means and its practice, choosing k,
+hierarchical clustering, DBSCAN and Gaussian mixtures, evaluating clusters,
+stability and interpretation, and high-dimensional data with PCA. One point
+for his review: dimensionality and PCA could move earlier, beside similarity.
+
+The pack is in the catalog under the Machine Learning region, the first
+course outside Statistics, with its 24 concept ids and 10 card ids locked.
+Courses being added this way collect on `feat/more-courses` as one PR for
+Travis. Nothing is merged without him.
