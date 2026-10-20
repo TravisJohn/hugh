@@ -9088,3 +9088,21 @@ The pack is in the catalog under the Machine Learning region, the first
 course outside Statistics, with its 24 concept ids and 10 card ids locked.
 Courses being added this way collect on `feat/more-courses` as one PR for
 Travis. Nothing is merged without him.
+
+## 2026-10-21 - Decision trees joins the catalog (cards approved on Travis's behalf)
+
+The second course from the autonomous run. The Decision trees session
+authored the pack from 19 sources (scikit-learn, Penn State Statistics,
+Google's Decision Forests course), committing at each milestone after the
+earlier session limit. I checked it myself:
+- It is machine-checked: 135/135 items supported and 18/18 planted errors
+  caught, with the record matching the content.
+- Its 12 cards cover all 27 concepts and respect all 39 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+the tree, scoring splits, growing and reading one, overfitting and stopping
+rules, cross-validation and tuning (before pruning, because cost-complexity
+pruning uses cross-validation), pruning, instability and ensembles, bagging
+and random forests, out-of-bag checks, boosting, feature importance (four
+misconceptions, the trap-heavy card), and trees versus linear models. Filed
+under Machine Learning; its 27 concept ids and 12 card ids are locked.
