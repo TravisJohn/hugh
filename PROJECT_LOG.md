@@ -8997,6 +8997,56 @@ Regression. `content/packs/ids/ab-testing.json` locks its 18 concept ids and
 teaching each live concept exactly once. Time series forecasting is being
 authored in a separate session.
 
+## 2026-10-20 - Time series forecasting pack: machine-checked, cards awaiting approval
+
+The first new pack after the two proof packs, picked by Travis because it is
+core to analytics and has excellent free sources. `time-series-forecasting`
+1.0.0 is `machine-checked`, with 27 concepts, 115 key points and 14
+misconceptions from 14 sources: Hyndman and Athanasopoulos, *Forecasting:
+Principles and Practice* 3rd ed. (7 chapters; no licence stated), Penn State
+STAT 510 (3 lessons, CC BY-NC 4.0) and the NIST/SEMATECH e-Handbook (4
+pages). Every source is HTML, so all 129 anchors are one-click highlights and
+none needs a manual check.
+
+- **Scope:** describing a series (patterns, decomposition, ACF, white noise),
+  the four benchmarks, residual checks and prediction intervals, honest
+  evaluation (test sets, accuracy measures, rolling-origin cross-validation),
+  exponential smoothing up to Holt-Winters, and ARIMA at a conceptual level
+  (stationarity, differencing, ACF/PACF identification, seasonal ARIMA, AICc
+  versus cross-validation). Out of scope: ETS state-space likelihoods, Kalman
+  filtering, deep-learning forecasters, VAR and dynamic regression, causal
+  impact, hierarchical and judgmental forecasting, GARCH.
+- **Misconceptions** are only ones a source names as a common error, e.g.
+  FPP3's "commonly held myth" that ARIMA is more general than exponential
+  smoothing, a high R-squared on trending series (spurious regression), and a
+  random train/test split.
+- **Machine check:** three blind Claude Opus 5.5 runs, 19 planted errors each
+  (14 misconception claims plus one of each corruption kind). Real items
+  supported, out of 129: 128, then 122, then 129. Every run caught 19 of 19.
+  Run 1 flagged one fair stretch (a passage that never said its calculation
+  was for prediction intervals; the anchor was widened one sentence). Run 2
+  was stricter about naming: seven sentences named a method ("seasonal
+  naive", "Holt's") that their passage, read alone, does not, though run 1
+  accepted all seven. Four anchors were widened to take in the heading or
+  sentence that names the method, and three sentences dropped the name.
+- **Cards:** 13 drafted in FPP3's teaching order. The validator accepts them;
+  Travis has not yet approved the order. The pack is not in the catalog and
+  has no `ids/` file yet.
+
+No schema or validator change was needed. Two authoring notes: FPP3's
+chapter pages are single long pages, so start anchors needed 5 or 6 words to
+be unique; and formula blocks eat into the 600-character gap, so two passages
+were split at a formula.
+
+## 2026-10-20 - Time series forecasting joins the catalog
+
+Travis approved the 13-card order as drafted: evaluation (benchmarks,
+residuals, honest testing) comes before exponential smoothing and ARIMA, as
+in Forecasting: Principles and Practice. The pack is in the catalog under the
+Statistics region. `content/packs/ids/time-series-forecasting.json` locks its
+27 concept ids and 13 card ids. The catalog now has three courses: Linear
+Regression, A/B testing, and Time series forecasting.
+
 ## 2026-10-21 - Clustering pack machine-checked; cards await approval
 
 `content/packs/clustering.json` 1.0.0 is machine-checked: 24 concepts, 107 key

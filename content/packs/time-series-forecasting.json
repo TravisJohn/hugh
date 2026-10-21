@@ -1,0 +1,1973 @@
+{
+  "id": "time-series-forecasting",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Time series forecasting: describing a series over time, and forecasting it with benchmark, exponential smoothing and ARIMA methods, evaluated honestly",
+  "outOfScope": [
+    "State space models for exponential smoothing (ETS likelihoods and the error, trend, seasonal taxonomy in depth), and Kalman filtering",
+    "Deep learning and machine learning forecasters, such as LSTMs, transformers and gradient-boosted trees",
+    "Multivariate models such as vector autoregression (VAR), and dynamic regression with ARIMA errors",
+    "Causal impact analysis and intervention analysis",
+    "Hierarchical and grouped forecasting, and forecast reconciliation",
+    "Judgmental forecasting, for when there is no data",
+    "Volatility models such as ARCH and GARCH",
+    "Box-Cox transformation details, bias adjustment and back-transformation",
+    "Multiple seasonality and sub-daily data, and irregularly spaced series",
+    "The mathematics of estimation (maximum likelihood) and of unit root test statistics",
+    "Software specifics, such as R's fable package or Python's statsmodels"
+  ],
+  "sources": [
+    {
+      "id": "fpp3-intro",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 1: Getting started",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/intro.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-graphics",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 2: Time series graphics",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/graphics.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-decomposition",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 3: Time series decomposition",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/decomposition.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-toolbox",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 5: The forecaster’s toolbox",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/toolbox.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-regression",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 7: Time series regression models",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/regression.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-exponential-smoothing",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 8: Exponential smoothing",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/exponential-smoothing.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "fpp3-arima",
+      "title": "Forecasting: Principles and Practice (3rd ed.), Chapter 9: ARIMA models",
+      "publisher": "Rob J Hyndman and George Athanasopoulos, OTexts",
+      "url": "https://otexts.com/fpp3/arima.html",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu510-01",
+      "title": "STAT 510 Lesson 1: Time Series Basics",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat510/Lesson01.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu510-02",
+      "title": "STAT 510 Lesson 2: MA Models, Partial Autocorrelation, Notational Conventions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat510/Lesson02.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu510-04",
+      "title": "STAT 510 Lesson 4: Seasonal Models",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat510/Lesson04.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "nist-stationarity",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 6.4.4.2: Stationarity",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc442.htm",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "nist-seasonality",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 6.4.4.3: Seasonality",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc443.htm",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "nist-triple-es",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 6.4.3.5: Triple Exponential Smoothing",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc435.htm",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "nist-box-jenkins",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 6.4.4.5: Box-Jenkins Models",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/pmc/section4/pmc445.htm",
+      "accessedAt": "2026-10-20"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "time_series_data",
+      "title": "What a time series is, and what forecasting it means",
+      "outcome": "Say what makes data a time series, what forecasting one aims to do, and what a model of a series can be used for.",
+      "aliases": [
+        "time series",
+        "forecasting",
+        "time series forecasting"
+      ],
+      "keyPoints": [
+        {
+          "text": "Anything observed one after another over time is a time series; the book works with series recorded at regular intervals. Forecasting one means estimating how the sequence of observations will continue into the future.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.4 Forecasting data and methods: Time series forecasting",
+          "anchor": {
+            "start": "Anything that is observed sequentially",
+            "end": "will continue into the future"
+          }
+        },
+        {
+          "text": "The simplest time series methods use only the past of the variable being forecast. They carry its trend and seasonal patterns forward but ignore everything else, such as marketing, competitors or changes in the economy.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.4 Forecasting data and methods: Time series forecasting",
+          "anchor": {
+            "start": "The simplest time series forecasting methods",
+            "end": "economic conditions, and so on"
+          }
+        },
+        {
+          "text": "A model of a time series can describe the important features of its pattern, explain how the past affects the future, and forecast the series' future values.",
+          "sourceId": "psu510-01",
+          "locator": "1.1 Overview of Time Series Characteristics: Basic Objectives of the Analysis",
+          "anchor": {
+            "start": "The basic objective usually is",
+            "end": "forecast future values of the series"
+          }
+        }
+      ]
+    },
+    {
+      "id": "forecastability",
+      "title": "What can be forecast",
+      "outcome": "Judge how forecastable a quantity is from what drives it, the data available, how stable it is, and whether forecasts feed back into it.",
+      "aliases": [
+        "predictability"
+      ],
+      "keyPoints": [
+        {
+          "text": "How predictable something is depends on how well we understand what drives it, how much data there is, how similar the future is to the past, and whether the forecasts can affect the outcome.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.1 What can be forecast?",
+          "anchor": {
+            "start": "The predictability of an event",
+            "end": "thing we are trying to forecast"
+          }
+        },
+        {
+          "text": "Short-term forecasts of household electricity demand can be highly accurate, because all four of those conditions usually hold.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.1 What can be forecast?",
+          "anchor": {
+            "start": "For example, short-term forecasts of residential",
+            "end": "all four conditions are usually satisfied"
+          }
+        },
+        {
+          "text": "Exchange rates are hard to forecast: data is plentiful, but the drivers are poorly understood, crises can make the future unlike the past, and well-publicised forecasts change prices, so they fulfil themselves.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.1 What can be forecast?",
+          "anchor": {
+            "start": "when forecasting currency exchange rates, only",
+            "end": "the forecasts are self-fulfilling"
+          }
+        },
+        {
+          "text": "Good forecasts capture the genuine patterns and relationships in historical data, but they do not repeat past events that will not happen again.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.1 What can be forecast?",
+          "anchor": {
+            "start": "Good forecasts capture the genuine patterns",
+            "end": "that will not occur again"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Forecasting is impossible when the environment keeps changing.",
+          "correction": "Every environment changes. A good model captures how things are changing; what forecasts usually assume is that the way the environment is changing will continue into the future.",
+          "sourceId": "fpp3-intro",
+          "locator": "1.1 What can be forecast?",
+          "anchor": {
+            "start": "Many people wrongly assume that forecasts",
+            "end": "will continue into the future"
+          }
+        }
+      ]
+    },
+    {
+      "id": "time_series_patterns",
+      "title": "Trend, seasonality and cycles",
+      "outcome": "Look at a time plot and name the patterns in it: trend, seasonality, cycles, and changes in variance or level.",
+      "aliases": [
+        "trend",
+        "seasonality",
+        "seasonal pattern",
+        "cycle",
+        "cyclic behaviour",
+        "components"
+      ],
+      "keyPoints": [
+        {
+          "text": "A trend is a long-term increase or decrease in the data. It need not be linear, and it can change direction, for example from increasing to decreasing.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.3 Time series patterns: Trend",
+          "anchor": {
+            "start": "A trend exists when there is",
+            "end": "to a decreasing trend"
+          }
+        },
+        {
+          "text": "A seasonal pattern comes from seasonal factors such as the time of year or the day of the week, and its period is always fixed and known. One series can have more than one seasonal pattern.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.3 Time series patterns: Seasonal",
+          "anchor": {
+            "start": "A seasonal pattern occurs when a",
+            "end": "more than one seasonal pattern"
+          }
+        },
+        {
+          "text": "A cycle is a rise and fall that does not have a fixed frequency. Cycles are often due to economic conditions, such as the business cycle, and usually last at least two years.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.3 Time series patterns: Cyclic",
+          "anchor": {
+            "start": "A cycle occurs when the data",
+            "end": "usually at least 2 years"
+          }
+        },
+        {
+          "text": "Cycles are usually longer than seasonal patterns and vary more in size. Many series contain trend, cycles and seasonality, so first identify the patterns, then choose a method that can capture them.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.3 Time series patterns",
+          "anchor": {
+            "start": "In general, the average length",
+            "end": "capture the patterns properly"
+          }
+        },
+        {
+          "text": "Questions to ask of a series include whether it has outliers, whether its variance is constant over time, and whether its level or its variance changes abruptly.",
+          "sourceId": "psu510-01",
+          "locator": "1.1 Overview of Time Series Characteristics: Important Characteristics to Consider First",
+          "anchor": {
+            "start": "Are there outliers? In regression",
+            "end": "series or the variance"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Any rise and fall that repeats in a series is seasonality.",
+          "correction": "Fluctuations without a fixed frequency are cyclic. A pattern is seasonal only when its frequency is unchanging and tied to some aspect of the calendar.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.3 Time series patterns: Cyclic",
+          "anchor": {
+            "start": "Many people confuse cyclic behaviour with",
+            "end": "then the pattern is seasonal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "decomposition",
+      "title": "Additive and multiplicative decomposition",
+      "outcome": "Split a series into trend-cycle, seasonal and remainder components, and choose between an additive and a multiplicative decomposition.",
+      "aliases": [
+        "time series decomposition",
+        "trend-cycle",
+        "remainder",
+        "additive decomposition",
+        "multiplicative decomposition"
+      ],
+      "keyPoints": [
+        {
+          "text": "An additive decomposition writes the data as a seasonal component plus a trend-cycle component plus a remainder component. A multiplicative decomposition multiplies those three components instead.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components",
+          "anchor": {
+            "start": "If we assume an additive decomposition",
+            "end": "S_{t} \\times T_{t} \\times R_t"
+          }
+        },
+        {
+          "text": "An additive decomposition suits a series whose seasonal swings, or variation around the trend-cycle, do not change in size with the level of the series.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components",
+          "anchor": {
+            "start": "The additive decomposition is the most",
+            "end": "the level of the time series"
+          }
+        },
+        {
+          "text": "When the seasonal swings, or the variation around the trend-cycle, grow in proportion to the level of the series, a multiplicative decomposition is more appropriate. Economic series often need one.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components",
+          "anchor": {
+            "start": "When the variation in the seasonal",
+            "end": "common with economic time series"
+          }
+        },
+        {
+          "text": "Alternatively, transform the data until its variation looks stable over time, then decompose additively. An additive decomposition of the logged data is equivalent to a multiplicative decomposition of the original data.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components",
+          "anchor": {
+            "start": "An alternative to using a multiplicative",
+            "end": "multiplicative decomposition on the original data"
+          }
+        }
+      ]
+    },
+    {
+      "id": "seasonal_adjustment",
+      "title": "Seasonally adjusted data",
+      "outcome": "Explain what a seasonally adjusted series is, when it is useful, and why it is not the trend.",
+      "aliases": [
+        "seasonally adjusted",
+        "seasonal adjustment"
+      ],
+      "keyPoints": [
+        {
+          "text": "Removing the seasonal component from the data gives the seasonally adjusted series: the data minus the seasonal component for an additive decomposition, or divided by it for a multiplicative one.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components: Seasonally adjusted data",
+          "anchor": {
+            "start": "If the seasonal component is removed",
+            "end": "obtained using y_{t}/S_{t}"
+          }
+        },
+        {
+          "text": "Seasonally adjusted data help when seasonal variation is not the main interest. Unemployment data are usually adjusted to highlight changes due to the economy, such as a recession, rather than seasonal ones, such as school leavers seeking work.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components: Seasonally adjusted data",
+          "anchor": {
+            "start": "If the variation due to seasonality",
+            "end": "recession is non-seasonal"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A seasonally adjusted series is a smooth trend, so every upturn or downturn in it marks a real turning point.",
+          "correction": "A seasonally adjusted series still contains the remainder as well as the trend-cycle, so it is not smooth and its ups and downs can mislead. To look for turning points, use the trend-cycle component.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.2 Time series components: Seasonally adjusted data",
+          "anchor": {
+            "start": "Seasonally adjusted series contain the remainder",
+            "end": "rather than the seasonally adjusted data"
+          }
+        }
+      ]
+    },
+    {
+      "id": "decomposition_methods",
+      "title": "Classical decomposition and STL",
+      "outcome": "Say why classical decomposition is no longer recommended and what STL does better, and where STL falls short.",
+      "aliases": [
+        "classical decomposition",
+        "STL",
+        "seasonal and trend decomposition using loess"
+      ],
+      "keyPoints": [
+        {
+          "text": "Classical decomposition is still widely used, but it is not recommended, because several much better methods now exist.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.4 Classical decomposition: Comments on classical decomposition",
+          "anchor": {
+            "start": "While classical decomposition is still widely",
+            "end": "several much better methods"
+          }
+        },
+        {
+          "text": "Classical decomposition gives no trend-cycle estimate, and so no remainder, for the first few and last few observations, and its trend-cycle tends to over-smooth rapid rises and falls.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.4 Classical decomposition: Comments on classical decomposition",
+          "anchor": {
+            "start": "Some of the problems with classical",
+            "end": "over-smooth rapid rises and falls"
+          }
+        },
+        {
+          "text": "Classical decomposition assumes the seasonal component repeats from year to year, so it cannot capture seasonality that changes, such as electricity demand in many places peaking in winter decades ago but in summer now.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.4 Classical decomposition: Comments on classical decomposition",
+          "anchor": {
+            "start": "Classical decomposition methods assume that the",
+            "end": "capture these seasonal changes over time"
+          }
+        },
+        {
+          "text": "STL handles any type of seasonality, lets the seasonal component change over time at a rate the user controls, lets the user set how smooth the trend-cycle is, and can be made robust to outliers.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.6 STL decomposition",
+          "anchor": {
+            "start": "Unlike SEATS and X-11, STL",
+            "end": "the trend-cycle and seasonal components"
+          }
+        },
+        {
+          "text": "STL does not handle trading-day or calendar variation automatically and only decomposes additively; a multiplicative decomposition comes from taking logs first and back-transforming the components.",
+          "sourceId": "fpp3-decomposition",
+          "locator": "3.6 STL decomposition",
+          "anchor": {
+            "start": "On the other hand, STL has",
+            "end": "then back-transforming the components"
+          }
+        }
+      ]
+    },
+    {
+      "id": "autocorrelation",
+      "title": "Autocorrelation and the ACF",
+      "outcome": "Read an ACF plot and recognise the signatures of trend and seasonality in it.",
+      "aliases": [
+        "ACF",
+        "autocorrelation function",
+        "correlogram",
+        "lag"
+      ],
+      "keyPoints": [
+        {
+          "text": "Autocorrelation measures the linear relationship between lagged values of a series: the lag-1 coefficient relates each value to the one before it, the lag-2 coefficient to the one two periods before, and so on.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.8 Autocorrelation",
+          "anchor": {
+            "start": "Just as correlation measures the extent",
+            "end": "and so on"
+          }
+        },
+        {
+          "text": "The autocorrelation coefficients together make up the autocorrelation function, or ACF. It is usually plotted against the lag, and the plot is sometimes called a correlogram.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.8 Autocorrelation",
+          "anchor": {
+            "start": "The autocorrelation coefficients make up",
+            "end": "sometimes known as a correlogram"
+          }
+        },
+        {
+          "text": "With a trend, autocorrelations at small lags are large and positive, because observations close in time are close in value, so the ACF of a trended series declines slowly as the lag grows.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.8 Autocorrelation: Trend and seasonality in ACF plots",
+          "anchor": {
+            "start": "When data have a trend, the",
+            "end": "as the lags increase"
+          }
+        },
+        {
+          "text": "With seasonality, the autocorrelations are larger at the seasonal lags, multiples of the seasonal period, than at other lags.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.8 Autocorrelation: Trend and seasonality in ACF plots",
+          "anchor": {
+            "start": "When data are seasonal, the autocorrelations",
+            "end": "than for other lags"
+          }
+        },
+        {
+          "text": "If the seasonal period is not known, the autocorrelation plot can help: significant seasonality shows as spikes at lags equal to the period, such as 12, 24 and 36 for monthly data.",
+          "sourceId": "nist-seasonality",
+          "locator": "6.4.4.3 Seasonality: Detecting Seasonality",
+          "anchor": {
+            "start": "However, if the period is not",
+            "end": "24, 36, and so on"
+          }
+        }
+      ]
+    },
+    {
+      "id": "white_noise",
+      "title": "White noise",
+      "outcome": "Recognise white noise in an ACF plot, and say why a group test is better than checking spikes one by one.",
+      "aliases": [
+        "white noise",
+        "portmanteau test",
+        "Ljung-Box test"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a white noise series, every autocorrelation should be close to zero, though random variation means none will be exactly zero.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.9 White noise",
+          "anchor": {
+            "start": "For white noise series, we expect",
+            "end": "there is some random variation"
+          }
+        },
+        {
+          "text": "For white noise, about 95% of the ACF spikes should lie within plus or minus 1.96 divided by the square root of the series length. These bounds are commonly drawn on ACF plots.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.9 White noise",
+          "anchor": {
+            "start": "For a white noise series, we",
+            "end": "the blue dashed lines above"
+          }
+        },
+        {
+          "text": "If one or more large spikes fall outside those bounds, or clearly more than 5% of spikes do, the series is probably not white noise.",
+          "sourceId": "fpp3-graphics",
+          "locator": "2.9 White noise",
+          "anchor": {
+            "start": "If one or more large spikes",
+            "end": "probably not white noise"
+          }
+        },
+        {
+          "text": "Checking each ACF spike separately is many tests at once, so one may look significant by chance. A portmanteau test instead tests a group of autocorrelations against what white noise would produce.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.4 Residual diagnostics: Portmanteau tests for autocorrelation",
+          "anchor": {
+            "start": "When we look at the ACF",
+            "end": "is called a portmanteau test"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stationarity",
+      "title": "Stationarity",
+      "outcome": "Decide whether a series is stationary from its time plot, and say why many methods need it.",
+      "aliases": [
+        "stationary",
+        "non-stationary",
+        "weak stationarity"
+      ],
+      "keyPoints": [
+        {
+          "text": "A stationary series has statistical properties that do not depend on when it is observed. Series with trend or seasonality are therefore not stationary, while white noise is: it looks much the same whenever you observe it.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing",
+          "anchor": {
+            "start": "A stationary time series is one",
+            "end": "any point in time"
+          }
+        },
+        {
+          "text": "A weakly stationary series has the same mean and the same variance at all times, and the correlation between values a given lag apart is the same throughout the series.",
+          "sourceId": "psu510-01",
+          "locator": "1.2 Sample ACF and Properties of AR(1) Model: Stationary Series",
+          "anchor": {
+            "start": "is said to be (weakly) stationary",
+            "end": "at each lag"
+          }
+        },
+        {
+          "text": "A stationary series has no predictable long-term patterns. Its time plot looks roughly horizontal, with constant variance, though some cyclic behaviour is possible.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing",
+          "anchor": {
+            "start": "In general, a stationary time series",
+            "end": "with constant variance"
+          }
+        },
+        {
+          "text": "Many time series techniques assume stationarity, meaning the mean, variance and autocorrelation structure do not change over time: in practice, a flat-looking series without trend, changing variance or seasonality.",
+          "sourceId": "nist-stationarity",
+          "locator": "6.4.4.2 Stationarity",
+          "anchor": {
+            "start": "A common assumption in many time",
+            "end": "no periodic fluctuations (seasonality)"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A series with strong cycles cannot be stationary.",
+          "correction": "A series with cycles but no trend or seasonality is stationary, because the cycles have no fixed length, so you cannot know beforehand where the peaks and troughs will fall.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing",
+          "anchor": {
+            "start": "Some cases can be confusing",
+            "end": "peaks and troughs of the cycles"
+          }
+        }
+      ]
+    },
+    {
+      "id": "spurious_regression",
+      "title": "Spurious regression",
+      "outcome": "Explain why regressing one trending series on another can produce a relationship that is not real.",
+      "aliases": [
+        "spurious correlation",
+        "nonsense regression"
+      ],
+      "keyPoints": [
+        {
+          "text": "More often than not, time series are non-stationary: their values do not fluctuate around a constant mean or with a constant variance.",
+          "sourceId": "fpp3-regression",
+          "locator": "7.3 Evaluating the regression model: Spurious regression",
+          "anchor": {
+            "start": "More often than not, time series",
+            "end": "with a constant variance"
+          }
+        },
+        {
+          "text": "Two series can look related simply because both trend upwards in the same way, such as air passengers in Australia and rice production in Guinea, which have nothing to do with each other.",
+          "sourceId": "fpp3-regression",
+          "locator": "7.3 Evaluating the regression model: Spurious regression",
+          "anchor": {
+            "start": "These appear to be related simply",
+            "end": "rice production in Guinea"
+          }
+        },
+        {
+          "text": "A spurious regression may appear to give reasonable short-term forecasts, but it will generally stop working further into the future.",
+          "sourceId": "fpp3-regression",
+          "locator": "7.3 Evaluating the regression model: Spurious regression",
+          "anchor": {
+            "start": "Cases of spurious regression might appear",
+            "end": "continue to work into the future"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A high R-squared from regressing one trending series on another shows the model is good.",
+          "correction": "Trending series can appear related when they are not. Regressing non-stationary series can give a spurious regression, and a high R-squared with highly autocorrelated residuals can be a sign of one.",
+          "sourceId": "fpp3-regression",
+          "locator": "7.3 Evaluating the regression model: Spurious regression",
+          "anchor": {
+            "start": "Trending time series data can appear",
+            "end": "signs of spurious regression"
+          }
+        }
+      ]
+    },
+    {
+      "id": "differencing",
+      "title": "Differencing",
+      "outcome": "Difference a series to stabilise its mean, and use the ACF to tell whether it needs differencing.",
+      "aliases": [
+        "first difference",
+        "differences"
+      ],
+      "keyPoints": [
+        {
+          "text": "Differencing, computing the changes between consecutive observations, is one way to make a non-stationary series stationary: a stock price may be non-stationary while its daily changes are stationary.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Differencing",
+          "anchor": {
+            "start": "In Figure 9.1, note that the",
+            "end": "This is known as differencing"
+          }
+        },
+        {
+          "text": "Transformations such as logarithms can stabilise a series' variance, while differencing stabilises its mean by removing changes in level, which removes or reduces trend and seasonality.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Differencing",
+          "anchor": {
+            "start": "Transformations such as logarithms can help",
+            "end": "eliminating (or reducing) trend and seasonality"
+          }
+        },
+        {
+          "text": "The ACF also helps spot non-stationarity: for a stationary series it drops to zero fairly quickly, while for non-stationary data it decreases slowly and the lag-1 autocorrelation is often large and positive.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Differencing",
+          "anchor": {
+            "start": "As well as the time plot",
+            "end": "often large and positive"
+          }
+        },
+        {
+          "text": "Differences should be interpretable. First differences are the change from one observation to the next and seasonal differences the change from one year to the next; other lags rarely make sense.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Seasonal differencing",
+          "anchor": {
+            "start": "It is important that if differencing",
+            "end": "should be avoided"
+          }
+        },
+        {
+          "text": "A differenced series has one point fewer than the original. Data can be differenced more than once, but one difference is usually enough.",
+          "sourceId": "nist-stationarity",
+          "locator": "6.4.4.2 Stationarity: Transformations to Achieve Stationarity",
+          "anchor": {
+            "start": "The differenced data will contain one",
+            "end": "one difference is usually sufficient"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Differencing extra times is harmless, so it is safest to difference more than you need to.",
+          "correction": "Applying more differences than required creates false dynamics or autocorrelations that are not really in the series, so use as few differences as needed to reach stationarity.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Seasonal differencing",
+          "anchor": {
+            "start": "Beware that applying more differences than",
+            "end": "to obtain a stationary series"
+          }
+        }
+      ]
+    },
+    {
+      "id": "seasonal_differencing",
+      "title": "Seasonal differencing and how much to difference",
+      "outcome": "Apply a seasonal difference, decide whether a first difference is also needed, and read a KPSS test result.",
+      "aliases": [
+        "seasonal difference",
+        "unit root test",
+        "KPSS test"
+      ],
+      "keyPoints": [
+        {
+          "text": "A seasonal difference is the change between an observation and the previous observation from the same season.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Seasonal differencing",
+          "anchor": {
+            "start": "A seasonal difference is the difference",
+            "end": "from the same season"
+          }
+        },
+        {
+          "text": "Seasonality usually makes a series non-stationary, because average values differ between times within the seasonal span; cooling-fan sales, for example, are always higher in the summer months.",
+          "sourceId": "psu510-04",
+          "locator": "4.1 Seasonal ARIMA models: Differencing",
+          "anchor": {
+            "start": "Almost by definition, it may be",
+            "end": "higher in the summer months"
+          }
+        },
+        {
+          "text": "When a series has both trend and seasonality, it may need both a non-seasonal first difference and a seasonal difference.",
+          "sourceId": "psu510-04",
+          "locator": "4.1 Seasonal ARIMA models: Differencing for Trend and Seasonality",
+          "anchor": {
+            "start": "When both trend and seasonality are",
+            "end": "and a seasonal difference"
+          }
+        },
+        {
+          "text": "Formal tests can help decide on differencing, but the modelling process always involves some choices, and different analysts may make different ones.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Seasonal differencing",
+          "anchor": {
+            "start": "Some formal tests for differencing are",
+            "end": "may make different choices"
+          }
+        },
+        {
+          "text": "Unit root tests rest on different assumptions and can disagree. In the KPSS test the null hypothesis is that the data are stationary, so a small p-value, such as below 0.05, suggests differencing is required.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Unit root tests",
+          "anchor": {
+            "start": "A number of unit root tests",
+            "end": "suggest that differencing is required"
+          }
+        }
+      ]
+    },
+    {
+      "id": "random_walk",
+      "title": "The random walk",
+      "outcome": "Recognise a random walk, and explain why it makes the naive and drift methods sensible forecasts.",
+      "aliases": [
+        "random walk",
+        "random walk with drift"
+      ],
+      "keyPoints": [
+        {
+          "text": "Random walk models are widely used for non-stationary data, especially financial and economic data. Random walks typically show long periods of apparent trend up or down, and sudden, unpredictable changes of direction.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Random walk model",
+          "anchor": {
+            "start": "Random walk models are widely used",
+            "end": "unpredictable changes in direction"
+          }
+        },
+        {
+          "text": "A random walk's forecasts equal the last observation, because future movements are unpredictable and equally likely to be up or down. The random walk therefore underpins naive forecasts.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Random walk model",
+          "anchor": {
+            "start": "The forecasts from a random walk",
+            "end": "first introduced in Section 5.2"
+          }
+        },
+        {
+          "text": "A closely related model lets the changes have a non-zero average: a positive average change makes the series drift upwards, a negative one downwards. It is the model behind the drift method.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.1 Stationarity and differencing: Random walk model",
+          "anchor": {
+            "start": "A closely related model allows the",
+            "end": "the drift method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "benchmark_methods",
+      "title": "Benchmark methods: mean, naive, seasonal naive and drift",
+      "outcome": "Produce the four benchmark forecasts and use them as the bar any other method has to clear.",
+      "aliases": [
+        "naive forecast",
+        "naïve method",
+        "seasonal naive",
+        "drift method",
+        "mean method",
+        "baseline"
+      ],
+      "keyPoints": [
+        {
+          "text": "The mean method forecasts every future value as the average of the historical data.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.2 Some simple forecasting methods: Mean method",
+          "anchor": {
+            "start": "Mean method Here, the forecasts",
+            "end": "of the historical data"
+          }
+        },
+        {
+          "text": "The naive method sets every forecast to the last observed value. Because it is optimal when data follow a random walk, naive forecasts are also called random walk forecasts.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.2 Some simple forecasting methods: Naïve method",
+          "anchor": {
+            "start": "For naïve forecasts, we simply set",
+            "end": "also called random walk forecasts"
+          }
+        },
+        {
+          "text": "The seasonal naive method, useful for highly seasonal data, sets each forecast to the last observed value from the same season, such as the same month of the previous year.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.2 Some simple forecasting methods: Seasonal naïve method",
+          "anchor": {
+            "start": "Seasonal naïve method A similar method",
+            "end": "same month of the previous year"
+          }
+        },
+        {
+          "text": "The drift method lets naive forecasts rise or fall over time by the average change seen in the historical data.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.2 Some simple forecasting methods: Drift method",
+          "anchor": {
+            "start": "A variation on the naïve method",
+            "end": "seen in the historical data"
+          }
+        },
+        {
+          "text": "These simple methods are sometimes the best available, but usually serve as benchmarks: a new method must be compared with them, and if it is not better it is not worth considering.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.2 Some simple forecasting methods",
+          "anchor": {
+            "start": "Sometimes one of these simple methods",
+            "end": "not worth considering"
+          }
+        }
+      ]
+    },
+    {
+      "id": "residual_diagnostics",
+      "title": "Residual diagnostics",
+      "outcome": "Check a forecasting method's residuals for leftover information and bias, and know what those checks can and cannot tell you.",
+      "aliases": [
+        "residuals",
+        "innovation residuals",
+        "fitted values",
+        "residual checks"
+      ],
+      "keyPoints": [
+        {
+          "text": "Residuals are what is left over after fitting a model: each observation minus its fitted value.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.3 Fitted values and residuals: Residuals",
+          "anchor": {
+            "start": "The \"residuals\" in a time series",
+            "end": "the corresponding fitted values"
+          }
+        },
+        {
+          "text": "A good forecasting method leaves innovation residuals that are uncorrelated, since correlation means information is left that the forecasts should use, and that have zero mean, since a non-zero mean means biased forecasts.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.3 Fitted values and residuals: Residuals",
+          "anchor": {
+            "start": "A good forecasting method will yield",
+            "end": "the forecasts are biased"
+          }
+        },
+        {
+          "text": "A method failing either property can be improved. Bias is easy to fix by adding the residuals' mean to every forecast; fixing correlation in the residuals is harder.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.3 Fitted values and residuals: Residuals",
+          "anchor": {
+            "start": "If either of these properties is",
+            "end": "Fixing the correlation problem is harder"
+          }
+        },
+        {
+          "text": "It is useful, but not necessary, for residuals to also have constant variance and a normal distribution; those two properties make prediction intervals easier to calculate.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.3 Fitted values and residuals: Residuals",
+          "anchor": {
+            "start": "In addition to these essential properties",
+            "end": "calculation of prediction intervals easier"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If a method's residuals look like white noise, it is the best method for the data.",
+          "correction": "Passing these residual checks shows a method uses the available information, but such a method can still be improved and several methods may pass; the checks are not a good way to choose a method.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.3 Fitted values and residuals: Residuals",
+          "anchor": {
+            "start": "Any forecasting method that does not",
+            "end": "way to select a forecasting method"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prediction_intervals",
+      "title": "Prediction intervals",
+      "outcome": "Report a forecast with a prediction interval, and explain how its width behaves and what it assumes.",
+      "aliases": [
+        "prediction interval",
+        "forecast interval",
+        "forecast distribution",
+        "uncertainty",
+        "bootstrapped intervals"
+      ],
+      "keyPoints": [
+        {
+          "text": "A prediction interval gives a range within which a future value is expected to lie with a stated probability.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.5 Distributional forecasts and prediction intervals: Prediction intervals",
+          "anchor": {
+            "start": "A prediction interval gives an interval",
+            "end": "with a specified probability"
+          }
+        },
+        {
+          "text": "Prediction intervals express how uncertain a forecast is. A point forecast alone gives no way to tell how accurate it is, so point forecasts can be of almost no value without intervals.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.5 Distributional forecasts and prediction intervals: Prediction intervals",
+          "anchor": {
+            "start": "The value of prediction intervals is",
+            "end": "without the accompanying prediction intervals"
+          }
+        },
+        {
+          "text": "A prediction interval needs an estimate of the forecast standard deviation. For multi-step forecasts that takes a more complicated calculation, which assumes the residuals are uncorrelated.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.5 Distributional forecasts and prediction intervals: Multi-step prediction intervals",
+          "anchor": {
+            "start": "To produce a prediction interval, it",
+            "end": "the residuals are uncorrelated"
+          }
+        },
+        {
+          "text": "When normally distributed residuals are an unreasonable assumption, bootstrapping is an alternative that only assumes the residuals are uncorrelated with constant variance.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.5 Distributional forecasts and prediction intervals: Prediction intervals from bootstrapped residuals",
+          "anchor": {
+            "start": "When a normal distribution for the",
+            "end": "uncorrelated with constant variance"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A prediction interval stays the same width however far ahead you forecast.",
+          "correction": "Prediction intervals usually widen as the forecast horizon grows: the further ahead the forecast, the more uncertainty it carries.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.5 Distributional forecasts and prediction intervals: Multi-step prediction intervals",
+          "anchor": {
+            "start": "A common feature of prediction intervals",
+            "end": "the wider the prediction intervals"
+          }
+        }
+      ]
+    },
+    {
+      "id": "train_test_split",
+      "title": "Training and test sets",
+      "outcome": "Hold out the end of a series as a test set and judge forecasts on it, not on the fit.",
+      "aliases": [
+        "holdout set",
+        "test set",
+        "training set",
+        "out-of-sample",
+        "backtest"
+      ],
+      "keyPoints": [
+        {
+          "text": "Forecast accuracy can only be judged by how well a model does on new data that were not used to fit it, so the size of the residuals is not a reliable guide to the size of true forecast errors.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Training and test sets",
+          "anchor": {
+            "start": "It is important to evaluate forecast",
+            "end": "used when fitting the model"
+          }
+        },
+        {
+          "text": "Split the data into training data, used to estimate the method's parameters, and test data, used to evaluate its accuracy; because the test data are not used to make the forecasts, they indicate performance on new data.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Training and test sets",
+          "anchor": {
+            "start": "When choosing models, it is common",
+            "end": "to forecast on new data"
+          }
+        },
+        {
+          "text": "The test set is typically about 20% of the sample, depending on the length of the series and how far ahead you need to forecast, and it should ideally be at least as long as the longest forecast horizon required.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Training and test sets",
+          "anchor": {
+            "start": "The size of the test set",
+            "end": "maximum forecast horizon required"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A model that fits the training data well will forecast well.",
+          "correction": "A close fit to the training data does not guarantee good forecasts. Enough parameters can always give a perfect fit, and over-fitting is just as bad as missing a systematic pattern.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Training and test sets",
+          "anchor": {
+            "start": "A model which fits the training",
+            "end": "a systematic pattern in the data"
+          }
+        }
+      ]
+    },
+    {
+      "id": "accuracy_measures",
+      "title": "Forecast accuracy measures",
+      "outcome": "Compute and choose between MAE, RMSE, percentage errors and scaled errors, knowing where each breaks.",
+      "aliases": [
+        "MAE",
+        "RMSE",
+        "MAPE",
+        "MASE",
+        "forecast error",
+        "scaled error"
+      ],
+      "keyPoints": [
+        {
+          "text": "A forecast error is an observed value minus its forecast: the unpredictable part, not a mistake. Unlike residuals, forecast errors come from the test set, not the training set, and can be multi-step.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Forecast errors",
+          "anchor": {
+            "start": "A forecast \"error\" is the difference",
+            "end": "can involve multi-step forecasts"
+          }
+        },
+        {
+          "text": "Accuracy measures built only on forecast errors are on the scale of the data, so they cannot compare series measured in different units.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Scale-dependent errors",
+          "anchor": {
+            "start": "The forecast errors are on the",
+            "end": "that involve different units"
+          }
+        },
+        {
+          "text": "For one series, or several in the same units, MAE is popular because it is easy to understand and compute. Minimising MAE leads to forecasts of the median, minimising RMSE to forecasts of the mean.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Scale-dependent errors",
+          "anchor": {
+            "start": "When comparing forecast methods applied to",
+            "end": "lead to forecasts of the mean"
+          }
+        },
+        {
+          "text": "Percentage errors are infinite or undefined when an actual value is zero, extreme when it is close to zero, and assume the unit of measurement has a meaningful zero.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Percentage errors",
+          "anchor": {
+            "start": "Measures based on percentage errors have",
+            "end": "has a meaningful zero"
+          }
+        },
+        {
+          "text": "Scaled errors are an alternative to percentage errors for comparing accuracy across series in different units: errors are scaled by the training MAE of a simple method, such as naive forecasts for a non-seasonal series.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Scaled errors",
+          "anchor": {
+            "start": "Scaled errors were proposed by Hyndman",
+            "end": "scaled error uses naïve forecasts"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Percentage errors such as MAPE suit any series, including temperatures measured in Celsius.",
+          "correction": "A percentage error makes no sense for temperature forecasts in Fahrenheit or Celsius, because those scales have an arbitrary zero point.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.8 Evaluating point forecast accuracy: Percentage errors",
+          "anchor": {
+            "start": "For example, a percentage error makes",
+            "end": "an arbitrary zero point"
+          }
+        }
+      ]
+    },
+    {
+      "id": "time_series_cv",
+      "title": "Time series cross-validation",
+      "outcome": "Evaluate a method on a rolling forecasting origin, and use the result to choose between models.",
+      "aliases": [
+        "rolling origin",
+        "rolling forecasting origin",
+        "walk-forward validation",
+        "time series cross validation"
+      ],
+      "keyPoints": [
+        {
+          "text": "Time series cross-validation is a more sophisticated version of a training/test split that uses a series of test sets, each a single observation.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "A more sophisticated version of training/test",
+            "end": "consisting of a single observation"
+          }
+        },
+        {
+          "text": "Accuracy is averaged over the test sets. The procedure is also called evaluation on a rolling forecasting origin, because the origin the forecast is based on rolls forward in time.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "The forecast accuracy is computed by",
+            "end": "rolls forward in time"
+          }
+        },
+        {
+          "text": "When multi-step forecasts matter more than one-step forecasts, the rolling-origin procedure can be modified to use multi-step errors.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "With time series forecasting, one-step forecasts",
+            "end": "multi-step errors to be used"
+          }
+        },
+        {
+          "text": "Accuracy measures computed from residuals come out smaller, because those 'forecasts' come from a model fitted to the entire data set and are not true forecasts.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "As expected, the accuracy measures from",
+            "end": "rather than being true forecasts"
+          }
+        },
+        {
+          "text": "A good way to choose the best forecasting model is to pick the one with the smallest RMSE under time series cross-validation.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "A good way to choose the",
+            "end": "using time series cross-validation"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Splitting a time series into training and test sets at random is fine.",
+          "correction": "In time series cross-validation, each training set holds only observations that came before its test observation, so no future observations are used to build a forecast.",
+          "sourceId": "fpp3-toolbox",
+          "locator": "5.10 Time series cross-validation",
+          "anchor": {
+            "start": "A more sophisticated version of training/test",
+            "end": "used in constructing the forecast"
+          }
+        }
+      ]
+    },
+    {
+      "id": "simple_exponential_smoothing",
+      "title": "Simple exponential smoothing",
+      "outcome": "Forecast a series with no trend or seasonality by simple exponential smoothing, and explain what the smoothing parameter does.",
+      "aliases": [
+        "SES",
+        "single exponential smoothing",
+        "exponential smoothing",
+        "smoothing parameter",
+        "alpha"
+      ],
+      "keyPoints": [
+        {
+          "text": "Simple exponential smoothing, the simplest exponential smoothing method, suits data with no clear trend or seasonal pattern.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.1 Simple exponential smoothing",
+          "anchor": {
+            "start": "The simplest of the exponentially smoothing",
+            "end": "clear trend or seasonal pattern"
+          }
+        },
+        {
+          "text": "Its forecasts are weighted averages of past observations, with weights that decrease exponentially the further back the observations are, so the oldest observations get the smallest weights.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.1 Simple exponential smoothing",
+          "anchor": {
+            "start": "Forecasts are calculated using weighted averages",
+            "end": "associated with the oldest observations"
+          }
+        },
+        {
+          "text": "A small smoothing parameter, near 0, gives more weight to the distant past; a large one, near 1, gives more weight to recent observations. At exactly 1 the forecasts equal the naive forecasts.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.1 Simple exponential smoothing",
+          "anchor": {
+            "start": "For any \\alpha between 0 and",
+            "end": "equal to the naïve forecasts"
+          }
+        },
+        {
+          "text": "Simple exponential smoothing gives flat forecasts: every future forecast equals the last estimated level. That is only suitable when the series has no trend or seasonal component.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.1 Simple exponential smoothing: Flat forecasts",
+          "anchor": {
+            "start": "Simple exponential smoothing has a",
+            "end": "no trend or seasonal component"
+          }
+        },
+        {
+          "text": "Smoothing parameters can be set from experience, but estimating them from the data is more reliable and objective; the parameters and initial values can be estimated by minimising the sum of squared errors.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.1 Simple exponential smoothing: Optimisation",
+          "anchor": {
+            "start": "In some cases, the smoothing parameters",
+            "end": "minimising the SSE"
+          }
+        }
+      ]
+    },
+    {
+      "id": "holt_trend",
+      "title": "Holt's linear trend and damped trend",
+      "outcome": "Extend exponential smoothing to trended data, and explain why a damped trend is often the safer choice.",
+      "aliases": [
+        "Holt's method",
+        "double exponential smoothing",
+        "damped trend",
+        "Holt's linear method"
+      ],
+      "keyPoints": [
+        {
+          "text": "Holt's linear trend method extends simple exponential smoothing to data with a trend, using a forecast equation and two smoothing equations: one for the level and one for the trend.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.2 Methods with trend: Holt's linear trend method",
+          "anchor": {
+            "start": "Holt (1957) extended simple exponential smoothing",
+            "end": "one for the trend)"
+          }
+        },
+        {
+          "text": "With a trend, the forecast function is no longer flat: the forecast h steps ahead is the last estimated level plus h times the last estimated trend, so forecasts are a linear function of h.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.2 Methods with trend: Holt's linear trend method",
+          "anchor": {
+            "start": "The forecast function is no longer",
+            "end": "a linear function of h"
+          }
+        },
+        {
+          "text": "Holt's method continues a constant trend indefinitely, and in practice such methods tend to over-forecast, especially at longer horizons.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.2 Methods with trend: Damped trend methods",
+          "anchor": {
+            "start": "The forecasts generated by Holt's linear",
+            "end": "for longer forecast horizons"
+          }
+        },
+        {
+          "text": "A damped trend flattens the trend out some time in the future. Damped methods have been very successful and are arguably the most popular single methods when many series must be forecast automatically.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.2 Methods with trend: Damped trend methods",
+          "anchor": {
+            "start": "Motivated by this observation, Gardner",
+            "end": "required automatically for many series"
+          }
+        },
+        {
+          "text": "The damping parameter is usually kept between 0.8 and 0.98: below 0.8 the damping is very strong, and close to 1 a damped model cannot be told apart from an undamped one.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.2 Methods with trend: Damped trend methods",
+          "anchor": {
+            "start": "In practice, \\phi is rarely less",
+            "end": "a maximum of 0.98"
+          }
+        }
+      ]
+    },
+    {
+      "id": "holt_winters",
+      "title": "Holt-Winters seasonal method",
+      "outcome": "Forecast trended, seasonal data with Holt-Winters, and choose between its additive and multiplicative forms.",
+      "aliases": [
+        "Holt-Winters",
+        "triple exponential smoothing",
+        "seasonal exponential smoothing"
+      ],
+      "keyPoints": [
+        {
+          "text": "The Holt-Winters seasonal method extends Holt's method to capture seasonality, with a forecast equation and three smoothing equations: for the level, the trend and the seasonal component.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.3 Methods with seasonality",
+          "anchor": {
+            "start": "Holt (1957) and Winters (1960) extended",
+            "end": "one for the seasonal component"
+          }
+        },
+        {
+          "text": "The additive version is preferred when seasonal variations are roughly constant through the series, and the multiplicative version when they change in proportion to the level of the series.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.3 Methods with seasonality",
+          "anchor": {
+            "start": "There are two variations to this",
+            "end": "to the level of the series"
+          }
+        },
+        {
+          "text": "In the additive method the seasonal component is in the units of the data and adds up to about zero within each year; in the multiplicative method it is relative, in percentages, and sums to about m.",
+          "sourceId": "fpp3-exponential-smoothing",
+          "locator": "8.3 Methods with seasonality",
+          "anchor": {
+            "start": "With the additive method, the seasonal",
+            "end": "sum up to approximately m"
+          }
+        },
+        {
+          "text": "Starting Holt-Winters needs at least one complete season of data to estimate the initial seasonal indices, and estimating the trend as well makes two complete seasons advisable.",
+          "sourceId": "nist-triple-es",
+          "locator": "6.4.3.5 Triple Exponential Smoothing: Complete season needed",
+          "anchor": {
+            "start": "To initialize the HW method we",
+            "end": "advisable to use two complete seasons"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ar_ma_models",
+      "title": "Autoregressive and moving average models",
+      "outcome": "Explain what an autoregressive model and a moving average model each use to forecast.",
+      "aliases": [
+        "AR model",
+        "MA model",
+        "autoregression",
+        "AR(1)",
+        "moving average model"
+      ],
+      "keyPoints": [
+        {
+          "text": "An autoregressive model forecasts a variable from a linear combination of its own past values: a regression of the variable on itself.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.3 Autoregressive models",
+          "anchor": {
+            "start": "In an autoregression model, we forecast",
+            "end": "regression of the variable against itself"
+          }
+        },
+        {
+          "text": "In an AR(1) model, a coefficient of 0 with no constant gives white noise, a coefficient of 1 with no constant gives a random walk, and a negative coefficient makes the series oscillate around its mean.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.3 Autoregressive models",
+          "anchor": {
+            "start": "when \\phi_1 = 0 and c",
+            "end": "oscillate around the mean"
+          }
+        },
+        {
+          "text": "Autoregressive models are normally restricted to stationary data, which requires some constraints on the values of their parameters.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.3 Autoregressive models",
+          "anchor": {
+            "start": "We normally restrict autoregressive models to",
+            "end": "parameters are required"
+          }
+        },
+        {
+          "text": "Instead of past values, a moving average model uses past forecast errors in a regression-like model.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.4 Moving average models",
+          "anchor": {
+            "start": "Rather than using past values of",
+            "end": "in a regression-like model"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A moving average model is the same thing as moving average smoothing.",
+          "correction": "The two should not be confused: a moving average model is used to forecast future values, while moving average smoothing estimates the trend-cycle of past values.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.4 Moving average models",
+          "anchor": {
+            "start": "However, moving average models should not",
+            "end": "trend-cycle of past values"
+          }
+        }
+      ]
+    },
+    {
+      "id": "arima",
+      "title": "ARIMA models",
+      "outcome": "Read an ARIMA(p,d,q) specification, and predict how its constant and differencing shape the long-term forecasts.",
+      "aliases": [
+        "ARIMA",
+        "ARIMA(p,d,q)",
+        "autoregressive integrated moving average",
+        "Box-Jenkins"
+      ],
+      "keyPoints": [
+        {
+          "text": "Combining differencing with an autoregression and a moving average model gives a non-seasonal ARIMA model: AutoRegressive Integrated Moving Average, where integration is the reverse of differencing.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models",
+          "anchor": {
+            "start": "If we combine differencing with autoregression",
+            "end": "the reverse of differencing)"
+          }
+        },
+        {
+          "text": "In an ARIMA(p,d,q) model, p is the order of the autoregressive part, d the degree of first differencing, and q the order of the moving average part.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models",
+          "anchor": {
+            "start": "We call this an ARIMA(p,",
+            "end": "order of the moving average part"
+          }
+        },
+        {
+          "text": "Many earlier models are special cases of ARIMA: white noise is ARIMA(0,0,0) without a constant, a random walk is ARIMA(0,1,0) without a constant, and a random walk with drift is ARIMA(0,1,0) with one.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models",
+          "anchor": {
+            "start": "Many of the models we have",
+            "end": "ARIMA(0,1,0) with a constant"
+          }
+        },
+        {
+          "text": "The constant and the differencing set the long-term forecasts. With neither, they go to zero; with a constant and no differencing, to the mean of the data; with a constant and one difference, they follow a straight line.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: Understanding ARIMA models",
+          "anchor": {
+            "start": "The constant c has an important",
+            "end": "will follow a quadratic trend"
+          }
+        },
+        {
+          "text": "The more differencing, the faster prediction intervals grow. With no differencing, the long-term forecast standard deviation settles at that of the historical data, so long-range intervals are essentially the same.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: Understanding ARIMA models",
+          "anchor": {
+            "start": "The value of d also has",
+            "end": "essentially the same"
+          }
+        }
+      ]
+    },
+    {
+      "id": "acf_pacf_identification",
+      "title": "Choosing ARIMA orders from the ACF and PACF",
+      "outcome": "Use ACF and PACF plots of the differenced data to suggest p or q, and know when the plots cannot help.",
+      "aliases": [
+        "PACF",
+        "partial autocorrelation",
+        "model identification"
+      ],
+      "keyPoints": [
+        {
+          "text": "Partial autocorrelations measure the relationship between a value and the value k periods earlier after removing the effects of the lags in between, so the first partial autocorrelation equals the first autocorrelation.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: ACF and PACF plots",
+          "anchor": {
+            "start": "To overcome this problem, we can",
+            "end": "nothing between them to remove"
+          }
+        },
+        {
+          "text": "If the data come from an ARIMA(p,d,0) or ARIMA(0,d,q) model, the ACF and PACF can help find p or q; when both p and q are positive, the plots do not help.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: ACF and PACF plots",
+          "anchor": {
+            "start": "If the data are from an",
+            "end": "help in finding suitable values"
+          }
+        },
+        {
+          "text": "An ARIMA(p,d,0) model is suggested when, for the differenced data, the ACF decays exponentially or like a sine wave and the PACF has a significant spike at lag p but none beyond it.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: ACF and PACF plots",
+          "anchor": {
+            "start": "The data may follow an ARIMA(p,d,0)",
+            "end": "but none beyond lag p"
+          }
+        },
+        {
+          "text": "An ARIMA(0,d,q) model is suggested when, for the differenced data, the PACF decays exponentially or like a sine wave and the ACF has a significant spike at lag q but none beyond it.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: ACF and PACF plots",
+          "anchor": {
+            "start": "The data may follow an ARIMA(0,d,q)",
+            "end": "but none beyond lag q"
+          }
+        },
+        {
+          "text": "The PACF is often the best tool for identifying an AR model: in theory it shuts off past the model's order, so the number of non-zero partial autocorrelations gives the AR order.",
+          "sourceId": "psu510-02",
+          "locator": "2.2 Partial Autocorrelation Function (PACF): Some Useful Facts About PACF and ACF Patterns",
+          "anchor": {
+            "start": "Identification of an AR model is",
+            "end": "the order of the AR model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "seasonal_arima",
+      "title": "Seasonal ARIMA",
+      "outcome": "Read an ARIMA(p,d,q)(P,D,Q) model for seasonal data, and find seasonal terms at the seasonal lags of the ACF and PACF.",
+      "aliases": [
+        "SARIMA",
+        "seasonal ARIMA",
+        "ARIMA(p,d,q)(P,D,Q)m"
+      ],
+      "keyPoints": [
+        {
+          "text": "Seasonality is a regular pattern of changes that repeats every S time periods: S is 12 for monthly data and 4 for quarterly data.",
+          "sourceId": "psu510-04",
+          "locator": "4.1 Seasonal ARIMA models",
+          "anchor": {
+            "start": "Seasonality in a time series is",
+            "end": "4 time periods per year"
+          }
+        },
+        {
+          "text": "In a seasonal ARIMA model, seasonal AR and MA terms predict using values and errors at lags that are multiples of S, such as predicting this August's sales of cooling fans from last August's.",
+          "sourceId": "psu510-04",
+          "locator": "4.1 Seasonal ARIMA models",
+          "anchor": {
+            "start": "In a seasonal ARIMA model, seasonal",
+            "end": "using last August's sales"
+          }
+        },
+        {
+          "text": "The seasonal part of an ARIMA model has terms like the non-seasonal ones but with backshifts of the seasonal period, and the seasonal terms are multiplied by the non-seasonal terms.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.9 Seasonal ARIMA models",
+          "anchor": {
+            "start": "seasonal part of the model consists",
+            "end": "multiplied by the non-seasonal terms"
+          }
+        },
+        {
+          "text": "The seasonal part of an AR or MA model shows in the seasonal lags of the ACF and PACF, so when choosing the seasonal orders, look only at the seasonal lags.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.9 Seasonal ARIMA models: ACF/PACF",
+          "anchor": {
+            "start": "The seasonal part of an AR",
+            "end": "restrict attention to the seasonal lags"
+          }
+        },
+        {
+          "text": "With seasonal data, short-run non-seasonal terms usually still matter, so check the ACF and PACF over the first few lags, below S, for non-seasonal terms that might belong in the model.",
+          "sourceId": "psu510-04",
+          "locator": "4.1 Seasonal ARIMA models: Non-seasonal behavior will still matter",
+          "anchor": {
+            "start": "With seasonal data, it is likely",
+            "end": "terms might work in the model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "model_selection",
+      "title": "Choosing between ARIMA and exponential smoothing models",
+      "outcome": "Use information criteria correctly when choosing a model, and compare model classes on test data instead.",
+      "aliases": [
+        "AIC",
+        "AICc",
+        "information criteria",
+        "ARIMA vs ETS",
+        "ETS"
+      ],
+      "keyPoints": [
+        {
+          "text": "Akaike's Information Criterion (AIC), useful for choosing predictors in regression, is also useful for determining the order of an ARIMA model.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.6 Estimation and order selection: Information Criteria",
+          "anchor": {
+            "start": "Akaike's Information Criterion (AIC), which was",
+            "end": "the order of an ARIMA model"
+          }
+        },
+        {
+          "text": "The AICc can choose between models in the same class, such as one ARIMA model against another, but not between an exponential smoothing (ETS) model and an ARIMA model, because their likelihoods are computed differently.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.10 ARIMA vs ETS",
+          "anchor": {
+            "start": "The AICc is useful for selecting",
+            "end": "computed in different ways"
+          }
+        },
+        {
+          "text": "Automatic ARIMA selection is useful, but anything automated can be a little dangerous; it is worth understanding how the models behave even when an automatic procedure chooses the model.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.5 Non-seasonal ARIMA models: Understanding ARIMA models",
+          "anchor": {
+            "start": "The ARIMA() function is useful, but",
+            "end": "choose the model for you"
+          }
+        },
+        {
+          "text": "Fitting Box-Jenkins models effectively typically needs at least a moderately long series: Chatfield recommends at least 50 observations, and many others at least 100.",
+          "sourceId": "nist-box-jenkins",
+          "locator": "6.4.4.5 Box-Jenkins Models: Sufficiently Long Series Required",
+          "anchor": {
+            "start": "Typically, effective fitting of Box-Jenkins models",
+            "end": "at least 100 observations"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "You can compare AIC values across models with different orders of differencing to choose d.",
+          "correction": "Differencing changes the data the likelihood is computed on, so AIC values from models with different orders of differencing are not comparable. Choose d another way, then use the AICc to select p and q.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.6 Estimation and order selection: Information Criteria",
+          "anchor": {
+            "start": "It is important to note that",
+            "end": "AICc to select p and q"
+          }
+        },
+        {
+          "claim": "ARIMA models are more general than exponential smoothing models.",
+          "correction": "Linear exponential smoothing models are all special cases of ARIMA, but non-linear ones have no ARIMA counterpart, many ARIMA models have no smoothing counterpart, and all ETS models are non-stationary while some ARIMA models are stationary.",
+          "sourceId": "fpp3-arima",
+          "locator": "9.10 ARIMA vs ETS",
+          "anchor": {
+            "start": "It is a commonly held myth",
+            "end": "some ARIMA models are stationary"
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "time_series_data",
+      "after": "forecastability",
+      "reason": "Judging what can be forecast presumes knowing what forecasting a series means."
+    },
+    {
+      "before": "time_series_data",
+      "after": "time_series_patterns",
+      "reason": "Patterns are described in a series observed over time."
+    },
+    {
+      "before": "time_series_patterns",
+      "after": "decomposition",
+      "reason": "A decomposition separates the trend-cycle and seasonal patterns."
+    },
+    {
+      "before": "decomposition",
+      "after": "seasonal_adjustment",
+      "reason": "Seasonal adjustment removes a component found by decomposition."
+    },
+    {
+      "before": "decomposition",
+      "after": "decomposition_methods",
+      "reason": "Classical decomposition and STL are ways of computing a decomposition."
+    },
+    {
+      "before": "time_series_patterns",
+      "after": "autocorrelation",
+      "reason": "The ACF is read for the signatures of trend and seasonality."
+    },
+    {
+      "before": "autocorrelation",
+      "after": "white_noise",
+      "reason": "White noise is defined by having no autocorrelation."
+    },
+    {
+      "before": "white_noise",
+      "after": "stationarity",
+      "reason": "White noise is the simplest stationary series."
+    },
+    {
+      "before": "time_series_patterns",
+      "after": "stationarity",
+      "reason": "Stationarity rules out trend and seasonality."
+    },
+    {
+      "before": "stationarity",
+      "after": "spurious_regression",
+      "reason": "Spurious regression comes from regressing non-stationary series."
+    },
+    {
+      "before": "stationarity",
+      "after": "differencing",
+      "reason": "Differencing is a way to make a series stationary."
+    },
+    {
+      "before": "autocorrelation",
+      "after": "differencing",
+      "reason": "The ACF is used to judge whether differencing is needed."
+    },
+    {
+      "before": "differencing",
+      "after": "seasonal_differencing",
+      "reason": "Seasonal differencing extends first differencing to the seasonal lag."
+    },
+    {
+      "before": "time_series_patterns",
+      "after": "benchmark_methods",
+      "reason": "Choosing among the benchmarks depends on whether the data are trended or seasonal."
+    },
+    {
+      "before": "benchmark_methods",
+      "after": "random_walk",
+      "reason": "The random walk explains why the naive and drift methods work."
+    },
+    {
+      "before": "differencing",
+      "after": "random_walk",
+      "reason": "A random walk is a series whose differences are white noise."
+    },
+    {
+      "before": "benchmark_methods",
+      "after": "residual_diagnostics",
+      "reason": "Residual checks are first applied to the benchmark methods."
+    },
+    {
+      "before": "white_noise",
+      "after": "residual_diagnostics",
+      "reason": "Good residuals look like white noise."
+    },
+    {
+      "before": "residual_diagnostics",
+      "after": "prediction_intervals",
+      "reason": "Prediction intervals rest on assumptions about the residuals."
+    },
+    {
+      "before": "residual_diagnostics",
+      "after": "train_test_split",
+      "reason": "Test-set evaluation is needed because residuals understate forecast error."
+    },
+    {
+      "before": "train_test_split",
+      "after": "accuracy_measures",
+      "reason": "Accuracy measures summarise errors on a test set."
+    },
+    {
+      "before": "accuracy_measures",
+      "after": "time_series_cv",
+      "reason": "Cross-validation averages an accuracy measure over many test sets."
+    },
+    {
+      "before": "benchmark_methods",
+      "after": "simple_exponential_smoothing",
+      "reason": "Simple exponential smoothing sits between the naive and mean methods."
+    },
+    {
+      "before": "simple_exponential_smoothing",
+      "after": "holt_trend",
+      "reason": "Holt's method adds a trend to simple exponential smoothing."
+    },
+    {
+      "before": "holt_trend",
+      "after": "holt_winters",
+      "reason": "Holt-Winters adds a seasonal component to Holt's method."
+    },
+    {
+      "before": "decomposition",
+      "after": "holt_winters",
+      "reason": "Choosing additive or multiplicative Holt-Winters follows the same rule as decomposition."
+    },
+    {
+      "before": "stationarity",
+      "after": "ar_ma_models",
+      "reason": "Autoregressive models are restricted to stationary data."
+    },
+    {
+      "before": "random_walk",
+      "after": "ar_ma_models",
+      "reason": "An AR(1) model with coefficient 1 is a random walk."
+    },
+    {
+      "before": "ar_ma_models",
+      "after": "arima",
+      "reason": "ARIMA combines autoregressive and moving average parts."
+    },
+    {
+      "before": "differencing",
+      "after": "arima",
+      "reason": "The I in ARIMA is differencing."
+    },
+    {
+      "before": "arima",
+      "after": "acf_pacf_identification",
+      "reason": "The ACF and PACF are used to choose ARIMA orders."
+    },
+    {
+      "before": "autocorrelation",
+      "after": "acf_pacf_identification",
+      "reason": "Partial autocorrelation builds on autocorrelation."
+    },
+    {
+      "before": "acf_pacf_identification",
+      "after": "seasonal_arima",
+      "reason": "Seasonal orders are read from the seasonal lags of the same plots."
+    },
+    {
+      "before": "seasonal_differencing",
+      "after": "seasonal_arima",
+      "reason": "Seasonal ARIMA uses seasonal differencing."
+    },
+    {
+      "before": "arima",
+      "after": "model_selection",
+      "reason": "Information criteria choose between ARIMA models."
+    },
+    {
+      "before": "holt_winters",
+      "after": "model_selection",
+      "reason": "Choosing between ARIMA and exponential smoothing needs both classes."
+    },
+    {
+      "before": "time_series_cv",
+      "after": "model_selection",
+      "reason": "Model classes are compared on cross-validated accuracy, not AICc."
+    }
+  ],
+  "cards": [
+    {
+      "id": "what-forecasting-is",
+      "title": "What forecasting is, and what can be forecast",
+      "conceptIds": [
+        "time_series_data",
+        "forecastability"
+      ]
+    },
+    {
+      "id": "reading-a-time-plot",
+      "title": "Reading a time plot: trend, seasonality, cycles",
+      "conceptIds": [
+        "time_series_patterns"
+      ]
+    },
+    {
+      "id": "decomposition",
+      "title": "Taking a series apart",
+      "conceptIds": [
+        "decomposition",
+        "seasonal_adjustment",
+        "decomposition_methods"
+      ]
+    },
+    {
+      "id": "autocorrelation",
+      "title": "Autocorrelation and white noise",
+      "conceptIds": [
+        "autocorrelation",
+        "white_noise"
+      ]
+    },
+    {
+      "id": "benchmarks",
+      "title": "Benchmark forecasts",
+      "conceptIds": [
+        "benchmark_methods"
+      ]
+    },
+    {
+      "id": "residuals-and-intervals",
+      "title": "Checking residuals, and stating the uncertainty",
+      "conceptIds": [
+        "residual_diagnostics",
+        "prediction_intervals"
+      ]
+    },
+    {
+      "id": "evaluating-forecasts",
+      "title": "Evaluating forecasts honestly",
+      "conceptIds": [
+        "train_test_split",
+        "accuracy_measures",
+        "time_series_cv"
+      ]
+    },
+    {
+      "id": "exponential-smoothing",
+      "title": "Exponential smoothing: level, trend, season",
+      "conceptIds": [
+        "simple_exponential_smoothing",
+        "holt_trend",
+        "holt_winters"
+      ]
+    },
+    {
+      "id": "stationarity",
+      "title": "Stationarity, and why it matters",
+      "conceptIds": [
+        "stationarity",
+        "spurious_regression"
+      ]
+    },
+    {
+      "id": "differencing",
+      "title": "Differencing and the random walk",
+      "conceptIds": [
+        "differencing",
+        "seasonal_differencing",
+        "random_walk"
+      ]
+    },
+    {
+      "id": "arima",
+      "title": "AR, MA and ARIMA models",
+      "conceptIds": [
+        "ar_ma_models",
+        "arima"
+      ]
+    },
+    {
+      "id": "identifying-arima",
+      "title": "Choosing ARIMA orders, including seasonal ones",
+      "conceptIds": [
+        "acf_pacf_identification",
+        "seasonal_arima"
+      ]
+    },
+    {
+      "id": "choosing-a-model",
+      "title": "Choosing between models",
+      "conceptIds": [
+        "model_selection"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-20",
+    "itemsJudged": 129,
+    "itemsSupported": 129,
+    "errorsPlanted": 19,
+    "errorsCaught": 19,
+    "fingerprint": "sha256:711eb2ee4659c1048e0d15facd903257"
+  }
+}

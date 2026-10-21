@@ -1,0 +1,31 @@
+{
+  "packId": "time-series-forecasting",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "train_test_split:1",
+      "type": "negation",
+      "sentence": "The size of the residuals is a reliable guide to the size of true forecast errors, so a model's accuracy can be judged on the same data used to fit it."
+    },
+    {
+      "ref": "time_series_cv:5",
+      "type": "overstatement",
+      "sentence": "Picking the model with the smallest RMSE under time series cross-validation always finds the model that will forecast best, guaranteed."
+    },
+    {
+      "ref": "holt_trend:5",
+      "type": "wrong_number_or_direction",
+      "sentence": "The damping parameter is usually kept between 0.5 and 0.7: above 0.7 the damping is very strong, and close to 0 a damped model cannot be told apart from an undamped one."
+    },
+    {
+      "ref": "benchmark_methods:4",
+      "type": "unsupported_addition",
+      "sentence": "The drift method lets naive forecasts rise or fall over time by the average change seen in the historical data; Box and Jenkins first proposed it in 1970."
+    },
+    {
+      "ref": "spurious_regression:2",
+      "type": "causal_from_association",
+      "sentence": "When two series trend upwards in the same way, such as air passengers in Australia and rice production in Guinea, one of them is driving the other."
+    }
+  ]
+}
