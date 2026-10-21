@@ -1,7 +1,7 @@
 {
   "id": "neural-networks",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Neural networks: how a network learns",
   "outOfScope": [
     "Transformers and large language models",
