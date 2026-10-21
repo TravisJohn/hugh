@@ -1901,5 +1901,104 @@
     "errorsPlanted": 19,
     "errorsCaught": 19,
     "fingerprint": "sha256:11ff44f10f72cf8a1f2e7ecc7a711e28"
-  }
+  },
+  "cards": [
+    {
+      "id": "from-linear-to-neurons",
+      "title": "From linear models to neurons",
+      "conceptIds": [
+        "linear_limits",
+        "neuron",
+        "why_nonlinearity"
+      ]
+    },
+    {
+      "id": "activations-and-layers",
+      "title": "Activation functions and layers",
+      "conceptIds": [
+        "activation_functions",
+        "layers_mlp"
+      ]
+    },
+    {
+      "id": "forward-pass-and-outputs",
+      "title": "The forward pass and the output layer",
+      "conceptIds": [
+        "forward_pass",
+        "output_layers"
+      ]
+    },
+    {
+      "id": "loss-and-gradient-descent",
+      "title": "Loss and gradient descent",
+      "conceptIds": [
+        "loss_functions",
+        "gradient_descent_nn"
+      ]
+    },
+    {
+      "id": "backpropagation",
+      "title": "Backpropagation and the loss surface",
+      "conceptIds": [
+        "backpropagation",
+        "non_convex_loss"
+      ]
+    },
+    {
+      "id": "batches-and-optimisers",
+      "title": "Batches, epochs and optimisers",
+      "conceptIds": [
+        "batches_epochs",
+        "optimisers",
+        "reading_loss_curves"
+      ]
+    },
+    {
+      "id": "stable-training",
+      "title": "Keeping gradients stable",
+      "conceptIds": [
+        "vanishing_exploding",
+        "weight_initialisation"
+      ]
+    },
+    {
+      "id": "overfitting-and-validation",
+      "title": "Overfitting and validation",
+      "conceptIds": [
+        "overfitting_nn",
+        "hyperparameters_validation"
+      ]
+    },
+    {
+      "id": "regularisation",
+      "title": "Regularisation: weight decay, dropout and early stopping",
+      "conceptIds": [
+        "weight_decay",
+        "dropout",
+        "early_stopping"
+      ]
+    },
+    {
+      "id": "feature-scaling",
+      "title": "Scaling the inputs",
+      "conceptIds": [
+        "feature_scaling_nn"
+      ]
+    },
+    {
+      "id": "representations-and-depth",
+      "title": "Representation learning and depth",
+      "conceptIds": [
+        "representation_learning",
+        "depth_and_width"
+      ]
+    },
+    {
+      "id": "choosing-a-network",
+      "title": "When a neural network is the wrong tool",
+      "conceptIds": [
+        "when_not_nn"
+      ]
+    }
+  ]
 }
