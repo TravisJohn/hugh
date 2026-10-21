@@ -120,6 +120,1513 @@
       "accessedAt": "2026-10-21"
     }
   ],
-  "concepts": [],
-  "prerequisites": []
+  "concepts": [
+    {
+      "id": "outlier_definition",
+      "title": "What an outlier is",
+      "outcome": "Define an outlier and explain why calling a value abnormal first needs a picture of what normal looks like.",
+      "keyPoints": [
+        {
+          "text": "An outlier is an observation that seems to differ sharply from the other observations in its sample.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Introduction",
+          "anchor": {
+            "start": "An outlier is an observation that",
+            "end": "other observations in the sample."
+          }
+        },
+        {
+          "text": "Defining an outlier as lying an abnormal distance from the other values leaves it to the analyst, or a consensus, to decide what counts as abnormal, so normal observations must be characterised first.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Definition of outliers",
+          "anchor": {
+            "start": "An outlier is an observation that",
+            "end": "to characterize normal observations."
+          }
+        },
+        {
+          "text": "Many applications need to decide whether a new observation belongs to the same distribution as the existing ones, an inlier, or is different enough to be an outlier.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "Many applications require being able",
+            "end": "different (it is an outlier)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "outlier_causes",
+      "title": "Errors, rare values and real signals",
+      "outcome": "Tell apart the main reasons a value can be outlying: a recording or measurement error, an uncommon but genuine value, or a sign of something worth studying.",
+      "keyPoints": [
+        {
+          "text": "An outlier may be bad data, such as a value coded incorrectly or a result from an experiment that was not run correctly.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Introduction",
+          "anchor": {
+            "start": "An outlier may indicate bad data.",
+            "end": "not have been run correctly."
+          }
+        },
+        {
+          "text": "Real data sets are often affected by measurement or recording errors, and regular but uncommon observations can also appear for many reasons.",
+          "sourceId": "sklearn-covariance",
+          "locator": "2.6.4, Robust Covariance Estimation",
+          "anchor": {
+            "start": "Real data sets are often subject",
+            "end": "for a variety of reasons."
+          }
+        },
+        {
+          "text": "It is not always possible to tell whether an outlier is bad data: it may come from random variation, or it may point to something scientifically interesting.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Introduction",
+          "anchor": {
+            "start": "In some cases, it may not",
+            "end": "something scientifically interesting."
+          }
+        },
+        {
+          "text": "Outliers often carry valuable information about the process being studied, or about how the data were gathered and recorded.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Outliers may contain important information",
+          "anchor": {
+            "start": "Outliers should be investigated carefully.",
+            "end": "gathering and recording process."
+          }
+        }
+      ]
+    },
+    {
+      "id": "why_outliers_matter",
+      "title": "Why outliers matter",
+      "outcome": "Explain how a single extreme value can distort ordinary summaries and transformations, and why checking for outliers belongs in every analysis.",
+      "keyPoints": [
+        {
+          "text": "Many statistical techniques are sensitive to outliers: even a simple mean and standard deviation can be distorted by one grossly inaccurate data point.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Importance",
+          "anchor": {
+            "start": "Many statistical techniques are sensitive",
+            "end": "grossly inaccurate data point."
+          }
+        },
+        {
+          "text": "Checking for outliers should be a routine part of any data analysis, and potential outliers should be examined to see whether they might be errors.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Importance",
+          "anchor": {
+            "start": "Checking for outliers should be",
+            "end": "they are possibly erroneous."
+          }
+        },
+        {
+          "text": "When a feature is rescaled to run from zero to one, outliers can skew it so much that the ordinary values end up collapsed almost together.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Ablation study",
+          "anchor": {
+            "start": "On the other hand, MinMaxScaler scales",
+            "end": "almost together as a result."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dont_delete_blindly",
+      "title": "Why not to delete outliers blindly",
+      "outcome": "Explain when deleting an outlier is justified, and why an outlier with no known cause should not simply be removed.",
+      "keyPoints": [
+        {
+          "text": "If an outlying point is shown to be erroneous, it should be deleted from the analysis, or corrected if possible.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Introduction",
+          "anchor": {
+            "start": "If it can be determined",
+            "end": "corrected if possible)."
+          }
+        },
+        {
+          "text": "When it cannot be shown that an outlier is bad data, the usual advice is not to simply delete it.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Introduction",
+          "anchor": {
+            "start": "In some cases, it may not",
+            "end": "simply delete the outlying observation."
+          }
+        },
+        {
+          "text": "Before considering removing outliers, try to understand why they appeared and whether similar values are likely to keep appearing.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Outliers may contain important information",
+          "anchor": {
+            "start": "Before considering the possible elimination",
+            "end": "will continue to appear."
+          }
+        },
+        {
+          "text": "Data points should not be deleted just because they do not fit a preconceived model; a deletion needs a good, objective reason and should be justified and described in the report.",
+          "sourceId": "psu501-11",
+          "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
+          "anchor": {
+            "start": "Do not delete data points just",
+            "end": "describe it in your reports."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Outliers should always be deleted before the analysis.",
+          "correction": "If there is no reason to believe an outlying point is in error, it should not be deleted without careful consideration.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Importance",
+          "anchor": {
+            "start": "If there is no reason to",
+            "end": "without careful consideration."
+          }
+        }
+      ]
+    },
+    {
+      "id": "three_tasks",
+      "title": "Labelling, accommodating and identifying outliers",
+      "outcome": "Distinguish flagging a value for investigation, adapting the analysis so outliers do not dominate it, and formally testing whether a value is an outlier.",
+      "keyPoints": [
+        {
+          "text": "Outlier labelling means flagging potential outliers for further investigation, for example to ask whether they are erroneous data or a sign that the distributional model is wrong.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Labeling, Accomodation, Identification",
+          "anchor": {
+            "start": "outlier labeling - flag potential outliers",
+            "end": "an inappropriate distributional model"
+          }
+        },
+        {
+          "text": "Outlier accommodation means using robust techniques that are not unduly affected by outliers, for when it cannot be shown that the potential outliers are errors.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Labeling, Accomodation, Identification",
+          "anchor": {
+            "start": "outlier accomodation - use robust",
+            "end": "account for these observations?"
+          }
+        },
+        {
+          "text": "Outlier identification means formally testing whether observations are outliers.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Labeling, Accomodation, Identification",
+          "anchor": {
+            "start": "outlier identification - formally test",
+            "end": "observations are outliers."
+          }
+        }
+      ]
+    },
+    {
+      "id": "graphical_screening",
+      "title": "Looking before testing",
+      "outcome": "Use a normal probability plot, box plot or histogram to spot outlying points and to judge which outlier check fits the data.",
+      "keyPoints": [
+        {
+          "text": "A normal probability plot, run sequence plot, box plot or histogram should show any obviously outlying points, and several of these graphs also help judge whether the data are roughly normal.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Related Techniques",
+          "anchor": {
+            "start": "Several graphical techniques can, and",
+            "end": "an approximately normal distribution."
+          }
+        },
+        {
+          "text": "The lower and upper tails of a normal probability plot can help show potential outliers, and whether to check for a single outlier or for several.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "In addition to checking the normality",
+            "end": "check for multiple outliers."
+          }
+        },
+        {
+          "text": "A box plot and a histogram are also useful for checking the normality assumption and for spotting potential outliers.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "The box plot and the",
+            "end": "identifying potential outliers."
+          }
+        }
+      ]
+    },
+    {
+      "id": "z_scores",
+      "title": "Z-scores",
+      "outcome": "Compute and read a z-score, and explain why it can mislead as an outlier rule, especially in small samples.",
+      "keyPoints": [
+        {
+          "text": "A z-score expresses an observation as the number of standard deviations it lies from the sample mean.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
+          "anchor": {
+            "start": "The Z-score of an observation",
+            "end": "it is from the mean."
+          }
+        },
+        {
+          "text": "Using z-scores to flag possible outliers is common practice, but it can mislead, particularly in small samples, because the largest possible z-score is capped by a limit that depends on the sample size.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
+          "anchor": {
+            "start": "Although it is common practice",
+            "end": "recommend using the modified Z-score"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Z-scores are a reliable way to flag outliers even in small samples.",
+          "correction": "Z-scores can be misleading as an outlier rule, particularly for small samples, because the maximum z-score has an upper limit.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
+          "anchor": {
+            "start": "Although it is common practice",
+            "end": "recommend using the modified Z-score"
+          }
+        }
+      ]
+    },
+    {
+      "id": "iqr_fences",
+      "title": "The IQR and box-plot fences",
+      "outcome": "Build a box plot's fences from the quartiles and the interquartile range, and classify points beyond them as mild or extreme outliers.",
+      "keyPoints": [
+        {
+          "text": "A box plot is built from the median and the lower and upper quartiles, the 25th and 75th percentiles, with a box between the quartiles covering the middle 50% of the data.",
+          "sourceId": "nist-boxplot",
+          "locator": "1.3.3.7, Definition",
+          "anchor": {
+            "start": "Calculate the median and the quartiles",
+            "end": "the middle 50% of the data"
+          }
+        },
+        {
+          "text": "The interquartile range is the upper quartile minus the lower quartile.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Box plot construction",
+          "anchor": {
+            "start": "If the lower quartile is Q1",
+            "end": "the interquartile range or IQ."
+          }
+        },
+        {
+          "text": "The inner fences sit 1.5 interquartile ranges below the lower quartile and above the upper quartile, and the outer fences sit 3 interquartile ranges beyond them.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Box plots with fences",
+          "anchor": {
+            "start": "The following quantities (called fences) are",
+            "end": "upper outer fence: Q3 + 3*IQ"
+          }
+        },
+        {
+          "text": "A point beyond an inner fence counts as a mild outlier, and a point beyond an outer fence counts as an extreme outlier.",
+          "sourceId": "nist-what-outliers",
+          "locator": "7.1.6, Outlier detection criteria",
+          "anchor": {
+            "start": "A point beyond an inner fence",
+            "end": "considered an extreme outlier."
+          }
+        },
+        {
+          "text": "In a box plot with fences, the whiskers stop at the most extreme points within 1.5 interquartile ranges of the box; points farther out are drawn as circles, larger ones beyond 3 interquartile ranges.",
+          "sourceId": "nist-boxplot",
+          "locator": "1.3.3.7, Box plots with fences",
+          "anchor": {
+            "start": "Calculate the interquartile range (the",
+            "end": "are drawn as large circles."
+          }
+        }
+      ],
+      "aliases": [
+        "box plot",
+        "Tukey fences",
+        "1.5 IQR rule"
+      ]
+    },
+    {
+      "id": "robust_z_mad",
+      "title": "Robust z-scores: the median and MAD",
+      "outcome": "Compute a modified z-score from the median and the median absolute deviation, and explain why such robust summaries resist the very outliers being looked for.",
+      "keyPoints": [
+        {
+          "text": "Iglewicz and Hoaglin recommend a modified z-score, which scales an observation's distance from the median by the median absolute deviation (MAD).",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
+          "anchor": {
+            "start": "recommend using the modified Z-score",
+            "end": "denoting the median."
+          }
+        },
+        {
+          "text": "They recommend labelling observations whose modified z-score exceeds 3.5 in absolute value as potential outliers.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
+          "anchor": {
+            "start": "These authors recommend that modified",
+            "end": "labeled as potential outliers."
+          }
+        },
+        {
+          "text": "The median and the interquartile range are less affected by extreme values than the range, the mean and the standard deviation.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Ablation study",
+          "anchor": {
+            "start": "The IQR is robust to outliers",
+            "end": "and the standard deviation."
+          }
+        },
+        {
+          "text": "Scaling a feature by subtracting its median and dividing by its interquartile range resists outliers, and unlike standard scaling it does not squash outlying values.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Ablation study",
+          "anchor": {
+            "start": "On the one hand, RobustScaler scales",
+            "end": "contrary to StandardScaler."
+          }
+        }
+      ],
+      "aliases": [
+        "modified z-score",
+        "median absolute deviation"
+      ]
+    },
+    {
+      "id": "normality_assumption",
+      "title": "The normality assumption behind outlier tests",
+      "outcome": "Explain why the formal outlier tests assume roughly normal data, how to check that first, and what to do with lognormal data.",
+      "keyPoints": [
+        {
+          "text": "Whether an observation counts as an outlier depends on the distribution assumed for the data; the tests discussed assume univariate data that are roughly normal.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "Identifying an observation as an outlier",
+            "end": "approximately normal distribution."
+          }
+        },
+        {
+          "text": "A normal probability plot of the data is recommended before an outlier test is applied.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "For this reason, it is recommended",
+            "end": "before applying an outlier test."
+          }
+        },
+        {
+          "text": "Formal tests for normality can themselves be thrown off by outliers, rejecting normality when it is in fact a reasonable assumption for the outlier test.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "Although you can also perform formal",
+            "end": "applying the outlier test."
+          }
+        },
+        {
+          "text": "If data are roughly lognormal, taking logarithms can transform them to normality before the outlier tests are applied.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Lognormal Distribution",
+          "anchor": {
+            "start": "If your data follow an approximately",
+            "end": "outlier tests discussed here."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A formal outlier test gives a valid answer whatever the distribution of the data.",
+          "correction": "If the normality assumption is not valid, a test's finding of an outlier may in fact reflect the non-normality of the data rather than a real outlier.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Normality Assumption",
+          "anchor": {
+            "start": "If the normality assumption for the",
+            "end": "prescence of an outlier."
+          }
+        }
+      ]
+    },
+    {
+      "id": "grubbs_test",
+      "title": "Grubbs' test for a single outlier",
+      "outcome": "State what Grubbs' test assumes and tests, and read its result for the largest or smallest value.",
+      "keyPoints": [
+        {
+          "text": "Grubbs' test detects a single outlier in a univariate data set that roughly follows a normal distribution.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Purpose",
+          "anchor": {
+            "start": "is used to detect a single",
+            "end": "approximately normal distribution."
+          }
+        },
+        {
+          "text": "Its null hypothesis is that the data set has no outliers, and its alternative is that it has exactly one.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Definition",
+          "anchor": {
+            "start": "Grubbs' test is defined for the",
+            "end": "There is exactly one outlier"
+          }
+        },
+        {
+          "text": "The Grubbs statistic is the largest absolute deviation from the sample mean, measured in units of the sample standard deviation.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Test Statistic",
+          "anchor": {
+            "start": "test statistic is the largest",
+            "end": "of the sample standard deviation."
+          }
+        },
+        {
+          "text": "One-sided versions of the test ask only whether the minimum value, or only whether the maximum value, is an outlier.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Test Statistic",
+          "anchor": {
+            "start": "test can also be defined as",
+            "end": "maximum value is an outlier"
+          }
+        },
+        {
+          "text": "If more than one outlier may be present, the Tietjen-Moore test or the generalized ESD test is recommended instead of Grubbs' test.",
+          "sourceId": "nist-grubbs",
+          "locator": "1.3.5.17.1, Purpose",
+          "anchor": {
+            "start": "If you suspect more than one",
+            "end": "instead of the Grubbs' test."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Running a single-outlier test such as Grubbs' again and again is a sound way to find several outliers.",
+          "correction": "It is not appropriate to apply a test designed for a single outlier sequentially in order to detect multiple outliers.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Single Versus Multiple Outliers",
+          "anchor": {
+            "start": "It is not appropriate to apply",
+            "end": "to detect multiple outliers."
+          }
+        }
+      ]
+    },
+    {
+      "id": "masking_swamping",
+      "title": "Masking and swamping",
+      "outcome": "Explain how testing for too few outliers can hide them, and testing for too many can wrongly flag ordinary points.",
+      "keyPoints": [
+        {
+          "text": "Masking can happen when a test looks for too few outliers: the extra outliers can shift the test statistic so much that no point is declared an outlier.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Masking and Swamping",
+          "anchor": {
+            "start": "Masking can occur when we specify",
+            "end": "declared as outliers."
+          }
+        },
+        {
+          "text": "Swamping can happen when a test looks for too many outliers: testing for two when only one exists may declare both, since many tests declare all or none of the tested points.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Masking and Swamping",
+          "anchor": {
+            "start": "On the other hand, swamping can",
+            "end": "the tested points as outliers)."
+          }
+        },
+        {
+          "text": "Because of masking and swamping, formal outlier tests are best complemented by graphs, which can often reveal cases where either may be a problem.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Masking and Swamping",
+          "anchor": {
+            "start": "Due to the possibility of masking",
+            "end": "swamping may be an issue."
+          }
+        },
+        {
+          "text": "Masking is one reason a single-outlier test applied sequentially can fail: the test for the first outlier may find none, so the search for others is never run.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Masking and Swamping",
+          "anchor": {
+            "start": "Also, masking is one reason",
+            "end": "additional outliers is not performed)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "generalized_esd",
+      "title": "The generalized ESD test for several outliers",
+      "outcome": "Explain how the generalized ESD test finds up to a stated number of outliers, and why it suits cases where the exact number is unknown.",
+      "keyPoints": [
+        {
+          "text": "The Grubbs and Tietjen-Moore tests need the suspected number of outliers to be specified exactly, and getting it wrong can distort their conclusions.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Purpose",
+          "anchor": {
+            "start": "The primary limitation of the",
+            "end": "the conclusions of these tests."
+          }
+        },
+        {
+          "text": "The generalized ESD test needs only an upper bound on the suspected number of outliers, and it is the recommended test when the exact number is not known.",
+          "sourceId": "nist-outliers",
+          "locator": "1.3.5.17, Formal Outlier Tests",
+          "anchor": {
+            "start": "this test requires only an upper",
+            "end": "of outliers is not known."
+          }
+        },
+        {
+          "text": "Given an upper bound r, the generalized ESD test in effect runs r separate tests: for one outlier, for two, and so on up to r.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Definition",
+          "anchor": {
+            "start": "Given the upper bound, r,",
+            "end": "so on up to r outliers."
+          }
+        },
+        {
+          "text": "The number of outliers it reports is the largest number tested for which the test statistic exceeds its critical value.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Critical Region",
+          "anchor": {
+            "start": "The number of outliers is determined",
+            "end": "such that Ri > λi."
+          }
+        },
+        {
+          "text": "Unlike the generalized ESD test, applying Grubbs' test sequentially does not adjust the critical values for the number of outliers tested, and with significant masking it may stop too soon.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Definition",
+          "anchor": {
+            "start": "Note that although the generalized ESD",
+            "end": "may stop too soon."
+          }
+        }
+      ],
+      "aliases": [
+        "generalized extreme studentized deviate test",
+        "Rosner test"
+      ]
+    },
+    {
+      "id": "mahalanobis_distance",
+      "title": "Multivariate outliers and Mahalanobis distance",
+      "outcome": "Explain what Mahalanobis distance measures, and use a chi-square Q-Q plot of the distances to look for multivariate outliers.",
+      "keyPoints": [
+        {
+          "text": "For Gaussian data, an observation's distance from the mode of the distribution can be measured by its Mahalanobis distance, which uses the distribution's location and covariance.",
+          "sourceId": "sklearn-mahalanobis",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "For Gaussian distributed data, the distance",
+            "end": "of the underlying Gaussian distributions."
+          }
+        },
+        {
+          "text": "In large samples, observed Mahalanobis distances roughly follow a chi-square distribution, which gives a subjective check on whether a point may be an outlier and whether the data look multivariate normal.",
+          "sourceId": "psu505-04",
+          "locator": "4.4, Multivariate Normality and Outliers",
+          "anchor": {
+            "start": "for \"large\" samples the observed Mahalanobis",
+            "end": "a multivariate normal distribution."
+          }
+        },
+        {
+          "text": "A Q-Q plot of the ordered Mahalanobis distances against chi-square quantiles should look like a straight line for multivariate normal data, and outliers show up at the upper right, well above their quantiles.",
+          "sourceId": "psu505-04",
+          "locator": "4.4, Multivariate Normality and Outliers",
+          "anchor": {
+            "start": "can be used to picture the",
+            "end": "than the chi-square quantile value."
+          }
+        }
+      ]
+    },
+    {
+      "id": "robust_covariance",
+      "title": "Robust covariance and the elliptic envelope",
+      "outcome": "Explain why Mahalanobis distances need a robust covariance estimate such as MCD, and how an elliptic envelope uses one to flag outliers.",
+      "keyPoints": [
+        {
+          "text": "The standard maximum likelihood covariance estimate is very sensitive to outliers, and so are the Mahalanobis distances built on it; a robust estimate keeps the distances true to how the data are organised.",
+          "sourceId": "sklearn-mahalanobis",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "The standard covariance maximum likelihood estimate",
+            "end": "true organization of the observations."
+          }
+        },
+        {
+          "text": "With standard covariance-based Mahalanobis distances, observations from a contaminating distribution can be indistinguishable from the genuine Gaussian ones; with MCD-based distances, the two groups become distinguishable.",
+          "sourceId": "sklearn-mahalanobis",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "Observations drawn from a contaminating distribution",
+            "end": "two populations become distinguishable."
+          }
+        },
+        {
+          "text": "The Minimum Covariance Determinant estimator finds a given proportion of good observations that are not outliers and computes their covariance; observations can then be weighted by their Mahalanobis distance to refine the estimate.",
+          "sourceId": "sklearn-covariance",
+          "locator": "2.6.4.1, Minimum Covariance Determinant",
+          "anchor": {
+            "start": "The Minimum Covariance Determinant estimator is",
+            "end": "leading to a reweighted estimate"
+          }
+        },
+        {
+          "text": "An elliptic envelope assumes the regular data come from a known distribution such as a Gaussian and fits a robust covariance estimate, so it fits an ellipse to the central points and ignores points outside the central mode.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.1, Fitting an elliptic envelope",
+          "anchor": {
+            "start": "One common way of performing outlier",
+            "end": "points outside the central mode."
+          }
+        },
+        {
+          "text": "Mahalanobis distances from the robustly estimated location and covariance then give a measure of each point's outlyingness.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.1, Fitting an elliptic envelope",
+          "anchor": {
+            "start": "For instance, assuming that the inlier",
+            "end": "a measure of outlyingness."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Mahalanobis distances computed from the ordinary covariance estimate reliably expose multivariate outliers.",
+          "correction": "With ordinary covariance-based Mahalanobis distances, contaminating observations can be indistinguishable from genuine ones; MCD-based distances separate the two.",
+          "sourceId": "sklearn-mahalanobis",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "Observations drawn from a contaminating distribution",
+            "end": "two populations become distinguishable."
+          }
+        }
+      ],
+      "aliases": [
+        "Minimum Covariance Determinant",
+        "MCD",
+        "EllipticEnvelope"
+      ]
+    },
+    {
+      "id": "regression_outliers",
+      "title": "Outliers in regression: residuals",
+      "outcome": "Identify an outlier in a regression as a point whose response breaks the trend, using studentized and deleted residuals.",
+      "keyPoints": [
+        {
+          "text": "In regression, an outlier is a data point whose response y does not follow the general trend of the rest of the data.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "An outlier is a data point",
+            "end": "the rest of the data."
+          }
+        },
+        {
+          "text": "In this sense a point is an outlier only if it is extreme in its y value compared with the other y values, not in its x values.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "to be an outlier only if",
+            "end": "not the x values."
+          }
+        },
+        {
+          "text": "Internally studentized residuals put residuals in standard deviation units, and one larger than 3 in absolute value is generally deemed an outlier.",
+          "sourceId": "psu501-11",
+          "locator": "11.3, Identifying Outliers (Unusual y Values)",
+          "anchor": {
+            "start": "The good thing about internally studentized",
+            "end": "generally deemed an outlier."
+          }
+        },
+        {
+          "text": "A potential outlier can pull the fitted line towards itself so far that the standardized residual criterion misses it; deleted residuals address this by refitting the model with each observation left out in turn.",
+          "sourceId": "psu501-11",
+          "locator": "11.4, Deleted Residuals",
+          "anchor": {
+            "start": "When trying to identify outliers, one",
+            "end": "the remaining n-1 observation."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Any observation whose studentized residual is beyond 3 is an error and should be removed.",
+          "correction": "Cutoffs of 2 or 3 should not be taken too literally; they are warning flags that call for investigating the data point further.",
+          "sourceId": "psu501-11",
+          "locator": "11.3, Identifying Outliers (Unusual y Values)",
+          "anchor": {
+            "start": "Recall that Minitab flags any",
+            "end": "the data points further."
+          }
+        }
+      ]
+    },
+    {
+      "id": "leverage",
+      "title": "Leverage: unusual predictor values",
+      "outcome": "Explain what leverage measures, how it differs from being an outlier, and how to flag a high-leverage point.",
+      "keyPoints": [
+        {
+          "text": "A point has high leverage if its predictor values are extreme: unusually high or low, or with several predictors an unusual combination, such as a high value of one and a low value of a positively correlated other.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "A data point has high leverage",
+            "end": "low value of the other predictor)."
+          }
+        },
+        {
+          "text": "A point's leverage measures the distance between its x value and the mean of the x values; it lies between 0 and 1, and the leverages sum to the number of model parameters.",
+          "sourceId": "psu501-11",
+          "locator": "11.2, Using Leverages to Help Identify Extreme x Values",
+          "anchor": {
+            "start": "a measure of the distance between",
+            "end": "including the intercept)."
+          }
+        },
+        {
+          "text": "A common rule flags any observation whose leverage is more than 3 times the mean leverage.",
+          "sourceId": "psu501-11",
+          "locator": "11.2, Using Leverages to Help Identify Extreme x Values",
+          "anchor": {
+            "start": "A common rule is to flag",
+            "end": "than the mean leverage value"
+          }
+        },
+        {
+          "text": "Not everyone agrees on the 3p/n cut-off, and 2p/n is also used; a refined rule flags leverages above 3p/n, or failing that, above 2p/n and very isolated.",
+          "sourceId": "psu501-11",
+          "locator": "11.2, Using Leverages to Help Identify Extreme x Values",
+          "anchor": {
+            "start": "As with many statistical",
+            "end": "and very isolated."
+          }
+        },
+        {
+          "text": "Extreme x values need to be found because in some situations they can strongly influence the estimated regression function.",
+          "sourceId": "psu501-11",
+          "locator": "11.2, Using Leverages to Help Identify Extreme x Values",
+          "anchor": {
+            "start": "need to be able to identify",
+            "end": "the estimated regression function."
+          }
+        }
+      ],
+      "aliases": [
+        "high-leverage point",
+        "hat values"
+      ]
+    },
+    {
+      "id": "influence_cooks",
+      "title": "Influence and Cook's distance",
+      "outcome": "Tell an influential point from a merely unusual one, and use Cook's distance and a with-and-without comparison to judge influence.",
+      "keyPoints": [
+        {
+          "text": "A point is influential if it unduly influences any part of a regression analysis, such as the predicted responses, the estimated slopes or the hypothesis test results.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "unduly influences any part of regression",
+            "end": "the hypothesis test results."
+          }
+        },
+        {
+          "text": "Outliers and high-leverage points have the potential to be influential, but further investigation is generally needed to tell whether they actually are.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "Outliers and high-leverage data points have",
+            "end": "they are actually influential."
+          }
+        },
+        {
+          "text": "Cook's distance depends on both a point's residual and its leverage, so both its x value and its y value play a role.",
+          "sourceId": "psu501-11",
+          "locator": "11.5, Cook's distance measure",
+          "anchor": {
+            "start": "It looks a little messy",
+            "end": "calculation of Cook's distance."
+          }
+        },
+        {
+          "text": "Common guidelines: a Cook's distance above 0.5 is worth investigating, above 1 is quite likely influential, and one that sticks out from the rest is almost certainly influential.",
+          "sourceId": "psu501-11",
+          "locator": "11.5, Using Cook's distance measures",
+          "anchor": {
+            "start": "Here are the guidelines commonly used:",
+            "end": "it is almost certainly influential."
+          }
+        },
+        {
+          "text": "These measures only flag potentially influential points; the analyst should analyse the data with and without them and, if the outcome changes significantly, report both analyses.",
+          "sourceId": "psu501-11",
+          "locator": "11.5, Identifying Influential Data Points",
+          "anchor": {
+            "start": "It all comes down to recognizing",
+            "end": "results of both analyses."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Any outlier or high-leverage point is influential.",
+          "correction": "Outliers and high-leverage points have the potential to be influential, but further investigation is generally needed to tell whether they actually are.",
+          "sourceId": "psu501-11",
+          "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
+          "anchor": {
+            "start": "Outliers and high-leverage data points have",
+            "end": "they are actually influential."
+          }
+        }
+      ],
+      "aliases": [
+        "influential point",
+        "Cook's D"
+      ]
+    },
+    {
+      "id": "novelty_vs_outlier",
+      "title": "Novelty detection versus outlier detection",
+      "outcome": "Decide whether a task is outlier detection on contaminated data or novelty detection on clean training data, and what each assumes about the anomalies.",
+      "keyPoints": [
+        {
+          "text": "In outlier detection the training data contain outliers, and the estimator tries to fit the regions where the data are most concentrated, ignoring the deviant observations.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "The training data contains outliers which",
+            "end": "ignoring the deviant observations."
+          }
+        },
+        {
+          "text": "In novelty detection the training data are not polluted by outliers, and the question is whether a new observation is an outlier, which is then called a novelty.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "The training data is not polluted",
+            "end": "is also called a novelty."
+          }
+        },
+        {
+          "text": "Outlier detection is also known as unsupervised anomaly detection, and novelty detection as semi-supervised anomaly detection.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "Outlier detection is then also known",
+            "end": "semi-supervised anomaly detection."
+          }
+        },
+        {
+          "text": "In outlier detection the anomalies cannot form a dense cluster, because the estimators assume they sit in low-density regions; in novelty detection they can, as long as they fall in a low-density region of the training data.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "In the context of outlier detection,",
+            "end": "considered as normal in this context."
+          }
+        },
+        {
+          "text": "Novelty detection learns a rough frontier around the training observations: new points inside it are treated as coming from the same population, and points outside it as abnormal.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.2, Novelty Detection",
+          "anchor": {
+            "start": "In general, it is about to",
+            "end": "a given confidence in our assessment."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "An outlier detector can pick out a tight cluster of anomalies hidden in its training data.",
+          "correction": "In outlier detection the anomalies cannot form a dense cluster, because the available estimators assume anomalies lie in low-density regions.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "In the context of outlier detection,",
+            "end": "considered as normal in this context."
+          }
+        }
+      ],
+      "aliases": [
+        "anomaly detection",
+        "novelty"
+      ]
+    },
+    {
+      "id": "local_outlier_factor",
+      "title": "Local Outlier Factor: density compared with neighbours",
+      "outcome": "Explain how LOF scores a point by comparing its local density with its neighbours', and how to choose the number of neighbours.",
+      "keyPoints": [
+        {
+          "text": "LOF measures how far a point's local density deviates from that of its neighbours, aiming to find points with substantially lower density than their neighbours.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.3, Local Outlier Factor",
+          "anchor": {
+            "start": "It measures the local density deviation",
+            "end": "lower density than their neighbors."
+          }
+        },
+        {
+          "text": "Local density comes from the k nearest neighbours; the LOF score is the ratio of the neighbours' average local density to the point's own, so normal points resemble their neighbours and abnormal ones have much lower density.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.3, Local Outlier Factor",
+          "anchor": {
+            "start": "In practice the local density is",
+            "end": "much smaller local density."
+          }
+        },
+        {
+          "text": "Taking 20 neighbours appears to work well in general, but when outliers make up a high proportion of the data, more than 10%, more neighbours should be used.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.3, Local Outlier Factor",
+          "anchor": {
+            "start": "such information is generally not available",
+            "end": "n_neighbors should be greater"
+          }
+        },
+        {
+          "text": "LOF takes both local and global properties of a data set into account, so it can work even when abnormal points have different underlying densities: what matters is how isolated a point is relative to its neighbourhood.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.3, Local Outlier Factor",
+          "anchor": {
+            "start": "The strength of the LOF algorithm",
+            "end": "the surrounding neighborhood."
+          }
+        },
+        {
+          "text": "LOF must compute pairwise distances to find nearest neighbours, so its cost grows quadratically with the number of observations, which can make it prohibitive on large data sets.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Plot and interpret results",
+          "anchor": {
+            "start": "LOF needs to compute pairwise distances",
+            "end": "prohibitive on large datasets."
+          }
+        }
+      ],
+      "aliases": [
+        "LOF"
+      ]
+    },
+    {
+      "id": "isolation_forest",
+      "title": "Isolation Forest",
+      "outcome": "Explain how Isolation Forest isolates points with random splits, and why short average path lengths signal anomalies.",
+      "keyPoints": [
+        {
+          "text": "Isolation Forest isolates observations by randomly choosing a feature and then a random split value between that feature's maximum and minimum.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.2, Isolation Forest",
+          "anchor": {
+            "start": "observations by randomly selecting a feature",
+            "end": "values of the selected feature."
+          }
+        },
+        {
+          "text": "The number of splits needed to isolate a sample equals its path length from the root of a tree, and that path length averaged over a forest of random trees measures normality.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.2, Isolation Forest",
+          "anchor": {
+            "start": "Since recursive partitioning can be represented",
+            "end": "normality and our decision function."
+          }
+        },
+        {
+          "text": "Random partitioning gives anomalies noticeably shorter paths, so samples with short path lengths across the forest are highly likely to be anomalies.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.2, Isolation Forest",
+          "anchor": {
+            "start": "Random partitioning produces noticeably shorter",
+            "end": "highly likely to be anomalies."
+          }
+        },
+        {
+          "text": "Isolation Forest is presented as an efficient way to detect outliers in high-dimensional data sets, built on forests of random trees.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.2, Isolation Forest",
+          "anchor": {
+            "start": "One efficient way of performing outlier",
+            "end": "is to use random forests."
+          }
+        },
+        {
+          "text": "Isolation Forest tends to train much faster than LOF on data sets with a large number of samples.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Plot and interpret results",
+          "anchor": {
+            "start": "Recall however that Isolation Forest",
+            "end": "large number of samples."
+          }
+        }
+      ],
+      "aliases": [
+        "IsolationForest",
+        "iForest"
+      ]
+    },
+    {
+      "id": "scores_and_thresholds",
+      "title": "Scores, thresholds and the contamination rate",
+      "outcome": "Explain how a detector turns a continuous outlier score into labels, and what setting the contamination rate does.",
+      "keyPoints": [
+        {
+          "text": "A fitted detector's predict method labels inliers 1 and outliers -1 by applying a threshold to its raw scoring function, and the contamination parameter controls that threshold.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "Inliers are labeled 1, while outliers",
+            "end": "by the contamination parameter."
+          }
+        },
+        {
+          "text": "The decision function is defined from the scoring function so that negative values are outliers and non-negative values are inliers.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7, Novelty and Outlier Detection",
+          "anchor": {
+            "start": "The decision_function method is also defined",
+            "end": "non-negative ones are inliers"
+          }
+        },
+        {
+          "text": "Contamination is the proportion of outliers in the data set, used when fitting to set the threshold on the scores; left on 'auto', Isolation Forest sets the threshold as in its original paper.",
+          "sourceId": "sklearn-iforest-api",
+          "locator": "Parameters: contamination",
+          "anchor": {
+            "start": "The amount of contamination of the",
+            "end": "as in the original paper."
+          }
+        },
+        {
+          "text": "When LOF's contamination is set, the threshold is the corresponding percentile of the training samples' scores, and samples scoring strictly below it are classed as outliers.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.3.3, Local Outlier Factor",
+          "anchor": {
+            "start": "When the contamination parameter is set,",
+            "end": "are classified as outliers."
+          }
+        }
+      ],
+      "aliases": [
+        "contamination",
+        "decision threshold"
+      ]
+    },
+    {
+      "id": "evaluating_detectors",
+      "title": "Evaluating detectors when labels are rare",
+      "outcome": "Evaluate an outlier detector against known labels with ROC or precision-recall curves, and explain why precision and recall suit rare outliers.",
+      "keyPoints": [
+        {
+          "text": "In scikit-learn's benchmark, detectors were trained without labels on data assumed to contain outliers, then judged by ROC curves and ROC-AUC computed from the known ground-truth labels.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "The algorithms are trained (without labels)",
+            "end": "in terms of the ROC-AUC."
+          }
+        },
+        {
+          "text": "Precision-recall is a useful measure of prediction success when the classes are very imbalanced.",
+          "sourceId": "sklearn-pr",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "Precision-Recall is a useful measure",
+            "end": "classes are very imbalanced."
+          }
+        },
+        {
+          "text": "Precision is the fraction of returned items that are relevant, and recall is the fraction of all relevant items that were returned.",
+          "sourceId": "sklearn-pr",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "In information retrieval, precision is a",
+            "end": "should have been returned."
+          }
+        },
+        {
+          "text": "The precision-recall curve shows the trade-off between precision and recall across thresholds; high precision means few false positives, and high recall means few false negatives.",
+          "sourceId": "sklearn-pr",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "The precision-recall curve shows the tradeoff",
+            "end": "negatives in the relevant results."
+          }
+        },
+        {
+          "text": "A system with high recall but low precision returns most relevant items but many wrongly labelled ones; one with high precision but low recall returns few relevant items, though most of its labels are correct.",
+          "sourceId": "sklearn-pr",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "A system with high recall but",
+            "end": "compared to the actual labels."
+          }
+        }
+      ]
+    },
+    {
+      "id": "choosing_detectors",
+      "title": "Comparing and preparing detectors",
+      "outcome": "Pick a reasonable detector for a data set and prepare its features, knowing that no single method wins everywhere.",
+      "keyPoints": [
+        {
+          "text": "On scikit-learn's comparison data sets, Isolation Forest and LOF perform reasonably well, while One-Class SVM, being sensitive to outliers, does not do very well at outlier detection.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.1, Overview of outlier detection methods",
+          "anchor": {
+            "start": "ensemble.IsolationForest and neighbors.LocalOutlierFactor perform",
+            "end": "very well for outlier detection."
+          }
+        },
+        {
+          "text": "Outlier detection in high dimensions, or without any assumptions about the distribution of the inlying data, is very challenging.",
+          "sourceId": "sklearn-outliers",
+          "locator": "2.7.1, Overview of outlier detection methods",
+          "anchor": {
+            "start": "That being said, outlier detection in",
+            "end": "is very challenging."
+          }
+        },
+        {
+          "text": "A benchmark of LOF and Isolation Forest set out to show that different algorithms perform well on different data sets, and that they differ in training speed and sensitivity to hyperparameters.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "The goal is to show that",
+            "end": "sensitivity to hyperparameters."
+          }
+        },
+        {
+          "text": "Different detectors need different preprocessing: ordinal encoding of categories often suits tree-based models such as Isolation Forest, while neighbour-based models such as LOF are better served by one-hot encoding.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Dataset preprocessing and model training",
+          "anchor": {
+            "start": "Different outlier detection models require different",
+            "end": "should rather use OneHotEncoder."
+          }
+        },
+        {
+          "text": "Neighbour-based models may also need their numerical features scaled, and when outliers are present a robust scaler is a good option.",
+          "sourceId": "sklearn-outlier-bench",
+          "locator": "Dataset preprocessing and model training",
+          "anchor": {
+            "start": "Neighbors-based models may also require scaling",
+            "end": "option is to use a RobustScaler."
+          }
+        }
+      ]
+    },
+    {
+      "id": "handling_strategy",
+      "title": "What to do with an outlier",
+      "outcome": "Work through a defensible decision for a problem point: correct it, delete it with a reason, revisit the model, or report the analysis both ways.",
+      "keyPoints": [
+        {
+          "text": "Start by checking for obvious data errors: correct a data entry or collection error, and delete a point that is not representative of the intended population or is invalidated by a procedural error.",
+          "sourceId": "psu501-11",
+          "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
+          "anchor": {
+            "start": "First, check for obvious data errors:",
+            "end": "invalidates the measurement, delete it."
+          }
+        },
+        {
+          "text": "Next, consider whether the model itself is wrong: an important predictor left out, interaction terms missing, or nonlinearity that needs modelling.",
+          "sourceId": "psu501-11",
+          "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
+          "anchor": {
+            "start": "Consider the possibility that you might",
+            "end": "nonlinearity that needs to be modeled?"
+          }
+        },
+        {
+          "text": "If you are unsure what to do about a point, analyse the data twice, once with and once without it, and report both results.",
+          "sourceId": "psu501-11",
+          "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
+          "anchor": {
+            "start": "If you are not sure what",
+            "end": "results of both analyses."
+          }
+        },
+        {
+          "text": "The various measures can reach different conclusions about how extreme a point is, so they are best used only to screen a data set for potentially influential points.",
+          "sourceId": "psu501-11",
+          "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
+          "anchor": {
+            "start": "That is, the various measures that",
+            "end": "potentially influential data points."
+          }
+        }
+      ]
+    },
+    {
+      "id": "robust_methods",
+      "title": "Robust methods: accommodating outliers",
+      "outcome": "Choose a robust method that limits outliers' pull on an analysis instead of deleting them, and know its limits.",
+      "keyPoints": [
+        {
+          "text": "Robust techniques may be warranted instead, since they often downweight the effect of outlying points without deleting them.",
+          "sourceId": "nist-esd",
+          "locator": "1.3.5.17.3, Importance",
+          "anchor": {
+            "start": "However, the use of more robust",
+            "end": "without deleting them."
+          }
+        },
+        {
+          "text": "Robust regression aims to fit a regression model when the data are corrupted, either by outliers or by error in the model.",
+          "sourceId": "sklearn-linear",
+          "locator": "1.1.14, Robustness regression",
+          "anchor": {
+            "start": "Robust regression aims to fit a",
+            "end": "or error in the model."
+          }
+        },
+        {
+          "text": "In robust fitting, both the number of outlying points and how far out they are matter; the breakdown point is the fraction of outlying data at which the fit starts missing the inliers.",
+          "sourceId": "sklearn-linear",
+          "locator": "1.1.14.1, Different scenario and useful concepts",
+          "anchor": {
+            "start": "The number of outlying points matters",
+            "end": "missing the inlying data."
+          }
+        },
+        {
+          "text": "Huber regression does not ignore outliers but gives them less weight, applying a linear loss to samples whose absolute error is not below a threshold.",
+          "sourceId": "sklearn-linear",
+          "locator": "1.1.14.4, Huber Regression",
+          "anchor": {
+            "start": "The HuberRegressor is different from Ridge",
+            "end": "gives a lesser weight to them."
+          }
+        },
+        {
+          "text": "Robust fitting is very hard in high-dimensional settings, where these robust regression models will probably not work.",
+          "sourceId": "sklearn-linear",
+          "locator": "1.1.14.1, Different scenario and useful concepts",
+          "anchor": {
+            "start": "Note that in general, robust fitting",
+            "end": "probably not work in these settings."
+          }
+        }
+      ],
+      "aliases": [
+        "robust regression",
+        "Huber loss",
+        "breakdown point"
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "outlier_definition",
+      "after": "outlier_causes",
+      "reason": "The causes of outliers presume knowing what an outlier is."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "why_outliers_matter",
+      "reason": "Why outliers matter presumes knowing what one is."
+    },
+    {
+      "before": "outlier_causes",
+      "after": "dont_delete_blindly",
+      "reason": "Whether to delete a point depends on what may have caused it."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "three_tasks",
+      "reason": "Labelling, accommodation and identification are things done to outliers."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "graphical_screening",
+      "reason": "Spotting outliers in a graph presumes knowing what one is."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "z_scores",
+      "reason": "A z-score is a first rule for flagging an outlier."
+    },
+    {
+      "before": "graphical_screening",
+      "after": "iqr_fences",
+      "reason": "Fences refine the box plot met as a screening graph."
+    },
+    {
+      "before": "z_scores",
+      "after": "robust_z_mad",
+      "reason": "The modified z-score replaces the z-score's mean and standard deviation."
+    },
+    {
+      "before": "iqr_fences",
+      "after": "robust_z_mad",
+      "reason": "Robust scaling uses the interquartile range."
+    },
+    {
+      "before": "graphical_screening",
+      "after": "normality_assumption",
+      "reason": "Checking normality relies on the normal probability plot."
+    },
+    {
+      "before": "z_scores",
+      "after": "grubbs_test",
+      "reason": "The Grubbs statistic is a largest deviation in standard deviation units."
+    },
+    {
+      "before": "normality_assumption",
+      "after": "grubbs_test",
+      "reason": "Grubbs' test assumes roughly normal data."
+    },
+    {
+      "before": "three_tasks",
+      "after": "grubbs_test",
+      "reason": "Formal tests are the identification task."
+    },
+    {
+      "before": "grubbs_test",
+      "after": "masking_swamping",
+      "reason": "Masking is explained through single-outlier tests applied in sequence."
+    },
+    {
+      "before": "grubbs_test",
+      "after": "generalized_esd",
+      "reason": "The generalized ESD test extends Grubbs' test to several outliers."
+    },
+    {
+      "before": "masking_swamping",
+      "after": "generalized_esd",
+      "reason": "The ESD test is preferred partly because it copes better with masking."
+    },
+    {
+      "before": "z_scores",
+      "after": "mahalanobis_distance",
+      "reason": "Mahalanobis distance generalises standardised distance to several variables."
+    },
+    {
+      "before": "mahalanobis_distance",
+      "after": "robust_covariance",
+      "reason": "Robust covariance fixes the Mahalanobis distance's sensitivity to outliers."
+    },
+    {
+      "before": "masking_swamping",
+      "after": "robust_covariance",
+      "reason": "Ordinary estimates can mask contaminating points."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "regression_outliers",
+      "reason": "A regression outlier is a special case of an outlier."
+    },
+    {
+      "before": "z_scores",
+      "after": "regression_outliers",
+      "reason": "Studentized residuals use standard deviation units."
+    },
+    {
+      "before": "regression_outliers",
+      "after": "leverage",
+      "reason": "Leverage is defined against the regression outlier."
+    },
+    {
+      "before": "regression_outliers",
+      "after": "influence_cooks",
+      "reason": "Influence combines unusual responses with leverage."
+    },
+    {
+      "before": "leverage",
+      "after": "influence_cooks",
+      "reason": "Cook's distance depends on leverage."
+    },
+    {
+      "before": "outlier_definition",
+      "after": "novelty_vs_outlier",
+      "reason": "The two tasks differ in where the outliers are."
+    },
+    {
+      "before": "novelty_vs_outlier",
+      "after": "local_outlier_factor",
+      "reason": "LOF behaves differently in outlier and novelty detection."
+    },
+    {
+      "before": "novelty_vs_outlier",
+      "after": "isolation_forest",
+      "reason": "Isolation Forest is an outlier detection estimator."
+    },
+    {
+      "before": "local_outlier_factor",
+      "after": "scores_and_thresholds",
+      "reason": "Thresholds act on a detector's scores, such as LOF's."
+    },
+    {
+      "before": "isolation_forest",
+      "after": "scores_and_thresholds",
+      "reason": "Contamination is set on detectors such as Isolation Forest."
+    },
+    {
+      "before": "scores_and_thresholds",
+      "after": "evaluating_detectors",
+      "reason": "Precision and recall depend on where the threshold sits."
+    },
+    {
+      "before": "local_outlier_factor",
+      "after": "choosing_detectors",
+      "reason": "Choosing a detector compares LOF with the others."
+    },
+    {
+      "before": "isolation_forest",
+      "after": "choosing_detectors",
+      "reason": "Choosing a detector compares Isolation Forest with the others."
+    },
+    {
+      "before": "robust_covariance",
+      "after": "choosing_detectors",
+      "reason": "The elliptic envelope is one of the detectors compared."
+    },
+    {
+      "before": "robust_z_mad",
+      "after": "choosing_detectors",
+      "reason": "Robust scaling is part of preparing features."
+    },
+    {
+      "before": "evaluating_detectors",
+      "after": "choosing_detectors",
+      "reason": "Comparing detectors relies on evaluating them."
+    },
+    {
+      "before": "dont_delete_blindly",
+      "after": "handling_strategy",
+      "reason": "The strategy builds on when deletion is justified."
+    },
+    {
+      "before": "influence_cooks",
+      "after": "handling_strategy",
+      "reason": "The strategy deals with points flagged as influential."
+    },
+    {
+      "before": "three_tasks",
+      "after": "robust_methods",
+      "reason": "Robust methods are the accommodation task."
+    },
+    {
+      "before": "robust_z_mad",
+      "after": "robust_methods",
+      "reason": "Robust methods build on robust summaries such as the median."
+    },
+    {
+      "before": "handling_strategy",
+      "after": "robust_methods",
+      "reason": "Robust methods are the option when deletion is not justified."
+    }
+  ]
 }
