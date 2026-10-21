@@ -416,7 +416,7 @@
           }
         },
         {
-          "text": "The inner fences sit 1.5 interquartile ranges below the lower quartile and above the upper quartile, and the outer fences sit 3 interquartile ranges beyond them.",
+          "text": "The inner fences sit 1.5 interquartile ranges below the lower quartile and above the upper quartile, and the outer fences sit 3 interquartile ranges from the quartiles.",
           "sourceId": "nist-what-outliers",
           "locator": "7.1.6, Box plots with fences",
           "anchor": {
@@ -455,7 +455,7 @@
       "outcome": "Compute a modified z-score from the median and the median absolute deviation, and explain why such robust summaries resist the very outliers being looked for.",
       "keyPoints": [
         {
-          "text": "Iglewicz and Hoaglin recommend a modified z-score, which scales an observation's distance from the median by the median absolute deviation (MAD).",
+          "text": "A recommended alternative is the modified z-score, which scales an observation's distance from the median by the median absolute deviation (MAD).",
           "sourceId": "nist-outliers",
           "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
           "anchor": {
@@ -464,7 +464,7 @@
           }
         },
         {
-          "text": "They recommend labelling observations whose modified z-score exceeds 3.5 in absolute value as potential outliers.",
+          "text": "The recommendation is to label observations whose modified z-score exceeds 3.5 in absolute value as potential outliers.",
           "sourceId": "nist-outliers",
           "locator": "1.3.5.17, Z-Scores and Modified Z-Scores",
           "anchor": {
@@ -502,7 +502,7 @@
       "outcome": "Explain why the formal outlier tests assume roughly normal data, how to check that first, and what to do with lognormal data.",
       "keyPoints": [
         {
-          "text": "Whether an observation counts as an outlier depends on the distribution assumed for the data; the tests discussed assume univariate data that are roughly normal.",
+          "text": "Whether an observation counts as an outlier depends on the distribution assumed for the data; the discussion is limited to univariate data assumed to be roughly normal.",
           "sourceId": "nist-outliers",
           "locator": "1.3.5.17, Normality Assumption",
           "anchor": {
@@ -561,7 +561,7 @@
           "sourceId": "nist-grubbs",
           "locator": "1.3.5.17.1, Purpose",
           "anchor": {
-            "start": "is used to detect a single",
+            "start": "Grubbs' test (Grubbs 1969 and",
             "end": "approximately normal distribution."
           }
         },
@@ -579,7 +579,7 @@
           "sourceId": "nist-grubbs",
           "locator": "1.3.5.17.1, Test Statistic",
           "anchor": {
-            "start": "test statistic is the largest",
+            "start": "Grubbs' test statistic is the largest",
             "end": "of the sample standard deviation."
           }
         },
@@ -588,7 +588,7 @@
           "sourceId": "nist-grubbs",
           "locator": "1.3.5.17.1, Test Statistic",
           "anchor": {
-            "start": "test can also be defined as",
+            "start": "Grubbs' test can also be defined",
             "end": "maximum value is an outlier"
           }
         },
@@ -677,7 +677,7 @@
           "sourceId": "nist-outliers",
           "locator": "1.3.5.17, Formal Outlier Tests",
           "anchor": {
-            "start": "this test requires only an upper",
+            "start": "(ESD) Test - this test requires",
             "end": "of outliers is not known."
           }
         },
@@ -691,11 +691,11 @@
           }
         },
         {
-          "text": "The number of outliers it reports is the largest number tested for which the test statistic exceeds its critical value.",
+          "text": "Each of the r test statistics gets its own critical value, and the number of outliers reported is the largest number tested whose statistic exceeds its critical value.",
           "sourceId": "nist-esd",
           "locator": "1.3.5.17.3, Critical Region",
           "anchor": {
-            "start": "The number of outliers is determined",
+            "start": "Corresponding to the r test statistics,",
             "end": "such that Ri > λi."
           }
         },
@@ -742,7 +742,7 @@
           "sourceId": "psu505-04",
           "locator": "4.4, Multivariate Normality and Outliers",
           "anchor": {
-            "start": "can be used to picture the",
+            "start": "A Q-Q plot can be used",
             "end": "than the chi-square quantile value."
           }
         }
@@ -754,7 +754,7 @@
       "outcome": "Explain why Mahalanobis distances need a robust covariance estimate such as MCD, and how an elliptic envelope uses one to flag outliers.",
       "keyPoints": [
         {
-          "text": "The standard maximum likelihood covariance estimate is very sensitive to outliers, and so are the Mahalanobis distances built on it; a robust estimate keeps the distances true to how the data are organised.",
+          "text": "The standard maximum likelihood covariance estimate is very sensitive to outliers, and so are the Mahalanobis distances built on it, so a robust estimator is preferable for the distances to reflect the true organisation of the data.",
           "sourceId": "sklearn-mahalanobis",
           "locator": "Introduction",
           "anchor": {
@@ -938,7 +938,7 @@
           "sourceId": "psu501-11",
           "locator": "11.1, Distinction Between Outliers & High Leverage Observations",
           "anchor": {
-            "start": "unduly influences any part of regression",
+            "start": "the x values. A data point",
             "end": "the hypothesis test results."
           }
         },
@@ -1006,7 +1006,7 @@
           "sourceId": "sklearn-outliers",
           "locator": "2.7, Novelty and Outlier Detection",
           "anchor": {
-            "start": "The training data contains outliers which",
+            "start": "outlier detection: The training data",
             "end": "ignoring the deviant observations."
           }
         },
@@ -1015,7 +1015,7 @@
           "sourceId": "sklearn-outliers",
           "locator": "2.7, Novelty and Outlier Detection",
           "anchor": {
-            "start": "The training data is not polluted",
+            "start": "novelty detection: The training data",
             "end": "is also called a novelty."
           }
         },
@@ -1042,7 +1042,7 @@
           "sourceId": "sklearn-outliers",
           "locator": "2.7.2, Novelty Detection",
           "anchor": {
-            "start": "In general, it is about to",
+            "start": "This is the question addressed by",
             "end": "a given confidence in our assessment."
           }
         }
@@ -1070,11 +1070,11 @@
       "outcome": "Explain how LOF scores a point by comparing its local density with its neighbours', and how to choose the number of neighbours.",
       "keyPoints": [
         {
-          "text": "LOF measures how far a point's local density deviates from that of its neighbours, aiming to find points with substantially lower density than their neighbours.",
+          "text": "The Local Outlier Factor scores how abnormal each observation is by measuring how far its local density deviates from that of its neighbours, aiming to find points with substantially lower density than their neighbours.",
           "sourceId": "sklearn-outliers",
           "locator": "2.7.3.3, Local Outlier Factor",
           "anchor": {
-            "start": "It measures the local density deviation",
+            "start": "(LOF) algorithm computes a score",
             "end": "lower density than their neighbors."
           }
         },
@@ -1129,7 +1129,7 @@
           "sourceId": "sklearn-outliers",
           "locator": "2.7.3.2, Isolation Forest",
           "anchor": {
-            "start": "observations by randomly selecting a feature",
+            "start": "The ensemble.IsolationForest 'isolates' observations by",
             "end": "values of the selected feature."
           }
         },
@@ -1199,7 +1199,7 @@
           }
         },
         {
-          "text": "Contamination is the proportion of outliers in the data set, used when fitting to set the threshold on the scores; left on 'auto', Isolation Forest sets the threshold as in its original paper.",
+          "text": "Contamination is the proportion of outliers in the data set, used when fitting to set the threshold on the scores; left on 'auto', the threshold is set as in the method's original paper.",
           "sourceId": "sklearn-iforest-api",
           "locator": "Parameters: contamination",
           "anchor": {
@@ -1208,7 +1208,7 @@
           }
         },
         {
-          "text": "When LOF's contamination is set, the threshold is the corresponding percentile of the training samples' scores, and samples scoring strictly below it are classed as outliers.",
+          "text": "When the contamination parameter is set, the threshold is the corresponding percentile of the training data's outlier-factor scores, and samples scoring strictly below it are classed as outliers.",
           "sourceId": "sklearn-outliers",
           "locator": "2.7.3.3, Local Outlier Factor",
           "anchor": {
@@ -1298,7 +1298,7 @@
           }
         },
         {
-          "text": "A benchmark of LOF and Isolation Forest set out to show that different algorithms perform well on different data sets, and that they differ in training speed and sensitivity to hyperparameters.",
+          "text": "One benchmark set out to show that different algorithms perform well on different data sets, and to contrast their training speed and sensitivity to hyperparameters.",
           "sourceId": "sklearn-outlier-bench",
           "locator": "Introduction",
           "anchor": {
@@ -1341,7 +1341,7 @@
           }
         },
         {
-          "text": "Next, consider whether the model itself is wrong: an important predictor left out, interaction terms missing, or nonlinearity that needs modelling.",
+          "text": "Consider whether the model itself is wrong: an important predictor left out, interaction terms missing, or nonlinearity that needs modelling.",
           "sourceId": "psu501-11",
           "locator": "11.7, A Strategy for Dealing with Problematic Data Points",
           "anchor": {
@@ -1375,7 +1375,7 @@
       "outcome": "Choose a robust method that limits outliers' pull on an analysis instead of deleting them, and know its limits.",
       "keyPoints": [
         {
-          "text": "Robust techniques may be warranted instead, since they often downweight the effect of outlying points without deleting them.",
+          "text": "More robust techniques may be warranted, and they often downweight the effect of outlying points without deleting them.",
           "sourceId": "nist-esd",
           "locator": "1.3.5.17.3, Importance",
           "anchor": {
