@@ -1,7 +1,7 @@
 {
   "id": "outlier-detection",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Outlier detection: finding, testing and handling unusual observations in data",
   "outOfScope": [
     "Deep-learning anomaly detection, such as autoencoders",
