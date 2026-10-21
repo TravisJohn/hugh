@@ -1157,7 +1157,7 @@
           "locator": "2.7.3.2, Isolation Forest",
           "anchor": {
             "start": "One efficient way of performing outlier",
-            "end": "is to use random forests."
+            "end": "The ensemble.IsolationForest 'isolates' observations"
           }
         },
         {
