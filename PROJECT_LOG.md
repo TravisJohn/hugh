@@ -9126,3 +9126,25 @@ versus confidence intervals; hypothesis tests and Bayes factors; Bayesian
 A/B testing (pairs with the A/B course); MCMC; and posterior predictive
 checks. Filed under Statistics; its 25 concept ids and 13 card ids are
 locked.
+
+## 2026-10-21 - Outlier detection joins the catalog (cards approved on Travis's behalf)
+
+The fourth and last course from the autonomous run, authored from 14
+sources (the NIST/SEMATECH e-Handbook, scikit-learn, Penn State Statistics)
+over three judge runs, widening anchors that did not carry their subjects. I
+checked it myself:
+- It is machine-checked: 117/117 items supported and 14/14 planted errors
+  caught.
+- Its 12 cards cover all 26 concepts and respect all 40 prerequisites.
+
+I approved the card order for Travis, pending his review. It runs the way a
+careful analyst works: what an outlier is, why not to delete blindly, look
+first, simple rules and robust z-scores, formal tests (Grubbs, generalized
+ESD), masking and swamping, multivariate outliers, regression influence, then
+the ML detectors (LOF, Isolation Forest), evaluating detectors, and deciding
+what to do with an outlier.
+
+The region is a judgement call for Travis: the content is mostly
+statistical, so it is filed under Statistics, with Analytics the other
+reasonable home. Its 26 concept ids and 12 card ids are locked. The run is
+complete: four new courses on feat/more-courses, nine in all.
