@@ -9148,3 +9148,33 @@ The region is a judgement call for Travis: the content is mostly
 statistical, so it is filed under Statistics, with Analytics the other
 reasonable home. Its 26 concept ids and 12 card ids are locked. The run is
 complete: four new courses on feat/more-courses, nine in all.
+
+## 2026-10-21 - Clustering joins the catalog
+
+Travis approved the 10-card order as drafted:
+1. what clustering is
+2. measuring similarity
+3. how k-means works
+4. k-means in practice
+5. choosing the number of clusters
+6. hierarchical clustering
+7. beyond k-means: DBSCAN and Gaussian mixtures
+8. evaluating clusters
+9. stability and interpreting clusters
+10. high-dimensional data and PCA
+
+It is the first course filed under the Machine Learning region; the other
+three are under Statistics. `content/packs/ids/clustering.json` locks its 24
+concept ids and 10 card ids. The branch was brought up to date with main
+(Time series forecasting) before listing, and the conflicts were only the
+appended log and the README table. The catalog now has four courses.
+
+## 2026-10-21 - Clustering: approved by Travis directly (PR #33)
+
+Travis reviewed the Clustering pack himself in its authoring session,
+approved its card order, and merged it to main as PR #33. That supersedes
+the "approved by Claude on Travis's behalf" note in the Clustering entry
+above. The pack and its id lock are identical in both, so feat/more-courses
+took main in with no change to Clustering. Draft PR #32 now carries the three
+courses still approved only on his behalf, pending his review: Decision trees,
+Bayesian inference and Outlier detection.
