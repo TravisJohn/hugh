@@ -9106,3 +9106,23 @@ pruning uses cross-validation), pruning, instability and ensembles, bagging
 and random forests, out-of-bag checks, boosting, feature importance (four
 misconceptions, the trap-heavy card), and trees versus linear models. Filed
 under Machine Learning; its 27 concept ids and 12 card ids are locked.
+
+## 2026-10-21 - Bayesian inference joins the catalog (cards approved on Travis's behalf)
+
+The third course from the autonomous run, authored from 16 sources: Penn
+State Statistics, Bayes Rules!, Poldrack's Statistical Thinking for the 21st
+Century, NIST/SEMATECH and Evan Miller. Some of the books carry
+non-commercial licences; as with Penn State, the pack stores only our own
+wording and 2-6-word anchors. I checked it myself:
+- It is machine-checked: 129/129 items supported and 18/18 planted errors
+  caught on run 2.
+- Its 13 cards cover all 25 concepts and respect all 34 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+Bayes' theorem and base rates, then prior, likelihood, evidence and
+posterior; the beta-binomial worked case; how prior and data share the
+posterior; choosing a prior; summarising the posterior, including credible
+versus confidence intervals; hypothesis tests and Bayes factors; Bayesian
+A/B testing (pairs with the A/B course); MCMC; and posterior predictive
+checks. Filed under Statistics; its 25 concept ids and 13 card ids are
+locked.
