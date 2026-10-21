@@ -1,0 +1,31 @@
+{
+  "packId": "neural-networks",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "why_nonlinearity:2",
+      "type": "negation",
+      "sentence": "A hidden layer without a non-linearity adds real expressive power, because an affine function of an affine function is no longer affine."
+    },
+    {
+      "ref": "weight_initialisation:4",
+      "type": "overstatement",
+      "sentence": "If you do not specify an initialisation method, deep learning frameworks use a default random initialisation, which guarantees the best possible result on every problem."
+    },
+    {
+      "ref": "batches_epochs:4",
+      "type": "wrong_number_or_direction",
+      "sentence": "An epoch means the model has processed every training example once; with 1,000 examples and a mini-batch size of 100, one epoch takes 100 iterations."
+    },
+    {
+      "ref": "activation_functions:3",
+      "type": "unsupported_addition",
+      "sentence": "ReLU often works a little better than sigmoid or tanh because it is less susceptible to the vanishing gradient problem, and it was designed specifically for image classifiers."
+    },
+    {
+      "ref": "overfitting_nn:2",
+      "type": "causal_from_association",
+      "sentence": "When training loss keeps falling while validation loss rises, the falling training loss is what causes the validation loss to rise."
+    }
+  ]
+}
