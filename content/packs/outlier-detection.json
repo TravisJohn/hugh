@@ -1,0 +1,125 @@
+{
+  "id": "outlier-detection",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Outlier detection: finding, testing and handling unusual observations in data",
+  "outOfScope": [
+    "Deep-learning anomaly detection, such as autoencoders",
+    "Streaming and real-time anomaly detection",
+    "Time-series anomaly detection methods in depth, beyond a single unusual value in a series",
+    "Engineering fraud-detection or intrusion-detection systems",
+    "The mathematics of One-Class SVM, such as kernels and the optimisation behind it",
+    "Computing formal outlier tests by hand, such as tables of critical values"
+  ],
+  "sources": [
+    {
+      "id": "nist-outliers",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.17: Detection of Outliers",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "nist-grubbs",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.17.1: Grubbs' Test for Outliers",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h1.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "nist-esd",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.17.3: Generalized ESD Test for Outliers",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h3.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "nist-boxplot",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.7: Box Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/boxplot.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "nist-what-outliers",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 7.1.6: What are outliers in the data?",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-outliers",
+      "title": "scikit-learn User Guide, 2.7: Novelty and Outlier Detection",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/outlier_detection.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-iforest-api",
+      "title": "scikit-learn API reference: sklearn.ensemble.IsolationForest",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-mahalanobis",
+      "title": "scikit-learn example: Robust covariance estimation and Mahalanobis distances relevance",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/covariance/plot_mahalanobis_distances.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-covariance",
+      "title": "scikit-learn User Guide, 2.6: Covariance estimation",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/covariance.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-outlier-bench",
+      "title": "scikit-learn example: Evaluation of outlier detection estimators",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/miscellaneous/plot_outlier_detection_bench.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-pr",
+      "title": "scikit-learn example: Precision-Recall",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_precision_recall.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "sklearn-linear",
+      "title": "scikit-learn User Guide, 1.1: Linear Models",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "license": "BSD-3-Clause",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "psu501-11",
+      "title": "STAT 501 Lesson 11: Influential Points",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat501/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    },
+    {
+      "id": "psu505-04",
+      "title": "STAT 505 Lesson 4: Multivariate Normal Distribution",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat505/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-21"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
