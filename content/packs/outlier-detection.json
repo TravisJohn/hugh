@@ -1629,6 +1629,106 @@
       "reason": "Robust methods are the option when deletion is not justified."
     }
   ],
+  "cards": [
+    {
+      "id": "what-is-an-outlier",
+      "title": "What an outlier is, and why it matters",
+      "conceptIds": [
+        "outlier_definition",
+        "outlier_causes",
+        "why_outliers_matter"
+      ]
+    },
+    {
+      "id": "before-you-delete",
+      "title": "Before you delete anything",
+      "conceptIds": [
+        "dont_delete_blindly",
+        "three_tasks"
+      ]
+    },
+    {
+      "id": "look-first",
+      "title": "Look first: plots and box-plot fences",
+      "conceptIds": [
+        "graphical_screening",
+        "iqr_fences"
+      ]
+    },
+    {
+      "id": "z-and-robust-z",
+      "title": "Z-scores and robust z-scores",
+      "conceptIds": [
+        "z_scores",
+        "robust_z_mad"
+      ]
+    },
+    {
+      "id": "grubbs",
+      "title": "Normality and Grubbs' test",
+      "conceptIds": [
+        "normality_assumption",
+        "grubbs_test"
+      ]
+    },
+    {
+      "id": "several-outliers",
+      "title": "Masking, swamping and the generalized ESD test",
+      "conceptIds": [
+        "masking_swamping",
+        "generalized_esd"
+      ]
+    },
+    {
+      "id": "multivariate",
+      "title": "Multivariate outliers and robust distance",
+      "conceptIds": [
+        "mahalanobis_distance",
+        "robust_covariance"
+      ]
+    },
+    {
+      "id": "regression",
+      "title": "Outliers, leverage and influence in regression",
+      "conceptIds": [
+        "regression_outliers",
+        "leverage",
+        "influence_cooks"
+      ]
+    },
+    {
+      "id": "novelty-and-lof",
+      "title": "Novelty versus outlier detection, and LOF",
+      "conceptIds": [
+        "novelty_vs_outlier",
+        "local_outlier_factor"
+      ]
+    },
+    {
+      "id": "isolation-and-thresholds",
+      "title": "Isolation Forest and the contamination rate",
+      "conceptIds": [
+        "isolation_forest",
+        "scores_and_thresholds"
+      ]
+    },
+    {
+      "id": "evaluate-and-choose",
+      "title": "Evaluating and choosing a detector",
+      "conceptIds": [
+        "evaluating_detectors",
+        "choosing_detectors"
+      ]
+    },
+    {
+      "id": "what-to-do",
+      "title": "Deciding what to do with an outlier",
+      "conceptIds": [
+        "handling_strategy",
+        "robust_methods"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
