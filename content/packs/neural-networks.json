@@ -1,7 +1,7 @@
 {
   "id": "neural-networks",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Neural networks: how a network learns",
   "outOfScope": [
     "Transformers and large language models",
@@ -1555,7 +1555,7 @@
           }
         },
         {
-          "text": "With non-linear activations, each layer is in effect learning a more complex, higher-level function over the raw inputs.",
+          "text": "Each layer of a network is, in effect, learning a more complex, higher-level function over the raw inputs.",
           "sourceId": "g-nn-activation",
           "locator": "Neural networks: activation functions",
           "anchor": {
@@ -1891,5 +1891,15 @@
       "after": "when_not_nn",
       "reason": "Judging when a network is the wrong tool needs a picture of what depth buys."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 125,
+    "itemsSupported": 125,
+    "errorsPlanted": 19,
+    "errorsCaught": 19,
+    "fingerprint": "sha256:11ff44f10f72cf8a1f2e7ecc7a711e28"
+  }
 }
