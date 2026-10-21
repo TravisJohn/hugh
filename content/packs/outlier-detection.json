@@ -1,7 +1,7 @@
 {
   "id": "outlier-detection",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Outlier detection: finding, testing and handling unusual observations in data",
   "outOfScope": [
     "Deep-learning anomaly detection, such as autoencoders",
@@ -1628,5 +1628,15 @@
       "after": "robust_methods",
       "reason": "Robust methods are the option when deletion is not justified."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-21",
+    "itemsJudged": 117,
+    "itemsSupported": 117,
+    "errorsPlanted": 14,
+    "errorsCaught": 14,
+    "fingerprint": "sha256:bfc0c0537386221f181df12590af0252"
+  }
 }
