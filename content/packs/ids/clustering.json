@@ -1,0 +1,42 @@
+{
+  "packId": "clustering",
+  "note": "Every concept and card id this pack has ever published to learners. Ids are permanent: a learner board stores them. Retire a concept instead of deleting it; never remove an id from this file.",
+  "concepts": [
+    "what_is_clustering",
+    "unsupervised_vs_supervised",
+    "clustering_workflow",
+    "distance_measures",
+    "categorical_similarity",
+    "feature_scaling",
+    "algorithm_families",
+    "kmeans_objective",
+    "kmeans_algorithm",
+    "kmeans_initialisation",
+    "kmeans_assumptions",
+    "choosing_k",
+    "silhouette",
+    "hierarchical_clustering",
+    "linkage_methods",
+    "dendrograms",
+    "dbscan",
+    "gaussian_mixtures",
+    "internal_evaluation",
+    "external_evaluation",
+    "cluster_stability",
+    "profiling_clusters",
+    "curse_of_dimensionality",
+    "pca_before_clustering"
+  ],
+  "cards": [
+    "what-clustering-is",
+    "measuring-similarity",
+    "how-k-means-works",
+    "k-means-in-practice",
+    "choosing-k",
+    "hierarchical-clustering",
+    "beyond-k-means",
+    "evaluating-clusters",
+    "stability-and-profiling",
+    "high-dimensional-data"
+  ]
+}
