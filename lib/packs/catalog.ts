@@ -15,6 +15,7 @@ import { checkPack, parsePack } from "./validate";
 import linearRegression from "@/content/packs/linear-regression.json";
 import abTesting from "@/content/packs/ab-testing.json";
 import timeSeriesForecasting from "@/content/packs/time-series-forecasting.json";
+import clustering from "@/content/packs/clustering.json";
 
 export interface CatalogEntry {
   id:     string;
@@ -27,6 +28,7 @@ const CATALOG: readonly CatalogEntry[] = [
   { id: "linear-regression", region: "stats", raw: linearRegression },
   { id: "ab-testing",        region: "stats", raw: abTesting },
   { id: "time-series-forecasting", region: "stats", raw: timeSeriesForecasting },
+  { id: "clustering",        region: "ml",    raw: clustering },
 ];
 
 /** The statuses Hugh may teach from. */

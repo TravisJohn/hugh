@@ -1,0 +1,1791 @@
+{
+  "id": "clustering",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Clustering: finding groups in unlabelled data",
+  "outOfScope": [
+    "Spectral clustering in depth, beyond the idea of reducing dimensions before clustering",
+    "Deep and neural-network clustering, including autoencoder embeddings and supervised similarity measures",
+    "The mathematics of the EM algorithm, and variational Bayesian mixtures",
+    "Topic models such as latent Dirichlet allocation",
+    "Other algorithms: mean shift, affinity propagation, OPTICS, HDBSCAN, BIRCH and mini-batch k-means",
+    "The mathematics of PCA, such as eigenvectors and the singular value decomposition",
+    "Biclustering, and clustering variables rather than observations",
+    "Hands-on tooling: scikit-learn, SAS or R code"
+  ],
+  "sources": [
+    {
+      "id": "sk-clustering",
+      "title": "scikit-learn User Guide 2.3: Clustering",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/clustering.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "sk-mixture",
+      "title": "scikit-learn User Guide 2.1: Gaussian mixture models",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/mixture.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "sk-preprocessing",
+      "title": "scikit-learn User Guide 8.3: Preprocessing data",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/preprocessing.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "sk-decomposition",
+      "title": "scikit-learn User Guide 2.5: Decomposing signals in components",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/decomposition.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "sk-silhouette-example",
+      "title": "Selecting the number of clusters with silhouette analysis on KMeans clustering",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "sk-kmeans-assumptions",
+      "title": "Demonstration of k-means assumptions",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_assumptions.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu505-14",
+      "title": "STAT 505 Lesson 14: Cluster Analysis",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat505/Lesson14",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu505-11",
+      "title": "STAT 505 Lesson 11: Principal Components Analysis (PCA)",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat505/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu508-13",
+      "title": "STAT 508 Lesson 13: Cluster Analysis",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat508/Lesson13.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "psu508-07",
+      "title": "STAT 508 Lesson 7: Principal Components Analysis",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat508/Lesson07.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-overview",
+      "title": "What is clustering?",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/overview?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-clustering-algorithms",
+      "title": "Clustering algorithms",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/clustering-algorithms?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-workflow",
+      "title": "Clustering workflow",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/workflow?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-prepare-data",
+      "title": "Data preparation",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/prepare-data?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-kmeans-overview",
+      "title": "What is k-means clustering?",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/kmeans/overview?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-kmeans-manual-similarity",
+      "title": "Manual similarity measure",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/kmeans/manual-similarity?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-kmeans-advantages-disadvantages",
+      "title": "Advantages and disadvantages of k-means",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/kmeans/advantages-disadvantages?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    },
+    {
+      "id": "g-kmeans-evaluate-results",
+      "title": "Evaluating results",
+      "publisher": "Google for Developers, Machine Learning: Clustering course",
+      "url": "https://developers.google.com/machine-learning/clustering/kmeans/evaluate-results?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-20"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "what_is_clustering",
+      "title": "What clustering is",
+      "outcome": "Explain what cluster analysis does, when it is used, and what a cluster ID gives you.",
+      "aliases": [
+        "cluster analysis",
+        "segmentation",
+        "grouping unlabelled data"
+      ],
+      "keyPoints": [
+        {
+          "text": "Cluster analysis is an exploratory tool for dividing a multivariate dataset into natural groups, to see whether groups that were never defined in advance exist; a marketing team might sort customers into segments this way.",
+          "sourceId": "psu505-14",
+          "locator": "Overview",
+          "anchor": {
+            "start": "Cluster analysis is a data exploration",
+            "end": "and so forth)."
+          }
+        },
+        {
+          "text": "Cluster analysis suits data thought to come from an unknown number of distinct sub-populations with no prior definition; the aim is to describe those sub-populations from the observed data.",
+          "sourceId": "psu505-14",
+          "locator": "Overview",
+          "anchor": {
+            "start": "Cluster Analysis is used when we",
+            "end": "with the observed data."
+          }
+        },
+        {
+          "text": "After clustering, each group gets its own label, a cluster ID, so a large dataset with many features can be simplified to one cluster ID per example.",
+          "sourceId": "g-overview",
+          "locator": "What is clustering?",
+          "anchor": {
+            "start": "After clustering, each group is",
+            "end": "to a single cluster ID."
+          }
+        },
+        {
+          "text": "Common uses include market segmentation, social network analysis, grouping search results, medical imaging, image segmentation and anomaly detection.",
+          "sourceId": "g-overview",
+          "locator": "Clustering use cases",
+          "anchor": {
+            "start": "Clustering is useful in a variety",
+            "end": "Anomaly detection"
+          }
+        }
+      ]
+    },
+    {
+      "id": "unsupervised_vs_supervised",
+      "title": "Unsupervised versus supervised learning",
+      "outcome": "Tell clustering apart from classification, and explain why the lack of labels changes how a result can be checked.",
+      "aliases": [
+        "unsupervised learning",
+        "supervised learning",
+        "classification versus clustering"
+      ],
+      "keyPoints": [
+        {
+          "text": "Clustering is an unsupervised technique that groups unlabelled examples by how similar they are; when the examples already carry labels, that kind of grouping is called classification.",
+          "sourceId": "g-overview",
+          "locator": "What is clustering?",
+          "anchor": {
+            "start": "unsupervised machine learning technique designed",
+            "end": "called classification."
+          }
+        },
+        {
+          "text": "In classification the true labels let you compute an error rate; in clustering the training data has no class labels, so evaluating the result is inevitably subjective.",
+          "sourceId": "psu508-13",
+          "locator": "13.2 The Objective Function in K-Means",
+          "anchor": {
+            "start": "Evaluating clustering results is inevitably subjective",
+            "end": "for the training data."
+          }
+        },
+        {
+          "text": "Because clustering is unsupervised, there is no ground truth to verify results against, and real-world data rarely shows clusters as obvious as textbook examples.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Evaluating results",
+          "anchor": {
+            "start": "Because clustering is unsupervised, no",
+            "end": "shown in Figure 1."
+          }
+        }
+      ]
+    },
+    {
+      "id": "clustering_workflow",
+      "title": "The clustering workflow",
+      "outcome": "Lay out the steps of a clustering project and explain why it is iterative.",
+      "keyPoints": [
+        {
+          "text": "A clustering project has four steps: prepare the data, create a similarity metric, run the clustering algorithm, then interpret the results and adjust.",
+          "sourceId": "g-workflow",
+          "locator": "Clustering workflow",
+          "anchor": {
+            "start": "To cluster your data, you'll",
+            "end": "and adjust your clustering."
+          }
+        },
+        {
+          "text": "As in any machine-learning problem, normalise, scale and transform the features first, then check that the prepared data lets you calculate similarity between examples accurately.",
+          "sourceId": "g-workflow",
+          "locator": "Prepare data",
+          "anchor": {
+            "start": "As with any ML problem",
+            "end": "similarity between examples."
+          }
+        },
+        {
+          "text": "A clustering algorithm needs to know how similar pairs of examples are, and building that similarity metric requires a careful understanding of the data.",
+          "sourceId": "g-workflow",
+          "locator": "Create similarity metric",
+          "anchor": {
+            "start": "Before a clustering algorithm can group",
+            "end": "understanding of your data."
+          }
+        },
+        {
+          "text": "With no ground truth to verify against, check the result against your expectations at both the cluster level and the example level.",
+          "sourceId": "g-workflow",
+          "locator": "Interpret results and adjust",
+          "anchor": {
+            "start": "Because clustering doesn't produce",
+            "end": "and the example level."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Whatever clusters an algorithm returns are meaningful groups in the data.",
+          "correction": "With no ground truth to verify the output, check the result against your expectations; if it looks odd or low-quality, rework the earlier steps until it meets your needs.",
+          "sourceId": "g-workflow",
+          "locator": "Interpret results and adjust",
+          "anchor": {
+            "start": "Because clustering doesn't produce",
+            "end": "output meets your needs."
+          }
+        }
+      ]
+    },
+    {
+      "id": "distance_measures",
+      "title": "Distance and similarity measures",
+      "outcome": "Choose a distance measure for numeric data and state the properties any distance must have.",
+      "aliases": [
+        "Euclidean distance",
+        "Manhattan distance",
+        "dissimilarity",
+        "metric"
+      ],
+      "keyPoints": [
+        {
+          "text": "Euclidean distance, the most commonly used measure, is the square root of the sum of squared differences between two units across all the variables.",
+          "sourceId": "psu505-14",
+          "locator": "14.1 Measures of Association for Continuous Variables",
+          "anchor": {
+            "start": "Euclidean Distance This is used",
+            "end": "for each variable."
+          }
+        },
+        {
+          "text": "Whatever the distance measure, similar units have smaller distances than dissimilar ones.",
+          "sourceId": "psu505-14",
+          "locator": "14.1 Measures of Association for Continuous Variables",
+          "anchor": {
+            "start": "For each distance measure, similar",
+            "end": "are more strongly associated."
+          }
+        },
+        {
+          "text": "Whatever distance measure you invent must satisfy symmetry, positivity and identity, and must obey the triangle inequality.",
+          "sourceId": "psu505-14",
+          "locator": "14.1 Measures of Association for Continuous Variables",
+          "anchor": {
+            "start": "whatever you invent, the measure",
+            "end": "Triangle inequality"
+          }
+        },
+        {
+          "text": "Manhattan (L1) distance often suits sparse features, where most values are zero, such as counts of rare words in text mining.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6.4 Varying the metric",
+          "anchor": {
+            "start": "l1 distance is often good",
+            "end": "occurrences of rare words."
+          }
+        },
+        {
+          "text": "A good rule for choosing a metric is one that makes samples from different classes far apart and samples within the same class close together.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6.4 Varying the metric",
+          "anchor": {
+            "start": "The guidelines for choosing a metric",
+            "end": "minimizes that within each class."
+          }
+        }
+      ]
+    },
+    {
+      "id": "categorical_similarity",
+      "title": "Similarity for categorical and binary data",
+      "outcome": "Measure similarity between examples that have categorical or yes/no features.",
+      "aliases": [
+        "Jaccard similarity",
+        "binary similarity coefficients"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a single-valued categorical feature, two examples score similarity 1 when their values match and 0 otherwise.",
+          "sourceId": "g-kmeans-manual-similarity",
+          "locator": "Manual similarity measure",
+          "anchor": {
+            "start": "If univalent data matches",
+            "end": "similarity is 0."
+          }
+        },
+        {
+          "text": "For multi-valued categories such as movie genres, Jaccard similarity is the ratio of values two examples have in common.",
+          "sourceId": "g-kmeans-manual-similarity",
+          "locator": "Manual similarity measure",
+          "anchor": {
+            "start": "Multivalent data, like movie genres",
+            "end": "called Jaccard similarity."
+          }
+        },
+        {
+          "text": "For binary presence-or-absence data, coefficients differ in how much weight they give matches and mismatches, and some ignore features absent from both units.",
+          "sourceId": "psu505-14",
+          "locator": "14.2 Measures of Association for Binary Variables",
+          "anchor": {
+            "start": "The remaining coefficients give different",
+            "end": "not found in either site."
+          }
+        },
+        {
+          "text": "The choice of similarity coefficient affects the results; one approach repeats the analysis with several coefficients and keeps the one giving the most easily interpreted result.",
+          "sourceId": "psu505-14",
+          "locator": "14.2 Measures of Association for Binary Variables",
+          "anchor": {
+            "start": "The choice of coefficient will have",
+            "end": "results is selected."
+          }
+        },
+        {
+          "text": "A manual similarity measure must correspond to how similar examples really are; if it does not, it is not encoding the information you want.",
+          "sourceId": "g-kmeans-manual-similarity",
+          "locator": "Manual similarity measure",
+          "anchor": {
+            "start": "In general, a manual similarity measure",
+            "end": "want it to encode."
+          }
+        }
+      ]
+    },
+    {
+      "id": "feature_scaling",
+      "title": "Feature scaling for distance",
+      "outcome": "Explain why features must share a scale before clustering, and pick z-scores, a log transform or quantiles.",
+      "aliases": [
+        "standardisation",
+        "normalisation",
+        "z-score",
+        "StandardScaler"
+      ],
+      "keyPoints": [
+        {
+          "text": "Clustering combines all of an example's features into one similarity number, so the features need the same scale, reached by normalising, transforming or creating quantiles.",
+          "sourceId": "g-prepare-data",
+          "locator": "Data preparation",
+          "anchor": {
+            "start": "In clustering, you calculate the similarity",
+            "end": "or creating quantiles."
+          }
+        },
+        {
+          "text": "Use z-scores, the number of standard deviations a value sits from the mean, when a feature looks roughly Gaussian, or when there is too little data for quantiles.",
+          "sourceId": "g-prepare-data",
+          "locator": "Z-scores",
+          "anchor": {
+            "start": "Whenever you see a dataset roughly",
+            "end": "large enough for quantiles."
+          }
+        },
+        {
+          "text": "Quantiles only represent the data meaningfully with at least ten examples per quantile; with less data, normalise instead.",
+          "sourceId": "g-prepare-data",
+          "locator": "Quantiles",
+          "anchor": {
+            "start": "You can choose any number",
+            "end": "normalize instead."
+          }
+        },
+        {
+          "text": "If one feature's variance is orders of magnitude larger than the others', it can dominate a learning algorithm's objective function and stop it learning from the other features.",
+          "sourceId": "sk-preprocessing",
+          "locator": "8.3.1 Standardization",
+          "anchor": {
+            "start": "If a feature has a variance",
+            "end": "correctly as expected."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Scaling doesn't matter for clustering; the algorithm works out which features count.",
+          "correction": "Unscaled features can make the wrong examples look most alike; putting features on the same scale, for example with z-scores, gives a more accurate measure of similarity.",
+          "sourceId": "g-prepare-data",
+          "locator": "Z-scores",
+          "anchor": {
+            "start": "In the unnormalized dataset on the",
+            "end": "similarity between points."
+          }
+        }
+      ]
+    },
+    {
+      "id": "algorithm_families",
+      "title": "Families of clustering algorithms",
+      "outcome": "Name the main families of clustering algorithm and what kind of data each suits.",
+      "aliases": [
+        "centroid-based",
+        "density-based",
+        "distribution-based",
+        "hierarchical"
+      ],
+      "keyPoints": [
+        {
+          "text": "Centroid-based clustering, of which k-means is the most widely used, organises data into non-hierarchical clusters around centroids, each the mean of its cluster's points; it is efficient but sensitive to initial conditions and outliers.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Centroid-based clustering",
+          "anchor": {
+            "start": "The centroid of a cluster is",
+            "end": "the most widely used."
+          }
+        },
+        {
+          "text": "Density-based clustering joins contiguous areas of high density into clusters of any number and shape and leaves outliers unassigned, but struggles with clusters of differing density.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Density-based clustering",
+          "anchor": {
+            "start": "Density-based clustering connects contiguous",
+            "end": "clusters of different density"
+          }
+        },
+        {
+          "text": "Distribution-based clustering assumes the data are made of distributions such as Gaussians; the probability that a point belongs to a distribution falls as it gets further from that distribution's centre.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Distribution-based clustering",
+          "anchor": {
+            "start": "This clustering approach assumes data",
+            "end": "that decrease in probability."
+          }
+        },
+        {
+          "text": "Hierarchical clustering builds a tree of clusters, suits hierarchical data such as taxonomies, and yields any number of clusters by cutting the tree at the right level.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Hierarchical clustering",
+          "anchor": {
+            "start": "tree of clusters. Hierarchical clustering,",
+            "end": "at the right level."
+          }
+        },
+        {
+          "text": "Many clustering algorithms compare every pair of examples, so their runtime grows with the square of the number of examples, which is impractical for millions of examples; k-means scales linearly.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Clustering algorithms",
+          "anchor": {
+            "start": "Many clustering algorithms compute the",
+            "end": "scales linearly with"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kmeans_objective",
+      "title": "The k-means objective",
+      "outcome": "State what k-means minimises and what a centroid is.",
+      "aliases": [
+        "inertia",
+        "within-cluster sum of squares",
+        "WCSS",
+        "centroid"
+      ],
+      "keyPoints": [
+        {
+          "text": "K-means splits the samples into K separate clusters, each described by the mean of its samples, called its centroid; centroids are generally not data points themselves, though they live in the same space.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "The k-means algorithm divides a set",
+            "end": "live in the same space."
+          }
+        },
+        {
+          "text": "K-means chooses centroids that minimise inertia, also called the within-cluster sum of squares.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "The K-means algorithm aims to choose",
+            "end": "sum-of-squares criterion:"
+          }
+        },
+        {
+          "text": "This reflects a common heuristic: points in the same cluster should be tight and points in different clusters far apart, so k-means minimises the total within-cluster distance from each point to its prototype.",
+          "sourceId": "psu508-13",
+          "locator": "13.2 The Objective Function in K-Means",
+          "anchor": {
+            "start": "One heuristic generally accepted is",
+            "end": "its corresponding prototype."
+          }
+        },
+        {
+          "text": "Inertia is not a normalised measure: you only know that lower values are better and that zero is optimal.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "Inertia is not a normalized metric",
+            "end": "zero is optimal."
+          }
+        }
+      ]
+    },
+    {
+      "id": "kmeans_algorithm",
+      "title": "How k-means runs",
+      "outcome": "Walk through the k-means iterations and explain why the algorithm converges.",
+      "aliases": [
+        "Lloyd's algorithm",
+        "k-means clustering"
+      ],
+      "keyPoints": [
+        {
+          "text": "K-means, often called Lloyd's algorithm, first picks initial centroids, then loops: assign each sample to its nearest centroid, then move each centroid to the mean of the samples assigned to it.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "K-means is often referred to as",
+            "end": "assigned to each previous centroid."
+          }
+        },
+        {
+          "text": "The loop repeats until points stop changing clusters; on very large datasets it can be stopped before convergence using other criteria.",
+          "sourceId": "g-kmeans-overview",
+          "locator": "k-means clustering algorithm",
+          "anchor": {
+            "start": "Repeat steps 4 and 5",
+            "end": "based on other criteria."
+          }
+        },
+        {
+          "text": "With the centroids fixed, the best assignment puts every point with its closest centroid, because that minimises the summed distance between points and their prototypes.",
+          "sourceId": "psu508-13",
+          "locator": "13.2 The Objective Function in K-Means",
+          "anchor": {
+            "start": "Condition 1: If the prototypes",
+            "end": "the closest one to it."
+          }
+        },
+        {
+          "text": "K-means converges because the objective function never increases from one iteration to the next.",
+          "sourceId": "psu508-13",
+          "locator": "13.3 K-Means Algorithm",
+          "anchor": {
+            "start": "The algorithm converges since, after",
+            "end": "objective function is non-increasing."
+          }
+        }
+      ]
+    },
+    {
+      "id": "kmeans_initialisation",
+      "title": "Initialisation, local optima and k-means++",
+      "outcome": "Explain why k-means results depend on the starting centroids and how multiple starts and k-means++ help.",
+      "aliases": [
+        "k-means++",
+        "n_init",
+        "local minimum",
+        "random restarts"
+      ],
+      "keyPoints": [
+        {
+          "text": "Given enough time k-means always converges, but possibly to a local minimum, and which one depends heavily on the initial centroids.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "Given enough time, K-means will",
+            "end": "initialization of the centroids."
+          }
+        },
+        {
+          "text": "There is no way to know in advance which starting point will give the better result, and in practice no efficient way to find the global optimum.",
+          "sourceId": "psu508-13",
+          "locator": "13.4 Example: K-means",
+          "anchor": {
+            "start": "Unfortunately, however, until we get",
+            "end": "to find the global optimal."
+          }
+        },
+        {
+          "text": "The simplest start uses randomly chosen data points as the initial centroids; people sometimes try several starts and keep the one with the lowest objective value.",
+          "sourceId": "psu508-13",
+          "locator": "13.4 Example: K-means",
+          "anchor": {
+            "start": "The simplest scheme is just to",
+            "end": "value for the objective function."
+          }
+        },
+        {
+          "text": "k-means++ picks the first centre at random from the data, then chooses each later centre from a weighting that favours points far from the centres already picked.",
+          "sourceId": "sk-mixture",
+          "locator": "Choice of the Initialization method",
+          "anchor": {
+            "start": "This uses the initialization method",
+            "end": "away from existing centers."
+          }
+        },
+        {
+          "text": "Because k-means++ starts the centroids generally far apart, it probably gives better results than random initialisation.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "One method to help address this",
+            "end": "as shown in the reference."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "K-means always finds the best possible clustering of the data.",
+          "correction": "K-means converges, but possibly to a local minimum that depends on the initial centroids, which is why it is often run several times from different starts.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "Given enough time, K-means will",
+            "end": "different initializations of the centroids."
+          }
+        }
+      ]
+    },
+    {
+      "id": "kmeans_assumptions",
+      "title": "When k-means struggles",
+      "outcome": "Recognise data shapes and quirks that break k-means' assumptions.",
+      "aliases": [
+        "k-means limitations",
+        "isotropic clusters",
+        "outliers"
+      ],
+      "keyPoints": [
+        {
+          "text": "Inertia assumes clusters are convex and isotropic, which is not always true, so it responds poorly to elongated clusters or irregularly shaped manifolds.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "Inertia makes the assumption that",
+            "end": "with irregular shapes."
+          }
+        },
+        {
+          "text": "Because k-means minimises Euclidean distance to the assigned centroid, it is better suited to clusters that are isotropic and normally distributed, like spherical Gaussian blobs.",
+          "sourceId": "sk-kmeans-assumptions",
+          "locator": "Anisotropically distributed blobs",
+          "anchor": {
+            "start": "Anisotropically distributed blobs: k-means",
+            "end": "(i.e. spherical gaussians)."
+          }
+        },
+        {
+          "text": "A straightforward k-means can struggle with clusters of different densities and sizes.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Generalizing k-means",
+          "anchor": {
+            "start": "A straightforward implementation of k-means",
+            "end": "different densities and sizes."
+          }
+        },
+        {
+          "text": "Outliers can drag centroids or end up with a cluster of their own, so consider removing or clipping them before clustering.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Disadvantages of k-means",
+          "anchor": {
+            "start": "Centroids can be dragged by outliers",
+            "end": "outliers before clustering."
+          }
+        },
+        {
+          "text": "When clusters are isotropic, have similar variance and are not too sparse, k-means is quite effective and one of the fastest clustering algorithms available.",
+          "sourceId": "sk-kmeans-assumptions",
+          "locator": "Final remarks",
+          "anchor": {
+            "start": "In the case where clusters are",
+            "end": "clustering algorithms available."
+          }
+        }
+      ]
+    },
+    {
+      "id": "choosing_k",
+      "title": "Choosing k: the elbow method",
+      "outcome": "Choose a number of clusters with an elbow plot and judgement, knowing there is no single true k.",
+      "aliases": [
+        "elbow method",
+        "number of clusters",
+        "k selection"
+      ],
+      "keyPoints": [
+        {
+          "text": "K-means groups samples by minimising inertia, and it needs the number of clusters to be specified.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "The KMeans algorithm clusters data by",
+            "end": "to be specified."
+          }
+        },
+        {
+          "text": "To pick k, run k-means with increasing values of k and plot the total distance of points from their centroids; it falls as k grows because the clusters get smaller.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Step 3: Find the optimal number of clusters",
+          "anchor": {
+            "start": "Try running the algorithm with",
+            "end": "against the number of clusters."
+          }
+        },
+        {
+          "text": "The elbow method takes the k where the slope of that curve first changes sharply, after which extra clusters reduce the loss only marginally; a higher k can be chosen for more granular clusters.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Step 3: Find the optimal number of clusters",
+          "anchor": {
+            "start": "As shown in Figure 5, above",
+            "end": "consulting this plot."
+          }
+        },
+        {
+          "text": "Without theory from the field, one approach tries several values of k and keeps the one giving the most meaningful description: large enough for uniform clusters, but not so large the description becomes too complex.",
+          "sourceId": "psu505-14",
+          "locator": "14.8 Defining Initial Clusters",
+          "anchor": {
+            "start": "In general, however, there is no",
+            "end": "description for the resulting clusters."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "K-means finds the true number of groups in the data.",
+          "correction": "In a real setting there is no uniquely defined true number of clusters; an appropriate number has to be decided from data-based criteria and knowledge of the goal.",
+          "sourceId": "sk-kmeans-assumptions",
+          "locator": "Non-optimal number of clusters",
+          "anchor": {
+            "start": "Non-optimal number of clusters: in",
+            "end": "of the intended goal."
+          }
+        }
+      ]
+    },
+    {
+      "id": "silhouette",
+      "title": "Silhouette analysis",
+      "outcome": "Read silhouette scores and plots, and use them to compare numbers of clusters.",
+      "aliases": [
+        "silhouette coefficient",
+        "silhouette score",
+        "silhouette plot"
+      ],
+      "keyPoints": [
+        {
+          "text": "When ground-truth labels are unknown, a clustering must be evaluated using the model itself; the silhouette coefficient is one such measure, and a higher score means better-defined clusters.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.5 Silhouette Coefficient",
+          "anchor": {
+            "start": "are not known, evaluation must be",
+            "end": "better defined clusters."
+          }
+        },
+        {
+          "text": "The silhouette coefficient is defined for each sample from two scores: a, its mean distance to the other points in its own class, and b, its mean distance to the points in the next nearest cluster.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.5 Silhouette Coefficient",
+          "anchor": {
+            "start": "Silhouette Coefficient is defined for each",
+            "end": "next nearest cluster."
+          }
+        },
+        {
+          "text": "A silhouette near +1 means a sample is far from neighbouring clusters, near 0 that it sits on or close to the boundary between two clusters, and negative that it may be in the wrong cluster.",
+          "sourceId": "sk-silhouette-example",
+          "locator": "Silhouette analysis",
+          "anchor": {
+            "start": "Silhouette coefficients (as these values",
+            "end": "the wrong cluster."
+          }
+        },
+        {
+          "text": "Silhouette plots can guide the choice of the number of clusters: a value of k is a poor pick if some clusters fall below the average silhouette score or cluster sizes fluctuate widely.",
+          "sourceId": "sk-silhouette-example",
+          "locator": "Silhouette analysis",
+          "anchor": {
+            "start": "In this example the silhouette analysis",
+            "end": "size of the silhouette plots."
+          }
+        },
+        {
+          "text": "The silhouette coefficient is generally higher for convex clusters than for other kinds, such as the density-based clusters DBSCAN finds.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.5 Silhouette Coefficient",
+          "anchor": {
+            "start": "The Silhouette Coefficient is generally higher",
+            "end": "obtained through DBSCAN."
+          }
+        }
+      ]
+    },
+    {
+      "id": "hierarchical_clustering",
+      "title": "Hierarchical clustering",
+      "outcome": "Explain agglomerative and divisive clustering and their cost.",
+      "aliases": [
+        "agglomerative clustering",
+        "divisive clustering",
+        "bottom-up clustering"
+      ],
+      "keyPoints": [
+        {
+          "text": "Agglomerative clustering starts with every point as its own cluster and repeatedly merges the two closest clusters; divisive clustering starts with one cluster and keeps splitting. Agglomerative is used much more often.",
+          "sourceId": "psu505-14",
+          "locator": "Overview",
+          "anchor": {
+            "start": "In agglomerative hierarchical algorithms, we",
+            "end": "more often than divisive methods."
+          }
+        },
+        {
+          "text": "Hierarchical clustering builds nested clusters represented as a tree, or dendrogram, whose root holds all the samples and whose leaves are single samples.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6 Hierarchical clustering",
+          "anchor": {
+            "start": "Hierarchical clustering is a general family",
+            "end": "with only one sample."
+          }
+        },
+        {
+          "text": "Agglomerative clustering needs only the pairwise distances between objects, so it also applies to data that are not vectors.",
+          "sourceId": "psu508-13",
+          "locator": "13.6 Agglomerative Clustering",
+          "anchor": {
+            "start": "Agglomerative clustering can be used as",
+            "end": "for non-vector data."
+          }
+        },
+        {
+          "text": "Without connectivity constraints, agglomerative clustering is computationally expensive, because at each step it considers every possible merge.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6 Hierarchical clustering",
+          "anchor": {
+            "start": "AgglomerativeClustering can also scale to large",
+            "end": "all the possible merges."
+          }
+        }
+      ]
+    },
+    {
+      "id": "linkage_methods",
+      "title": "Linkage: distance between clusters",
+      "outcome": "Compare single, complete, average and Ward linkage, and predict how each shapes the clusters.",
+      "aliases": [
+        "single linkage",
+        "complete linkage",
+        "average linkage",
+        "Ward's method",
+        "UPGMA"
+      ],
+      "keyPoints": [
+        {
+          "text": "Complete linkage merges on the largest distance between points of two clusters, average linkage on the average of all pairwise distances, and single linkage on the distance between the closest points.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6 Hierarchical clustering",
+          "anchor": {
+            "start": "Maximum or complete linkage minimizes",
+            "end": "the closest observations of pairs"
+          }
+        },
+        {
+          "text": "Ward linkage minimises the sum of squared differences within all clusters, a variance-minimising aim similar to the k-means objective but pursued by agglomerative merging.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6 Hierarchical clustering",
+          "anchor": {
+            "start": "Ward minimizes the sum of squared",
+            "end": "agglomerative hierarchical approach."
+          }
+        },
+        {
+          "text": "Single linkage, also called friends-of-friends, treats two points as close if a chain of small steps connects them, however many links the chain has.",
+          "sourceId": "psu508-13",
+          "locator": "13.7 Agglomerative Clustering Example",
+          "anchor": {
+            "start": "Single linkage is also sometimes called",
+            "end": "does not matter."
+          }
+        },
+        {
+          "text": "Agglomerative clustering tends toward uneven cluster sizes, worst with single linkage and most regular with Ward; Ward cannot use other distances, so average linkage is a good alternative for non-Euclidean metrics.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6.1 Different linkage type",
+          "anchor": {
+            "start": "Agglomerative cluster has a",
+            "end": "on non-globular data."
+          }
+        },
+        {
+          "text": "None of the four methods is uniformly best; in practice, try several and compare the results to form an overall judgement about the final clusters.",
+          "sourceId": "psu505-14",
+          "locator": "14.3 Agglomerative Hierarchical Clustering",
+          "anchor": {
+            "start": "None of these four methods is",
+            "end": "final formation of clusters."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The choice of linkage barely changes the clusters you get.",
+          "correction": "Depending on how between-cluster distances are updated, dramatically different results can come out, so look at the results visually rather than blindly trusting any algorithm's output.",
+          "sourceId": "psu508-13",
+          "locator": "13.6 Agglomerative Clustering",
+          "anchor": {
+            "start": "How do we decide which aggregation",
+            "end": "there is no gold standard."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dendrograms",
+      "title": "Reading a dendrogram",
+      "outcome": "Read a dendrogram and cut it to get a set of clusters.",
+      "aliases": [
+        "dendrogram",
+        "tree diagram",
+        "cutting the tree"
+      ],
+      "keyPoints": [
+        {
+          "text": "A dendrogram plots distance on one axis and the units on the other; the height of each branching point is the distance at which two clusters were joined.",
+          "sourceId": "psu505-14",
+          "locator": "Dendrograms (Tree Diagrams)",
+          "anchor": {
+            "start": "results of cluster analysis are best",
+            "end": "two clusters are joined."
+          }
+        },
+        {
+          "text": "To pick the number of clusters, choose a cut-off distance below which further branching is ignored; this is often not straightforward, so try several cut points.",
+          "sourceId": "psu505-14",
+          "locator": "Applying the Cluster Analysis Process",
+          "anchor": {
+            "start": "To arrive at the optimum number",
+            "end": "which is more decisive."
+          }
+        },
+        {
+          "text": "Clusters with only one or a few members are undesirable, but a single-member cluster can be a unit genuinely unlike the rest, so investigate why it formed.",
+          "sourceId": "psu505-14",
+          "locator": "Applying the Cluster Analysis Process",
+          "anchor": {
+            "start": "Note that clusters containing one or",
+            "end": "best left alone."
+          }
+        },
+        {
+          "text": "Visually inspecting the dendrogram can help in understanding the data's structure, more so for small samples.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.6.2 Visualization of cluster hierarchy",
+          "anchor": {
+            "start": "It's possible to visualize the tree",
+            "end": "of small sample sizes."
+          }
+        },
+        {
+          "text": "A large break between the first and second branches of a tree can point to two very well-defined clusters.",
+          "sourceId": "psu505-14",
+          "locator": "14.6 Ward's Method",
+          "anchor": {
+            "start": "It looks as though there are",
+            "end": "branches of the tree."
+          }
+        }
+      ]
+    },
+    {
+      "id": "dbscan",
+      "title": "Density-based clustering: DBSCAN",
+      "outcome": "Explain how DBSCAN forms clusters from dense regions, labels noise, and depends on eps and min_samples.",
+      "aliases": [
+        "DBSCAN",
+        "density-based clustering",
+        "eps",
+        "min_samples",
+        "core samples"
+      ],
+      "keyPoints": [
+        {
+          "text": "DBSCAN sees clusters as areas of high density separated by areas of low density, so its clusters can be any shape, unlike k-means, which assumes convex clusters.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "The DBSCAN algorithm views clusters as",
+            "end": "clusters are convex shaped."
+          }
+        },
+        {
+          "text": "A core sample has at least min_samples other samples within distance eps, its neighbours, which places it in a dense area.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "More formally, we define a core",
+            "end": "dense area of the vector space."
+          }
+        },
+        {
+          "text": "A cluster is built by starting from a core sample and repeatedly adding neighbours that are also core samples; non-core neighbours join too, on the cluster's fringes.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "A cluster is a set of",
+            "end": "the fringes of a cluster."
+          }
+        },
+        {
+          "text": "The min_samples parameter mainly controls how tolerant the algorithm is of noise; on noisy, large datasets it may help to increase it.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "While the parameter min_samples primarily",
+            "end": "increase this parameter)"
+          }
+        },
+        {
+          "text": "eps must be chosen for the data: too small and most data is left unclustered as noise; too large and nearby clusters merge, eventually into a single cluster.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "the parameter eps is crucial to",
+            "end": "as a single cluster."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "DBSCAN puts every point into some cluster.",
+          "correction": "A sample that is not a core sample and lies at least eps from every core sample is treated as an outlier, not put into a cluster.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "Any core sample is part of",
+            "end": "an outlier by the algorithm."
+          }
+        }
+      ]
+    },
+    {
+      "id": "gaussian_mixtures",
+      "title": "Gaussian mixture models",
+      "outcome": "Describe a Gaussian mixture model as soft, probabilistic clustering and how its number of components is chosen.",
+      "aliases": [
+        "GMM",
+        "mixture model",
+        "expectation-maximisation",
+        "EM",
+        "soft clustering"
+      ],
+      "keyPoints": [
+        {
+          "text": "A Gaussian mixture model assumes the data come from a mixture of a finite number of Gaussian distributions with unknown parameters; it generalises k-means by also using each cluster's covariance structure.",
+          "sourceId": "sk-mixture",
+          "locator": "2.1 Gaussian mixture models",
+          "anchor": {
+            "start": "Gaussian mixture model is a probabilistic",
+            "end": "centers of the latent Gaussians."
+          }
+        },
+        {
+          "text": "Expectation-maximisation fits the model by iterating: it computes each point's probability of coming from each component, then adjusts the parameters to maximise the likelihood given those assignments.",
+          "sourceId": "sk-mixture",
+          "locator": "Estimation algorithm expectation-maximization",
+          "anchor": {
+            "start": "Expectation-maximization is a well-founded",
+            "end": "given those assignments."
+          }
+        },
+        {
+          "text": "Repeating the EM steps is guaranteed to converge, but only to a local optimum.",
+          "sourceId": "sk-mixture",
+          "locator": "Estimation algorithm expectation-maximization",
+          "anchor": {
+            "start": "Expectation-maximization is a well-founded",
+            "end": "to a local optimum."
+          }
+        },
+        {
+          "text": "The BIC can help select the number of components, but in theory it recovers the true number only with plenty of data actually generated from a Gaussian mixture.",
+          "sourceId": "sk-mixture",
+          "locator": "Selecting the number of components",
+          "anchor": {
+            "start": "The BIC criterion can be used",
+            "end": "mixture of Gaussian distributions)."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A Gaussian mixture works out on its own how many clusters there are.",
+          "correction": "The algorithm always uses all the components it is given, so held-out data or information-theoretic criteria are needed to decide how many to use.",
+          "sourceId": "sk-mixture",
+          "locator": "Pros and cons of class GaussianMixture",
+          "anchor": {
+            "start": "This algorithm will always use all",
+            "end": "absence of external cues."
+          }
+        }
+      ]
+    },
+    {
+      "id": "internal_evaluation",
+      "title": "Evaluating clusters without labels",
+      "outcome": "Check a clustering's quality with internal measures and practical checks when no labels exist.",
+      "aliases": [
+        "internal validation",
+        "cluster cardinality",
+        "cluster magnitude",
+        "Calinski-Harabasz"
+      ],
+      "keyPoints": [
+        {
+          "text": "Evaluating clustering is harder than counting a classifier's errors: a metric must ignore the label values themselves and ask whether the separation matches some ground truth or makes members of a cluster more similar than members of different ones.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11 Clustering performance evaluation",
+          "anchor": {
+            "start": "Evaluating the performance of a clustering",
+            "end": "to some similarity metric."
+          }
+        },
+        {
+          "text": "First check that clusters look as you expect and that examples you consider similar land together, then check metrics such as cluster cardinality, cluster magnitude and downstream performance.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Step 1: Assess quality of clustering",
+          "anchor": {
+            "start": "First check that the clusters look",
+            "end": "Downstream performance"
+          }
+        },
+        {
+          "text": "Cluster cardinality is the number of examples in a cluster: plot it for all clusters and investigate major outliers. Cluster magnitude is the sum of distances from a cluster's examples to its centroid.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Cluster cardinality",
+          "anchor": {
+            "start": "Cluster cardinality is the number",
+            "end": "to the cluster's centroid."
+          }
+        },
+        {
+          "text": "When clusters feed a downstream model, checking whether that model improves as the clustering changes is a real-world test of quality, though it can be complex and expensive.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Downstream performance",
+          "anchor": {
+            "start": "Since clustering outputs are often used",
+            "end": "this kind of test."
+          }
+        },
+        {
+          "text": "A clustering algorithm is only as good as its similarity measure: check that pairs you know to be similar score higher than pairs you know to be dissimilar.",
+          "sourceId": "g-kmeans-evaluate-results",
+          "locator": "Step 2: Reassess your similarity measure",
+          "anchor": {
+            "start": "Your clustering algorithm is only as",
+            "end": "pairs of dissimilar examples."
+          }
+        }
+      ]
+    },
+    {
+      "id": "external_evaluation",
+      "title": "Evaluating clusters against known labels",
+      "outcome": "Compare a clustering with known classes using the Rand index and adjusted Rand index.",
+      "aliases": [
+        "Rand index",
+        "adjusted Rand index",
+        "ARI",
+        "external validation"
+      ],
+      "keyPoints": [
+        {
+          "text": "The Rand index, adjusted or not, measures how similar two label assignments of the same samples are, ignoring how the labels are permuted.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "labels_pred, the (adjusted or unadjusted)",
+            "end": "ignoring permutations:"
+          }
+        },
+        {
+          "text": "The plain Rand index does not guarantee a value near 0 for a random labelling; the adjusted Rand index corrects for chance and gives that baseline.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "The Rand index does not ensure",
+            "end": "give such a baseline."
+          }
+        },
+        {
+          "text": "Both scores reach 1.0 for a perfect match; the unadjusted Rand index ranges from 0 to 1 and the adjusted one from -0.5 to 1.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "Bounded range: Lower values indicate",
+            "end": "for the adjusted Rand index."
+          }
+        },
+        {
+          "text": "These scores need the true classes, which are almost never available in practice, or must be assigned by hand by human annotators.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "Contrary to inertia, the (adjusted",
+            "end": "supervised learning setting)."
+          }
+        },
+        {
+          "text": "The Rand index can compare all kinds of clustering algorithms, such as k-means, which assumes isotropic blobs, against spectral clustering, which can find folded shapes.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "Rand index can be used to",
+            "end": "\"folded\" shapes."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A Rand index close to 1 means the two clusterings nearly agree.",
+          "correction": "The unadjusted Rand index is often close to 1 even when the clusterings differ a lot, because most pairs of points are split apart under both, so most pair labels agree.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "The unadjusted Rand index is often",
+            "end": "to a high score."
+          }
+        }
+      ]
+    },
+    {
+      "id": "cluster_stability",
+      "title": "Cluster stability",
+      "outcome": "Check whether a clustering holds up across runs, methods and data order before relying on it.",
+      "aliases": [
+        "stability",
+        "consensus",
+        "reproducibility"
+      ],
+      "keyPoints": [
+        {
+          "text": "Because the starting centroids are chosen at random, k-means can return significantly different results on successive runs.",
+          "sourceId": "g-kmeans-overview",
+          "locator": "k-means clustering algorithm",
+          "anchor": {
+            "start": "Because the centroid positions are initially",
+            "end": "on successive runs."
+          }
+        },
+        {
+          "text": "DBSCAN gives the same clusters for the same data in the same order, but a different order can change which cluster a non-core sample joins.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.7 DBSCAN",
+          "anchor": {
+            "start": "The DBSCAN algorithm is deterministic",
+            "end": "depending on the data order."
+          }
+        },
+        {
+          "text": "Different linkage methods can partition the same data very differently: in one example, average, centroid and single linkage left several clusters of only one or two sites, while complete linkage gave the most satisfactory result.",
+          "sourceId": "psu505-14",
+          "locator": "Applying the Cluster Analysis Process",
+          "anchor": {
+            "start": "Partitioning into 6 clusters yields",
+            "end": "the most satisfactory result."
+          }
+        },
+        {
+          "text": "The Rand index and adjusted Rand index are symmetric, so they can serve as consensus measures between two clusterings.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.11.1 Rand index",
+          "anchor": {
+            "start": "Furthermore, both rand_score and",
+            "end": "as consensus measures:"
+          }
+        }
+      ]
+    },
+    {
+      "id": "profiling_clusters",
+      "title": "Interpreting and profiling clusters",
+      "outcome": "Describe what makes each cluster distinct and interpret it with domain knowledge.",
+      "aliases": [
+        "cluster profiling",
+        "cluster description",
+        "segment profiles"
+      ],
+      "keyPoints": [
+        {
+          "text": "To describe clusters, compare each variable's mean across clusters, for example with an analysis of variance per variable, using a Bonferroni correction to control the error rate across the many tests.",
+          "sourceId": "psu505-14",
+          "locator": "14.5 Cluster Description",
+          "anchor": {
+            "start": "We perform an analysis of variance",
+            "end": "the experiment-wise error rate."
+          }
+        },
+        {
+          "text": "Each cluster is then characterised by the variables that stand out as high in it, such as the tree species most abundant at that cluster's sites.",
+          "sourceId": "psu505-14",
+          "locator": "14.5 Cluster Description",
+          "anchor": {
+            "start": "Each cluster is then characterized by",
+            "end": "across the columns of the table."
+          }
+        },
+        {
+          "text": "A meaningful interpretation of the clusters is best obtained using subject-matter knowledge.",
+          "sourceId": "psu505-14",
+          "locator": "14.5 Cluster Description",
+          "anchor": {
+            "start": "From the above description, you can",
+            "end": "subject-matter knowledge."
+          }
+        },
+        {
+          "text": "When Ward's method gave a cleaner interpretation of the clusters than complete linkage did, that suggested Ward's method may be preferred for that data.",
+          "sourceId": "psu505-14",
+          "locator": "14.6 Ward's Method",
+          "anchor": {
+            "start": "This interpretation is cleaner than",
+            "end": "for the current data."
+          }
+        }
+      ]
+    },
+    {
+      "id": "curse_of_dimensionality",
+      "title": "The curse of dimensionality",
+      "outcome": "Explain why distance-based clustering weakens as the number of features grows.",
+      "aliases": [
+        "high-dimensional data",
+        "curse of dimensionality"
+      ],
+      "keyPoints": [
+        {
+          "text": "As the number of dimensions grows, a distance-based similarity measure converges toward a constant value between any two examples.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Disadvantages of k-means",
+          "anchor": {
+            "start": "As the number of dimensions in",
+            "end": "between any given examples."
+          }
+        },
+        {
+          "text": "As dimensions increase, the spread of distances between examples shrinks relative to their mean distance, so k-means gets worse at telling examples apart; this is the curse of dimensionality.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Curse of dimensionality and spectral clustering",
+          "anchor": {
+            "start": "In these three plots, notice how",
+            "end": "the curse of dimensionality."
+          }
+        },
+        {
+          "text": "In very high-dimensional spaces, Euclidean distances tend to become inflated.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "But in very high-dimensional spaces,",
+            "end": "tend to become inflated"
+          }
+        },
+        {
+          "text": "Density-based algorithms have difficulty with data that has many dimensions.",
+          "sourceId": "g-clustering-algorithms",
+          "locator": "Density-based clustering",
+          "anchor": {
+            "start": "Density-based clustering connects contiguous",
+            "end": "with high dimensions."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Adding more features always gives a clustering more to work with.",
+          "correction": "As the number of dimensions increases, distances between examples become more alike relative to their mean, so k-means becomes less effective at distinguishing between examples.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Curse of dimensionality and spectral clustering",
+          "anchor": {
+            "start": "In these three plots, notice how",
+            "end": "the curse of dimensionality."
+          }
+        }
+      ]
+    },
+    {
+      "id": "pca_before_clustering",
+      "title": "Reducing dimensions with PCA before clustering",
+      "outcome": "Explain, at a conceptual level, what PCA does and why it is often run before clustering.",
+      "aliases": [
+        "PCA",
+        "principal component analysis",
+        "dimensionality reduction"
+      ],
+      "keyPoints": [
+        {
+          "text": "PCA decomposes a multivariate dataset into successive orthogonal components that each explain as much of the variance as possible.",
+          "sourceId": "sk-decomposition",
+          "locator": "2.5.1.1 Exact PCA",
+          "anchor": {
+            "start": "PCA is used to decompose a",
+            "end": "amount of the variance."
+          }
+        },
+        {
+          "text": "Reducing a dataset's dimensionality can ease interpretation, help avoid overfitting, and prepare the data for later analysis.",
+          "sourceId": "psu508-07",
+          "locator": "Lesson 7 Objectives",
+          "anchor": {
+            "start": "Reduce the dimensionality of a data",
+            "end": "for subsequent analysis."
+          }
+        },
+        {
+          "text": "In very high-dimensional spaces Euclidean distances become inflated; running PCA before k-means can ease this and speed up the computation.",
+          "sourceId": "sk-clustering",
+          "locator": "2.3.2 K-means",
+          "anchor": {
+            "start": "But in very high-dimensional spaces,",
+            "end": "speed up the computations."
+          }
+        },
+        {
+          "text": "One remedy for high-dimensional data is to reduce its dimensionality, for example by running PCA on the feature data.",
+          "sourceId": "g-kmeans-advantages-disadvantages",
+          "locator": "Disadvantages of k-means",
+          "anchor": {
+            "start": "Reduce dimensionality either by using",
+            "end": "modify the clustering algorithm."
+          }
+        },
+        {
+          "text": "Variables with the largest variances tend to be emphasised in the first principal components, so standardise variables measured in different units, or meant to count equally, before PCA.",
+          "sourceId": "psu505-11",
+          "locator": "11.4 Alternative: Standardize the Variables",
+          "anchor": {
+            "start": "Variables with the highest sample variances",
+            "end": "principal components analysis."
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "what_is_clustering",
+      "after": "unsupervised_vs_supervised",
+      "reason": "Contrasting clustering with classification needs a picture of what clustering is."
+    },
+    {
+      "before": "what_is_clustering",
+      "after": "clustering_workflow",
+      "reason": "The workflow is the steps of a clustering project."
+    },
+    {
+      "before": "what_is_clustering",
+      "after": "distance_measures",
+      "reason": "Clusters are groups of similar units, and distance is how similarity is measured."
+    },
+    {
+      "before": "distance_measures",
+      "after": "categorical_similarity",
+      "reason": "Categorical similarity extends the idea of a distance to non-numeric features."
+    },
+    {
+      "before": "distance_measures",
+      "after": "feature_scaling",
+      "reason": "Scaling matters because distances combine every feature."
+    },
+    {
+      "before": "distance_measures",
+      "after": "algorithm_families",
+      "reason": "Each family groups points using some notion of distance or density."
+    },
+    {
+      "before": "algorithm_families",
+      "after": "kmeans_objective",
+      "reason": "K-means is the main centroid-based method."
+    },
+    {
+      "before": "feature_scaling",
+      "after": "kmeans_objective",
+      "reason": "Inertia sums squared distances, which unscaled features distort."
+    },
+    {
+      "before": "kmeans_objective",
+      "after": "kmeans_algorithm",
+      "reason": "The algorithm's steps are how it lowers the objective."
+    },
+    {
+      "before": "kmeans_algorithm",
+      "after": "kmeans_initialisation",
+      "reason": "Initialisation is the first step of the algorithm."
+    },
+    {
+      "before": "kmeans_algorithm",
+      "after": "kmeans_assumptions",
+      "reason": "Its weaknesses follow from how it assigns points to centroids."
+    },
+    {
+      "before": "kmeans_objective",
+      "after": "choosing_k",
+      "reason": "The elbow plot tracks the k-means objective as k changes."
+    },
+    {
+      "before": "unsupervised_vs_supervised",
+      "after": "choosing_k",
+      "reason": "There is no true k because there are no labels to check against."
+    },
+    {
+      "before": "choosing_k",
+      "after": "silhouette",
+      "reason": "Silhouette analysis is a second way to compare values of k."
+    },
+    {
+      "before": "algorithm_families",
+      "after": "hierarchical_clustering",
+      "reason": "Hierarchical clustering is one of the families."
+    },
+    {
+      "before": "hierarchical_clustering",
+      "after": "linkage_methods",
+      "reason": "Linkage decides which clusters an agglomerative method merges."
+    },
+    {
+      "before": "kmeans_objective",
+      "after": "linkage_methods",
+      "reason": "Ward linkage is explained by its likeness to the k-means objective."
+    },
+    {
+      "before": "hierarchical_clustering",
+      "after": "dendrograms",
+      "reason": "A dendrogram is the picture of a hierarchical clustering."
+    },
+    {
+      "before": "kmeans_assumptions",
+      "after": "dbscan",
+      "reason": "DBSCAN is introduced as an answer to shapes k-means handles poorly."
+    },
+    {
+      "before": "kmeans_assumptions",
+      "after": "gaussian_mixtures",
+      "reason": "Mixtures relax k-means' assumption of round, equal-variance clusters."
+    },
+    {
+      "before": "kmeans_initialisation",
+      "after": "gaussian_mixtures",
+      "reason": "EM, like k-means, depends on its start and reaches only a local optimum."
+    },
+    {
+      "before": "unsupervised_vs_supervised",
+      "after": "internal_evaluation",
+      "reason": "Internal measures exist because labels usually do not."
+    },
+    {
+      "before": "silhouette",
+      "after": "internal_evaluation",
+      "reason": "The silhouette is the first internal measure a learner meets."
+    },
+    {
+      "before": "unsupervised_vs_supervised",
+      "after": "external_evaluation",
+      "reason": "External measures need the labels that clustering normally lacks."
+    },
+    {
+      "before": "kmeans_initialisation",
+      "after": "cluster_stability",
+      "reason": "Run-to-run variation in k-means is the first instability a learner meets."
+    },
+    {
+      "before": "linkage_methods",
+      "after": "cluster_stability",
+      "reason": "Stability compares the partitions different linkage methods give."
+    },
+    {
+      "before": "dbscan",
+      "after": "cluster_stability",
+      "reason": "One stability point is DBSCAN's sensitivity to data order."
+    },
+    {
+      "before": "external_evaluation",
+      "after": "cluster_stability",
+      "reason": "Comparing two clusterings uses the Rand index."
+    },
+    {
+      "before": "internal_evaluation",
+      "after": "profiling_clusters",
+      "reason": "Profiling comes after the clusters have been checked."
+    },
+    {
+      "before": "dendrograms",
+      "after": "profiling_clusters",
+      "reason": "The profiling example cuts a dendrogram into clusters first."
+    },
+    {
+      "before": "kmeans_assumptions",
+      "after": "curse_of_dimensionality",
+      "reason": "The curse is another way distance-based k-means breaks down."
+    },
+    {
+      "before": "curse_of_dimensionality",
+      "after": "pca_before_clustering",
+      "reason": "PCA is the remedy for the curse of dimensionality."
+    },
+    {
+      "before": "feature_scaling",
+      "after": "pca_before_clustering",
+      "reason": "PCA needs standardised variables when units differ."
+    }
+  ],
+  "cards": [
+    {
+      "id": "what-clustering-is",
+      "title": "What clustering is",
+      "conceptIds": [
+        "what_is_clustering",
+        "unsupervised_vs_supervised",
+        "clustering_workflow"
+      ]
+    },
+    {
+      "id": "measuring-similarity",
+      "title": "Measuring similarity",
+      "conceptIds": [
+        "distance_measures",
+        "categorical_similarity",
+        "feature_scaling"
+      ]
+    },
+    {
+      "id": "how-k-means-works",
+      "title": "How k-means works",
+      "conceptIds": [
+        "algorithm_families",
+        "kmeans_objective",
+        "kmeans_algorithm"
+      ]
+    },
+    {
+      "id": "k-means-in-practice",
+      "title": "K-means in practice",
+      "conceptIds": [
+        "kmeans_initialisation",
+        "kmeans_assumptions"
+      ]
+    },
+    {
+      "id": "choosing-k",
+      "title": "Choosing the number of clusters",
+      "conceptIds": [
+        "choosing_k",
+        "silhouette"
+      ]
+    },
+    {
+      "id": "hierarchical-clustering",
+      "title": "Hierarchical clustering",
+      "conceptIds": [
+        "hierarchical_clustering",
+        "linkage_methods",
+        "dendrograms"
+      ]
+    },
+    {
+      "id": "beyond-k-means",
+      "title": "Beyond k-means: DBSCAN and Gaussian mixtures",
+      "conceptIds": [
+        "dbscan",
+        "gaussian_mixtures"
+      ]
+    },
+    {
+      "id": "evaluating-clusters",
+      "title": "Evaluating clusters",
+      "conceptIds": [
+        "internal_evaluation",
+        "external_evaluation"
+      ]
+    },
+    {
+      "id": "stability-and-profiling",
+      "title": "Stability and interpreting clusters",
+      "conceptIds": [
+        "cluster_stability",
+        "profiling_clusters"
+      ]
+    },
+    {
+      "id": "high-dimensional-data",
+      "title": "High-dimensional data and PCA",
+      "conceptIds": [
+        "curse_of_dimensionality",
+        "pca_before_clustering"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-21",
+    "itemsJudged": 116,
+    "itemsSupported": 116,
+    "errorsPlanted": 14,
+    "errorsCaught": 14,
+    "fingerprint": "sha256:a1ccbaa8a0204ce323381d971ca1d4d9"
+  }
+}
