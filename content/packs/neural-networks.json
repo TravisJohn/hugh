@@ -1,0 +1,219 @@
+{
+  "id": "neural-networks",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Neural networks: how a network learns",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "g-nn-intro",
+      "title": "Google Machine Learning Crash Course: Neural networks",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-nn-nodes",
+      "title": "Google Machine Learning Crash Course: Nodes and hidden layers",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks/nodes-hidden-layers?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-nn-activation",
+      "title": "Google Machine Learning Crash Course: Activation functions",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks/activation-functions?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-nn-backprop",
+      "title": "Google Machine Learning Crash Course: Training using backpropagation",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks/backpropagation?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-nn-multiclass",
+      "title": "Google Machine Learning Crash Course: Multi-class classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks/multi-class?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-linreg-loss",
+      "title": "Google Machine Learning Crash Course: Linear regression: loss",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/loss?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-gradient-descent",
+      "title": "Google Machine Learning Crash Course: Linear regression: gradient descent",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-hyperparameters",
+      "title": "Google Machine Learning Crash Course: Linear regression: hyperparameters",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-logreg-loss",
+      "title": "Google Machine Learning Crash Course: Logistic regression: loss and regularization",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-normalization",
+      "title": "Google Machine Learning Crash Course: Numerical data: normalization",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/numerical-data/normalization?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-dividing-datasets",
+      "title": "Google Machine Learning Crash Course: Datasets: dividing the original dataset",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-overfitting",
+      "title": "Google Machine Learning Crash Course: Overfitting",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/overfitting/overfitting?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-regularization",
+      "title": "Google Machine Learning Crash Course: Overfitting: L2 regularization",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/overfitting/regularization?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-loss-curves",
+      "title": "Google Machine Learning Crash Course: Overfitting: interpreting loss curves",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/overfitting/interpreting-loss-curves?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-df-intro",
+      "title": "Google Decision Forests course: Introduction",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/decision-forests/intro-to-decision-forests?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-mlp",
+      "title": "scikit-learn User Guide 1.17: Neural network models (supervised)",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/neural_networks_supervised.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-intro",
+      "title": "Dive into Deep Learning, 1. Introduction",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_introduction/index.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-linreg",
+      "title": "Dive into Deep Learning, 3.1 Linear regression",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_linear-regression/linear-regression.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-generalization",
+      "title": "Dive into Deep Learning, 3.6 Generalization",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_linear-regression/generalization.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-weight-decay",
+      "title": "Dive into Deep Learning, 3.7 Weight decay",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_linear-regression/weight-decay.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-softmax",
+      "title": "Dive into Deep Learning, 4.1 Softmax regression",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_linear-classification/softmax-regression.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-mlp",
+      "title": "Dive into Deep Learning, 5.1 Multilayer perceptrons",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_multilayer-perceptrons/mlp.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-backprop",
+      "title": "Dive into Deep Learning, 5.3 Forward propagation, backward propagation, and computational graphs",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_multilayer-perceptrons/backprop.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-init",
+      "title": "Dive into Deep Learning, 5.4 Numerical stability and initialization",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_multilayer-perceptrons/numerical-stability-and-init.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-generalization-deep",
+      "title": "Dive into Deep Learning, 5.5 Generalization in deep learning",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_multilayer-perceptrons/generalization-deep.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "d2l-dropout",
+      "title": "Dive into Deep Learning, 5.6 Dropout",
+      "publisher": "Zhang, Lipton, Li and Smola (d2l.ai)",
+      "url": "https://d2l.ai/chapter_multilayer-perceptrons/dropout.html",
+      "license": "CC BY-SA 4.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
