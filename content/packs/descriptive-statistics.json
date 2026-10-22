@@ -1,7 +1,7 @@
 {
   "id": "descriptive-statistics",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Descriptive statistics: describing and summarising data",
   "outOfScope": [
     "Probability, probability distributions and random variables, beyond naming the normal (bell-shaped) curve that the empirical rule describes",
@@ -1674,5 +1674,15 @@
       "after": "choosing_summary",
       "reason": "Choosing a spread compares the standard deviation with the IQR."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 113,
+    "itemsSupported": 113,
+    "errorsPlanted": 13,
+    "errorsCaught": 13,
+    "fingerprint": "sha256:e1b1620e69dd41da3efb8e59f74ce9c0"
+  }
 }
