@@ -1,7 +1,7 @@
 {
   "id": "descriptive-statistics",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Descriptive statistics: describing and summarising data",
   "outOfScope": [
     "Probability, probability distributions and random variables, beyond naming the normal (bell-shaped) curve that the empirical rule describes",
@@ -78,21 +78,6 @@
       "accessedAt": "2026-10-22"
     },
     {
-      "id": "psu800-02",
-      "title": "STAT 800 Lesson 2: Explaining Variability",
-      "publisher": "Penn State Department of Statistics",
-      "url": "https://online.stat.psu.edu/stat800/Lesson02",
-      "license": "CC BY-NC 4.0",
-      "accessedAt": "2026-10-22"
-    },
-    {
-      "id": "nist-eda",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.1.1: What is EDA?",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section1/eda11.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
       "id": "nist-location",
       "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.1: Measures of Location",
       "publisher": "NIST/SEMATECH",
@@ -107,13 +92,6 @@
       "accessedAt": "2026-10-22"
     },
     {
-      "id": "nist-skew",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.11: Measures of Skewness and Kurtosis",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
       "id": "nist-histogram",
       "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14: Histogram",
       "publisher": "NIST/SEMATECH",
@@ -121,31 +99,10 @@
       "accessedAt": "2026-10-22"
     },
     {
-      "id": "nist-hist-normal",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.1: Histogram Interpretation: Normal",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr1.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
-      "id": "nist-hist-bimodal",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.5: Histogram Interpretation: Bimodal Mixture of 2 Normals",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr5.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
       "id": "nist-hist-right",
       "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.6: Histogram Interpretation: Skewed (Non-Normal) Right",
       "publisher": "NIST/SEMATECH",
       "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr6.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
-      "id": "nist-boxplot",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.7: Box Plot",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/boxplot.htm",
       "accessedAt": "2026-10-22"
     },
     {
@@ -188,7 +145,7 @@
       "outcome": "Explain what descriptive statistics tell you about the data in hand, what they do not, and how a sample statistic differs from a population parameter.",
       "keyPoints": [
         {
-          "text": "Descriptive statistics simply describe the data in front of you; on their own they convey no significance, prediction or certainty.",
+          "text": "Descriptive statistics simply describe the data in front of you; they convey no significance, prediction or certainty.",
           "sourceId": "psu800-01",
           "locator": "Lesson 1, Introduction",
           "anchor": {
@@ -240,7 +197,7 @@
           }
         },
         {
-          "text": "A variable is numerical when it takes a range of numerical values that it makes sense to add, subtract or average; telephone area codes are numbers, but their average means nothing, so they are categorical.",
+          "text": "An unemployment rate is numerical because it takes a wide range of values that it is sensible to add, subtract or average; telephone area codes are numbers, but their average, sum and difference mean nothing, so they are categorical.",
           "sourceId": "ims-hello",
           "locator": "1.2.2 Types of variables",
           "anchor": {
@@ -422,7 +379,7 @@
           }
         },
         {
-          "text": "A pie chart can give a high-level overview, but details are hard to read from it: which of two similar categories is larger may not be obvious, while a bar plot makes it plain.",
+          "text": "A pie chart can give a high-level overview, but details are hard to read from it: whether one category has more cases than another may not be obvious, while a bar plot makes it plain.",
           "sourceId": "ims-cat",
           "locator": "4.4 Pie charts",
           "anchor": {
@@ -591,7 +548,7 @@
       "outcome": "Read a dot plot and a histogram of one numerical variable, say what each shows, and explain why the choice of bins changes a histogram.",
       "keyPoints": [
         {
-          "text": "Dot plots show the exact value of each observation, which suits small data sets; with larger samples they become hard to read, and grouping values into bins works better.",
+          "text": "Dot plots show the exact value of each observation, which suits small data sets; with larger samples they become hard to read, so values are instead thought of as belonging to bins.",
           "sourceId": "ims-num",
           "locator": "5.3 Histograms and shape",
           "anchor": {
@@ -761,7 +718,7 @@
           }
         },
         {
-          "text": "A common reason a histogram shows two clear peaks is that the data really come from two different populations.",
+          "text": "A typical example of a histogram with two clear peaks is data that really come from two different populations.",
           "sourceId": "psu100-03",
           "locator": "3.2 Graphs: Displaying Measurement Data",
           "anchor": {
@@ -834,7 +791,7 @@
           "sourceId": "psu500-01",
           "locator": "1.5.1 Measure of Central Tendency",
           "anchor": {
-            "start": "sample size is an odd number",
+            "start": "Note on Odd or Even Sample",
             "end": "the example below illustrates."
           }
         },
@@ -996,11 +953,11 @@
           }
         },
         {
-          "text": "In a five-number summary of exam scores of 24, 70, 82.5, 89 and 97, a quarter of the students scored 70 or below, and a quarter scored at least 89.",
+          "text": "For exam scores with the five-number summary 24, 70, 82.5, 89 and 97, a quarter of the students scored 70 or below, and a quarter scored at least 89.",
           "sourceId": "psu500-01",
           "locator": "1.5.2 The 5-Number Summary",
           "anchor": {
-            "start": "The lowest score on the final",
+            "start": "Find the five number summary for",
             "end": "scored at least an 89."
           }
         }
@@ -1130,11 +1087,11 @@
           }
         },
         {
-          "text": "A skeletal box plot joins the five-number summary, but most software instead also marks outliers; when there are no outliers, the software's box plot is essentially the skeletal one.",
+          "text": "A skeletal box plot draws a box from Q1 to Q3 and whiskers to the minimum and maximum, but most software also marks outliers; when there are no outliers, the software's box plot is essentially the skeletal one.",
           "sourceId": "psu500-01",
           "locator": "1.6.3 Boxplots",
           "anchor": {
-            "start": "Most statistical software does NOT create",
+            "start": "Using the five number summary, one",
             "end": "essentially the skeletal boxplot."
           }
         },
@@ -1207,7 +1164,7 @@
       "misconceptions": [
         {
           "claim": "The 68-95-99.7 rule works for any data set.",
-          "correction": "It is for roughly normal data: the number of tattoos is extremely right-skewed, since most people have none, and has gaps, so a normal curve should not be used for even rough approximations.",
+          "correction": "Not every data set is bell-shaped: the number of tattoos is extremely right-skewed, since most people have none, and has gaps, so a normal curve should not be used even for rough approximations.",
           "sourceId": "psu100-04",
           "locator": "4.2 The Normal Curve",
           "anchor": {
@@ -1444,7 +1401,7 @@
       "outcome": "Pick summaries of centre and spread that suit the data's shape, report variability alongside the centre, and look at the data rather than trusting a few numbers.",
       "keyPoints": [
         {
-          "text": "If a sample has outliers or skew, resistant measures are preferred, because sensitive measures overreact to outliers; if it is reasonably symmetric, sensitive measures, which use all the observations, should be used.",
+          "text": "If a sample has outliers or skew, resistant measures are preferred, because sensitive measures tend to overreact to outliers; if it is reasonably symmetric, sensitive measures, which use all the observations, should be used.",
           "sourceId": "psu100-03",
           "locator": "3.5 Measures of Spread or Variation",
           "anchor": {
@@ -1462,7 +1419,7 @@
           }
         },
         {
-          "text": "When data are roughly normal the standard deviation is a sensible measure of spread; when they are not, especially with long tails, a measure such as the interquartile range makes more sense.",
+          "text": "When data are roughly normal the standard deviation is a sensible measure of spread; when they are not, especially with long tails, a measure such as the interquartile range makes sense.",
           "sourceId": "nist-scale",
           "locator": "1.3.5.6, Robustness",
           "anchor": {
