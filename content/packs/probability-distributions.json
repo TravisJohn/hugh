@@ -1855,6 +1855,114 @@
       "reason": "Matching sample and theoretical moments is a weak check on fit."
     }
   ],
+  "cards": [
+    {
+      "id": "random-variables",
+      "title": "Random variables and probability distributions",
+      "conceptIds": [
+        "random_variables",
+        "discrete_continuous_rv",
+        "probability_distributions"
+      ]
+    },
+    {
+      "id": "mass-and-density",
+      "title": "Probability mass and probability density",
+      "conceptIds": [
+        "pmf",
+        "pdf_density"
+      ]
+    },
+    {
+      "id": "cumulative-probabilities",
+      "title": "Cumulative probabilities and percentiles",
+      "conceptIds": [
+        "cdf",
+        "cdf_probabilities",
+        "percentiles_quantiles"
+      ]
+    },
+    {
+      "id": "expected-value-and-variance",
+      "title": "Expected value and variance",
+      "conceptIds": [
+        "expected_value",
+        "variance_of_rv",
+        "population_vs_sample"
+      ]
+    },
+    {
+      "id": "binomial-setting",
+      "title": "When the binomial applies",
+      "conceptIds": [
+        "binomial_conditions",
+        "without_replacement"
+      ]
+    },
+    {
+      "id": "binomial-probabilities",
+      "title": "Binomial probabilities, mean and shape",
+      "conceptIds": [
+        "binomial_probabilities",
+        "binomial_mean_shape"
+      ]
+    },
+    {
+      "id": "poisson",
+      "title": "The Poisson distribution for counts",
+      "conceptIds": [
+        "poisson_setting",
+        "poisson_mean_and_approx"
+      ]
+    },
+    {
+      "id": "normal-distribution",
+      "title": "Location, scale and the normal distribution",
+      "conceptIds": [
+        "location_scale",
+        "normal_distribution"
+      ]
+    },
+    {
+      "id": "standard-normal",
+      "title": "Standardising and normal probabilities",
+      "conceptIds": [
+        "standard_normal",
+        "normal_probabilities"
+      ]
+    },
+    {
+      "id": "normal-approximation",
+      "title": "Approximating the binomial with the normal",
+      "conceptIds": [
+        "normal_approx_binomial"
+      ]
+    },
+    {
+      "id": "other-distributions",
+      "title": "Uniform, exponential and skewed distributions",
+      "conceptIds": [
+        "uniform_distribution",
+        "exponential_distribution",
+        "other_shapes"
+      ]
+    },
+    {
+      "id": "probability-plots",
+      "title": "Normal probability (Q-Q) plots",
+      "conceptIds": [
+        "normal_probability_plot",
+        "qq_patterns"
+      ]
+    },
+    {
+      "id": "choosing-a-distribution",
+      "title": "Choosing a distribution for real data",
+      "conceptIds": [
+        "choosing_a_distribution"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
