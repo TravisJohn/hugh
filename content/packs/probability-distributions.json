@@ -1,7 +1,7 @@
 {
   "id": "probability-distributions",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Probability distributions: random variables and the common distributions",
   "outOfScope": [
     "Probability axioms, set theory and rules of probability in depth; conditional probability and Bayes' theorem are taught in the Bayesian inference pack",
@@ -121,13 +121,6 @@
       "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.4: Location and Scale Parameters",
       "publisher": "NIST/SEMATECH",
       "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda364.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
-      "id": "nist-gallery",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6: Gallery of Distributions",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366.htm",
       "accessedAt": "2026-10-22"
     },
     {
@@ -375,7 +368,7 @@
           "locator": "7.3 Probability Mass Functions",
           "anchor": {
             "start": "First item basically says that,",
-            "end": "values in \\(A\\)."
+            "end": "you just sum up the probabilities"
           }
         }
       ],
@@ -519,21 +512,12 @@
           }
         },
         {
-          "text": "For a discrete variable, the probability of exactly 3 is the cumulative probability at 3 minus the cumulative probability at 2.",
-          "sourceId": "psu414-10",
-          "locator": "10.3 Cumulative Binomial Probabilities",
-          "anchor": {
-            "start": "We can calculate \\(P(X=3)\\) by",
-            "end": "from \\(P(X\\le 3)\\),"
-          }
-        },
-        {
-          "text": "For 'at least one', the short way is the complement rule: 1 minus the probability of none.",
+          "text": "For 'at least one', adding up every case is the long way; the short way is the complement rule.",
           "sourceId": "psu500-03",
           "locator": "3.2.2 Binomial Random Variables",
           "anchor": {
             "start": "There are two ways to solve",
-            "end": "\\(1 - P(X = 0)\\)."
+            "end": "by using the complement rule."
           }
         },
         {
@@ -814,7 +798,7 @@
           "locator": "10.1 The Probability Mass Function",
           "anchor": {
             "start": "It seems that, in each case,",
-            "end": "\\(3-x\\) Nebraska fans"
+            "end": "Nebraska fans"
           }
         },
         {
@@ -847,12 +831,12 @@
       "outcome": "State a binomial distribution's mean, spread and range, and predict its shape from n and p.",
       "keyPoints": [
         {
-          "text": "A binomial distribution has mean np, takes values from 0 to n, and has standard deviation equal to the square root of np(1 - p).",
+          "text": "A binomial distribution has mean np and takes values from 0 to n.",
           "sourceId": "nist-binomial",
           "locator": "Common Statistics",
           "anchor": {
             "start": "Common Statistics Mean np",
-            "end": "\\( \\sqrt{np(1 - p)} \\)"
+            "end": "Range 0 to n"
           }
         },
         {
@@ -932,7 +916,7 @@
           "sourceId": "psu414-12",
           "locator": "12.1 Poisson Distributions",
           "anchor": {
-            "start": "Let the discrete random variable \\(X\\)",
+            "start": "Let the discrete random variable",
             "end": "the time being one minute.)"
           }
         },
@@ -941,7 +925,7 @@
           "sourceId": "psu414-12",
           "locator": "12.1 Poisson Distributions",
           "anchor": {
-            "start": "\\(X\\) denote the number of events",
+            "start": "denote the number of events in",
             "end": "is essentially zero."
           }
         },
@@ -955,12 +939,12 @@
           }
         },
         {
-          "text": "There are infinitely many Poisson distributions; which one applies depends on its single parameter, lambda.",
+          "text": "There are infinitely many Poisson distributions, and which specific one applies depends on the distribution's parameter.",
           "sourceId": "psu414-12",
           "locator": "12.1 Poisson Distributions",
           "anchor": {
             "start": "Also, note that there are (theoretically)",
-            "end": "depends on the parameter \\(\\lambda\\)."
+            "end": "depends on the parameter"
           }
         }
       ],
@@ -1003,12 +987,12 @@
           }
         },
         {
-          "text": "The Poisson approximation to the binomial works well only when n is large and p is small: roughly, n of at least 20 with p at most 0.05, or n of at least 100 with p at most 0.10.",
+          "text": "The Poisson approximation to the binomial works well only when n is large and p is small.",
           "sourceId": "psu414-12",
           "locator": "12.4 Approximating the Binomial",
           "anchor": {
             "start": "It is important to keep in",
-            "end": "\\(p\\le 0.10\\)."
+            "end": "and p is small."
           }
         }
       ]
@@ -1170,7 +1154,7 @@
           "sourceId": "ims-math",
           "locator": "13.2.2 Standardizing with Z scores",
           "anchor": {
-            "start": "If the observation \\(x\\) comes from",
+            "start": "comes from a normal distribution centered",
             "end": "as well as the spread."
           }
         }
@@ -1249,7 +1233,7 @@
           "sourceId": "psu414-28",
           "locator": "28.1 Normal Approximation to Binomial",
           "anchor": {
-            "start": "Note, however, that \\(Y\\) in the",
+            "start": "Note, however, that",
             "end": "to approximate some probabilities for"
           }
         },
@@ -1268,7 +1252,7 @@
           "locator": "28.1 Normal Approximation to Binomial",
           "anchor": {
             "start": "That is, the only way both",
-            "end": "namely \\(n=50\\)."
+            "end": "a much larger sample size,"
           }
         },
         {
@@ -1288,8 +1272,8 @@
           "sourceId": "psu414-28",
           "locator": "28.1 Normal Approximation to Binomial",
           "anchor": {
-            "start": "In general, the farther \\(p\\) is",
-            "end": "namely \\(n=50\\)."
+            "start": "In general, the farther",
+            "end": "a much larger sample size,"
           }
         }
       ],
