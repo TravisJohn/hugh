@@ -1955,8 +1955,9 @@
     },
     {
       "id": "stable-training",
-      "title": "Keeping gradients stable",
+      "title": "Making training stable: scaling, gradients and initialisation",
       "conceptIds": [
+        "feature_scaling_nn",
         "vanishing_exploding",
         "weight_initialisation"
       ]
@@ -1976,13 +1977,6 @@
         "weight_decay",
         "dropout",
         "early_stopping"
-      ]
-    },
-    {
-      "id": "feature-scaling",
-      "title": "Scaling the inputs",
-      "conceptIds": [
-        "feature_scaling_nn"
       ]
     },
     {

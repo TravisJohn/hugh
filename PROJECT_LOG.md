@@ -9178,3 +9178,37 @@ above. The pack and its id lock are identical in both, so feat/more-courses
 took main in with no change to Clustering. Draft PR #32 now carries the three
 courses still approved only on his behalf, pending his review: Decision trees,
 Bayesian inference and Outlier detection.
+
+## 2026-10-22 - Neural networks and Classification metrics join the catalog
+
+Travis asked for both card orders to be settled on his behalf so more topics
+can be authored. Both courses are filed under Machine Learning, which takes
+the catalog from nine courses (with #32) to eleven.
+
+**Neural networks** 1.0.0 is scoped to how a network learns, not deep learning
+in general. It has 25 concepts, 111 key points and 14 misconceptions from 25
+HTML sources: Google's Machine Learning Crash Course, scikit-learn's MLP guide
+and the early chapters of Dive into Deep Learning. Nielsen's book was left out
+because its site serves no HTTPS. Gradient descent links to Linear
+Regression's concept rather than re-teaching it. Judge run 1 had 124/125
+supported; one claim stated a condition its passage does not, and was
+trimmed. Run 2 had 125/125 supported and 19/19 planted errors caught.
+
+Its card order: linear models to neurons; activations and layers; the forward
+pass and output layer; loss and gradient descent; backpropagation and the
+loss surface; batches, epochs and optimisers; making training stable
+(scaling, gradients and initialisation); overfitting and validation;
+regularisation; representation learning and depth; and when a network is
+the wrong tool. Feature scaling was folded into the stability card, rather
+than standing as a one-concept card near the end, so there are 11 cards.
+
+**Classification metrics** 1.0.0 covers logistic regression and judging a
+classifier. It has 28 concepts and 109 key points from 17 HTML sources
+(Google MLCC, scikit-learn, Penn State STAT 501/504). Judge run 2 had 119/119
+supported and 15/15 planted errors caught. Its 12-card order was kept as
+drafted: probability, odds, training, threshold, confusion matrix, the
+metrics, imbalance, curves, cost-based thresholds, calibration, then bias
+and more than two classes.
+
+Both packs' concept and card ids are locked in `content/packs/ids/`. The
+branch is stacked on feat/more-courses (#32), so it merges cleanly after #32.
