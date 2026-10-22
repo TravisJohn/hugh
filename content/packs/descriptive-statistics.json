@@ -1675,6 +1675,113 @@
       "reason": "Choosing a spread compares the standard deviation with the IQR."
     }
   ],
+  "cards": [
+    {
+      "id": "data-and-variables",
+      "title": "What descriptive statistics do, and kinds of variable",
+      "conceptIds": [
+        "descriptive_statistics",
+        "variable_types",
+        "nominal_ordinal",
+        "discrete_continuous"
+      ]
+    },
+    {
+      "id": "one-categorical-variable",
+      "title": "One categorical variable: counts, bar charts and pie charts",
+      "conceptIds": [
+        "categorical_counts",
+        "bar_and_pie_charts"
+      ]
+    },
+    {
+      "id": "two-categorical-variables",
+      "title": "Two categorical variables: two-way tables and their charts",
+      "conceptIds": [
+        "two_way_tables",
+        "row_column_proportions",
+        "two_variable_bar_charts"
+      ]
+    },
+    {
+      "id": "seeing-a-distribution",
+      "title": "Seeing a numerical distribution: dot plots and histograms",
+      "conceptIds": [
+        "dot_plots_histograms",
+        "bar_chart_vs_histogram"
+      ]
+    },
+    {
+      "id": "shape",
+      "title": "Shape: skew and peaks",
+      "conceptIds": [
+        "shape_symmetry_skew",
+        "modes_and_peaks"
+      ]
+    },
+    {
+      "id": "mean-and-median",
+      "title": "The mean and the median",
+      "conceptIds": [
+        "mean",
+        "median"
+      ]
+    },
+    {
+      "id": "when-mean-and-median-disagree",
+      "title": "When the mean and median disagree: skew and resistance",
+      "conceptIds": [
+        "skew_mean_median",
+        "resistant_summaries"
+      ]
+    },
+    {
+      "id": "percentiles-and-iqr",
+      "title": "Percentiles, the five-number summary and the IQR",
+      "conceptIds": [
+        "percentiles_five_number",
+        "range_iqr"
+      ]
+    },
+    {
+      "id": "box-plots",
+      "title": "Box plots",
+      "conceptIds": [
+        "box_plots"
+      ]
+    },
+    {
+      "id": "standard-deviation",
+      "title": "Standard deviation and the empirical rule",
+      "conceptIds": [
+        "variance_sd",
+        "empirical_rule"
+      ]
+    },
+    {
+      "id": "standardising-and-rescaling",
+      "title": "Z-scores and rescaling data",
+      "conceptIds": [
+        "z_scores",
+        "shift_and_scale"
+      ]
+    },
+    {
+      "id": "comparing-groups",
+      "title": "Summarising by group",
+      "conceptIds": [
+        "comparing_groups"
+      ]
+    },
+    {
+      "id": "choosing-a-summary",
+      "title": "Choosing the right summary",
+      "conceptIds": [
+        "choosing_centre",
+        "choosing_summary"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
