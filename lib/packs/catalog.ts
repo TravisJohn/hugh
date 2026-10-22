@@ -19,6 +19,8 @@ import clustering from "@/content/packs/clustering.json";
 import decisionTrees from "@/content/packs/decision-trees.json";
 import bayesianInference from "@/content/packs/bayesian-inference.json";
 import outlierDetection from "@/content/packs/outlier-detection.json";
+import neuralNetworks from "@/content/packs/neural-networks.json";
+import classificationMetrics from "@/content/packs/classification-metrics.json";
 
 export interface CatalogEntry {
   id:     string;
@@ -35,6 +37,8 @@ const CATALOG: readonly CatalogEntry[] = [
   { id: "decision-trees",          region: "ml",    raw: decisionTrees },
   { id: "bayesian-inference",      region: "stats", raw: bayesianInference },
   { id: "outlier-detection",       region: "stats", raw: outlierDetection },
+  { id: "neural-networks",         region: "ml",    raw: neuralNetworks },
+  { id: "classification-metrics",  region: "ml",    raw: classificationMetrics },
 ];
 
 /** The statuses Hugh may teach from. */
