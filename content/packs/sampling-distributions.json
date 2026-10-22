@@ -1,0 +1,129 @@
+{
+  "id": "sampling-distributions",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Sampling distributions, standard error and confidence intervals: how much a statistic varies from sample to sample, and how to turn one sample into a range of plausible values",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "psu100-08",
+      "title": "STAT 100 Lesson 8: The Diversity of Samples",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu100-09",
+      "title": "STAT 100 Lesson 9: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-04",
+      "title": "STAT 200 Lesson 4: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-07",
+      "title": "STAT 200 Lesson 7: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-08",
+      "title": "STAT 200 Lesson 8: Inference for One Sample",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-04",
+      "title": "STAT 500 Lesson 4: Sampling Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-05",
+      "title": "STAT 500 Lesson 5: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson05",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu414-26",
+      "title": "STAT 414 Lesson 26: Random Functions Associated with Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson26",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu414-27",
+      "title": "STAT 414 Lesson 27: The Central Limit Theorem",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson27",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-12",
+      "title": "Introduction to Modern Statistics (2e), Chapter 12: Confidence intervals with bootstrapping",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-bootstrapping.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-13",
+      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-16",
+      "title": "Introduction to Modern Statistics (2e), Chapter 16: Inference for a single proportion",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-prop.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-19",
+      "title": "Introduction to Modern Statistics (2e), Chapter 19: Inference for a single mean",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-mean.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc14",
+      "title": "7.1.4 What are confidence intervals?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section1/prc14.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-eda352",
+      "title": "1.3.5.2 Confidence Limits for the Mean",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm",
+      "accessedAt": "2026-10-23"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
