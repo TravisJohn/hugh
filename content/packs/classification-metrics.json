@@ -1,0 +1,139 @@
+{
+  "id": "classification-metrics",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Logistic regression and judging a classifier",
+  "outOfScope": [
+    "Support vector machines and other classifiers in depth",
+    "The maximum-likelihood derivation of logistic regression",
+    "Generalised linear models other than logistic regression",
+    "Multinomial and ordinal logistic regression beyond naming them",
+    "Survival analysis",
+    "Causal interpretation of coefficients, beyond the warning that association is not causation",
+    "Code, libraries and tooling"
+  ],
+  "sources": [
+    {
+      "id": "g-lr-intro",
+      "title": "Google Machine Learning Crash Course: Logistic regression",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-lr-sigmoid",
+      "title": "Google Machine Learning Crash Course: Calculating a probability with the sigmoid function",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/sigmoid-function?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-lr-loss",
+      "title": "Google Machine Learning Crash Course: Logistic regression: loss and regularization",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-intro",
+      "title": "Google Machine Learning Crash Course: Classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-threshold",
+      "title": "Google Machine Learning Crash Course: Thresholds and the confusion matrix",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/thresholding?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-metrics",
+      "title": "Google Machine Learning Crash Course: Accuracy, recall, precision, and related metrics",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-roc",
+      "title": "Google Machine Learning Crash Course: ROC and AUC",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-bias",
+      "title": "Google Machine Learning Crash Course: Prediction bias",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/prediction-bias?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-multiclass",
+      "title": "Google Machine Learning Crash Course: Multi-class classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/multiclass?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-linear",
+      "title": "scikit-learn User Guide 1.1: Linear Models (1.1.11 Logistic regression)",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-metrics",
+      "title": "scikit-learn User Guide 3.4: Metrics and scoring",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-threshold",
+      "title": "scikit-learn User Guide 3.3: Tuning the decision threshold for class prediction",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-calibration",
+      "title": "scikit-learn User Guide 1.16: Probability calibration",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/calibration.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu501-15",
+      "title": "STAT 501 Regression Methods, Lesson 15: Logistic, Poisson and Nonlinear Regression",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat501/Lesson15",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu504-06",
+      "title": "STAT 504 Analysis of Discrete Data, Lesson 6: Logistic Regression",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat504/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
