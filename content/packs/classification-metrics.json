@@ -1,7 +1,7 @@
 {
   "id": "classification-metrics",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Logistic regression and judging a classifier",
   "outOfScope": [
     "Support vector machines and other classifiers in depth",
@@ -416,7 +416,7 @@
       "misconceptions": [
         {
           "claim": "Squared loss works just as well for training logistic regression as it does for linear regression.",
-          "correction": "Squared loss suits a linear model, whose output changes at a constant rate; a logistic model's rate of change is not constant, so logistic regression uses log loss instead.",
+          "correction": "Squared loss works well for a linear model, whose output changes at a constant rate, but a logistic regression model's rate of change is not constant.",
           "sourceId": "g-lr-loss",
           "locator": "Log Loss",
           "anchor": {
@@ -1056,15 +1056,6 @@
             "start": "For a binary classifier, a model",
             "end": "(0,0) to (1,1)"
           }
-        },
-        {
-          "text": "An ROC curve needs the true binary labels and target scores, which can be probability estimates of the positive class or non-thresholded decision values.",
-          "sourceId": "sk-metrics",
-          "locator": "3.4.4.15 Receiver operating characteristic (ROC)",
-          "anchor": {
-            "start": "This function requires the true binary",
-            "end": "decision_function on some classifiers)"
-          }
         }
       ]
     },
@@ -1270,7 +1261,7 @@
           "sourceId": "sk-threshold",
           "locator": "3.3.1.1 Options to tune the decision threshold",
           "anchor": {
-            "start": "By default, the balanced accuracy is",
+            "start": "One way to tune the threshold",
             "end": "meaningful metric for their use case"
           }
         },
@@ -1357,7 +1348,7 @@
       "misconceptions": [
         {
           "claim": "A predicted probability of 0.8 from any classifier means an 80% chance that the example is positive.",
-          "correction": "Only a well-calibrated classifier's probabilities can be read directly as confidence levels, with about 80% of samples given 0.8 actually positive; some models give poor probability estimates.",
+          "correction": "Only a well-calibrated classifier's probabilities can be read directly as confidence levels, with about 80% of the samples it scores near 0.8 actually positive.",
           "sourceId": "sk-calibration",
           "locator": "1.16 Probability calibration",
           "anchor": {
@@ -1840,5 +1831,15 @@
       "after": "multiclass",
       "reason": "Softmax extends the sigmoid's logistic formula to several classes."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 119,
+    "itemsSupported": 119,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:8f51a99f6f2c9674cf00fec87ee3dd8b"
+  }
 }
