@@ -1817,5 +1817,113 @@
     "errorsPlanted": 17,
     "errorsCaught": 17,
     "fingerprint": "sha256:9c22fe9ec98ae9f26f9cdbc934359cc8"
-  }
+  },
+  "cards": [
+    {
+      "id": "populations-and-samples",
+      "title": "Populations, samples and why we sample",
+      "conceptIds": [
+        "population_and_sample",
+        "parameters_and_statistics",
+        "why_sample"
+      ]
+    },
+    {
+      "id": "frame-and-bias",
+      "title": "The sampling frame and sampling bias",
+      "conceptIds": [
+        "sampling_frame",
+        "sampling_bias"
+      ]
+    },
+    {
+      "id": "random-samples",
+      "title": "Probability samples: simple random and systematic",
+      "conceptIds": [
+        "probability_vs_nonprobability",
+        "simple_random_sampling",
+        "systematic_sampling"
+      ]
+    },
+    {
+      "id": "stratified-sampling",
+      "title": "Stratified sampling",
+      "conceptIds": [
+        "stratified_sampling"
+      ]
+    },
+    {
+      "id": "cluster-and-multistage",
+      "title": "Cluster and multistage sampling",
+      "conceptIds": [
+        "cluster_sampling",
+        "multistage_sampling"
+      ]
+    },
+    {
+      "id": "choosing-a-design",
+      "title": "Choosing a design: strata, clusters and cost",
+      "conceptIds": [
+        "stratified_vs_cluster",
+        "cluster_cost_precision"
+      ]
+    },
+    {
+      "id": "non-probability-samples",
+      "title": "Samples that cannot speak for a population",
+      "conceptIds": [
+        "convenience_and_voluntary",
+        "quota_sampling",
+        "online_opt_in"
+      ]
+    },
+    {
+      "id": "errors-and-coverage",
+      "title": "Sampling error, undercoverage and non-response",
+      "conceptIds": [
+        "sampling_vs_nonsampling_error",
+        "undercoverage",
+        "nonresponse_bias"
+      ]
+    },
+    {
+      "id": "response-bias-and-wording",
+      "title": "Response bias and question wording",
+      "conceptIds": [
+        "response_bias",
+        "question_wording"
+      ]
+    },
+    {
+      "id": "writing-questions",
+      "title": "Writing clear questions and answer options",
+      "conceptIds": [
+        "questionnaire_design",
+        "open_closed_questions"
+      ]
+    },
+    {
+      "id": "order-and-mode",
+      "title": "Order effects and survey modes",
+      "conceptIds": [
+        "order_effects",
+        "survey_modes"
+      ]
+    },
+    {
+      "id": "weighting-and-size",
+      "title": "Weighting, and why size does not fix bias",
+      "conceptIds": [
+        "weighting",
+        "bigger_sample_bias"
+      ]
+    },
+    {
+      "id": "surveys-and-experiments",
+      "title": "Observational studies and experiments",
+      "conceptIds": [
+        "observational_vs_experiment"
+      ]
+    }
+  ]
 }
