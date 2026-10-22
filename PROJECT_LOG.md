@@ -9070,6 +9070,85 @@ Penn State STAT 505 Lessons 11 and 14 and STAT 508 Lessons 7 and 13 (CC BY-NC
   approved**. The pack is not in `lib/packs/catalog.ts` and has no `ids/`
   file; both follow Travis's approval of the card order.
 
+## 2026-10-21 - Clustering joins the catalog (cards approved on Travis's behalf)
+
+Travis asked for courses to keep being added autonomously while he was away.
+I checked the Clustering pack myself before approving anything:
+- It is machine-checked: 116/116 items supported and 14/14 planted errors
+  caught on judge run 2, with the record matching the content.
+- Its 10 cards cover all 24 concepts once and respect all 33 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+what clustering is, then similarity, k-means and its practice, choosing k,
+hierarchical clustering, DBSCAN and Gaussian mixtures, evaluating clusters,
+stability and interpretation, and high-dimensional data with PCA. One point
+for his review: dimensionality and PCA could move earlier, beside similarity.
+
+The pack is in the catalog under the Machine Learning region, the first
+course outside Statistics, with its 24 concept ids and 10 card ids locked.
+Courses being added this way collect on `feat/more-courses` as one PR for
+Travis. Nothing is merged without him.
+
+## 2026-10-21 - Decision trees joins the catalog (cards approved on Travis's behalf)
+
+The second course from the autonomous run. The Decision trees session
+authored the pack from 19 sources (scikit-learn, Penn State Statistics,
+Google's Decision Forests course), committing at each milestone after the
+earlier session limit. I checked it myself:
+- It is machine-checked: 135/135 items supported and 18/18 planted errors
+  caught, with the record matching the content.
+- Its 12 cards cover all 27 concepts and respect all 39 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+the tree, scoring splits, growing and reading one, overfitting and stopping
+rules, cross-validation and tuning (before pruning, because cost-complexity
+pruning uses cross-validation), pruning, instability and ensembles, bagging
+and random forests, out-of-bag checks, boosting, feature importance (four
+misconceptions, the trap-heavy card), and trees versus linear models. Filed
+under Machine Learning; its 27 concept ids and 12 card ids are locked.
+
+## 2026-10-21 - Bayesian inference joins the catalog (cards approved on Travis's behalf)
+
+The third course from the autonomous run, authored from 16 sources: Penn
+State Statistics, Bayes Rules!, Poldrack's Statistical Thinking for the 21st
+Century, NIST/SEMATECH and Evan Miller. Some of the books carry
+non-commercial licences; as with Penn State, the pack stores only our own
+wording and 2-6-word anchors. I checked it myself:
+- It is machine-checked: 129/129 items supported and 18/18 planted errors
+  caught on run 2.
+- Its 13 cards cover all 25 concepts and respect all 34 prerequisites.
+
+I approved the card order for Travis, pending his review. The order is:
+Bayes' theorem and base rates, then prior, likelihood, evidence and
+posterior; the beta-binomial worked case; how prior and data share the
+posterior; choosing a prior; summarising the posterior, including credible
+versus confidence intervals; hypothesis tests and Bayes factors; Bayesian
+A/B testing (pairs with the A/B course); MCMC; and posterior predictive
+checks. Filed under Statistics; its 25 concept ids and 13 card ids are
+locked.
+
+## 2026-10-21 - Outlier detection joins the catalog (cards approved on Travis's behalf)
+
+The fourth and last course from the autonomous run, authored from 14
+sources (the NIST/SEMATECH e-Handbook, scikit-learn, Penn State Statistics)
+over three judge runs, widening anchors that did not carry their subjects. I
+checked it myself:
+- It is machine-checked: 117/117 items supported and 14/14 planted errors
+  caught.
+- Its 12 cards cover all 26 concepts and respect all 40 prerequisites.
+
+I approved the card order for Travis, pending his review. It runs the way a
+careful analyst works: what an outlier is, why not to delete blindly, look
+first, simple rules and robust z-scores, formal tests (Grubbs, generalized
+ESD), masking and swamping, multivariate outliers, regression influence, then
+the ML detectors (LOF, Isolation Forest), evaluating detectors, and deciding
+what to do with an outlier.
+
+The region is a judgement call for Travis: the content is mostly
+statistical, so it is filed under Statistics, with Analytics the other
+reasonable home. Its 26 concept ids and 12 card ids are locked. The run is
+complete: four new courses on feat/more-courses, nine in all.
+
 ## 2026-10-21 - Clustering joins the catalog
 
 Travis approved the 10-card order as drafted:
@@ -9089,3 +9168,13 @@ three are under Statistics. `content/packs/ids/clustering.json` locks its 24
 concept ids and 10 card ids. The branch was brought up to date with main
 (Time series forecasting) before listing, and the conflicts were only the
 appended log and the README table. The catalog now has four courses.
+
+## 2026-10-21 - Clustering: approved by Travis directly (PR #33)
+
+Travis reviewed the Clustering pack himself in its authoring session,
+approved its card order, and merged it to main as PR #33. That supersedes
+the "approved by Claude on Travis's behalf" note in the Clustering entry
+above. The pack and its id lock are identical in both, so feat/more-courses
+took main in with no change to Clustering. Draft PR #32 now carries the three
+courses still approved only on his behalf, pending his review: Decision trees,
+Bayesian inference and Outlier detection.
