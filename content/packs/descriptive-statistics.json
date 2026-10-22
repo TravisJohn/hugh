@@ -1,0 +1,186 @@
+{
+  "id": "descriptive-statistics",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Descriptive statistics: describing and summarising data",
+  "outOfScope": [
+    "Probability, probability distributions and random variables, beyond naming the normal (bell-shaped) curve that the empirical rule describes",
+    "Statistical inference: sampling distributions, confidence intervals and hypothesis tests",
+    "Correlation, scatterplots and regression for two numerical variables",
+    "Outlier detection methods, such as box-plot fences and z-score rules (see the Outlier detection pack)",
+    "Sampling and survey design, and how the data were collected",
+    "Formal measures of skewness and kurtosis, and fitting distributions to data",
+    "Tooling: Excel, R, Python, Minitab and BI tools"
+  ],
+  "sources": [
+    {
+      "id": "psu200-01",
+      "title": "STAT 200 Lesson 1: Collecting Data",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-02",
+      "title": "STAT 200 Lesson 2: Describing Data, Part 1",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson02",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-03",
+      "title": "STAT 200 Lesson 3: Describing Data, Part 2",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson03",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu500-01",
+      "title": "STAT 500 Lesson 1: Collecting and Summarizing Data",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu100-01",
+      "title": "STAT 100 Lesson 1: Statistics: Benefits, Risks, and Measurements",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu100-03",
+      "title": "STAT 100 Lesson 3: Getting the Big Picture and Summaries",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson03",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu100-04",
+      "title": "STAT 100 Lesson 4: Bell-Shaped Curves and Statistical Pictures",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu800-01",
+      "title": "STAT 800 Lesson 1: Describing Data and Ethics",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat800/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu800-02",
+      "title": "STAT 800 Lesson 2: Explaining Variability",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat800/Lesson02",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-eda",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.1.1: What is EDA?",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section1/eda11.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-location",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.1: Measures of Location",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda351.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-scale",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.6: Measures of Scale",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda356.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-skew",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.5.11: Measures of Skewness and Kurtosis",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-histogram",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14: Histogram",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogra.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-hist-normal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.1: Histogram Interpretation: Normal",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr1.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-hist-bimodal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.5: Histogram Interpretation: Bimodal Mixture of 2 Normals",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr5.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-hist-right",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.14.6: Histogram Interpretation: Skewed (Non-Normal) Right",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/histogr6.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-boxplot",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.7: Box Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/boxplot.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-hello",
+      "title": "Introduction to Modern Statistics (2e), Chapter 1: Hello data",
+      "publisher": "OpenIntro (Çetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/data-hello.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-cat",
+      "title": "Introduction to Modern Statistics (2e), Chapter 4: Exploring categorical data",
+      "publisher": "OpenIntro (Çetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/explore-categorical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-num",
+      "title": "Introduction to Modern Statistics (2e), Chapter 5: Exploring numerical data",
+      "publisher": "OpenIntro (Çetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/explore-numerical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-first-steps",
+      "title": "Machine Learning Crash Course: Numerical data: First steps",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/numerical-data/first-steps?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
