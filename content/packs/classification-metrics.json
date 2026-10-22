@@ -1,7 +1,7 @@
 {
   "id": "classification-metrics",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Logistic regression and judging a classifier",
   "outOfScope": [
     "Support vector machines and other classifiers in depth",
@@ -476,6 +476,15 @@
         "decision making"
       ],
       "keyPoints": [
+        {
+          "text": "Classification is the task of predicting which of a set of classes an example belongs to; a logistic regression model that predicts a probability can be turned into a binary classification model that predicts one of two classes.",
+          "sourceId": "g-cls-intro",
+          "locator": "Classification: introduction",
+          "anchor": {
+            "start": "Classification is the task of predicting",
+            "end": "predicts one of two classes"
+          }
+        },
         {
           "text": "Classification is best split in two: the statistical problem of learning to predict class probabilities, and the decision problem of acting on them, like the chance of rain versus whether to take an umbrella.",
           "sourceId": "sk-threshold",
