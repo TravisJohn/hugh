@@ -1,7 +1,7 @@
 {
   "id": "sampling-distributions",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Sampling distributions, standard error and confidence intervals: how much a statistic varies from sample to sample, and how to turn one sample into a range of plausible values",
   "outOfScope": [
     "Hypothesis tests, p-values and significance levels (the next pack); this pack only notes that values outside an interval are not plausible estimates",
@@ -701,7 +701,7 @@
       "misconceptions": [
         {
           "claim": "With a large enough sample, the central limit theorem makes the data themselves normally distributed.",
-          "correction": "With a large sample and no particularly extreme outliers, the sampling distribution of the sample mean is nearly normal even if the distribution of the individual observations is not.",
+          "correction": "With a large sample and no particularly extreme outliers, the sampling distribution of the sample mean is typically assumed to be nearly normal, even if the distribution of the individual observations is not.",
           "sourceId": "ims-19",
           "locator": "19.2.2 Evaluating the two conditions required for modeling the mean",
           "anchor": {
@@ -826,7 +826,7 @@
           }
         },
         {
-          "text": "If the success-failure condition is not met, the sampling distribution may be approximated with a binomial distribution instead, which is known as the exact method.",
+          "text": "If np or n(1 - p) is not at least 10, the sampling distribution may be approximated with a binomial distribution instead, which is known as the exact method.",
           "sourceId": "psu200-08",
           "locator": "8.1 One Sample Proportion",
           "anchor": {
@@ -959,7 +959,7 @@
           }
         },
         {
-          "text": "The rounded multiplier of 2 comes from the empirical rule: approximately 95% of a normal distribution falls within two standard deviations of the mean.",
+          "text": "A multiplier of 2 for a 95% interval comes from the empirical rule: approximately 95% of a normal distribution falls within two standard deviations of the mean.",
           "sourceId": "psu200-04",
           "locator": "4.2 Introduction to Confidence Intervals",
           "anchor": {
@@ -1315,7 +1315,7 @@
           }
         },
         {
-          "text": "For large random samples, the interval for a population proportion is the sample proportion plus or minus a normal-curve multiplier, which sets the confidence level, times the estimated standard error.",
+          "text": "For large random samples, the interval for a population proportion is the sample proportion plus or minus a normal-curve multiplier, which sets the confidence level, times the square root of the sample proportion times one minus it, over n.",
           "sourceId": "psu100-09",
           "locator": "9.1 Confidence Intervals for a Population Proportion",
           "anchor": {
@@ -1333,7 +1333,7 @@
           }
         },
         {
-          "text": "The exact interval is always appropriate; when the success and failure counts are at least 5, the normal-approximation interval and the exact interval should be very similar.",
+          "text": "The exact interval is always appropriate; when the success and failure counts are at least 5, the z-interval can approximate it, and the two should be very similar.",
           "sourceId": "psu500-05",
           "locator": "5.3.1 Minitab: 1-proportion confidence interval",
           "anchor": {
@@ -1371,7 +1371,7 @@
           }
         },
         {
-          "text": "A t interval for a mean needs one of two conditions: the sample comes from a normal distribution, or the sample is large (at least 30) so the central limit theorem applies.",
+          "text": "One of two conditions must hold: the sample comes from a normal distribution, so the sample mean is normal too, or the sample is large (at least 30), so the central limit theorem applies.",
           "sourceId": "psu500-05",
           "locator": "5.4.1 Constructing the Confidence Interval (Step 1)",
           "anchor": {
@@ -1466,7 +1466,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The 95% bootstrap percentile interval runs from the 2.5% point to the 97.5% point of the sorted bootstrap proportions.",
+          "text": "A 95% bootstrap confidence interval runs from the 2.5% point to the 97.5% point of the sorted bootstrap proportions.",
           "sourceId": "ims-12",
           "locator": "12.3.2 Bootstrap confidence interval",
           "anchor": {
@@ -1475,7 +1475,7 @@
           }
         },
         {
-          "text": "The standard error method takes the statistic plus or minus 2 bootstrap standard errors for 95%, given an approximately normal distribution. The percentile method takes the middle 95% of bootstrap statistics and is preferred, because it works whatever the shape.",
+          "text": "One method takes the statistic plus or minus 2 bootstrap standard errors for 95%, given an approximately normal distribution. The percentile method takes the middle 95% of bootstrap statistics and is preferred, because it works whatever the shape.",
           "sourceId": "psu200-04",
           "locator": "4.4 Bootstrap Confidence Interval",
           "anchor": {
@@ -1796,5 +1796,15 @@
       "after": "ci_ignores_bias",
       "reason": "Knowing what an interval claims comes before what it leaves out."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 124,
+    "itemsSupported": 124,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:c93c9a10ce834bf6c22840b2e607e275"
+  }
 }
