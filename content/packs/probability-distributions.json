@@ -1,0 +1,221 @@
+{
+  "id": "probability-distributions",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Probability distributions: random variables and the common distributions",
+  "outOfScope": [
+    "Probability axioms, set theory and rules of probability in depth; conditional probability and Bayes' theorem are taught in the Bayesian inference pack",
+    "Counting and combinatorics beyond the number of ways the binomial needs",
+    "Sampling distributions and the central limit theorem (a later pack)",
+    "Confidence intervals and hypothesis tests (later packs)",
+    "Joint, conditional and multivariate distributions, covariance between random variables",
+    "Moment generating functions, derivations and proofs",
+    "Describing data with means, standard deviations, z-scores and the empirical rule (see the Descriptive statistics pack)",
+    "The beta distribution and other priors (see the Bayesian inference pack)",
+    "Tooling: Excel, R, Python, Minitab and statistical tables"
+  ],
+  "sources": [
+    {
+      "id": "psu414-07",
+      "title": "STAT 414 Lesson 7: Discrete Random Variables",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-08",
+      "title": "STAT 414 Lesson 8: Mathematical Expectation",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-10",
+      "title": "STAT 414 Lesson 10: The Binomial Distribution",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-12",
+      "title": "STAT 414 Lesson 12: The Poisson Distribution",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson12",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-14",
+      "title": "STAT 414 Lesson 14: Continuous Random Variables",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson14",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-15",
+      "title": "STAT 414 Lesson 15: Exponential, Gamma and Chi-Square Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson15",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-16",
+      "title": "STAT 414 Lesson 16: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson16",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-28",
+      "title": "STAT 414 Lesson 28: Approximations for Discrete Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson28",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu500-03",
+      "title": "STAT 500 Lesson 3: Probability Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson03",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-07",
+      "title": "STAT 200 Lesson 7: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-what",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.1: What is a Probability Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda361.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-related",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.2: Related Distributions",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda362.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-families",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.3: Families of Distributions",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda363.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-loc-scale",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.4: Location and Scale Parameters",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda364.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-gallery",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6: Gallery of Distributions",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-normal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.1: Normal Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-uniform",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.2: Uniform Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3662.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-exponential",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.7: Exponential Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3667.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-binomial",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.18: Binomial Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366i.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-poisson",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.19: Poisson Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366j.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21: Normal Probability Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprpl.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-normal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.1: Normal Probability Plot: Normally Distributed Data",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp1.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-short",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.2: Normal Probability Plot: Data Have Short Tails",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp2.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-long",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.3: Normal Probability Plot: Data Have Long Tails",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp3.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-right",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.4: Normal Probability Plot: Data are Skewed Right",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp4.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-probplot",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.22: Probability Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/probplot.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-math",
+      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
+      "publisher": "OpenIntro (Çetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
