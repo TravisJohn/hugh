@@ -1,0 +1,31 @@
+{
+  "packId": "probability-distributions",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "pdf_density:4",
+      "type": "negation",
+      "sentence": "Even though single values carry no probability, whether an interval includes its endpoints changes a continuous probability, so the endpoints must never be treated carelessly."
+    },
+    {
+      "ref": "normal_probability_plot:4",
+      "type": "overstatement",
+      "sentence": "A normal probability plot of a fitted model's residuals proves the model is correct: if the residuals look normal, every assumption of the model is guaranteed to hold."
+    },
+    {
+      "ref": "binomial_mean_shape:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "With a small p and a small n, a binomial distribution is skewed left: most of the probability sits on large counts and it tails off to the left."
+    },
+    {
+      "ref": "uniform_distribution:1",
+      "type": "unsupported_addition",
+      "sentence": "A continuous uniform distribution gives equal probability across a range, which makes it important as a reference distribution and the best default model for real measurement data."
+    },
+    {
+      "ref": "exponential_distribution:4",
+      "type": "causal_from_association",
+      "sentence": "Modelling data with the exponential distribution, as is common in reliability work, is what causes their failure rate to become constant."
+    }
+  ]
+}
