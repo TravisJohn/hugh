@@ -1,0 +1,1947 @@
+{
+  "id": "classification-metrics",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Logistic regression and judging a classifier",
+  "outOfScope": [
+    "Support vector machines and other classifiers in depth",
+    "The maximum-likelihood derivation of logistic regression",
+    "Generalised linear models other than logistic regression",
+    "Multinomial and ordinal logistic regression beyond naming them",
+    "Survival analysis",
+    "Causal interpretation of coefficients, beyond the warning that association is not causation",
+    "Code, libraries and tooling"
+  ],
+  "sources": [
+    {
+      "id": "g-lr-intro",
+      "title": "Google Machine Learning Crash Course: Logistic regression",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-lr-sigmoid",
+      "title": "Google Machine Learning Crash Course: Calculating a probability with the sigmoid function",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/sigmoid-function?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-lr-loss",
+      "title": "Google Machine Learning Crash Course: Logistic regression: loss and regularization",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-intro",
+      "title": "Google Machine Learning Crash Course: Classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-threshold",
+      "title": "Google Machine Learning Crash Course: Thresholds and the confusion matrix",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/thresholding?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-metrics",
+      "title": "Google Machine Learning Crash Course: Accuracy, recall, precision, and related metrics",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-roc",
+      "title": "Google Machine Learning Crash Course: ROC and AUC",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-bias",
+      "title": "Google Machine Learning Crash Course: Prediction bias",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/prediction-bias?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-cls-multiclass",
+      "title": "Google Machine Learning Crash Course: Multi-class classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/classification/multiclass?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "g-nn-multiclass",
+      "title": "Google Machine Learning Crash Course: Neural networks: Multi-class classification",
+      "publisher": "Google for Developers",
+      "url": "https://developers.google.com/machine-learning/crash-course/neural-networks/multi-class?hl=en",
+      "license": "CC BY 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-linear",
+      "title": "scikit-learn User Guide 1.1: Linear Models (1.1.11 Logistic regression)",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/linear_model.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-metrics",
+      "title": "scikit-learn User Guide 3.4: Metrics and scoring",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/model_evaluation.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-threshold",
+      "title": "scikit-learn User Guide 3.3: Tuning the decision threshold for class prediction",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/classification_threshold.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-cost-sensitive",
+      "title": "scikit-learn example: Post-tuning the decision threshold for cost-sensitive learning",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/auto_examples/model_selection/plot_cost_sensitive_learning.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "sk-calibration",
+      "title": "scikit-learn User Guide 1.16: Probability calibration",
+      "publisher": "scikit-learn developers",
+      "url": "https://scikit-learn.org/stable/modules/calibration.html",
+      "license": "BSD License",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu501-13",
+      "title": "STAT 501 Regression Methods, Lesson 13: Weighted Least Squares and Logistic Regressions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat501/Lesson13",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu504-06",
+      "title": "STAT 504 Analysis of Discrete Data, Lesson 6: Logistic Regression",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat504/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "binary_outcomes",
+      "title": "Why a yes-or-no outcome needs a different model",
+      "outcome": "Explain why the straight-line model from Linear Regression suits a continuous response but not a yes-or-no one, and say what logistic regression predicts instead.",
+      "aliases": [
+        "binary outcome",
+        "binary response",
+        "categorical response",
+        "linear probability model"
+      ],
+      "keyPoints": [
+        {
+          "text": "Linear regression makes continuous numerical predictions; logistic regression is a different kind of regression model, designed to predict the probability of an outcome, such as whether an email is spam.",
+          "sourceId": "g-lr-intro",
+          "locator": "Logistic regression: introduction",
+          "anchor": {
+            "start": "In the Linear regression module,",
+            "end": "probability of a given outcome"
+          }
+        },
+        {
+          "text": "Modelling a categorical response, such as a binary one, raises particular problems: error terms that are not normal, error variance that is not constant, and a response that must stay between 0 and 1.",
+          "sourceId": "psu501-13",
+          "locator": "13.2 Logistic Regression",
+          "anchor": {
+            "start": "Particular issues with modeling a categorical",
+            "end": "is bounded between 0 and 1"
+          }
+        },
+        {
+          "text": "Logistic regression differs from classical linear regression in two ways: its response has a binomial rather than a normal distribution, and it relates the predictors to the log-odds of success, called the logit, rather than to the response directly.",
+          "sourceId": "psu504-06",
+          "locator": "Lesson 6 introduction",
+          "anchor": {
+            "start": "there are two key differences between",
+            "end": "success probability called the logit"
+          }
+        },
+        {
+          "text": "Working on the log-odds scale, among other benefits, stops any estimated probability from falling outside the range 0 to 1.",
+          "sourceId": "psu504-06",
+          "locator": "Lesson 6 introduction",
+          "anchor": {
+            "start": "Among other benefits, working with the",
+            "end": "fall outside the range (0, 1)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sigmoid",
+      "title": "The sigmoid: from a score to a probability",
+      "outcome": "Describe how logistic regression turns a weighted sum of features into a probability between 0 and 1 using the sigmoid function.",
+      "aliases": [
+        "sigmoid function",
+        "logistic function",
+        "S-curve"
+      ],
+      "keyPoints": [
+        {
+          "text": "Logistic regression can guarantee its output is a probability because it uses a logistic function, whose output always lies between 0 and 1; the standard one is called the sigmoid function, meaning s-shaped.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Sigmoid function",
+          "anchor": {
+            "start": "You might be wondering how a",
+            "end": "sigmoid means \"s-shaped\""
+          }
+        },
+        {
+          "text": "As its input increases, the sigmoid's output approaches but never reaches 1; as its input decreases, the output approaches but never reaches 0.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Sigmoid function",
+          "anchor": {
+            "start": "As the input, x, increases,",
+            "end": "output approaches but never reaches 0"
+          }
+        },
+        {
+          "text": "The linear part of a logistic regression model computes z, the bias plus each feature value times its learned weight; z is also called the log odds.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Transforming linear output using the sigmoid function",
+          "anchor": {
+            "start": "The following equation represents the linear",
+            "end": "for a particular example."
+          }
+        },
+        {
+          "text": "Feeding the linear output into the sigmoid bends a straight line into an S-shape: the linear part can produce very large or very small values, but the model's output always lies strictly between 0 and 1.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Transforming linear output using the sigmoid function",
+          "anchor": {
+            "start": "In Figure 2, a linear equation",
+            "end": "always between 0 and 1, exclusive"
+          }
+        },
+        {
+          "text": "With one predictor, the theoretical logistic model has an elongated S, or sigmoidal, shape with asymptotes at 0 and 1, although sample estimates may not show it if the predictor's range is limited.",
+          "sourceId": "psu501-13",
+          "locator": "13.2 Logistic Regression",
+          "anchor": {
+            "start": "With one X variable, the",
+            "end": "the X variable is limited"
+          }
+        }
+      ]
+    },
+    {
+      "id": "log_odds",
+      "title": "Odds and log-odds",
+      "outcome": "Convert between a probability, its odds and its log-odds, and explain why logistic regression is linear on the log-odds scale.",
+      "aliases": [
+        "odds",
+        "log odds",
+        "logit"
+      ],
+      "keyPoints": [
+        {
+          "text": "The odds of an event are its probability divided by one minus that probability: a horse with an 80% chance of winning has odds of 4, or 4 to 1.",
+          "sourceId": "psu501-13",
+          "locator": "Odds, Log Odds, and Odds Ratio",
+          "anchor": {
+            "start": "By definition, the odds for an",
+            "end": "= 4, or 4:1"
+          }
+        },
+        {
+          "text": "Written another way, the model says the natural logarithm of the odds, called the log odds or the logit transformation of the success probability, is a linear function of the predictors.",
+          "sourceId": "psu501-13",
+          "locator": "Odds, Log Odds, and Odds Ratio",
+          "anchor": {
+            "start": "The second is",
+            "end": "transformation of the probability of success"
+          }
+        },
+        {
+          "text": "The linear output z is called the log-odds because solving the sigmoid equation for z gives the natural logarithm of the ratio between the probabilities of the two possible outcomes, y and 1 minus y.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Transforming linear output using the sigmoid function",
+          "anchor": {
+            "start": "referred to as the log-odds because",
+            "end": "outcomes: y and 1 - y"
+          }
+        }
+      ]
+    },
+    {
+      "id": "odds_ratios",
+      "title": "Reading coefficients as odds ratios",
+      "outcome": "Interpret a logistic regression coefficient as a multiplicative change in the odds, and explain why it is not a fixed change in probability the way a linear-regression slope is a fixed change in the response.",
+      "aliases": [
+        "odds ratio",
+        "coefficient interpretation",
+        "exponentiated coefficient"
+      ],
+      "keyPoints": [
+        {
+          "text": "Logistic regression parameters are on the logit, or log-odds, scale, so they must be converted back before being interpreted in terms of the original variables.",
+          "sourceId": "psu504-06",
+          "locator": "6.1 Interpretation of Parameter Estimates",
+          "anchor": {
+            "start": "One source of complication when interpreting",
+            "end": "terms of the original variables"
+          }
+        },
+        {
+          "text": "Exponentiating a slope gives the multiplicative increase in the odds of success for each one-unit increase in the predictor, with other predictors held fixed; a linear-regression slope, by contrast, is an additive change.",
+          "sourceId": "psu504-06",
+          "locator": "6.1 Interpretation of Parameter Estimates",
+          "anchor": {
+            "start": "\\(\\exp(\\beta_1) =\\) the multiplicative",
+            "end": "held fixed for this interpretation"
+          }
+        },
+        {
+          "text": "An odds ratio can be any non-negative number: 1 means no association between predictor and response, and above 1 means the odds of success are higher at higher levels of a continuous predictor.",
+          "sourceId": "psu501-13",
+          "locator": "Odds, Log Odds, and Odds Ratio",
+          "anchor": {
+            "start": "odds ratio can be any nonnegative",
+            "end": "the indicated level of a factor"
+          }
+        },
+        {
+          "text": "In a leukemia example, the odds ratio for LI is about 18.1: every one-unit increase in LI multiplies the estimated odds of remission by about 18.1.",
+          "sourceId": "psu501-13",
+          "locator": "Odds, Log Odds, and Odds Ratio",
+          "anchor": {
+            "start": "The odds ratio for LI of",
+            "end": "remission are multiplied by 18.1245"
+          }
+        },
+        {
+          "text": "Because the sigmoid is S-shaped, the same small increase in log-odds changes the probability far more when the log-odds are near 0 than when they are a large positive or negative number.",
+          "sourceId": "g-lr-loss",
+          "locator": "Log Loss",
+          "anchor": {
+            "start": "However, the rate of change of",
+            "end": "large positive or negative number"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A logistic regression coefficient is the change in the probability of the outcome for a one-unit increase in the predictor.",
+          "correction": "The exponentiated coefficient is the multiplicative increase in the odds of success for a one-unit increase, with other predictors fixed; it is not an additive change as in linear regression.",
+          "sourceId": "psu504-06",
+          "locator": "6.1 Interpretation of Parameter Estimates",
+          "anchor": {
+            "start": "\\(\\exp(\\beta_1) =\\) the multiplicative",
+            "end": "held fixed for this interpretation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "log_loss",
+      "title": "Log loss instead of squared loss",
+      "outcome": "Explain why logistic regression is trained with log loss rather than the squared loss used for linear regression.",
+      "aliases": [
+        "log loss",
+        "cross-entropy",
+        "logistic loss",
+        "binary cross-entropy"
+      ],
+      "keyPoints": [
+        {
+          "text": "Logistic regression models are trained by the same process as linear regression models, with two key differences: they use Log Loss rather than squared loss, and regularisation is critical to prevent overfitting.",
+          "sourceId": "g-lr-loss",
+          "locator": "Loss and regularization",
+          "anchor": {
+            "start": "Logistic regression models are trained using",
+            "end": "is critical to prevent overfitting"
+          }
+        },
+        {
+          "text": "Squared loss works well for a linear model, whose output changes at a constant rate; a logistic regression model's rate of change is not constant, because the sigmoid curve is S-shaped rather than linear.",
+          "sourceId": "g-lr-loss",
+          "locator": "Log Loss",
+          "anchor": {
+            "start": "Squared loss works well for a",
+            "end": "is s-shaped rather than linear"
+          }
+        },
+        {
+          "text": "Using squared loss on sigmoid outputs would need ever more memory to preserve the precision required as predictions get closer to 0 and 1.",
+          "sourceId": "g-lr-loss",
+          "locator": "Log Loss",
+          "anchor": {
+            "start": "If you used squared loss to",
+            "end": "needed to track these values"
+          }
+        },
+        {
+          "text": "Log Loss, the loss function for logistic regression, works with the logarithm of the size of the change, rather than just the distance between the data and the prediction.",
+          "sourceId": "g-lr-loss",
+          "locator": "Log Loss",
+          "anchor": {
+            "start": "Instead, the loss function for logistic",
+            "end": "distance from data to prediction"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Squared loss works just as well for training logistic regression as it does for linear regression.",
+          "correction": "Squared loss works well for a linear model, whose output changes at a constant rate, but a logistic regression model's rate of change is not constant.",
+          "sourceId": "g-lr-loss",
+          "locator": "Log Loss",
+          "anchor": {
+            "start": "Squared loss works well for a",
+            "end": "is s-shaped rather than linear"
+          }
+        }
+      ]
+    },
+    {
+      "id": "logistic_regularisation",
+      "title": "Regularising logistic regression",
+      "outcome": "Explain why regularisation matters so much for logistic regression, building on ridge and lasso in Linear Regression, and name the two common strategies.",
+      "aliases": [
+        "regularization",
+        "L2 regularisation",
+        "early stopping",
+        "C parameter"
+      ],
+      "keyPoints": [
+        {
+          "text": "Without regularisation, the asymptotic nature of logistic regression would keep driving loss towards 0 when the model has a large number of features.",
+          "sourceId": "g-lr-loss",
+          "locator": "Regularization in logistic regression",
+          "anchor": {
+            "start": "Without regularization, the asymptotic nature of",
+            "end": "a large number of features"
+          }
+        },
+        {
+          "text": "Most logistic regression models therefore reduce complexity with L2 regularisation or with early stopping, which limits the number of training steps and halts training while loss is still decreasing.",
+          "sourceId": "g-lr-loss",
+          "locator": "Regularization in logistic regression",
+          "anchor": {
+            "start": "Consequently, most logistic regression models use",
+            "end": "while loss is still decreasing"
+          }
+        },
+        {
+          "text": "Applying regularisation by default is common in machine learning but not in statistics; regularisation also improves numerical stability, and setting C to a very high value amounts to no regularisation.",
+          "sourceId": "sk-linear",
+          "locator": "1.1.11 Logistic regression (note on regularization)",
+          "anchor": {
+            "start": "Regularization is applied by default, which",
+            "end": "to a very high value"
+          }
+        }
+      ]
+    },
+    {
+      "id": "probability_and_decision",
+      "title": "Predicting a probability, then making a decision",
+      "outcome": "Separate the statistical job of predicting a probability from the decision taken on it, and use the probability either as it is or as a category.",
+      "aliases": [
+        "predict versus decide",
+        "probabilistic prediction",
+        "decision making"
+      ],
+      "keyPoints": [
+        {
+          "text": "Classification is the task of predicting which of a set of classes an example belongs to; a logistic regression model that predicts a probability can be turned into a binary classification model that predicts one of two classes.",
+          "sourceId": "g-cls-intro",
+          "locator": "Classification: introduction",
+          "anchor": {
+            "start": "Classification is the task of predicting",
+            "end": "predicts one of two classes"
+          }
+        },
+        {
+          "text": "Classification is best split in two: the statistical problem of learning to predict class probabilities, and the decision problem of acting on them, like the chance of rain versus whether to take an umbrella.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3 Tuning the decision threshold",
+          "anchor": {
+            "start": "Classification is best divided into two",
+            "end": "take an umbrella tomorrow?"
+          }
+        },
+        {
+          "text": "A logistic regression probability can be used as it is, so an output of 0.932 means a 93.2% chance an email is spam, or converted into a binary category such as spam or not spam.",
+          "sourceId": "g-lr-sigmoid",
+          "locator": "Calculating a probability",
+          "anchor": {
+            "start": "Practically speaking, you can use the",
+            "end": "Spam or Not Spam"
+          }
+        },
+        {
+          "text": "The most common decisions are binary: a predicted probability is turned into a single outcome, as when the probability of rain decides whether to take mitigating measures such as an umbrella.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.1 Which scoring function should I use? (Decision making)",
+          "anchor": {
+            "start": "The most common decisions are done",
+            "end": "like an umbrella or not)"
+          }
+        },
+        {
+          "text": "If a scoring function is given, for example by a business context, use it; if you are free to choose, start from the ultimate goal and application of the prediction.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.1 Which scoring function should I use?",
+          "anchor": {
+            "start": "In a nutshell, if the scoring",
+            "end": "application of the prediction"
+          }
+        }
+      ]
+    },
+    {
+      "id": "classification_threshold",
+      "title": "The classification threshold",
+      "outcome": "Turn predicted probabilities into class labels with a threshold, and explain why the usual default of 0.5 is often the wrong choice.",
+      "aliases": [
+        "threshold",
+        "decision threshold",
+        "cut-off",
+        "positive class",
+        "negative class"
+      ],
+      "keyPoints": [
+        {
+          "text": "To turn a probability into a class you choose a classification threshold: examples above it are assigned to the positive class, the class being tested for, and examples below it to the negative class.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Thresholds and the confusion matrix",
+          "anchor": {
+            "start": "To make this conversion, you choose",
+            "end": "the alternative class (here, not spam)"
+          }
+        },
+        {
+          "text": "The threshold changes the labels: at 0.5, emails scored 0.99 and 0.51 are both classed as spam, while at 0.95 only the email scored 0.99 is.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Thresholds and the confusion matrix",
+          "anchor": {
+            "start": "Suppose the model scores one email",
+            "end": "0.99 will be classified as spam"
+          }
+        },
+        {
+          "text": "Logistic regression's predicted probability can be used as a classifier by applying a threshold to it, by default 0.5.",
+          "sourceId": "sk-linear",
+          "locator": "1.1.11 Logistic regression (note on GLMs)",
+          "anchor": {
+            "start": "numerical output of the logistic regression,",
+            "end": "(by default 0.5) to it"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "0.5 is always the right classification threshold.",
+          "correction": "A threshold of 0.5 is not a good idea when one kind of wrong classification costs more than the other, or when the classes are imbalanced.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Thresholds and the confusion matrix",
+          "anchor": {
+            "start": "While 0.5 might seem like an",
+            "end": "produces undesirable results"
+          }
+        }
+      ]
+    },
+    {
+      "id": "confusion_matrix",
+      "title": "The confusion matrix",
+      "outcome": "Lay out a binary classifier's results as true and false positives and negatives, and read the matrix's row and column totals.",
+      "aliases": [
+        "confusion matrix",
+        "true positive",
+        "false positive",
+        "true negative",
+        "false negative"
+      ],
+      "keyPoints": [
+        {
+          "text": "A predicted probability is not reality, or ground truth; each output of a binary classifier has four possible outcomes, and setting ground truth against prediction gives a table called a confusion matrix.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Confusion matrix",
+          "anchor": {
+            "start": "The probability score is not reality,",
+            "end": "confusion matrix, is the result"
+          }
+        },
+        {
+          "text": "For a spam filter, a true positive is spam sent to the spam folder, a false positive is legitimate mail sent there, a false negative is spam reaching the inbox, and a true negative is legitimate mail reaching the inbox.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Confusion matrix",
+          "anchor": {
+            "start": "True positive (TP): A spam",
+            "end": "directly to the inbox"
+          }
+        },
+        {
+          "text": "Each row total of the matrix counts all predicted positives or all predicted negatives, whether right or wrong; each column total counts all actual positives or all actual negatives.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Confusion matrix",
+          "anchor": {
+            "start": "Notice that the total in each",
+            "end": "regardless of model classification"
+          }
+        }
+      ]
+    },
+    {
+      "id": "threshold_and_counts",
+      "title": "How the threshold moves the counts",
+      "outcome": "Predict how raising or lowering the threshold shifts the numbers of true and false positives and negatives.",
+      "aliases": [
+        "threshold effect",
+        "moving the threshold"
+      ],
+      "keyPoints": [
+        {
+          "text": "Different thresholds usually give different numbers of true and false positives and true and false negatives.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Effect of threshold on true and false positives and negatives",
+          "anchor": {
+            "start": "Different thresholds usually result in different",
+            "end": "true and false negatives"
+          }
+        },
+        {
+          "text": "As the threshold rises, a model predicts fewer positives, both true and false: a spam filter at 0.9999 is very unlikely to mislabel a legitimate email but is also likely to miss real spam.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Check your understanding, question 2",
+          "anchor": {
+            "start": "false positives when the classification threshold",
+            "end": "to miss actual spam email"
+          }
+        },
+        {
+          "text": "As the threshold rises, a model predicts more negatives, both true and false; at a very high threshold almost every email, spam or not, is classified as not spam.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Check your understanding, question 3",
+          "anchor": {
+            "start": "false negatives when the classification threshold",
+            "end": "will be classified as not-spam"
+          }
+        }
+      ]
+    },
+    {
+      "id": "accuracy",
+      "title": "Accuracy, and when it misleads",
+      "outcome": "Calculate accuracy and explain when it is a fair summary of a classifier and when it flatters a useless one.",
+      "aliases": [
+        "accuracy",
+        "accuracy paradox"
+      ],
+      "keyPoints": [
+        {
+          "text": "Accuracy is the proportion of all classifications that were correct, positive or negative; a perfect model, with no false positives and no false negatives, has an accuracy of 1.0.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy",
+          "anchor": {
+            "start": "Accuracy is the proportion of all",
+            "end": "accuracy of 1.0, or 100%"
+          }
+        },
+        {
+          "text": "Because it uses all four outcomes, accuracy can be a coarse measure of model quality on a balanced dataset, which is why it is often the default metric for generic or unspecified tasks.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy",
+          "anchor": {
+            "start": "Because it incorporates all four outcomes",
+            "end": "generic or unspecified tasks"
+          }
+        },
+        {
+          "text": "When the dataset is imbalanced, or one kind of mistake costs more than the other, as in most real-world applications, it is better to optimise one of the other metrics.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy",
+          "anchor": {
+            "start": "However, when the dataset is imbalanced,",
+            "end": "of the other metrics instead"
+          }
+        },
+        {
+          "text": "If one class appears only 1% of the time, a model that always predicts negative scores 99% accuracy despite being useless.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy",
+          "anchor": {
+            "start": "For heavily imbalanced datasets, where one",
+            "end": "despite being useless"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A classifier with high accuracy is a good classifier.",
+          "correction": "On a heavily imbalanced dataset, a useless model that always predicts the negative class can still score 99% accuracy.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy",
+          "anchor": {
+            "start": "For heavily imbalanced datasets, where one",
+            "end": "despite being useless"
+          }
+        }
+      ]
+    },
+    {
+      "id": "class_imbalance",
+      "title": "Imbalanced classes and balanced accuracy",
+      "outcome": "Recognise an imbalanced dataset and use balanced accuracy to avoid an inflated score.",
+      "aliases": [
+        "class imbalance",
+        "imbalanced dataset",
+        "balanced accuracy",
+        "rare class"
+      ],
+      "keyPoints": [
+        {
+          "text": "A dataset is imbalanced when the number of actual positives is far from the number of actual negatives, such as a rare cloud type that appears only a few times among thousands of photos.",
+          "sourceId": "g-cls-threshold",
+          "locator": "Confusion matrix",
+          "anchor": {
+            "start": "When the total of actual positives",
+            "end": "only appears a few times"
+          }
+        },
+        {
+          "text": "Balanced accuracy avoids inflated performance estimates on imbalanced datasets: it is the average of the recall on each class, so on a balanced dataset it equals ordinary accuracy.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.4 Balanced accuracy score",
+          "anchor": {
+            "start": "function computes the balanced accuracy, which",
+            "end": "the score is equal to accuracy"
+          }
+        },
+        {
+          "text": "For a binary classifier, balanced accuracy is the arithmetic mean of sensitivity, the true positive rate, and specificity, the true negative rate.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.4 Balanced accuracy score",
+          "anchor": {
+            "start": "In the binary case, balanced accuracy",
+            "end": "and specificity (true negative rate)"
+          }
+        },
+        {
+          "text": "If a classifier's accuracy is above chance only because it exploits an imbalanced test set, its balanced accuracy drops to one divided by the number of classes.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.4 Balanced accuracy score",
+          "anchor": {
+            "start": "In contrast, if the conventional accuracy",
+            "end": "drop to \\(\\frac{1}{n\\_classes}\\)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "recall",
+      "title": "Recall, the true positive rate",
+      "outcome": "Calculate recall and say when it is the metric to watch.",
+      "aliases": [
+        "recall",
+        "true positive rate",
+        "TPR",
+        "sensitivity",
+        "probability of detection"
+      ],
+      "keyPoints": [
+        {
+          "text": "Recall, also called the true positive rate, is the proportion of all actual positives that were correctly classified as positive.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Recall, or true positive rate",
+          "anchor": {
+            "start": "The true positive rate (TPR), or",
+            "end": "is also known as recall"
+          }
+        },
+        {
+          "text": "Recall is also called the probability of detection: for a spam filter, it answers what fraction of spam emails the model detects.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Recall, or true positive rate",
+          "anchor": {
+            "start": "In the spam classification example, recall",
+            "end": "detected by this model?"
+          }
+        },
+        {
+          "text": "When actual positives are very rare, recall is more meaningful than accuracy because it measures how well the model identifies the positive cases; in disease prediction a false negative usually costs more than a false positive.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Recall, or true positive rate",
+          "anchor": {
+            "start": "actual positives is very low, recall",
+            "end": "consequences than a false positive"
+          }
+        }
+      ]
+    },
+    {
+      "id": "false_positive_rate",
+      "title": "The false positive rate",
+      "outcome": "Calculate the false positive rate and explain when it becomes an unstable guide.",
+      "aliases": [
+        "false positive rate",
+        "FPR",
+        "false alarm rate",
+        "fall-out"
+      ],
+      "keyPoints": [
+        {
+          "text": "The false positive rate is the proportion of all actual negatives that were wrongly classified as positive, also known as the probability of false alarm.",
+          "sourceId": "g-cls-metrics",
+          "locator": "False positive rate",
+          "anchor": {
+            "start": "The false positive rate (FPR)",
+            "end": "probability of false alarm"
+          }
+        },
+        {
+          "text": "For a spam filter, the false positive rate is the fraction of legitimate emails wrongly classed as spam; a perfect model has a false positive rate of 0.",
+          "sourceId": "g-cls-metrics",
+          "locator": "False positive rate",
+          "anchor": {
+            "start": "In the spam classification example, FPR",
+            "end": "a 0% false alarm rate"
+          }
+        },
+        {
+          "text": "On an imbalanced dataset the false positive rate is usually more informative than accuracy, but with very few actual negatives it is volatile, and precision may then be a more stable measure of false positives.",
+          "sourceId": "g-cls-metrics",
+          "locator": "False positive rate",
+          "anchor": {
+            "start": "For an imbalanced dataset, FPR is",
+            "end": "the effects of false positives"
+          }
+        }
+      ]
+    },
+    {
+      "id": "precision",
+      "title": "Precision",
+      "outcome": "Calculate precision and contrast what it measures with what recall measures.",
+      "aliases": [
+        "precision",
+        "positive predictive value"
+      ],
+      "keyPoints": [
+        {
+          "text": "Precision is the proportion of the model's positive classifications that are actually positive: for a spam filter, the fraction of emails classed as spam that really are spam.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Precision",
+          "anchor": {
+            "start": "Precision is the proportion of all",
+            "end": "that were actually spam"
+          }
+        },
+        {
+          "text": "When actual positives are very, very rare, say one or two in total, precision becomes less meaningful and less useful as a metric.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Precision",
+          "anchor": {
+            "start": "therefore a precision of 1.0",
+            "end": "less useful as a metric"
+          }
+        },
+        {
+          "text": "Intuitively, precision is a classifier's ability not to label a negative sample as positive, and recall is its ability to find all the positive samples.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.9 Precision, recall and F-measures",
+          "anchor": {
+            "start": "Intuitively, precision is the ability",
+            "end": "find all the positive samples"
+          }
+        },
+        {
+          "text": "A metric can be NaN when its denominator is 0: a model that never predicts positive has no true or false positives, so its precision is NaN, which can signal perfection or uselessness.",
+          "sourceId": "g-cls-metrics",
+          "locator": "What does NaN mean in the metrics?",
+          "anchor": {
+            "start": "NaN, or \"not a number,\" appears",
+            "end": "precision would result in NaN"
+          }
+        }
+      ]
+    },
+    {
+      "id": "precision_recall_tradeoff",
+      "title": "The precision-recall trade-off",
+      "outcome": "Explain why improving precision usually costs recall, and how the threshold sets the balance between them.",
+      "aliases": [
+        "precision-recall trade-off",
+        "precision versus recall"
+      ],
+      "keyPoints": [
+        {
+          "text": "Precision improves as false positives fall and recall as false negatives fall; raising the threshold tends to cut false positives and add false negatives, so improving one of the two often worsens the other.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Precision",
+          "anchor": {
+            "start": "Precision improves as false positives decrease,",
+            "end": "one of them worsens the other"
+          }
+        },
+        {
+          "text": "Physicians who prioritise a high recall rate accept a trade-off: potentially more false-positive predictions, which reduce the model's precision.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3 Tuning the decision threshold",
+          "anchor": {
+            "start": "In other words, physicians prioritize achieving",
+            "end": "reducing the precision of the model"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Raising the classification threshold improves both precision and recall.",
+          "correction": "Raising the threshold tends to cut false positives, which helps precision, but adds false negatives, which hurts recall, so the two often move in opposite directions.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Precision",
+          "anchor": {
+            "start": "Precision improves as false positives decrease,",
+            "end": "one of them worsens the other"
+          }
+        }
+      ]
+    },
+    {
+      "id": "f1_score",
+      "title": "The F1 score",
+      "outcome": "Calculate F1 and explain how it balances precision and recall.",
+      "aliases": [
+        "F1",
+        "F-score",
+        "F-measure",
+        "F-beta"
+      ],
+      "keyPoints": [
+        {
+          "text": "The F1 score is the harmonic mean of precision and recall; it balances the importance of the two and is preferable to accuracy for class-imbalanced datasets.",
+          "sourceId": "g-cls-metrics",
+          "locator": "(Optional, advanced) F1 score",
+          "anchor": {
+            "start": "The F1 score is the harmonic",
+            "end": "accuracy for class-imbalanced datasets"
+          }
+        },
+        {
+          "text": "When precision and recall are both 1.0, so is F1; when they are close, F1 is close to their value; when they are far apart, F1 is similar to whichever is worse.",
+          "sourceId": "g-cls-metrics",
+          "locator": "(Optional, advanced) F1 score",
+          "anchor": {
+            "start": "When precision and recall both have",
+            "end": "similar to whichever metric is worse"
+          }
+        },
+        {
+          "text": "The F-beta measure is a weighted harmonic mean of precision and recall, best at 1 and worst at 0; with beta equal to 1 it is the F1 score, which weighs precision and recall equally.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.9 Precision, recall and F-measures",
+          "anchor": {
+            "start": "The F-measure",
+            "end": "precision are equally important"
+          }
+        }
+      ]
+    },
+    {
+      "id": "choosing_a_metric",
+      "title": "Choosing the metric for the problem",
+      "outcome": "Pick the metric to optimise from the relative costs of false positives and false negatives.",
+      "aliases": [
+        "metric choice",
+        "evaluation metric",
+        "cost of errors"
+      ],
+      "keyPoints": [
+        {
+          "text": "Which metric is most meaningful depends on the model, the task, the cost of different mistakes and whether the dataset is balanced; every one of these metrics is calculated at a single threshold and changes when it changes.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Accuracy, recall, precision, and related metrics",
+          "anchor": {
+            "start": "Which evaluation metrics are most",
+            "end": "change when the threshold changes"
+          }
+        },
+        {
+          "text": "The metrics to prioritise when evaluating a model and choosing a threshold depend on the costs, benefits and risks of the specific problem.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Choice of metric and tradeoffs",
+          "anchor": {
+            "start": "The metric(s) you choose to prioritize",
+            "end": "above some minimum accuracy level"
+          }
+        },
+        {
+          "text": "Use recall when false negatives cost more than false positives, the false positive rate when false positives cost more than false negatives, and precision when it is very important that positive predictions are accurate.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Choice of metric and tradeoffs",
+          "anchor": {
+            "start": "Recall(True positive rate)",
+            "end": "positive predictions to be accurate"
+          }
+        },
+        {
+          "text": "When false positives are cheap and false negatives very costly, it makes sense to maximise recall, the probability of detection.",
+          "sourceId": "g-cls-metrics",
+          "locator": "Exercise: Check your understanding",
+          "anchor": {
+            "start": "(FP) are low-cost, and false",
+            "end": "the probability of detection"
+          }
+        }
+      ]
+    },
+    {
+      "id": "roc_curve",
+      "title": "The ROC curve",
+      "outcome": "Read an ROC curve, including what the diagonal and the top-left corner mean.",
+      "aliases": [
+        "ROC",
+        "receiver operating characteristic",
+        "ROC curve"
+      ],
+      "keyPoints": [
+        {
+          "text": "Metrics at one threshold cannot judge a model across all possible thresholds; the ROC curve is a visual representation of model performance across all thresholds.",
+          "sourceId": "g-cls-roc",
+          "locator": "Receiver-operating characteristic curve (ROC)",
+          "anchor": {
+            "start": "But if you want to evaluate",
+            "end": "performance across all thresholds"
+          }
+        },
+        {
+          "text": "An ROC curve is drawn by calculating the true positive rate and the false positive rate at every possible threshold, in practice at selected intervals, and plotting the first against the second.",
+          "sourceId": "g-cls-roc",
+          "locator": "Receiver-operating characteristic curve (ROC)",
+          "anchor": {
+            "start": "The ROC curve is drawn by",
+            "end": "then graphing TPR over FPR"
+          }
+        },
+        {
+          "text": "A binary classifier that does exactly as well as random guessing has an ROC curve that is a diagonal line from (0,0) to (1,1).",
+          "sourceId": "g-cls-roc",
+          "locator": "Area under the curve (AUC)",
+          "anchor": {
+            "start": "For a binary classifier, a model",
+            "end": "(0,0) to (1,1)"
+          }
+        }
+      ]
+    },
+    {
+      "id": "auc",
+      "title": "AUC: the area under the ROC curve",
+      "outcome": "Interpret AUC as a ranking probability, use it to compare models, and explain why it does not choose a threshold.",
+      "aliases": [
+        "AUC",
+        "ROC-AUC",
+        "AUROC",
+        "area under the curve"
+      ],
+      "keyPoints": [
+        {
+          "text": "AUC, the area under the ROC curve, is the probability that the model ranks a randomly chosen positive example above a randomly chosen negative one.",
+          "sourceId": "g-cls-roc",
+          "locator": "Area under the curve (AUC)",
+          "anchor": {
+            "start": "under the ROC curve (AUC) represents",
+            "end": "positive higher than the negative"
+          }
+        },
+        {
+          "text": "A binary classifier that does only as well as random guessing has an AUC of 0.5: a 50% chance of ranking a random positive above a random negative.",
+          "sourceId": "g-cls-roc",
+          "locator": "Area under the curve (AUC)",
+          "anchor": {
+            "start": "For a binary classifier, a model",
+            "end": "random positive and negative example"
+          }
+        },
+        {
+          "text": "AUC does not depend on where the threshold is set: a spam classifier with an AUC of 1.0 always scores a random spam email above a random legitimate one, but each email's label still depends on the chosen threshold.",
+          "sourceId": "g-cls-roc",
+          "locator": "Area under the curve (AUC)",
+          "anchor": {
+            "start": "AUC gives the probability that the",
+            "end": "the threshold that you choose"
+          }
+        },
+        {
+          "text": "AUC is useful for comparing two models as long as the dataset is roughly balanced; the model with the greater area under the curve is generally the better one.",
+          "sourceId": "g-cls-roc",
+          "locator": "AUC and ROC for choosing model and threshold",
+          "anchor": {
+            "start": "AUC is a useful measure for",
+            "end": "is generally the better one"
+          }
+        },
+        {
+          "text": "A binary classifier that reliably puts examples in the wrong class more often than chance can be made better than chance, without retraining, by switching its class labels.",
+          "sourceId": "g-cls-roc",
+          "locator": "Exercise: Check your understanding",
+          "anchor": {
+            "start": "If a binary classifier reliably puts",
+            "end": "without having to retrain the model"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "AUC tells you which classification threshold to use.",
+          "correction": "AUC is a ranking probability measured independently of where the threshold is set; how each example is actually classified still depends on the threshold you choose.",
+          "sourceId": "g-cls-roc",
+          "locator": "Area under the curve (AUC)",
+          "anchor": {
+            "start": "AUC gives the probability that the",
+            "end": "the threshold that you choose"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pr_curve",
+      "title": "Precision-recall curves",
+      "outcome": "Explain when a precision-recall curve compares models better than an ROC curve, and read average precision.",
+      "aliases": [
+        "precision-recall curve",
+        "PR curve",
+        "average precision",
+        "AP",
+        "AUPRC"
+      ],
+      "keyPoints": [
+        {
+          "text": "ROC and AUC work well for comparing models when the classes are roughly balanced; when the dataset is imbalanced, precision-recall curves and the area under them may compare models better.",
+          "sourceId": "g-cls-roc",
+          "locator": "(Optional, advanced) Precision-recall curve",
+          "anchor": {
+            "start": "AUC and ROC work well for",
+            "end": "visualization of model performance"
+          }
+        },
+        {
+          "text": "A precision-recall curve plots precision on the y-axis against recall on the x-axis across all thresholds.",
+          "sourceId": "g-cls-roc",
+          "locator": "(Optional, advanced) Precision-recall curve",
+          "anchor": {
+            "start": "Precision-recall curves are created by plotting",
+            "end": "the x-axis across all thresholds"
+          }
+        },
+        {
+          "text": "A precision-recall curve is computed from the ground-truth labels and a classifier's scores by varying a decision threshold.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.9 Precision, recall and F-measures",
+          "anchor": {
+            "start": "The precision_recall_curve computes a",
+            "end": "by varying a decision threshold"
+          }
+        },
+        {
+          "text": "Average precision, computed from prediction scores, lies between 0 and 1 with higher being better; with random predictions it equals the fraction of positive samples.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.9 Precision, recall and F-measures",
+          "anchor": {
+            "start": "function computes the average precision",
+            "end": "the fraction of positive samples"
+          }
+        }
+      ]
+    },
+    {
+      "id": "threshold_from_costs",
+      "title": "Choosing a threshold from business costs",
+      "outcome": "Choose a classification threshold from what each kind of mistake costs the business.",
+      "aliases": [
+        "cost-sensitive threshold",
+        "business metric",
+        "cost matrix",
+        "operating point"
+      ],
+      "keyPoints": [
+        {
+          "text": "The points on an ROC curve closest to (0,1) are a range of the model's best-performing thresholds; which one to choose depends on which metric matters most for the use case.",
+          "sourceId": "g-cls-roc",
+          "locator": "AUC and ROC for choosing model and threshold",
+          "anchor": {
+            "start": "points on a ROC curve closest",
+            "end": "important to the specific use case"
+          }
+        },
+        {
+          "text": "If false positives are costly, pick a threshold with a lower FPR even if TPR drops; if false negatives are costly and false positives cheap, maximise TPR; if costs are similar, balance TPR and FPR.",
+          "sourceId": "g-cls-roc",
+          "locator": "AUC and ROC for choosing model and threshold",
+          "anchor": {
+            "start": "If false positives (false alarms) are",
+            "end": "best balance between TPR and FPR"
+          }
+        },
+        {
+          "text": "A business metric quantifies how correct and wrong predictions affect the value of deploying a model; in a credit example, classing a bad credit as good costs five times as much on average as the opposite mistake.",
+          "sourceId": "sk-cost-sensitive",
+          "locator": "Defining a business metric",
+          "anchor": {
+            "start": "call a \"business metric\" any",
+            "end": "costly on average than the opposite"
+          }
+        },
+        {
+          "text": "Tuned to maximise such a business metric, the threshold ended far below 0.5: the model gained much higher recall at the cost of much lower precision, predicting the \"bad\" class for a larger fraction of people.",
+          "sourceId": "sk-cost-sensitive",
+          "locator": "Tuning the cut-off point",
+          "anchor": {
+            "start": "the objective score that is exactly",
+            "end": "for a larger fraction of individuals"
+          }
+        }
+      ]
+    },
+    {
+      "id": "threshold_tuning",
+      "title": "Tuning the threshold without fooling yourself",
+      "outcome": "Tune a threshold after training on data the model has not seen, and explain what tuning does and does not change.",
+      "aliases": [
+        "threshold tuning",
+        "post-tuning",
+        "validation set"
+      ],
+      "keyPoints": [
+        {
+          "text": "One solution is to tune a classifier's decision threshold once the model has been trained, choosing the value that maximises a given metric, for example through internal cross-validation.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3.1 Post-tuning the decision threshold",
+          "anchor": {
+            "start": "One solution to address the problem",
+            "end": "chosen to maximize a given metric"
+          }
+        },
+        {
+          "text": "Tuning the decision threshold leaves a classifier's predicted probabilities, and so its ROC and precision-recall curves, unchanged; only its class-label predictions differ.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3.1 Post-tuning the decision threshold",
+          "anchor": {
+            "start": "While the vanilla and tuned classifiers",
+            "end": "because of the tuned decision threshold"
+          }
+        },
+        {
+          "text": "When tuning a threshold to maximise a ready-made metric, choose one that is meaningful for the use case rather than relying on the default, balanced accuracy.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3.1.1 Options to tune the decision threshold",
+          "anchor": {
+            "start": "One way to tune the threshold",
+            "end": "meaningful metric for their use case"
+          }
+        },
+        {
+          "text": "Never use the same data both to train a classifier and to tune its decision threshold, because of the risk of overfitting.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3.1.2 Important notes regarding the internal cross-validation",
+          "anchor": {
+            "start": "should never use the same data",
+            "end": "due to the risk of overfitting"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "It is fine to tune the decision threshold on the same data used to train the classifier.",
+          "correction": "Never use the same data for training the classifier and tuning its decision threshold, because of the risk of overfitting.",
+          "sourceId": "sk-threshold",
+          "locator": "3.3.1.2 Important notes regarding the internal cross-validation",
+          "anchor": {
+            "start": "should never use the same data",
+            "end": "due to the risk of overfitting"
+          }
+        }
+      ]
+    },
+    {
+      "id": "calibration",
+      "title": "Calibration: can the probabilities be trusted?",
+      "outcome": "Explain what a well-calibrated classifier is and read a calibration curve.",
+      "aliases": [
+        "calibration",
+        "reliability diagram",
+        "calibration curve",
+        "well calibrated"
+      ],
+      "keyPoints": [
+        {
+          "text": "A predicted probability gives some sense of confidence in a prediction, but some models give poor estimates of class probabilities and some cannot predict probabilities at all.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16 Probability calibration",
+          "anchor": {
+            "start": "This probability gives you some kind",
+            "end": "do not support probability prediction"
+          }
+        },
+        {
+          "text": "A well-calibrated classifier's probabilities can be read directly as confidence levels: among samples given a probability of about 0.8, roughly 80% actually belong to the positive class.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16 Probability calibration",
+          "anchor": {
+            "start": "Well calibrated classifiers are probabilistic classifiers",
+            "end": "actually belong to the positive class"
+          }
+        },
+        {
+          "text": "A calibration curve, also called a reliability diagram, plots the frequency of the positive label against a binary classifier's predicted probability, showing how well its probabilities are calibrated.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.1 Calibration curves",
+          "anchor": {
+            "start": "Calibration curves, also referred to as",
+            "end": "of a model on the x-axis"
+          }
+        },
+        {
+          "text": "The predictions are binned: the x-axis shows each bin's average predicted probability and the y-axis the fraction of positives in that bin.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.1 Calibration curves",
+          "anchor": {
+            "start": "by binning the predictions such that",
+            "end": "positive class (in each bin)"
+          }
+        },
+        {
+          "text": "Logistic regression is more likely to return well-calibrated predictions by itself, because its log loss has a canonical link function, the logit.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.1 Calibration curves",
+          "anchor": {
+            "start": "LogisticRegression is more likely to return",
+            "end": "the logit-link for the Log loss"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A predicted probability of 0.8 from any classifier means an 80% chance that the example is positive.",
+          "correction": "Only a well-calibrated classifier's probabilities can be read directly as confidence levels, with about 80% of the samples it scores near 0.8 actually positive.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16 Probability calibration",
+          "anchor": {
+            "start": "Well calibrated classifiers are probabilistic classifiers",
+            "end": "actually belong to the positive class"
+          }
+        }
+      ]
+    },
+    {
+      "id": "recalibration",
+      "title": "Calibrating a classifier",
+      "outcome": "Describe how a calibrator corrects a model's probabilities, and choose between sigmoid and isotonic calibration.",
+      "aliases": [
+        "recalibration",
+        "Platt scaling",
+        "sigmoid calibration",
+        "isotonic calibration"
+      ],
+      "keyPoints": [
+        {
+          "text": "Calibrating a classifier means fitting a regressor, called a calibrator, that maps the classifier's output to a calibrated probability between 0 and 1.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.2 Calibrating a classifier",
+          "anchor": {
+            "start": "Calibrating a classifier consists of fitting",
+            "end": "calibrated probability in [0, 1]"
+          }
+        },
+        {
+          "text": "The calibrator should be fitted on data independent of the classifier's training data: the classifier does better on its training data, so a calibrator fitted there would map to probabilities too close to 0 and 1.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.2 Calibrating a classifier",
+          "anchor": {
+            "start": "Ideally, the calibrator is fit on",
+            "end": "0 and 1 than it should"
+          }
+        },
+        {
+          "text": "Sigmoid calibration assumes the calibration curve can be corrected by applying a sigmoid to the raw predictions, an assumption that does not necessarily hold in general.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.3.1 Sigmoid",
+          "anchor": {
+            "start": "The sigmoid method assumes the calibration",
+            "end": "does not necessarily hold in general"
+          }
+        },
+        {
+          "text": "Isotonic calibration is more general than sigmoid and can correct any monotonic distortion, but is more prone to overfitting on small datasets; with enough data, over about 1,000 samples, it does as well as sigmoid or better.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.3.2 Isotonic",
+          "anchor": {
+            "start": "This method is more general when",
+            "end": "samples) to avoid overfitting"
+          }
+        },
+        {
+          "text": "Calibration is generally expected to leave ranking metrics such as ROC-AUC unchanged; sigmoid calibration is strictly monotonic and keeps the ranking, while isotonic calibration can introduce ties that change them.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16.3.2 Isotonic (note on ranking metrics)",
+          "anchor": {
+            "start": "It is generally expected that calibration",
+            "end": "transformation and thus keeps the ranking"
+          }
+        }
+      ]
+    },
+    {
+      "id": "probabilistic_scores",
+      "title": "Scoring the probabilities: log loss and the Brier score",
+      "outcome": "Use log loss and the Brier score to judge predicted probabilities rather than labels, and know what a lower score does not prove.",
+      "aliases": [
+        "Brier score",
+        "log loss metric",
+        "proper scoring rule"
+      ],
+      "keyPoints": [
+        {
+          "text": "Log loss, also called logistic regression loss or cross-entropy loss, is defined on probability estimates, so it can evaluate a classifier's predicted probabilities instead of its discrete predictions.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.12 Log loss",
+          "anchor": {
+            "start": "Log loss, also called logistic regression",
+            "end": "instead of its discrete predictions"
+          }
+        },
+        {
+          "text": "The Brier score is computed for binary and multiclass probabilistic predictions and is equivalent to the mean squared error.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.18 Brier score loss",
+          "anchor": {
+            "start": "function computes the Brier score for",
+            "end": "equivalent to the mean squared error"
+          }
+        },
+        {
+          "text": "The Brier score is a strictly proper scoring rule: it achieves its best score only when the estimated probabilities equal the true ones.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.4.18 Brier score loss",
+          "anchor": {
+            "start": "Actually, the Brier score is a",
+            "end": "equal the true ones"
+          }
+        },
+        {
+          "text": "Once a strictly consistent scoring function is chosen, it is best used both as the loss function for training a model and as the metric for evaluating and comparing models.",
+          "sourceId": "sk-metrics",
+          "locator": "3.4.1 Which scoring function should I use?",
+          "anchor": {
+            "start": "Once a strictly consistent scoring function",
+            "end": "evaluation and model comparison"
+          }
+        },
+        {
+          "text": "Proper scoring rules such as the Brier score and log loss mix a model's calibration, its discriminative power and the randomness of the data, so a lower Brier loss does not necessarily mean a better calibrated model.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16 Probability calibration (note)",
+          "anchor": {
+            "start": "Strictly proper scoring rules for probabilistic",
+            "end": "mean a better calibrated model"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A lower Brier score always means a better calibrated model.",
+          "correction": "The Brier score mixes calibration with discriminative power and the data's randomness, so a lower score could come from a worse calibrated model that discriminates much better.",
+          "sourceId": "sk-calibration",
+          "locator": "1.16 Probability calibration (note)",
+          "anchor": {
+            "start": "Strictly proper scoring rules for probabilistic",
+            "end": "mean a better calibrated model"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prediction_bias",
+      "title": "Prediction bias",
+      "outcome": "Compute prediction bias as a quick health check on a classifier, and list what can cause it.",
+      "aliases": [
+        "prediction bias",
+        "mean prediction check"
+      ],
+      "keyPoints": [
+        {
+          "text": "Calculating prediction bias, the difference between the mean of a model's predictions and the mean of the ground-truth labels, is a quick check that can flag problems with the model or training data early.",
+          "sourceId": "g-cls-bias",
+          "locator": "Prediction bias",
+          "anchor": {
+            "start": "Calculating prediction bias is a quick",
+            "end": "ground-truth labels in the data"
+          }
+        },
+        {
+          "text": "A model trained on data where 5% of emails are spam should predict, on average, that 5% are spam; then it has zero prediction bias, though it might still have other problems.",
+          "sourceId": "g-cls-bias",
+          "locator": "Prediction bias",
+          "anchor": {
+            "start": "A model trained on a dataset",
+            "end": "might still have other problems"
+          }
+        },
+        {
+          "text": "If that model instead predicts spam 50% of the time, something is wrong with the training data, the new data it is applied to, or the model itself; any significant gap between the two means suggests prediction bias.",
+          "sourceId": "g-cls-bias",
+          "locator": "Prediction bias",
+          "anchor": {
+            "start": "If the model instead predicts 50%",
+            "end": "the model has some prediction bias"
+          }
+        },
+        {
+          "text": "Prediction bias can come from biased or noisy data, including biased sampling of the training set; regularisation so strong it oversimplifies the model; bugs in the training pipeline; or features insufficient for the task.",
+          "sourceId": "g-cls-bias",
+          "locator": "Prediction bias",
+          "anchor": {
+            "start": "Prediction bias can be caused by:",
+            "end": "being insufficient for the task"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A model with zero prediction bias is a good model.",
+          "correction": "Zero prediction bias only means the average prediction matches the average label, as when a model predicts 5% spam on data that is 5% spam; the model might still have other problems.",
+          "sourceId": "g-cls-bias",
+          "locator": "Prediction bias",
+          "anchor": {
+            "start": "A model trained on a dataset",
+            "end": "might still have other problems"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiclass",
+      "title": "More than two classes",
+      "outcome": "Extend binary classification to several classes with one-vs-rest or softmax, and tell multi-class from multi-label problems.",
+      "aliases": [
+        "multi-class classification",
+        "one-vs-rest",
+        "one-vs-all",
+        "softmax",
+        "multinomial logistic regression",
+        "multi-label"
+      ],
+      "keyPoints": [
+        {
+          "text": "When each example can belong to only one class, a multi-class problem can be handled as a binary one: one class against all the others put together, repeated for each of the original classes.",
+          "sourceId": "g-cls-multiclass",
+          "locator": "Multi-class classification",
+          "anchor": {
+            "start": "If each example can only be",
+            "end": "for each of the original classes"
+          }
+        },
+        {
+          "text": "If an example can belong to several classes at once, the problem is called multi-label classification.",
+          "sourceId": "g-cls-multiclass",
+          "locator": "Multi-class classification",
+          "anchor": {
+            "start": "If class membership isn't exclusive,",
+            "end": "multi-label classification problem"
+          }
+        },
+        {
+          "text": "In a one-vs-all approach, each class's probability is determined independently of the others, so the probabilities need not add up to 1.",
+          "sourceId": "g-nn-multiclass",
+          "locator": "One versus one (softmax)",
+          "anchor": {
+            "start": "You may have noticed that the",
+            "end": "independently of all the other sets"
+          }
+        },
+        {
+          "text": "Softmax assigns a probability to each class so that all the probabilities add up to 1.0; its formula extends the logistic regression formula to multiple classes.",
+          "sourceId": "g-nn-multiclass",
+          "locator": "One versus one (softmax)",
+          "anchor": {
+            "start": "For one-vs.-one, we can instead apply",
+            "end": "regression into multiple classes"
+          }
+        },
+        {
+          "text": "Binary logistic regression can be extended to K classes, giving multinomial logistic regression.",
+          "sourceId": "sk-linear",
+          "locator": "1.1.11.2 Multinomial Case",
+          "anchor": {
+            "start": "The binary case can be extended",
+            "end": "leading to the multinomial logistic regression"
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "binary_outcomes",
+      "after": "sigmoid",
+      "reason": "The sigmoid is the answer to keeping a yes-or-no model's output between 0 and 1."
+    },
+    {
+      "before": "sigmoid",
+      "after": "log_odds",
+      "reason": "The log-odds are the sigmoid's input, so the sigmoid comes first."
+    },
+    {
+      "before": "log_odds",
+      "after": "odds_ratios",
+      "reason": "An odds ratio compares two odds, and coefficients live on the log-odds scale."
+    },
+    {
+      "before": "sigmoid",
+      "after": "odds_ratios",
+      "reason": "Why a coefficient is not a fixed change in probability rests on the S-shape of the sigmoid."
+    },
+    {
+      "before": "sigmoid",
+      "after": "log_loss",
+      "reason": "Log loss is motivated by the sigmoid's non-constant rate of change."
+    },
+    {
+      "before": "log_loss",
+      "after": "logistic_regularisation",
+      "reason": "Regularisation is the second of the two training differences, after log loss, and is about loss being driven towards 0."
+    },
+    {
+      "before": "sigmoid",
+      "after": "probability_and_decision",
+      "reason": "A decision is taken on the probability the sigmoid produces."
+    },
+    {
+      "before": "probability_and_decision",
+      "after": "classification_threshold",
+      "reason": "A threshold is the simplest decision rule on a predicted probability."
+    },
+    {
+      "before": "classification_threshold",
+      "after": "confusion_matrix",
+      "reason": "The confusion matrix counts the outcomes of labels made at a threshold."
+    },
+    {
+      "before": "confusion_matrix",
+      "after": "threshold_and_counts",
+      "reason": "Watching the threshold move the counts needs the four counts first."
+    },
+    {
+      "before": "classification_threshold",
+      "after": "threshold_and_counts",
+      "reason": "The counts move as the threshold moves."
+    },
+    {
+      "before": "confusion_matrix",
+      "after": "accuracy",
+      "reason": "Accuracy is computed from all four cells of the confusion matrix."
+    },
+    {
+      "before": "confusion_matrix",
+      "after": "recall",
+      "reason": "Recall is computed from true positives and false negatives."
+    },
+    {
+      "before": "confusion_matrix",
+      "after": "false_positive_rate",
+      "reason": "The false positive rate is computed from false positives and true negatives."
+    },
+    {
+      "before": "confusion_matrix",
+      "after": "precision",
+      "reason": "Precision is computed from true and false positives."
+    },
+    {
+      "before": "accuracy",
+      "after": "class_imbalance",
+      "reason": "Balanced accuracy fixes the way plain accuracy misleads on imbalanced data."
+    },
+    {
+      "before": "recall",
+      "after": "class_imbalance",
+      "reason": "Balanced accuracy is the average recall per class."
+    },
+    {
+      "before": "precision",
+      "after": "precision_recall_tradeoff",
+      "reason": "The trade-off is between precision and recall."
+    },
+    {
+      "before": "recall",
+      "after": "precision_recall_tradeoff",
+      "reason": "The trade-off is between precision and recall."
+    },
+    {
+      "before": "threshold_and_counts",
+      "after": "precision_recall_tradeoff",
+      "reason": "The trade-off comes from how the threshold moves false positives and false negatives."
+    },
+    {
+      "before": "precision",
+      "after": "f1_score",
+      "reason": "F1 combines precision and recall."
+    },
+    {
+      "before": "recall",
+      "after": "f1_score",
+      "reason": "F1 combines precision and recall."
+    },
+    {
+      "before": "precision_recall_tradeoff",
+      "after": "choosing_a_metric",
+      "reason": "Choosing a metric means choosing a side of the trade-off."
+    },
+    {
+      "before": "false_positive_rate",
+      "after": "choosing_a_metric",
+      "reason": "The false positive rate is one of the metrics to choose between."
+    },
+    {
+      "before": "recall",
+      "after": "roc_curve",
+      "reason": "An ROC curve plots the true positive rate."
+    },
+    {
+      "before": "false_positive_rate",
+      "after": "roc_curve",
+      "reason": "An ROC curve plots against the false positive rate."
+    },
+    {
+      "before": "threshold_and_counts",
+      "after": "roc_curve",
+      "reason": "An ROC curve traces the rates as the threshold moves."
+    },
+    {
+      "before": "roc_curve",
+      "after": "auc",
+      "reason": "AUC is the area under the ROC curve."
+    },
+    {
+      "before": "auc",
+      "after": "pr_curve",
+      "reason": "Precision-recall curves are introduced as the alternative to ROC and AUC on imbalanced data."
+    },
+    {
+      "before": "precision_recall_tradeoff",
+      "after": "pr_curve",
+      "reason": "A precision-recall curve draws the trade-off across thresholds."
+    },
+    {
+      "before": "class_imbalance",
+      "after": "pr_curve",
+      "reason": "The case for a precision-recall curve rests on class imbalance."
+    },
+    {
+      "before": "choosing_a_metric",
+      "after": "threshold_from_costs",
+      "reason": "A cost-based threshold applies the reasoning used to choose a metric."
+    },
+    {
+      "before": "roc_curve",
+      "after": "threshold_from_costs",
+      "reason": "Thresholds are chosen as points on the ROC curve."
+    },
+    {
+      "before": "threshold_from_costs",
+      "after": "threshold_tuning",
+      "reason": "Tuning searches for the threshold that best serves the chosen costs."
+    },
+    {
+      "before": "pr_curve",
+      "after": "threshold_tuning",
+      "reason": "Tuning leaves the ROC and precision-recall curves unchanged, which needs both curves."
+    },
+    {
+      "before": "probability_and_decision",
+      "after": "calibration",
+      "reason": "Calibration asks whether the predicted probability can be read as it is."
+    },
+    {
+      "before": "log_loss",
+      "after": "calibration",
+      "reason": "Logistic regression's calibration is explained by its log loss."
+    },
+    {
+      "before": "calibration",
+      "after": "recalibration",
+      "reason": "A calibrator fixes the miscalibration a calibration curve reveals."
+    },
+    {
+      "before": "auc",
+      "after": "recalibration",
+      "reason": "Whether calibration changes AUC needs AUC first."
+    },
+    {
+      "before": "calibration",
+      "after": "probabilistic_scores",
+      "reason": "What a Brier score says about calibration needs calibration first."
+    },
+    {
+      "before": "log_loss",
+      "after": "probabilistic_scores",
+      "reason": "Log loss as a metric builds on log loss as a training loss."
+    },
+    {
+      "before": "probability_and_decision",
+      "after": "prediction_bias",
+      "reason": "Prediction bias compares the average predicted probability with the average label."
+    },
+    {
+      "before": "logistic_regularisation",
+      "after": "prediction_bias",
+      "reason": "Too-strong regularisation is one cause of prediction bias."
+    },
+    {
+      "before": "classification_threshold",
+      "after": "multiclass",
+      "reason": "One-vs-rest is built from binary classifiers, each with its own threshold."
+    },
+    {
+      "before": "sigmoid",
+      "after": "multiclass",
+      "reason": "Softmax extends the sigmoid's logistic formula to several classes."
+    }
+  ],
+  "cards": [
+    {
+      "id": "from-lines-to-probabilities",
+      "title": "From a straight line to a probability",
+      "conceptIds": [
+        "binary_outcomes",
+        "sigmoid"
+      ]
+    },
+    {
+      "id": "odds-and-coefficients",
+      "title": "Odds, log-odds and reading coefficients",
+      "conceptIds": [
+        "log_odds",
+        "odds_ratios"
+      ]
+    },
+    {
+      "id": "training-logistic-regression",
+      "title": "Training: log loss and regularisation",
+      "conceptIds": [
+        "log_loss",
+        "logistic_regularisation"
+      ]
+    },
+    {
+      "id": "probabilities-to-decisions",
+      "title": "From probability to decision: the threshold",
+      "conceptIds": [
+        "probability_and_decision",
+        "classification_threshold"
+      ]
+    },
+    {
+      "id": "confusion-matrix",
+      "title": "The confusion matrix and the threshold",
+      "conceptIds": [
+        "confusion_matrix",
+        "threshold_and_counts"
+      ]
+    },
+    {
+      "id": "accuracy-recall-false-alarms",
+      "title": "Accuracy, recall and false alarms",
+      "conceptIds": [
+        "accuracy",
+        "recall",
+        "false_positive_rate"
+      ]
+    },
+    {
+      "id": "precision-and-f1",
+      "title": "Precision, the trade-off and F1",
+      "conceptIds": [
+        "precision",
+        "precision_recall_tradeoff",
+        "f1_score"
+      ]
+    },
+    {
+      "id": "imbalance-and-metric-choice",
+      "title": "Imbalanced classes and choosing a metric",
+      "conceptIds": [
+        "class_imbalance",
+        "choosing_a_metric"
+      ]
+    },
+    {
+      "id": "roc-auc-pr-curves",
+      "title": "ROC, AUC and precision-recall curves",
+      "conceptIds": [
+        "roc_curve",
+        "auc",
+        "pr_curve"
+      ]
+    },
+    {
+      "id": "threshold-from-costs",
+      "title": "Setting the threshold from business costs",
+      "conceptIds": [
+        "threshold_from_costs",
+        "threshold_tuning"
+      ]
+    },
+    {
+      "id": "calibrated-probabilities",
+      "title": "Can the probabilities be trusted?",
+      "conceptIds": [
+        "calibration",
+        "recalibration",
+        "probabilistic_scores"
+      ]
+    },
+    {
+      "id": "bias-and-many-classes",
+      "title": "Prediction bias and more than two classes",
+      "conceptIds": [
+        "prediction_bias",
+        "multiclass"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 119,
+    "itemsSupported": 119,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:8f51a99f6f2c9674cf00fec87ee3dd8b"
+  }
+}
