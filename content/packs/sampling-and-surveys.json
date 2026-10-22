@@ -1,7 +1,7 @@
 {
   "id": "sampling-and-surveys",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Sampling and survey design: how data are collected from a population, and what can go wrong",
   "outOfScope": [
     "Sampling distributions, standard errors, margins of error and confidence intervals (the next pack); this pack only says that a margin of error does not measure bias",
