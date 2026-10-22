@@ -1,0 +1,36 @@
+{
+  "packId": "sampling-distributions",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "se_and_sample_size:1",
+      "type": "negation",
+      "sentence": "Sample size and standard error are unrelated: increasing the sample size leaves the variability of the sampling distribution unchanged."
+    },
+    {
+      "ref": "interpreting_ci:4",
+      "type": "overstatement",
+      "sentence": "Values inside a confidence interval are guaranteed to include the true population value, and every value outside it is certainly wrong."
+    },
+    {
+      "ref": "confidence_level_meaning:4",
+      "type": "overstatement",
+      "sentence": "Every properly constructed 95% confidence interval captures the parameter; only intervals built with mistakes ever miss it."
+    },
+    {
+      "ref": "se_and_sample_size:3",
+      "type": "wrong_number_or_direction",
+      "sentence": "The variability of a sample statistic decreases with the square root of the sample size: a sample twice as large cuts the margin of error in half."
+    },
+    {
+      "ref": "bootstrap:1",
+      "type": "unsupported_addition",
+      "sentence": "Bootstrapping, introduced by Bradley Efron in 1979, is a resampling procedure that uses the data from one sample to generate a sampling distribution, by repeatedly taking random samples from that sample."
+    },
+    {
+      "ref": "bootstrap_ci:3",
+      "type": "causal_from_association",
+      "sentence": "In one example, working with the consultant caused patients' complication probability to fall to between 0% and 11.3%, as 95% of 10,000 bootstrap proportions showed."
+    }
+  ]
+}
