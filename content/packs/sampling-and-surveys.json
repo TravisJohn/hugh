@@ -1,0 +1,135 @@
+{
+  "id": "sampling-and-surveys",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Sampling and survey design: how data are collected from a population, and what can go wrong",
+  "outOfScope": [
+    "Sampling distributions, standard errors, margins of error and confidence intervals (the next pack); this pack only says that a margin of error does not measure bias",
+    "Sample-size formulas and how to choose a sample size",
+    "The mathematics of survey estimators: expansion, ratio and Hansen-Hurwitz estimators, optimal allocation, design effects and variance formulas",
+    "Randomisation and experimental design in depth (see the A/B testing pack); this pack names observational studies and experiments and the difference between them",
+    "Probability, random variables and the binomial distribution (see the Probability distributions pack)",
+    "Snowball and respondent-driven sampling of hidden populations",
+    "Weighting methods in detail, such as raking algorithms, propensity models, matching and multilevel regression and poststratification",
+    "Polling methodology for specific elections, and forecasting election results",
+    "Survey tooling such as Qualtrics, SurveyMonkey and Google Forms"
+  ],
+  "sources": [
+    {
+      "id": "psu100-01",
+      "title": "STAT 100 Lesson 1: Statistics: Benefits, Risks, and Measurements",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu100-02",
+      "title": "STAT 100 Lesson 2: Characteristics of Good Sample Surveys and Comparative Studies",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson02",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-01",
+      "title": "STAT 200 Lesson 1: Collecting Data",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-01",
+      "title": "STAT 506 Lesson 1: Estimating Population Mean and Total under SRS",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-06",
+      "title": "STAT 506 Lesson 6: Stratified Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-07",
+      "title": "STAT 506 Lesson 7: Cluster and Systematic Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-09",
+      "title": "STAT 506 Lesson 9: Multi-Stage Designs",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-11",
+      "title": "STAT 506 Lesson 11: Applied Problems for Survey Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-design",
+      "title": "Introduction to Modern Statistics, 2nd ed., Chapter 2: Study design",
+      "publisher": "OpenIntro (Mine Çetinkaya-Rundel and Johanna Hardin)",
+      "url": "https://openintro-ims.netlify.app/data-design.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-questions",
+      "title": "Writing Survey Questions",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/our-methods/u-s-surveys/writing-survey-questions/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-faq",
+      "title": "Frequently Asked Questions",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/our-methods/u-s-surveys/frequently-asked-questions/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-nonprob",
+      "title": "Methods 101: What are nonprobability surveys?",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/08/06/video-explainer-what-are-nonprobability-surveys/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-weighting",
+      "title": "For Weighting Online Opt-In Samples, What Matters Most?",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/01/26/for-weighting-online-opt-in-samples-what-matters-most/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-modes",
+      "title": "From Telephone to the Web: The Challenge of Mode of Interview Effects in Public Opinion Polls",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2015/05/13/from-telephone-to-the-web-the-challenge-of-mode-of-interview-effects-in-public-opinion-polls/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-weight-methods",
+      "title": "How different weighting methods work",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/01/26/how-different-weighting-methods-work/",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
