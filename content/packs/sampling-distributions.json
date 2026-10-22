@@ -1,7 +1,7 @@
 {
   "id": "sampling-distributions",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Sampling distributions, standard error and confidence intervals: how much a statistic varies from sample to sample, and how to turn one sample into a range of plausible values",
   "outOfScope": [
     "Hypothesis tests, p-values and significance levels (the next pack); this pack only notes that values outside an interval are not plausible estimates",
@@ -175,12 +175,12 @@
           }
         },
         {
-          "text": "When the survey method is unbiased, the sample proportion is expected to come out around the population value, give or take a random error.",
+          "text": "When the survey method is unbiased, the sample proportion equals the population proportion plus a random error, and that random error tells how far off the sample is from the population.",
           "sourceId": "psu100-08",
           "locator": "8 The Diversity of Samples (Lesson Overview, Example 8.1)",
           "anchor": {
             "start": "Since the survey method is unbiased,",
-            "end": "give or take a random error"
+            "end": "sample is from the population."
           }
         }
       ]
@@ -191,7 +191,7 @@
       "outcome": "Explain why averages and proportions from bigger random samples settle near the population value, and why small samples are volatile.",
       "keyPoints": [
         {
-          "text": "The law of large numbers: a chance process repeated independently is unpredictable in the short run but regular in the long run, so averages and proportions from a random sample tend to home in on the population values.",
+          "text": "By the law of large numbers, a chance process repeated independently is unpredictable in the short run but regular in the long run. Averages and proportions from a random sample tend to home in on the population values.",
           "sourceId": "psu100-08",
           "locator": "8 The Diversity of Samples (Lesson Overview)",
           "anchor": {
@@ -405,7 +405,7 @@
           }
         },
         {
-          "text": "The sampling distribution of a mean is centred very close to the population mean, but its standard deviation is smaller than the standard deviation of the population.",
+          "text": "In one simulation of sample means, the sampling distribution's mean was very close to the population mean, and its standard deviation was smaller than the population's.",
           "sourceId": "psu500-04",
           "locator": "4.1 Sampling Distribution of the Sample Mean (Example 4.2)",
           "anchor": {
@@ -558,11 +558,11 @@
           }
         },
         {
-          "text": "One observation, the mean of 4 and the mean of 8 observations are all unbiased estimates of the population mean, but the mean of 8 is the most precise.",
+          "text": "For IQ, one person's score, the mean of 4 people and the mean of 8 people are all unbiased estimates of the population mean, but the mean of 8 is the most precise.",
           "sourceId": "psu414-26",
           "locator": "26.2 Sampling Distribution of Sample Mean (example)",
           "anchor": {
-            "start": "As the plot suggests, an individual",
+            "start": "the average IQ of 4 random",
             "end": "will be the most precise estimate"
           }
         }
@@ -596,7 +596,7 @@
           }
         },
         {
-          "text": "If the population already follows the normal curve, the normal approximation for a sample mean is fine even with a sample of only 4.",
+          "text": "In one example, the normal approximation was fine for the mean of only 4 values, because the population already followed the normal distribution.",
           "sourceId": "psu100-08",
           "locator": "8.3 The Quality of the Normal Approximation (Example 8.7)",
           "anchor": {
@@ -643,7 +643,7 @@
           }
         },
         {
-          "text": "With a smaller sample there were large gaps between the possible sample proportions; with a larger sample the gaps shrank and the sampling distribution approximated a normal distribution.",
+          "text": "In one example, with a smaller sample there were large gaps between the possible sample proportions; with a larger sample the gaps shrank and the sampling distribution approximated a normal distribution.",
           "sourceId": "psu200-04",
           "locator": "4.1.2 Impact of Sample Size (Example 4.7)",
           "anchor": {
@@ -689,7 +689,7 @@
           }
         },
         {
-          "text": "The bell shape seen in so many sampling distributions is not a coincidence but is guaranteed by mathematical theory: under certain conditions a sample proportion follows a bell-shaped normal curve.",
+          "text": "Bell-shaped sampling distributions are no coincidence but are guaranteed by mathematical theory: under certain conditions, a sample proportion will appear to follow a bell-shaped curve called the normal distribution.",
           "sourceId": "ims-13",
           "locator": "13.1 Central Limit Theorem",
           "anchor": {
@@ -722,7 +722,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The sample size needed depends on the population's skew: as few as 4 or 5 can be adequate for a symmetric population, at least 25 or 30 for a skewed one, and even more for an extremely skewed one.",
+          "text": "The sample size needed depends on the population's skew: as few as 4 or 5 can be adequate for a symmetric population, at least 25 or 30 for a skewed one, and an extremely skewed one may need even more.",
           "sourceId": "psu414-27",
           "locator": "27.1 The Theorem",
           "anchor": {
@@ -740,7 +740,7 @@
           }
         },
         {
-          "text": "For sample means, the normal approximation works better the closer the population is to a normal curve, so strong skew and outliers call for larger samples.",
+          "text": "For sample means, the normal approximation works better the closer the population is to a normal curve, so more strongly skewed populations need larger samples.",
           "sourceId": "psu100-08",
           "locator": "8.3 The Quality of the Normal Approximation",
           "anchor": {
@@ -1146,7 +1146,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Being 100% confident is possible only with a useless interval: the only interval sure to capture an approval rating is 0% to 100%.",
+          "text": "Full confidence is of no practical use: the only interval one can be truly confident captures an approval rating runs from 0% to 100%.",
           "sourceId": "psu500-05",
           "locator": "5.2 General Format of a Confidence Interval (Note)",
           "anchor": {
@@ -1324,7 +1324,7 @@
           }
         },
         {
-          "text": "With 660 of 1500 adults approving, the sample proportion was 0.44 and the 95% interval ran from 41.5% to 46.5%, which can also be reported as 44% with a 95% margin of error of 2.5%.",
+          "text": "In one example, a sample proportion of 660/1500 = 0.44 gave a 95% interval for an approval rating of 41.5% to 46.5%, which can also be reported as 44% with a 95% margin of error of 2.5%.",
           "sourceId": "psu500-05",
           "locator": "5.3.1 Construct and Interpret the CI (Example 5.3)",
           "anchor": {
@@ -1441,7 +1441,7 @@
           "sourceId": "ims-12",
           "locator": "12.1.2 Variability of the statistic",
           "anchor": {
-            "start": "It does not make sense to",
+            "start": "By sampling with replacement from the",
             "end": "under an estimate of the population."
           }
         },
@@ -1493,7 +1493,7 @@
           }
         },
         {
-          "text": "Percentile and standard error intervals for the same mean came out similar but not identical; the larger the samples, the better and closer the interval estimates will be.",
+          "text": "In one example, two bootstrap methods gave very similar but not identical intervals; the larger the samples, the better and closer the interval estimates will be.",
           "sourceId": "ims-19",
           "locator": "19.1.3 Bootstrap SE confidence interval",
           "anchor": {
@@ -1552,7 +1552,7 @@
           }
         },
         {
-          "text": "Repeated measurements of a fixed quantity can come out differently; if the measurement process is unbiased, averaging many repetitions gives a better estimate of the true value.",
+          "text": "Measurements are random quantities that can come out differently when repeated; if the measurement process is unbiased, averaging many repetitions gives a better estimate of the true value.",
           "sourceId": "psu100-09",
           "locator": "9.2 Confidence Intervals for a Population Mean (Example 9.3)",
           "anchor": {
