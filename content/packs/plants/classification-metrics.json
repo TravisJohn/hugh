@@ -1,0 +1,31 @@
+{
+  "packId": "classification-metrics",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "recalibration:2",
+      "type": "negation",
+      "sentence": "The calibrator should be fitted on the classifier's own training data: the classifier's outputs there are its most reliable, so a calibrator fitted on them maps to the right probabilities."
+    },
+    {
+      "ref": "auc:4",
+      "type": "overstatement",
+      "sentence": "AUC always identifies the better of two models on any dataset, balanced or not; the model with the greater area under the curve is guaranteed to be the better one."
+    },
+    {
+      "ref": "threshold_and_counts:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "As the threshold rises, a model predicts more positives, both true and false: a spam filter at 0.9999 is likely to mislabel many legitimate emails but very unlikely to miss real spam."
+    },
+    {
+      "ref": "prediction_bias:4",
+      "type": "unsupported_addition",
+      "sentence": "Prediction bias can come from biased or noisy data, regularisation that is too strong, bugs in the training pipeline or insufficient features, and its most common cause is training for too few epochs."
+    },
+    {
+      "ref": "odds_ratios:3",
+      "type": "causal_from_association",
+      "sentence": "An odds ratio can be any non-negative number: 1 means the predictor has no causal effect on the response, and above 1 means raising a continuous predictor causes the odds of success to rise."
+    }
+  ]
+}
