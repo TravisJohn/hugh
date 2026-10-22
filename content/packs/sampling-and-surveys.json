@@ -1,7 +1,7 @@
 {
   "id": "sampling-and-surveys",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Sampling and survey design: how data are collected from a population, and what can go wrong",
   "outOfScope": [
     "Sampling distributions, standard errors, margins of error and confidence intervals (the next pack); this pack only says that a margin of error does not measure bias",
@@ -241,7 +241,7 @@
           }
         },
         {
-          "text": "Time, access and cost often make it impossible to gather information from a whole population, so information is gathered from a smaller subset, the sample.",
+          "text": "Time, access and cost can make it impossible to gather information from a whole population, so information is often gathered from a smaller subset, the sample.",
           "sourceId": "psu200-01",
           "locator": "1.2 Sampling Bias",
           "anchor": {
@@ -307,7 +307,7 @@
           }
         },
         {
-          "text": "A random sample of residential postal addresses still misses people who do not live at a residential address, such as those incarcerated or in group facilities, and places without standard mail delivery.",
+          "text": "One poll's random sample of residential postal addresses still misses people who do not live at a residential address, such as those incarcerated or in group facilities, and places without standard mail delivery.",
           "sourceId": "pew-faq",
           "locator": "How are people selected for your polls?",
           "anchor": {
@@ -347,7 +347,7 @@
           }
         },
         {
-          "text": "A retailer that surveys purchasers in one store on a Tuesday morning has sampling bias: customers of other stores, people at work at that hour and people who left without buying are all left out.",
+          "text": "In one example, a retailer that surveyed purchasers in one store on a Tuesday morning had sampling bias: customers of other stores, people at work at that hour and people who left without buying are all left out.",
           "sourceId": "psu200-01",
           "locator": "1.2.1 Example 1.10 (NYC Advertising Study)",
           "anchor": {
@@ -356,7 +356,7 @@
           }
         },
         {
-          "text": "Data collected haphazardly, such as a few remembered cases, are anecdotal evidence. They may be true, but they may represent only extraordinary cases rather than the population.",
+          "text": "Data collected in a haphazard fashion are anecdotal evidence. Such evidence may be true, but it may represent only extraordinary cases rather than the population.",
           "sourceId": "ims-design",
           "locator": "2.1.3 Anecdotal evidence",
           "anchor": {
@@ -378,7 +378,7 @@
       ],
       "keyPoints": [
         {
-          "text": "In a probability sample, each unit has a known probability of being selected. In a non-probability sample, such as a convenience or voluntary-response survey, it does not.",
+          "text": "In probability sampling, the sample has a known probability of being selected. In non-probability sampling, such as convenience or voluntary-response surveys, it does not.",
           "sourceId": "psu100-02",
           "locator": "2.4 Sampling Methods",
           "anchor": {
@@ -562,7 +562,7 @@
           }
         },
         {
-          "text": "When the cases within each stratum are similar, each stratum's estimate is more stable, so the combined estimate for the whole population tends to be more precise.",
+          "text": "When the cases within a stratum are very similar, that stratum's estimate may be more stable and precise, and combining such estimates tends to give a more precise estimate for the whole population.",
           "sourceId": "ims-design",
           "locator": "2.1.5 Four sampling methods",
           "anchor": {
@@ -652,11 +652,11 @@
           }
         },
         {
-          "text": "Large surveys of housing units are multistage: the U.S. Census Bureau selects geographic areas within each state, then selects housing units within each selected area.",
+          "text": "Multistage designs are used in practice: in large surveys of housing units, the U.S. Census Bureau selects geographic areas within each state, then housing units within each selected area.",
           "sourceId": "psu506-09",
           "locator": "9.1 Multi-Stage Design",
           "anchor": {
-            "start": "Large surveys involving the sampling of",
+            "start": "Multi-stage designs are used in many",
             "end": "within each selected geographical area"
           }
         },
@@ -707,7 +707,7 @@
           }
         },
         {
-          "text": "Stratify when answers depend on the grouping factor, such as time zone for watching a live sporting event. Cluster sampling needs a reasonable number of clusters: picking 2 of only 4 offers little over simple random sampling.",
+          "text": "With time zones as groups, stratifying is preferred if answers depend on time zone, as live sports viewing may. Cluster sampling works best with a reasonable number of clusters; 2 of only 4 offers little over simple random sampling.",
           "sourceId": "psu100-02",
           "locator": "2.4 Probability Sampling (Tables 2.2 and 2.3)",
           "anchor": {
@@ -757,7 +757,7 @@
           }
         },
         {
-          "text": "To test 150 people across 30 similar but distant villages, a simple random sample could make collection expensive. Sampling half the villages and then 10 people in each could cut costs substantially.",
+          "text": "Where a simple random sample would draw people from all 30 villages and make collection expensive, randomly sampling half the villages and then 10 people in each could cut costs substantially.",
           "sourceId": "ims-design",
           "locator": "2.1.5 Four sampling methods",
           "anchor": {
@@ -810,7 +810,7 @@
           }
         },
         {
-          "text": "Recruiting volunteers through a social media advert limits the sample to that site's users, and those who choose to take part, such as people already trying to lose weight, may differ from the population.",
+          "text": "When one study recruited volunteers through a social media advert, the sample was limited to that site's users, and those who chose to take part, such as people already trying to lose weight, may differ from the population.",
           "sourceId": "psu200-01",
           "locator": "1.2.1 Example 1.9 (Weight Loss Study Volunteers)",
           "anchor": {
@@ -851,7 +851,7 @@
           }
         },
         {
-          "text": "In a 1948 poll, quota sampling gave Dewey 52% and Truman 45.3%, while a probability sample gave Dewey 46% and Truman 50.5%. The quota result was well off, and probability sampling then became the norm.",
+          "text": "In one poll, quota sampling gave Dewey 52% and Truman 45.3%, while a probability sample gave Dewey 46% and Truman 50.5%. The quota result was well off, and probability sampling then became the norm.",
           "sourceId": "psu506-01",
           "locator": "1.1 Example 1.1 (1948 Washington State Presidential Poll)",
           "anchor": {
@@ -872,12 +872,12 @@
       "misconceptions": [
         {
           "claim": "A quota sample that matches the population's make-up is as good as a random sample.",
-          "correction": "Even when the quotas mirror the population, which people fill them is left to the interviewers' subjective judgement, so there is no way to ensure the sample is representative.",
+          "correction": "Even when the quotas mirror the population, the choice of respondents is left to the interviewers' subjective judgement, and that is the drawback of quota sampling.",
           "sourceId": "psu506-01",
           "locator": "1.1 Sampling Design (Definition 1.2)",
           "anchor": {
             "start": "Definition 1.2 (Quota Sampling) This is",
-            "end": "you have selected is indeed representative"
+            "end": "in the hands of the interviewers"
           }
         }
       ]
@@ -933,7 +933,7 @@
       "misconceptions": [
         {
           "claim": "An online poll with thousands of respondents represents the population, because so many people took part.",
-          "correction": "An opt-in poll has no random selection, so nobody knows each person's chance of being included; if the participants differ from the broader population, their views may not represent it.",
+          "correction": "A non-probability poll has no random selection, so nobody knows each person's chance of being included; if the participants differ from the broader population, their views may not represent it.",
           "sourceId": "pew-nonprob",
           "locator": "Methods 101: What are nonprobability surveys?",
           "anchor": {
@@ -1006,7 +1006,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Using the wrong sampling frame causes bias: when the frame leaves out major portions of the population, that undercoverage is a kind of selection bias.",
+          "text": "Using the wrong sampling frame can bias results: when the frame leaves out major portions of the population, that undercoverage is a kind of selection bias.",
           "sourceId": "psu100-02",
           "locator": "2.1 Defining a Common Language for Sampling",
           "anchor": {
@@ -1073,7 +1073,7 @@
           }
         },
         {
-          "text": "When a restaurant invites recent customers to an online survey, those with strong feelings, good or bad, respond far more than those with a neutral experience. That is non-response bias.",
+          "text": "In one example, a restaurant invited recent customers to an online survey; those with strong feelings, good or bad, were far more likely to respond than those with a neutral experience. That is non-response bias.",
           "sourceId": "psu200-01",
           "locator": "1.2.4 Non-Response Bias",
           "anchor": {
@@ -1133,7 +1133,7 @@
           }
         },
         {
-          "text": "Social desirability bias: wanting to be accepted, people understate things like drug use, tax evasion and racial bias, and overstate things like church attendance, charitable giving and their likelihood of voting.",
+          "text": "Social desirability bias: wanting to be accepted, people understate things like drug use, tax evasion and racial bias, and may overstate things like church attendance, charitable giving and their likelihood of voting.",
           "sourceId": "pew-questions",
           "locator": "Question wording",
           "anchor": {
@@ -1160,11 +1160,11 @@
           }
         },
         {
-          "text": "Some respondents, more often the less educated and less informed, tend to agree with whatever statement they are given. This acquiescence bias is stronger with an interviewer present; offering a choice between alternative statements is better.",
+          "text": "Asked whether they agree or disagree with a statement, less educated and less informed respondents agree more readily than others. This acquiescence bias is stronger with an interviewer present; offering a choice between alternative statements is better.",
           "sourceId": "pew-questions",
           "locator": "Question wording",
           "anchor": {
-            "start": "Research has shown that, compared with",
+            "start": "In this type of question, respondents",
             "end": "choice between alternative statements"
           }
         }
@@ -1200,7 +1200,7 @@
           }
         },
         {
-          "text": "People tend to agree with one-sided statements, even with two contradictory ones in the same survey. Asking whether they agree or disagree with a statement makes it at least two-sided.",
+          "text": "People tend to agree with one-sided statements, even with two contradictory ones in the same survey, so revised wordings that are at least two-sided are preferred.",
           "sourceId": "psu100-01",
           "locator": "1.2 Example 1.4 (Deliberate Bias, Such as One-Sided Statements)",
           "anchor": {
@@ -1209,7 +1209,7 @@
           }
         },
         {
-          "text": "Words such as forbid, ban or outlaw push people towards answering 'oppose' or 'no' whatever is really being asked, because people do not like being told they cannot do something.",
+          "text": "People tend to answer 'oppose' or 'no' to a question containing words such as forbid, ban or outlaw, whatever is really being asked, because people do not like being told they cannot do something.",
           "sourceId": "psu100-01",
           "locator": "1.2 Example 1.8 (Unintentional Bias)",
           "anchor": {
@@ -1218,7 +1218,7 @@
           }
         },
         {
-          "text": "A reference number in a question acts as an anchor: answers drift towards it, because people know little about the topic or are distracted by the anchor.",
+          "text": "A reference point in a question acts as an anchor: answers drift towards it, because people know little about the topic or are distracted by the anchor.",
           "sourceId": "psu100-01",
           "locator": "1.2 Example 1.7 (Anchoring)",
           "anchor": {
@@ -1416,7 +1416,7 @@
           }
         },
         {
-          "text": "Mode effects are fairly common but usually not large: across 60 questions in one experiment, phone and web answers differed by 5.5 percentage points on average, ranging from 0 to 18.",
+          "text": "Mode effects are fairly common but usually not large: across 60 questions, answers differed by survey mode by 5.5 percentage points on average, ranging from 0 to 18.",
           "sourceId": "pew-modes",
           "locator": "Overview",
           "anchor": {
@@ -1434,7 +1434,7 @@
           }
         },
         {
-          "text": "Mode also affects who answers. Automated 'robocall' polls can be very biased: few people respond to a machine, they cannot legally call cell phones, and landline users tend to be older.",
+          "text": "Automated 'robocall' polls can be very biased: response rates are extremely low because people dislike talking to a machine, they cannot legally call cell phones, and landline users tend to be older.",
           "sourceId": "psu100-02",
           "locator": "2.4 Probability Sampling",
           "anchor": {
@@ -1443,7 +1443,7 @@
           }
         },
         {
-          "text": "For an online panel to represent the nation, people who do not use the internet must be included, for example by letting them take surveys by phone with a live interviewer.",
+          "text": "For one online panel, the ATP, to be nationally representative, people who do not use the internet must be represented on it; they can now take its surveys by phone with a live interviewer.",
           "sourceId": "pew-faq",
           "locator": "Do you survey people who don't use the internet?",
           "anchor": {
@@ -1483,11 +1483,11 @@
           }
         },
         {
-          "text": "The most common weighting method, raking, takes variables whose population distribution is known and repeatedly adjusts each case's weight until the sample matches the population on those variables.",
+          "text": "For public opinion surveys, the most common weighting method is raking: it takes variables whose population distribution is known and repeatedly adjusts each case's weight until the sample matches the population on them.",
           "sourceId": "pew-weight-methods",
           "locator": "Raking",
           "anchor": {
-            "start": "With raking, a researcher chooses a",
+            "start": "For public opinion surveys, the most",
             "end": "population for those variables"
           }
         },
@@ -1563,7 +1563,7 @@
       "misconceptions": [
         {
           "claim": "A larger sample always removes bias.",
-          "correction": "Very large samples do not fix a biased sampling method: an online opt-in survey of 8,000 interviews was found to be virtually no more accurate than one of 2,000.",
+          "correction": "Very large samples do not fix the shortcomings of online opt-in samples: an opt-in survey of 8,000 interviews was found to be virtually no more accurate than one of 2,000.",
           "sourceId": "pew-weighting",
           "locator": "Introduction",
           "anchor": {
@@ -1807,5 +1807,15 @@
       "after": "observational_vs_experiment",
       "reason": "Random sampling is contrasted with random assignment."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 124,
+    "itemsSupported": 124,
+    "errorsPlanted": 17,
+    "errorsCaught": 17,
+    "fingerprint": "sha256:9c22fe9ec98ae9f26f9cdbc934359cc8"
+  }
 }
