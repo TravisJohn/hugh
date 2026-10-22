@@ -1832,6 +1832,108 @@
       "reason": "Softmax extends the sigmoid's logistic formula to several classes."
     }
   ],
+  "cards": [
+    {
+      "id": "from-lines-to-probabilities",
+      "title": "From a straight line to a probability",
+      "conceptIds": [
+        "binary_outcomes",
+        "sigmoid"
+      ]
+    },
+    {
+      "id": "odds-and-coefficients",
+      "title": "Odds, log-odds and reading coefficients",
+      "conceptIds": [
+        "log_odds",
+        "odds_ratios"
+      ]
+    },
+    {
+      "id": "training-logistic-regression",
+      "title": "Training: log loss and regularisation",
+      "conceptIds": [
+        "log_loss",
+        "logistic_regularisation"
+      ]
+    },
+    {
+      "id": "probabilities-to-decisions",
+      "title": "From probability to decision: the threshold",
+      "conceptIds": [
+        "probability_and_decision",
+        "classification_threshold"
+      ]
+    },
+    {
+      "id": "confusion-matrix",
+      "title": "The confusion matrix and the threshold",
+      "conceptIds": [
+        "confusion_matrix",
+        "threshold_and_counts"
+      ]
+    },
+    {
+      "id": "accuracy-recall-false-alarms",
+      "title": "Accuracy, recall and false alarms",
+      "conceptIds": [
+        "accuracy",
+        "recall",
+        "false_positive_rate"
+      ]
+    },
+    {
+      "id": "precision-and-f1",
+      "title": "Precision, the trade-off and F1",
+      "conceptIds": [
+        "precision",
+        "precision_recall_tradeoff",
+        "f1_score"
+      ]
+    },
+    {
+      "id": "imbalance-and-metric-choice",
+      "title": "Imbalanced classes and choosing a metric",
+      "conceptIds": [
+        "class_imbalance",
+        "choosing_a_metric"
+      ]
+    },
+    {
+      "id": "roc-auc-pr-curves",
+      "title": "ROC, AUC and precision-recall curves",
+      "conceptIds": [
+        "roc_curve",
+        "auc",
+        "pr_curve"
+      ]
+    },
+    {
+      "id": "threshold-from-costs",
+      "title": "Setting the threshold from business costs",
+      "conceptIds": [
+        "threshold_from_costs",
+        "threshold_tuning"
+      ]
+    },
+    {
+      "id": "calibrated-probabilities",
+      "title": "Can the probabilities be trusted?",
+      "conceptIds": [
+        "calibration",
+        "recalibration",
+        "probabilistic_scores"
+      ]
+    },
+    {
+      "id": "bias-and-many-classes",
+      "title": "Prediction bias and more than two classes",
+      "conceptIds": [
+        "prediction_bias",
+        "multiclass"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
