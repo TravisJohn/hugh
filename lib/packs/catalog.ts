@@ -16,6 +16,9 @@ import linearRegression from "@/content/packs/linear-regression.json";
 import abTesting from "@/content/packs/ab-testing.json";
 import timeSeriesForecasting from "@/content/packs/time-series-forecasting.json";
 import clustering from "@/content/packs/clustering.json";
+import decisionTrees from "@/content/packs/decision-trees.json";
+import bayesianInference from "@/content/packs/bayesian-inference.json";
+import outlierDetection from "@/content/packs/outlier-detection.json";
 
 export interface CatalogEntry {
   id:     string;
@@ -28,7 +31,10 @@ const CATALOG: readonly CatalogEntry[] = [
   { id: "linear-regression", region: "stats", raw: linearRegression },
   { id: "ab-testing",        region: "stats", raw: abTesting },
   { id: "time-series-forecasting", region: "stats", raw: timeSeriesForecasting },
-  { id: "clustering",        region: "ml",    raw: clustering },
+  { id: "clustering",              region: "ml",    raw: clustering },
+  { id: "decision-trees",          region: "ml",    raw: decisionTrees },
+  { id: "bayesian-inference",      region: "stats", raw: bayesianInference },
+  { id: "outlier-detection",       region: "stats", raw: outlierDetection },
 ];
 
 /** The statuses Hugh may teach from. */

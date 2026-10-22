@@ -1,0 +1,31 @@
+{
+  "packId": "decision-trees",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "tree_practical_properties:2",
+      "type": "negation",
+      "sentence": "Because they split by thresholds, classification trees change when an ordered variable is given a monotone transformation, and they are sensitive to outliers and mislabelled training points."
+    },
+    {
+      "ref": "random_forests:3",
+      "type": "overstatement",
+      "sentence": "A random forest lowers variance by combining diverse trees at no cost in bias, so it always gives a better model than any single tree."
+    },
+    {
+      "ref": "boosting_tuning:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "Shrinkage works like a learning rate: it controls how fast the boosted model learns. Values closer to 1 reduce overfitting more than values closer to 0."
+    },
+    {
+      "ref": "out_of_bag:3",
+      "type": "unsupported_addition",
+      "sentence": "Each tree typically trains on about 67% of the examples and never sees the other 33%. Out-of-bag evaluation scores each example using only the trees that did not see it, which makes it exactly as accurate as 10-fold cross-validation."
+    },
+    {
+      "ref": "permutation_importance:1",
+      "type": "causal_from_association",
+      "sentence": "Permutation importance shuffles one feature's values and measures how much the model's score drops; a large drop shows that changing that feature in the real world causes the target to change."
+    }
+  ]
+}

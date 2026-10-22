@@ -1,0 +1,36 @@
+{
+  "packId": "outlier-detection",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "outlier_causes:4",
+      "type": "negation",
+      "sentence": "Outliers rarely carry any useful information, either about the process being studied or about how the data were gathered and recorded."
+    },
+    {
+      "ref": "masking_swamping:3",
+      "type": "negation",
+      "sentence": "Graphs add little to formal outlier tests, because they cannot reveal cases where masking or swamping may be a problem."
+    },
+    {
+      "ref": "influence_cooks:4",
+      "type": "overstatement",
+      "sentence": "A Cook's distance above 0.5 proves that a point is influential, and any value above 1 guarantees that the whole regression is invalid."
+    },
+    {
+      "ref": "robust_z_mad:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "The recommendation is to label observations whose modified z-score exceeds 2 in absolute value as potential outliers."
+    },
+    {
+      "ref": "local_outlier_factor:3",
+      "type": "unsupported_addition",
+      "sentence": "Taking 20 neighbours appears to work well in general, but when outliers make up more than 10% of the data more neighbours should be used; LOF was first designed for credit-card fraud detection."
+    },
+    {
+      "ref": "isolation_forest:3",
+      "type": "causal_from_association",
+      "sentence": "A short path length is what makes a sample anomalous: being cut off from the rest in only a few random splits turns an ordinary sample into an anomaly."
+    }
+  ]
+}
