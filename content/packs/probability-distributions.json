@@ -1,7 +1,7 @@
 {
   "id": "probability-distributions",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Probability distributions: random variables and the common distributions",
   "outOfScope": [
     "Probability axioms, set theory and rules of probability in depth; conditional probability and Bayes' theorem are taught in the Bayesian inference pack",
@@ -142,13 +142,6 @@
       "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.7: Exponential Distribution",
       "publisher": "NIST/SEMATECH",
       "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3667.htm",
-      "accessedAt": "2026-10-22"
-    },
-    {
-      "id": "nist-binomial",
-      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.18: Binomial Distribution",
-      "publisher": "NIST/SEMATECH",
-      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366i.htm",
       "accessedAt": "2026-10-22"
     },
     {
@@ -685,7 +678,7 @@
       "outcome": "Tell a random variable's expected value and variance from a sample's mean and variance, and use the sample values as estimates. (Computing a sample's mean and standard deviation is taught in the Descriptive statistics pack.)",
       "keyPoints": [
         {
-          "text": "When a population is too large to measure, you take a random sample and use the sample mean and sample variance as estimates of the population mean and variance.",
+          "text": "You can take a random sample and use its sample mean and sample variance as estimates of the population mean and population variance.",
           "sourceId": "psu414-08",
           "locator": "8.5 Sample Means and Variances",
           "anchor": {
@@ -793,12 +786,12 @@
       "outcome": "Compute a binomial probability by counting the ways to get x successes and multiplying by the chance of each way.",
       "keyPoints": [
         {
-          "text": "A binomial probability multiplies the number of ways of getting x successes by the probability of x successes and then by the probability of the remaining failures.",
+          "text": "The pattern behind the binomial formula is to multiply the number of ways of getting x successes by the probability of x successes and then by the probability of the remaining failures.",
           "sourceId": "psu414-10",
           "locator": "10.1 The Probability Mass Function",
           "anchor": {
             "start": "It seems that, in each case,",
-            "end": "Nebraska fans"
+            "end": "mass function of a binomial"
           }
         },
         {
@@ -811,7 +804,7 @@
           }
         },
         {
-          "text": "Adding many individual binomial probabilities, as a range such as 'more than 7' needs, is laborious, so cumulative binomial probabilities are typically used instead.",
+          "text": "Adding up many individual binomial probabilities by hand is laborious, so cumulative binomial probabilities are the alternative typically used.",
           "sourceId": "psu414-10",
           "locator": "10.3 Cumulative Binomial Probabilities",
           "anchor": {
@@ -831,12 +824,12 @@
       "outcome": "State a binomial distribution's mean, spread and range, and predict its shape from n and p.",
       "keyPoints": [
         {
-          "text": "A binomial distribution has mean np and takes values from 0 to n.",
-          "sourceId": "nist-binomial",
-          "locator": "Common Statistics",
+          "text": "A binomial random variable has mean np, variance np(1 - p), and standard deviation equal to the square root of np(1 - p).",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
           "anchor": {
-            "start": "Common Statistics Mean np",
-            "end": "Range 0 to n"
+            "start": "If the four conditions are satisfied,",
+            "end": "A Note on Notation!"
           }
         },
         {
@@ -964,7 +957,7 @@
           "sourceId": "nist-poisson",
           "locator": "Probability Mass Function",
           "anchor": {
-            "start": "λ is the shape parameter",
+            "start": "The Poisson distribution is used to",
             "end": "in the given time interval."
           }
         },
@@ -1078,15 +1071,6 @@
           "anchor": {
             "start": "Because the mean and standard deviation",
             "end": "called the distribution's parameters."
-          }
-        },
-        {
-          "text": "In a normal distribution the mean, the median and the mode are all the same value, the location parameter.",
-          "sourceId": "nist-normal",
-          "locator": "Common Statistics",
-          "anchor": {
-            "start": "Common Statistics Mean The location",
-            "end": "Mode The location parameter μ."
           }
         },
         {
@@ -1396,7 +1380,7 @@
           "sourceId": "nist-families",
           "locator": "Example: Weibull Distribution",
           "anchor": {
-            "start": "The shapes above include an exponential",
+            "start": "The Weibull distribution is an example",
             "end": "a relatively symmetric distribution."
           }
         },
@@ -1490,7 +1474,7 @@
       "misconceptions": [
         {
           "claim": "Data fit a distribution only if every point on its probability plot lies exactly on the line.",
-          "correction": "Minor deviations from the line are expected: a strongly linear pattern with only minor deviations still shows the normal distribution is a good model.",
+          "correction": "A plot whose points show only minor deviations from the line still shows the normal distribution is a good model for the data.",
           "sourceId": "nist-npp-normal",
           "locator": "Conclusions",
           "anchor": {
@@ -1618,7 +1602,7 @@
         },
         {
           "claim": "Every dataset is approximately normally distributed.",
-          "correction": "Some data are not: for one right-skewed data set the normal probability plot showed a strongly curved pattern, and the normal was not a good model.",
+          "correction": "Some data are not: for one data set the normal probability plot showed a strongly non-linear pattern, and the normal distribution was not a good model.",
           "sourceId": "nist-npp-right",
           "locator": "Conclusions",
           "anchor": {
@@ -1870,5 +1854,15 @@
       "after": "choosing_a_distribution",
       "reason": "Matching sample and theoretical moments is a weak check on fit."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 119,
+    "itemsSupported": 119,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:7f9c331b74c6f08a92f97ff8892636a7"
+  }
 }
