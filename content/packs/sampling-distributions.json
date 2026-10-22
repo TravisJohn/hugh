@@ -1797,6 +1797,107 @@
       "reason": "Knowing what an interval claims comes before what it leaves out."
     }
   ],
+  "cards": [
+    {
+      "id": "sampling-variability",
+      "title": "Statistics vary from sample to sample",
+      "conceptIds": [
+        "statistic_varies",
+        "law_of_large_numbers"
+      ]
+    },
+    {
+      "id": "sampling-distributions",
+      "title": "The sampling distribution and its centre",
+      "conceptIds": [
+        "sampling_distribution",
+        "unbiased_estimates"
+      ]
+    },
+    {
+      "id": "standard-error",
+      "title": "The standard error",
+      "conceptIds": [
+        "standard_error",
+        "se_vs_sd",
+        "estimating_the_se"
+      ]
+    },
+    {
+      "id": "precision",
+      "title": "Sample size, precision and good estimators",
+      "conceptIds": [
+        "se_and_sample_size",
+        "good_estimators"
+      ]
+    },
+    {
+      "id": "mean-and-proportion",
+      "title": "Sampling distributions of a mean and a proportion",
+      "conceptIds": [
+        "sampling_dist_mean",
+        "sampling_dist_proportion"
+      ]
+    },
+    {
+      "id": "central-limit-theorem",
+      "title": "The central limit theorem and its conditions",
+      "conceptIds": [
+        "clt",
+        "clt_conditions",
+        "success_failure"
+      ]
+    },
+    {
+      "id": "interval-estimates",
+      "title": "From a point estimate to an interval",
+      "conceptIds": [
+        "point_vs_interval",
+        "ci_general_form",
+        "multipliers"
+      ]
+    },
+    {
+      "id": "confidence-level",
+      "title": "What 95% confidence means",
+      "conceptIds": [
+        "confidence_level_meaning",
+        "interpreting_ci"
+      ]
+    },
+    {
+      "id": "interval-width",
+      "title": "What makes an interval wider or narrower",
+      "conceptIds": [
+        "confidence_vs_width",
+        "what_narrows_ci"
+      ]
+    },
+    {
+      "id": "one-proportion-one-mean",
+      "title": "Intervals for one proportion and one mean",
+      "conceptIds": [
+        "ci_one_proportion",
+        "t_distribution",
+        "ci_one_mean"
+      ]
+    },
+    {
+      "id": "bootstrap",
+      "title": "Bootstrap intervals",
+      "conceptIds": [
+        "bootstrap",
+        "bootstrap_ci"
+      ]
+    },
+    {
+      "id": "what-intervals-miss",
+      "title": "What an interval leaves out",
+      "conceptIds": [
+        "ci_ignores_bias"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
