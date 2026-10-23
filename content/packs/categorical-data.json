@@ -215,7 +215,7 @@
           }
         },
         {
-          "text": "In a table of counts expected under independence, each opinion makes up the same proportion of every row: in one example, 0.404 of Democrats and 0.404 of Republicans favoured a bill.",
+          "text": "In one table of expected counts, each opinion made up the same proportion of every row: 0.404 of Democrats and 0.404 of Republicans favoured a bill.",
           "sourceId": "psu500-08",
           "locator": "8 Chi-Square Test for Independence (Chi-Square Test Statistic)",
           "anchor": {
@@ -403,7 +403,7 @@
           }
         },
         {
-          "text": "The chi-square goodness-of-fit test is used to test whether a sample of data came from a population with a specific distribution.",
+          "text": "This chi-square test is used to test whether a sample of data came from a population with a specific distribution.",
           "sourceId": "nist-eda35f",
           "locator": "1.3.5.15 Chi-Square Goodness-of-Fit Test",
           "anchor": {
@@ -431,7 +431,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The chi-square test of independence is used to test for a relationship between two categorical variables.",
+          "text": "The test of independence is used to test for a relationship between two categorical variables.",
           "sourceId": "psu200-11",
           "locator": "11.3 Chi-Square Test of Independence",
           "anchor": {
@@ -534,7 +534,7 @@
           }
         },
         {
-          "text": "A common rule is that at least 80% of the cells need an expected count of at least 5; in a 2 × 2 table, that means all four cells.",
+          "text": "At least 80% of all cells need an expected count of at least 5; with 4 cells, that means all four must satisfy the condition.",
           "sourceId": "psu500-08",
           "locator": "8 Chi-Square Test for Independence (Comparing Two Proportions)",
           "anchor": {
@@ -593,7 +593,7 @@
           }
         },
         {
-          "text": "In one example, the residuals showed searches of Black drivers were substantially higher than expected under independence, and searches of white drivers substantially lower.",
+          "text": "In one example, the residuals showed searches of Black individuals were substantially higher than expected under independence, and searches of white individuals substantially lower.",
           "sourceId": "st21-12",
           "locator": "12.4 Standardized residuals",
           "anchor": {
@@ -668,7 +668,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Watch the baseline: commuter flights had about 2.7 times the crash risk of major carriers, yet the chance of being killed on a major-carrier flight is about 1 in 20 million, so the risk is very small regardless.",
+          "text": "Watch the baseline: dying in a plane crash was about 2.7 times as likely on a commuter airline as on a major carrier, yet on a major carrier the chance per flight is about 1 in 20 million.",
           "sourceId": "psu100-06",
           "locator": "6.1 Numbers That Can Describe 2×2 Tables (Cautions)",
           "anchor": {
@@ -686,11 +686,11 @@
           }
         },
         {
-          "text": "Relative and increased risks are almost always descriptive statistics from observational data, so examine possible confounders before drawing conclusions.",
+          "text": "Relative and increased risks, often reported in the news, are almost always descriptive statistics from observational data, so examine possible confounders before drawing conclusions.",
           "sourceId": "psu100-06",
           "locator": "6.1 Numbers That Can Describe 2×2 Tables (Example 6.3)",
           "anchor": {
-            "start": "However, these measures are almost always",
+            "start": "Relative risks and increased risks are",
             "end": "before drawing conclusions."
           }
         },
@@ -817,7 +817,7 @@
       "misconceptions": [
         {
           "claim": "A case-control study shows how common the disease is in the population.",
-          "correction": "A retrospective study gives no information about the overall incidence of the disease, because the investigator decided the numbers of cases and non-cases; it does give consistent estimates of the odds ratio.",
+          "correction": "A retrospective study gives no information about the overall incidence of the outcome in the population, because the investigator decided the proportions in each outcome group; it does give consistent estimates of the odds ratio.",
           "sourceId": "psu504-03",
           "locator": "3.7 Prospective and Retrospective Studies",
           "anchor": {
