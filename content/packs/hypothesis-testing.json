@@ -3,13 +3,32 @@
   "version": "1.0.0",
   "status": "draft",
   "subject": "Hypothesis testing: framing a null and an alternative, measuring the evidence against the null with a test statistic and a p-value, and reading the result without overclaiming",
-  "outOfScope": [],
+  "outOfScope": [
+    "Standard errors, the central limit theorem, the t-distribution and building confidence intervals (see the Sampling distributions pack); this pack only uses an interval to reach a test's decision",
+    "Designing and reading product experiments: randomisation units, metrics, peeking and sequential testing, sample-size and power calculations, and corrections for many metrics (see the A/B testing pack)",
+    "Bayesian alternatives to a p-value: posterior probabilities of a hypothesis and Bayes factors (see the Bayesian inference pack)",
+    "Tests that compare two or more groups: two-sample and paired t-tests, two proportions and ANOVA (see the Comparing groups pack)",
+    "Chi-square tests for counts and tables (see the Categorical data pack)",
+    "Multiple-comparison procedures in detail, such as Bonferroni or false discovery rate corrections; this pack treats multiple testing only conceptually",
+    "Exact binomial tests, nonparametric tests and tests for a variance or standard deviation, beyond naming them",
+    "Probability distributions themselves: the normal, t and binomial distributions and their tables (see the Probability distributions pack)",
+    "Mathematical theory of tests: likelihood ratios, most powerful tests and power functions",
+    "Tooling: Minitab, R, Python, StatKey and spreadsheet functions"
+  ],
   "sources": [
     {
       "id": "psu100-10",
       "title": "STAT 100 Lesson 10: Hypothesis Testing",
       "publisher": "Penn State Department of Statistics",
       "url": "https://online.stat.psu.edu/stat100/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu100-11",
+      "title": "STAT 100 Lesson 11: Significance Testing Caveats & Ethics of Experiments",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson11",
       "license": "CC BY-NC 4.0",
       "accessedAt": "2026-10-23"
     },
@@ -121,6 +140,1301 @@
       "accessedAt": "2026-10-23"
     }
   ],
-  "concepts": [],
-  "prerequisites": []
+  "concepts": [
+    {
+      "id": "what_a_test_does",
+      "title": "What a hypothesis test is for",
+      "outcome": "Explain what a hypothesis test decides, and why it asks whether chance alone is a plausible explanation for the data.",
+      "aliases": [
+        "significance test",
+        "statistical test",
+        "test of significance"
+      ],
+      "keyPoints": [
+        {
+          "text": "A hypothesis test is a statistical technique for using data to evaluate two competing claims.",
+          "sourceId": "ims-11",
+          "locator": "11.1 Sex discrimination case study",
+          "anchor": {
+            "start": "A hypothesis test is a statistical",
+            "end": "evaluate competing claims using data."
+          }
+        },
+        {
+          "text": "A statistical test gives a way to make quantitative decisions: it asks whether there is enough evidence to reject a conjecture about a process, and that conjecture is called the null hypothesis.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests?",
+          "anchor": {
+            "start": "A statistical test provides a mechanism",
+            "end": "is called the null hypothesis."
+          }
+        },
+        {
+          "text": "A significance test carries out a probability calculation that assumes the null hypothesis is true, to see whether random chance is a plausible explanation for the data.",
+          "sourceId": "psu100-10",
+          "locator": "10 Hypothesis Testing (Lesson Overview)",
+          "anchor": {
+            "start": "In a significance test, you carry",
+            "end": "plausible explanation for the data."
+          }
+        },
+        {
+          "text": "When random assignment and blinding leave the groups alike, a difference between them has two possible explanations: the treatment produced it, or it was just the luck of the draw, which is the null hypothesis.",
+          "sourceId": "psu100-10",
+          "locator": "10 Hypothesis Testing (Lesson Overview)",
+          "anchor": {
+            "start": "Random assignment alleviates the bias that",
+            "end": "the draw (the null hypothesis)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "null_and_alternative",
+      "title": "The null and alternative hypotheses",
+      "outcome": "State a null and an alternative hypothesis about a population parameter for a research question. (Framing hypotheses for a product experiment is taught in the A/B testing pack.)",
+      "aliases": [
+        "H0",
+        "Ha",
+        "null hypothesis",
+        "alternative hypothesis",
+        "research hypothesis"
+      ],
+      "keyPoints": [
+        {
+          "text": "The null hypothesis often represents a sceptical position or a claim of no difference. The alternative hypothesis is the competing claim under consideration, and is often a range of possible values.",
+          "sourceId": "ims-11",
+          "locator": "11.3 Hypothesis testing",
+          "anchor": {
+            "start": "Null and alternative hypotheses. The null",
+            "end": "for the value of interest."
+          }
+        },
+        {
+          "text": "The null hypothesis states the status quo and is assumed true until there is evidence otherwise. The alternative is the statement one wants to conclude, and is also called the research hypothesis.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.1 Introduction to Hypothesis Testing",
+          "anchor": {
+            "start": "The null hypothesis states the",
+            "end": "also called the research hypothesis."
+          }
+        },
+        {
+          "text": "The null hypothesis does not involve the data. It is a statement about a population parameter, such as a proportion, a mean, a difference between means or proportions, or a correlation.",
+          "sourceId": "psu100-10",
+          "locator": "10.1 Setting the Hypotheses: Examples",
+          "anchor": {
+            "start": "The null hypothesis itself does not",
+            "end": "other numerical summary of the population."
+          }
+        },
+        {
+          "text": "Because hypothesis tests are about a parameter's value, the hypotheses are written in terms of the parameter, such as a proportion or a mean, and the alternative is chosen from the research question.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.3 Set-Up for One-Sample Hypotheses",
+          "anchor": {
+            "start": "Since hypothesis tests are about a",
+            "end": "based on our research question."
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_logic",
+      "title": "Assume the null, look for evidence against it",
+      "outcome": "Explain the logic of a test as a trial: the null is presumed until the data conflict with it strongly enough to reject it.",
+      "aliases": [
+        "logic of hypothesis testing",
+        "innocent until proven guilty"
+      ],
+      "keyPoints": [
+        {
+          "text": "Hypothesis testing works like a trial: the sceptical position, the null, is that the defendant is innocent until evidence convinces the jury, beyond reasonable doubt, of guilt, the alternative.",
+          "sourceId": "ims-11",
+          "locator": "11.3.1 The US court system",
+          "anchor": {
+            "start": "The jury considers whether the evidence",
+            "end": "is guilty (alternative hypothesis)."
+          }
+        },
+        {
+          "text": "A test assumes the null hypothesis is true and looks for evidence against it, so its conclusion is stated in terms of rejecting the null, not accepting it.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.1 Introduction to Hypothesis Testing (The Logic of Hypothesis Testing)",
+          "anchor": {
+            "start": "Why can’t we say we “accept",
+            "end": "in terms of rejecting the null."
+          }
+        },
+        {
+          "text": "If the sample data are consistent with the null hypothesis, we do not reject it. If they are inconsistent with the null but consistent with the alternative, we reject the null and conclude the alternative.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.2 Steps for Hypothesis Tests",
+          "anchor": {
+            "start": "If the sample data are consistent",
+            "end": "the alternative hypothesis is true."
+          }
+        },
+        {
+          "text": "We choose between the two claims by asking whether the data conflict so much with the null hypothesis that it can no longer be deemed reasonable.",
+          "sourceId": "ims-11",
+          "locator": "11.1 Sex discrimination case study",
+          "anchor": {
+            "start": "We will choose between the two",
+            "end": "cannot be deemed reasonable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_statistic",
+      "title": "The test statistic",
+      "outcome": "Describe a test statistic as a standardised measure of how far the data sit from what the null hypothesis predicts.",
+      "aliases": [
+        "z statistic",
+        "t statistic",
+        "Z score",
+        "T score"
+      ],
+      "keyPoints": [
+        {
+          "text": "A test statistic is a summary of the data measuring the difference between what is seen and what the null hypothesis predicts. It is usually standardised, so a p-value can come from a reference distribution such as the normal curve.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Step 2)",
+          "anchor": {
+            "start": "can be calculated. A test statistic",
+            "end": "like the normal curve."
+          }
+        },
+        {
+          "text": "A test statistic is calculated assuming the null hypothesis is true: it compares the sample statistic with the parameter value in the null and incorporates a standard error.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.2 Steps for Hypothesis Tests",
+          "anchor": {
+            "start": "Calculate the test statistic: Gather sample",
+            "end": "related to the sampling distribution."
+          }
+        },
+        {
+          "text": "Z scores and T scores are computed in the same way and are conceptually identical: each represents how many standard errors the observed value lies from the null value.",
+          "sourceId": "ims-19",
+          "locator": "19.2.5 One sample t-tests",
+          "anchor": {
+            "start": "The Z score and T score",
+            "end": "is from the null value."
+          }
+        },
+        {
+          "text": "A summary statistic of the data, such as a difference in proportions, is used to compute the p-value; this summary value is often called the test statistic.",
+          "sourceId": "ims-11",
+          "locator": "11.3.2 p-value and statistical discernibility",
+          "anchor": {
+            "start": "We typically use a summary statistic",
+            "end": "often called the test statistic."
+          }
+        }
+      ]
+    },
+    {
+      "id": "null_distribution",
+      "title": "The null distribution",
+      "outcome": "Explain the null distribution as the spread of a test statistic when the null hypothesis is true, and use it to judge how unusual the observed result is.",
+      "aliases": [
+        "distribution under the null",
+        "reference distribution"
+      ],
+      "keyPoints": [
+        {
+          "text": "The p-value is computed from the null distribution, which is the distribution of the test statistic if the null hypothesis is true.",
+          "sourceId": "ims-16",
+          "locator": "16.1.1 Observed data",
+          "anchor": {
+            "start": "The p-value is computed based on",
+            "end": "if the null hypothesis is true."
+          }
+        },
+        {
+          "text": "In a simulation of the null hypothesis that makes no distinction between the groups, the simulated differences centre on zero: differences from chance alone fall around zero with some random fluctuation.",
+          "sourceId": "ims-11",
+          "locator": "11.1.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "Note that the distribution of these",
+            "end": "fluctuation for each simulation."
+          }
+        },
+        {
+          "text": "Comparing the observed result with the null distribution shows how rare it would be by chance: in one study, a difference at least as large as the one observed occurred in only about 2% of null simulations.",
+          "sourceId": "ims-11",
+          "locator": "11.1.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "How often would you observe a",
+            "end": "from chance alone is rare."
+          }
+        }
+      ]
+    },
+    {
+      "id": "randomization_test",
+      "title": "Testing by simulation",
+      "outcome": "Describe a randomization test: simulate the study many times as if the null were true, and see how often chance matches the observed result.",
+      "aliases": [
+        "randomization test",
+        "permutation test",
+        "simulation-based test"
+      ],
+      "keyPoints": [
+        {
+          "text": "In a randomization test of an experiment, the goal is to see what differences would arise if the null hypothesis were true and the treatment had no effect, using randomization to simulate them.",
+          "sourceId": "ims-11",
+          "locator": "11.2.2 Variability of the statistic",
+          "anchor": {
+            "start": "The primary goal in this data",
+            "end": "in Section 11.1: randomization."
+          }
+        },
+        {
+          "text": "In one experiment, 1,000 simulated differences under the null showed a difference of at least 20% only about 0.6% of the time, so the data gave strong evidence of a treatment effect.",
+          "sourceId": "ims-11",
+          "locator": "11.2.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "Under the null hypothesis (no treatment",
+            "end": "there is a treatment effect"
+          }
+        },
+        {
+          "text": "Because the study was an experiment, the result supported a causal statement, although it could not say why the treatment worked.",
+          "sourceId": "ims-11",
+          "locator": "11.2.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "Notice that we are able to",
+            "end": "induces a lower purchase rate."
+          }
+        },
+        {
+          "text": "Simulating a test of a hypothesised proportion has the advantage that it can be used with any sample size, which is a large benefit for small samples.",
+          "sourceId": "ims-16",
+          "locator": "16.1 Bootstrap test for a proportion",
+          "anchor": {
+            "start": "the bootstrap simulation for hypothesis testing",
+            "end": "alternative for large samples)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "p_value",
+      "title": "The p-value",
+      "outcome": "Define a p-value correctly and say which results count as 'at least as extreme' for each kind of alternative.",
+      "aliases": [
+        "p value",
+        "probability value",
+        "observed significance level"
+      ],
+      "keyPoints": [
+        {
+          "text": "The p-value is the probability, assuming the null hypothesis is true, that the test statistic equals the observed value or a more extreme one. It is found differently for each form of the alternative.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.4 Hypothesis Test for One-Sample Proportion (P-Value Approach)",
+          "anchor": {
+            "start": "The p-value (or probability value) is",
+            "end": "for each of the alternative hypotheses."
+          }
+        },
+        {
+          "text": "A p-value quantifies the strength of the evidence against the null hypothesis: it is the probability of data at least as favourable to the alternative as the observed data, if the null were true.",
+          "sourceId": "ims-11",
+          "locator": "11.3.2 p-value and statistical discernibility",
+          "anchor": {
+            "start": "chance is what we call a",
+            "end": "if the null hypothesis were true."
+          }
+        },
+        {
+          "text": "What counts as 'more extreme' depends on the alternative: larger values for a 'greater than' alternative, smaller values for 'less than', and values farther from the null in either tail for 'not equal to'.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Step 3)",
+          "anchor": {
+            "start": "For a one-sided “greater than” alternative",
+            "end": "lower end of the reference distribution"
+          }
+        },
+        {
+          "text": "In one example, the p-value of 0.004 meant that, if the null hypothesis were true, a test statistic of 2.67 or higher would occur with probability 0.004.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
+          "anchor": {
+            "start": "getting our test statistic of 2.67",
+            "end": "is true, is 0.004."
+          }
+        }
+      ]
+    },
+    {
+      "id": "p_value_misreadings",
+      "title": "What a p-value does not tell you",
+      "outcome": "Avoid the common misreadings of a p-value: as the chance the null is true, as a measure of importance, or as proof of cause. (The Bayesian inference pack contrasts this with posterior probabilities.)",
+      "keyPoints": [
+        {
+          "text": "A significance test or p-value does not give the chance that the null hypothesis is correct, or that the alternative is, because it is calculated assuming the null.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats",
+          "anchor": {
+            "start": "or a p-value does not tell",
+            "end": "it is calculated assuming the null."
+          }
+        },
+        {
+          "text": "A p-value cannot tell whether a result is important in a practical sense, or whether biased methods of gathering the data created differences that do not exist in the population.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats",
+          "anchor": {
+            "start": "cannot tell us when a result",
+            "end": "where none exist in the population."
+          }
+        },
+        {
+          "text": "A small p-value does not mean the sample statistic is a poor estimate of the population parameter; it only says the null hypothesis is a poor explanation of the data.",
+          "sourceId": "psu100-10",
+          "locator": "10.4 Test Yourself! (Question 1)",
+          "anchor": {
+            "start": "If the p-value is small, then",
+            "end": "poor explanation of the data."
+          }
+        },
+        {
+          "text": "When a null hypothesis rests on several assumptions, a small p-value does not say which of them is causing the poor fit, such as an assumption that observations are independent.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats",
+          "anchor": {
+            "start": "A small p-value does not tell",
+            "end": "may be substantially wrong)."
+          }
+        },
+        {
+          "text": "A significant result means the null hypothesis is a poor explanation of the data, but there may be many other explanations besides a causal treatment effect, especially in an observational study.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats",
+          "anchor": {
+            "start": "Finding significance implies that the null",
+            "end": "especially in an observational study."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A p-value of 0.03 means there is a 3% chance that the null hypothesis is true.",
+          "correction": "A test only does a probability calculation that assumes the null hypothesis is true, so it cannot say anything about the chances that the null or the alternative hypothesis is true.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.10)",
+          "anchor": {
+            "start": "It is important to remember in",
+            "end": "or the alternative hypothesis are true."
+          }
+        }
+      ]
+    },
+    {
+      "id": "significance_level",
+      "title": "The significance level",
+      "outcome": "Explain the significance level as a risk chosen in advance, and use it with a p-value to make a decision.",
+      "aliases": [
+        "alpha",
+        "level of significance",
+        "discernibility level"
+      ],
+      "keyPoints": [
+        {
+          "text": "A test is constructed so that the risk of rejecting the null hypothesis when it is in fact true is small. That risk, alpha, is often called the significance level of the test.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests? (Significance levels)",
+          "anchor": {
+            "start": "The test procedure is constructed so",
+            "end": "the significance level of the test."
+          }
+        },
+        {
+          "text": "A significance level of 0.05 means the null hypothesis is rejected 5% of the time when it is in fact true. The choice is somewhat arbitrary, though 0.1, 0.05 and 0.01 are common in practice.",
+          "sourceId": "nist-prc131",
+          "locator": "7.1.3.1 Critical values and p values",
+          "anchor": {
+            "start": "implies that the null hypothesis is",
+            "end": "0.05, and 0.01 are common."
+          }
+        },
+        {
+          "text": "Compare the p-value with the preset significance level: if the p-value is less than or equal to alpha there is enough evidence to reject the null hypothesis; if it is greater, there is not.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.4 Hypothesis Test for One-Sample Proportion (P-Value Approach)",
+          "anchor": {
+            "start": "Once we find the p-value, we",
+            "end": "there is not enough evidence"
+          }
+        },
+        {
+          "text": "It is good practice to decide before the test how small a p-value must be to reject the null hypothesis, which is the same as choosing a significance level.",
+          "sourceId": "nist-prc131",
+          "locator": "7.1.3.1 Critical values and p values (Good practice)",
+          "anchor": {
+            "start": "It is good practice to decide",
+            "end": "exactly analagous to choosing a significance"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A p-value of 0.049 shows a real effect, while a p-value of 0.051 shows there is none.",
+          "correction": "Cut-offs such as 0.05 are arbitrary: data with a p-value of 0.049 should not be viewed any differently from data with a p-value of 0.051. There is no magic in 0.05.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Common Decision Rules)",
+          "anchor": {
+            "start": "However, such cut-offs are arbitrary and",
+            "end": "no magic in the 0.05 value."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fail_to_reject",
+      "title": "Failing to reject is not accepting",
+      "outcome": "Explain why a test that does not reject the null has not shown the null to be true, and set up hypotheses with that in mind.",
+      "aliases": [
+        "not significant",
+        "absence of evidence"
+      ],
+      "keyPoints": [
+        {
+          "text": "A test ends in one of two decisions: reject the null hypothesis or fail to reject it. It never ends by accepting the null hypothesis.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.2 Steps for Hypothesis Tests (Six Steps)",
+          "anchor": {
+            "start": "we decide to either reject the",
+            "end": "accept the null hypothesis."
+          }
+        },
+        {
+          "text": "Not rejecting the null can be a good result, if we want to go on acting as if it is true, or a disappointing one that may mean there is not yet enough data to prove something by rejecting it.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests?",
+          "anchor": {
+            "start": "Not rejecting may be a good",
+            "end": "by rejecting the null hypothesis."
+          }
+        },
+        {
+          "text": "Because a test can only fail to reject the null, a claim needing proof, like 'the building is safe', belongs in the alternative; as the null, failing to reject it would not show the building is safe.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.1 Introduction to Hypothesis Testing (Try It!)",
+          "anchor": {
+            "start": "It makes sense for us to",
+            "end": "we can only fail to reject"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A test that fails to reject the null hypothesis has shown that the null hypothesis is true.",
+          "correction": "A jury's verdict of not guilty does not mean it is confident of innocence. Likewise, failing to find evidence for the alternative is not the same as finding evidence that the null hypothesis is true.",
+          "sourceId": "ims-11",
+          "locator": "11.3.1 The US court system",
+          "anchor": {
+            "start": "Notice that if a jury finds",
+            "end": "the null hypothesis is true."
+          }
+        }
+      ]
+    },
+    {
+      "id": "critical_values",
+      "title": "Critical values and the rejection region",
+      "outcome": "Make a decision with critical values and a rejection region, and explain why it always agrees with the p-value method.",
+      "aliases": [
+        "rejection region",
+        "critical region",
+        "critical value approach"
+      ],
+      "keyPoints": [
+        {
+          "text": "Critical values are cut-offs marking a region where the test statistic is unlikely to lie if the null hypothesis is true. The null is rejected if the statistic falls in this region, called the rejection region.",
+          "sourceId": "nist-prc131",
+          "locator": "7.1.3.1 Critical values and p values",
+          "anchor": {
+            "start": "Critical values are essentially cut-off values",
+            "end": "referred to as the rejection region(s)."
+          }
+        },
+        {
+          "text": "The rejection-region method and the p-value method always reach the same conclusion. The p-value method is the one more commonly used and reported in published literature.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.4 Hypothesis Test for One-Sample Proportion (More on the P-Value and Rejection Region Approach)",
+          "anchor": {
+            "start": "Of the two methods for making",
+            "end": "two approaches are exactly the same."
+          }
+        },
+        {
+          "text": "With a two-sided alternative, the critical value is based on half of alpha rather than alpha, because the test needs equal probabilities in each of the two tails.",
+          "sourceId": "nist-prc22",
+          "locator": "7.2.2 Are the data consistent with the assumed process mean? (Critical values)",
+          "anchor": {
+            "start": "The critical value is based on",
+            "end": "each tail of the distribution"
+          }
+        },
+        {
+          "text": "In one example, the test statistic fell inside the interval from -2.262 to 2.262, so the null hypothesis could not be rejected and the process mean could still be assumed to be 50 counts.",
+          "sourceId": "nist-prc22",
+          "locator": "7.2.2 Are the data consistent with the assumed process mean? (Conclusion)",
+          "anchor": {
+            "start": "Conclusion Because the value of the",
+            "end": "process mean is 50 counts."
+          }
+        }
+      ]
+    },
+    {
+      "id": "steps_of_a_test",
+      "title": "The steps of a test",
+      "outcome": "Carry out a test in order: hypotheses and conditions, significance level, test statistic, p-value, decision, and a conclusion in context.",
+      "aliases": [
+        "four-step procedure",
+        "six steps of a hypothesis test"
+      ],
+      "keyPoints": [
+        {
+          "text": "Whatever kind of hypothesis is being tested, a significance test follows the same four basic steps.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test",
+          "anchor": {
+            "start": "Regardless of the type of hypothesis",
+            "end": "relies on four basic steps"
+          }
+        },
+        {
+          "text": "Setting up the hypotheses is a very important step: if the hypotheses are incorrect, the conclusion will be incorrect too.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.2 Steps for Hypothesis Tests",
+          "anchor": {
+            "start": "Step 1 is a very important",
+            "end": "your conclusion will be incorrect."
+          }
+        },
+        {
+          "text": "If a test's conditions are not satisfied, its statistic and p-value can still be calculated, but no decision or conclusion can be made; other methods, perhaps about another parameter such as the median, are needed.",
+          "sourceId": "psu500-06",
+          "locator": "6.2.3 Further Considerations for Hypothesis Testing (How Important are the Conditions of a Test?)",
+          "anchor": {
+            "start": "In our six steps in hypothesis",
+            "end": "such as the median."
+          }
+        },
+        {
+          "text": "The last step interprets the p-value: does the null hypothesis give a reasonable explanation of the data? If not, the result is statistically significant, and the conclusion is stated in terms of the problem.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Step 4)",
+          "anchor": {
+            "start": "Interpret what the p-value is telling",
+            "end": "conclusion in terms of the problem."
+          }
+        }
+      ]
+    },
+    {
+      "id": "type_i_ii_errors",
+      "title": "Type I and Type II errors",
+      "outcome": "Name the two ways a test can reach the wrong conclusion and describe each in the context of a problem. (The A/B testing pack applies them to experiments.)",
+      "aliases": [
+        "false positive",
+        "false negative",
+        "Type 1 error",
+        "Type 2 error"
+      ],
+      "keyPoints": [
+        {
+          "text": "A Type I error is rejecting the null hypothesis when it is actually true. A Type II error is failing to reject the null hypothesis when the alternative is actually true.",
+          "sourceId": "ims-14",
+          "locator": "14 Decision Errors",
+          "anchor": {
+            "start": "A Type I error is rejecting",
+            "end": "the alternative is actually true."
+          }
+        },
+        {
+          "text": "In a court case, a Type I error means an innocent defendant is wrongly convicted, and a Type II error means a guilty defendant is not convicted.",
+          "sourceId": "ims-14",
+          "locator": "14 Decision Errors",
+          "anchor": {
+            "start": "If the court makes a Type",
+            "end": "they were in fact guilty"
+          }
+        },
+        {
+          "text": "A Type I error is the event of rejecting the null given that the null is true, so its probability, alpha, is a conditional probability; the same holds for a Type II error and beta.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.1 Introduction to Hypothesis Testing (Types of errors)",
+          "anchor": {
+            "start": "Type I error is also thought",
+            "end": "Type II error and \\(\\beta\\)."
+          }
+        },
+        {
+          "text": "Identify the possible Type I and Type II errors when stating the hypotheses, before collecting any data; doing so helps improve the design of the study.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
+          "anchor": {
+            "start": "Now that you know the null",
+            "end": "the design of your research study."
+          }
+        },
+        {
+          "text": "Once the null hypothesis has been rejected, only a Type I error is possible; a Type II error cannot occur, because the null was not retained.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
+          "anchor": {
+            "start": "Now that we have made our",
+            "end": "we rejected the null hypothesis."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If the null hypothesis is true, a test at the 5% significance level will never reject it.",
+          "correction": "A test may still reject a true null hypothesis: at a 5% significance level, a true null is rejected 5% of the time.",
+          "sourceId": "psu100-10",
+          "locator": "10.4 Test Yourself! (Question 4)",
+          "anchor": {
+            "start": "may still reject the null Correct.",
+            "end": "even when it is true."
+          }
+        }
+      ]
+    },
+    {
+      "id": "error_tradeoff",
+      "title": "Trading one error against the other",
+      "outcome": "Explain why lowering one error rate raises the other, and choose a significance level from the consequences of each error.",
+      "keyPoints": [
+        {
+          "text": "Reducing one type of error generally means making more of the other: raising a court's standard of proof means fewer innocent people are convicted, but more guilty people go free.",
+          "sourceId": "ims-14",
+          "locator": "14 Decision Errors",
+          "anchor": {
+            "start": "To lower the Type I error",
+            "end": "make more Type II errors."
+          }
+        },
+        {
+          "text": "The risk of failing to reject a false null is not chosen by the user; it depends on how big the real discrepancy is. Large discrepancies are easier to detect, so they give smaller risks of this error.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests? (Errors of the second kind)",
+          "anchor": {
+            "start": "The risk of failing to reject",
+            "end": "large errors of the second kind."
+          }
+        },
+        {
+          "text": "If a Type I error is especially dangerous or costly, use a small discernibility level such as 0.01; if a Type II error is relatively more costly, use a higher one such as 0.10.",
+          "sourceId": "ims-14",
+          "locator": "14.1 Discernibility level",
+          "anchor": {
+            "start": "If making a Type I error",
+            "end": "level (e.g., 0.10)."
+          }
+        },
+        {
+          "text": "With a fixed sample size, decreasing alpha increases beta and so decreases power. To decrease both alpha and beta, increase the sample size.",
+          "sourceId": "psu500-06",
+          "locator": "6.2.3 Further Considerations for Hypothesis Testing (The Relationship Between Power, β, and α)",
+          "anchor": {
+            "start": "If the sample size is fixed,",
+            "end": "has to increase the sample size."
+          }
+        }
+      ]
+    },
+    {
+      "id": "power",
+      "title": "Power",
+      "outcome": "Define power and name what raises it. (Choosing a sample size for a target power is taught in the A/B testing pack.)",
+      "aliases": [
+        "statistical power",
+        "1 - beta"
+      ],
+      "keyPoints": [
+        {
+          "text": "The power of a test is the probability of rejecting the null when the alternative is true. How easy an effect is to detect depends on both the size of the effect and the sample size.",
+          "sourceId": "ims-14",
+          "locator": "14.4 Power",
+          "anchor": {
+            "start": "power of the test is the",
+            "end": "as well as the sample size."
+          }
+        },
+        {
+          "text": "Power and beta, the probability of a Type II error, are complements: increasing power decreases beta. One way to increase power is to increase the sample size.",
+          "sourceId": "psu500-06",
+          "locator": "6.2.3 Further Considerations for Hypothesis Testing (The Relationship Between Power, β, and α)",
+          "anchor": {
+            "start": "The relationship between power and",
+            "end": "increase the sample size."
+          }
+        },
+        {
+          "text": "Reducing variability, in ways that depend on the design and the analysis, makes a test more powerful, so the data are more likely to reject the null hypothesis.",
+          "sourceId": "ims-14",
+          "locator": "14.4 Power",
+          "anchor": {
+            "start": "That is to say, reducing variability",
+            "end": "likely to reject the null hypothesis."
+          }
+        },
+        {
+          "text": "A Type II error is more likely with a small sample size, because the greater variability makes it impossible to rule out random chance as an explanation.",
+          "sourceId": "psu100-11",
+          "locator": "11.3 Test Yourself! (Question 4)",
+          "anchor": {
+            "start": "A type 2 error is more",
+            "end": "random chance as an explanation."
+          }
+        }
+      ]
+    },
+    {
+      "id": "one_vs_two_sided",
+      "title": "One-sided and two-sided tests",
+      "outcome": "Choose a one- or two-sided alternative before seeing the data, and compute the matching p-value.",
+      "aliases": [
+        "one-tailed test",
+        "two-tailed test",
+        "directional alternative"
+      ],
+      "keyPoints": [
+        {
+          "text": "A two-sided alternative guards against departures in opposite directions, such as photomask linewidths that are too small or too large.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests? (Concept of null hypothesis)",
+          "anchor": {
+            "start": "This is a two-sided alternative because",
+            "end": "too small or too large."
+          }
+        },
+        {
+          "text": "Hypotheses can also be one-sided: to check that light bulbs last at least 500 hours on average, the alternative guarded against is a mean below 500, and the statistic is compared with a lower critical value.",
+          "sourceId": "nist-prc13",
+          "locator": "7.1.3 What are statistical tests? (One-sided tests of hypothesis)",
+          "anchor": {
+            "start": "Null and alternative hypotheses can also",
+            "end": "the null hypothesis is rejected."
+          }
+        },
+        {
+          "text": "Default to a two-sided test, and use a one-sided test only if you truly care about one direction. For a two-sided p-value, compute the p-value for one tail and double it.",
+          "sourceId": "ims-14",
+          "locator": "14.2 Two-sided hypotheses",
+          "anchor": {
+            "start": "Default to a two-sided test.",
+            "end": "get the two-sided p-value."
+          }
+        },
+        {
+          "text": "Never change a two-sided test into a one-sided test after seeing the data: freely switching to whichever side the data favour leads to twice as many Type I errors as intended.",
+          "sourceId": "ims-14",
+          "locator": "14.3 Controlling the Type I error rate",
+          "anchor": {
+            "start": "it is never okay to change",
+            "end": "Type I errors as intended."
+          }
+        },
+        {
+          "text": "Framing the alternative simply to match the direction the data point will generally inflate the Type I error rate, and only using alternatives that agree with your worldview invites confirmation bias.",
+          "sourceId": "ims-14",
+          "locator": "14.2 Two-sided hypotheses",
+          "anchor": {
+            "start": "Framing an alternative hypothesis simply to",
+            "end": "data that supports our ideas."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "It is fine to choose a one-sided test after seeing which direction the data point.",
+          "correction": "Hypotheses should be set up before observing the data. Turning a two-sided test into a one-sided test after seeing the data is a temptation to avoid.",
+          "sourceId": "ims-14",
+          "locator": "14.3 Controlling the Type I error rate",
+          "anchor": {
+            "start": "Hypothesis tests should be set up",
+            "end": "before observing the data."
+          }
+        }
+      ]
+    },
+    {
+      "id": "tests_and_cis",
+      "title": "Tests and confidence intervals",
+      "outcome": "Use a confidence interval to reach the decision a two-sided test would make, and explain what the interval adds. (Building intervals is taught in the Sampling distributions pack.)",
+      "aliases": [
+        "duality of tests and intervals"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a two-sided test, compare the hypothesised value with the confidence interval: if it falls within the interval, fail to reject the null hypothesis; if it falls outside, reject it.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.5 Relating the CI to a Two-Tailed Test",
+          "anchor": {
+            "start": "The essence of this method is",
+            "end": "we reject the null hypothesis."
+          }
+        },
+        {
+          "text": "A 95% confidence interval includes the null value if, and only if, a two-sided test would not reject it at the 5% level; the interval contains every null value such a test would accept.",
+          "sourceId": "nist-prc221",
+          "locator": "7.2.2.1 Confidence interval approach (Interpretation)",
+          "anchor": {
+            "start": "The 95 % confidence interval includes",
+            "end": "of course, a two-sided alternative."
+          }
+        },
+        {
+          "text": "The main purpose of a confidence interval is to estimate an unknown parameter. Supporting a decision in a hypothesis test, especially a two-tailed one, is a secondary use.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.5 Relating the CI to a Two-Tailed Test",
+          "anchor": {
+            "start": "The primary purpose of a confidence",
+            "end": "especially when the test is two-tailed."
+          }
+        },
+        {
+          "text": "A hypothesis test gives only a yes-or-no answer: the null hypothesis is rejected or not. A confidence interval about the true but unknown mean is another way of testing it.",
+          "sourceId": "nist-prc221",
+          "locator": "7.2.2.1 Confidence interval approach",
+          "anchor": {
+            "start": "The hypothesis test results in a",
+            "end": "the true but unknown mean."
+          }
+        },
+        {
+          "text": "A one-sided confidence bound can be used to reach a conclusion about a one-sided test, but it must be obtained very carefully.",
+          "sourceId": "psu500-06",
+          "locator": "6.1.5 Relating the CI to a Two-Tailed Test",
+          "anchor": {
+            "start": "It is possible to use a",
+            "end": "obtaining the one-sided confidence bound."
+          }
+        }
+      ]
+    },
+    {
+      "id": "z_test_proportion",
+      "title": "The z-test for one proportion",
+      "outcome": "Test a claim about one population proportion with a z-test, checking its conditions with the null value.",
+      "aliases": [
+        "one-proportion z-test",
+        "one sample proportion test"
+      ],
+      "keyPoints": [
+        {
+          "text": "A hypothesis test for one proportion compares one sample, with one categorical variable, to a known or hypothesised population proportion; that hypothesised value is the value in the null hypothesis.",
+          "sourceId": "psu200-08",
+          "locator": "8.1.3 Hypothesis Testing",
+          "anchor": {
+            "start": "A hypothesis test for a proportion",
+            "end": "the value in the null"
+          }
+        },
+        {
+          "text": "A normal-model test for one proportion needs independent observations and the success-failure condition, checked with the null proportion: n times the null value, and n times one minus it, must both be at least 10.",
+          "sourceId": "ims-16",
+          "locator": "16.2.5 Hypothesis test for a proportion",
+          "anchor": {
+            "start": "To apply the normal distribution framework",
+            "end": "are at least 10, where"
+          }
+        },
+        {
+          "text": "In a one-proportion test, the standard error is computed using the null value, and the test statistic is the Z score of the sample proportion.",
+          "sourceId": "ims-16",
+          "locator": "16.2.5 Hypothesis test for a proportion",
+          "anchor": {
+            "start": "The standard error in the context",
+            "end": "Z score of the point estimate:"
+          }
+        },
+        {
+          "text": "In one example with a null value of 10%, the standard error under the null was 0.03; a sample proportion of 0.18 gave z of 2.67, and the one-sided p-value was about 0.004.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
+          "anchor": {
+            "start": "true then the standard error of",
+            "end": "the p-value to be about 0.004."
+          }
+        }
+      ]
+    },
+    {
+      "id": "t_test_mean",
+      "title": "The t-test for one mean",
+      "outcome": "Test a claim about one population mean with a one-sample t-test, checking its conditions.",
+      "aliases": [
+        "one-sample t-test",
+        "single sample mean t-test"
+      ],
+      "keyPoints": [
+        {
+          "text": "A one-sample mean t-test needs quantitative data, and either a large sample, of at least 30, or a population known to be normally distributed.",
+          "sourceId": "psu200-08",
+          "locator": "8.2.4 Hypothesis Testing (One Sample Mean t-Test)",
+          "anchor": {
+            "start": "Data must be quantitative. In order",
+            "end": "known to be normally distributed."
+          }
+        },
+        {
+          "text": "The test statistic for one mean is a T score: the ratio of how far the sample mean is from the hypothesised mean to how much the observations vary.",
+          "sourceId": "ims-19",
+          "locator": "19.2.5 One sample t-tests",
+          "anchor": {
+            "start": "test statistic for assessing a single",
+            "end": "how the observations vary."
+          }
+        },
+        {
+          "text": "A test for one mean proceeds almost exactly like a test for one proportion, except that the score is called a T score and the tail area comes from a t-distribution.",
+          "sourceId": "ims-19",
+          "locator": "19.2.5 One sample t-tests",
+          "anchor": {
+            "start": "When completing a hypothesis test for",
+            "end": "calculating the tail area."
+          }
+        }
+      ]
+    },
+    {
+      "id": "z_or_t",
+      "title": "z or t for a mean?",
+      "outcome": "Decide whether a test about a mean should use the normal or the t-distribution.",
+      "keyPoints": [
+        {
+          "text": "The form of a test statistic for a mean depends on whether the population standard deviation is known or estimated from the data; having to estimate it is the more typical case.",
+          "sourceId": "nist-prc22",
+          "locator": "7.2.2 Are the data consistent with the assumed process mean?",
+          "anchor": {
+            "start": "test statistic depends on whether the",
+            "end": "estimated from the data at hand."
+          }
+        },
+        {
+          "text": "A one-sample z-test for a mean is used when the population is known to be normal and its standard deviation is known, most often with standardised measures such as IQ or SAT scores.",
+          "sourceId": "psu200-08",
+          "locator": "8.2.4 Hypothesis Testing (One Sample Mean z-Test)",
+          "anchor": {
+            "start": "A one sample mean z-test is",
+            "end": "the population parameters are known."
+          }
+        },
+        {
+          "text": "With a sample of only 10, the sample standard deviation is an unreliable estimate of the population's, so the p-value comes from the t curve rather than the normal curve.",
+          "sourceId": "psu100-10",
+          "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.10)",
+          "anchor": {
+            "start": "Since the sample size is only",
+            "end": "would be used instead"
+          }
+        }
+      ]
+    },
+    {
+      "id": "statistical_vs_practical",
+      "title": "Statistical versus practical significance",
+      "outcome": "Tell whether a significant result also matters in practice, especially with a large sample. (The A/B testing pack applies this to product decisions.)",
+      "aliases": [
+        "practical importance",
+        "large sample caution"
+      ],
+      "keyPoints": [
+        {
+          "text": "A large sample leaves very little variability in an estimate, so even a small difference of no practical consequence can be statistically significant.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (Example 11.1)",
+          "anchor": {
+            "start": "In this example the sample size",
+            "end": "seen as statistically significant."
+          }
+        },
+        {
+          "text": "In one study, pizzas arrived 3 minutes early on average: statistically significant, since chance could not explain it, but whether 3 minutes matters in practice is a separate question.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (Example 11.1)",
+          "anchor": {
+            "start": "The results are indeed significant in",
+            "end": "times given over the phone?"
+          }
+        },
+        {
+          "text": "'Statistically discernible', often called statistically significant, means only that the p-value fell below the chosen level; unlike everyday 'significant', it does not mean a difference is large or meaningful.",
+          "sourceId": "ims-11",
+          "locator": "11.3.2 p-value and statistical discernibility",
+          "anchor": {
+            "start": "Note that you may have heard",
+            "end": "the chosen discernibility level."
+          }
+        },
+        {
+          "text": "Concluding that data give statistically discernible evidence against the null tells you nothing about how big the difference is.",
+          "sourceId": "ims-11",
+          "locator": "11.3.2 p-value and statistical discernibility",
+          "anchor": {
+            "start": "Using a discernibility level of",
+            "end": "the size of the difference"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A statistically significant result is always large enough to matter in practice.",
+          "correction": "With a large enough sample, even the smallest departure from the null can be detected, so ask whether the size of the observed difference is of any practical importance.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (The Large Sample Caution)",
+          "anchor": {
+            "start": "With a sufficiently large sample size,",
+            "end": "of any practical importance."
+          }
+        }
+      ]
+    },
+    {
+      "id": "small_samples",
+      "title": "Small samples and missed effects",
+      "outcome": "Explain why a small study can miss an important effect, and why 'not significant' from a small study proves little.",
+      "aliases": [
+        "small sample caution"
+      ],
+      "keyPoints": [
+        {
+          "text": "With a very small sample, even a large departure from the null may not be statistically significant, although it may matter in practice; that should prompt a better study with a larger sample.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (The Small Sample Caution)",
+          "anchor": {
+            "start": "For very small sample sizes, a",
+            "end": "with a larger sample size."
+          }
+        },
+        {
+          "text": "One trial with as few as 32 patients per group found no significant difference and endorsed the cheaper drug, but groups that small could easily miss important differences, so the conclusion was not justified.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (Example 11.2)",
+          "anchor": {
+            "start": "However, there were only 47 patients",
+            "end": "could easily go undetected."
+          }
+        },
+        {
+          "text": "With a very small treatment effect, a large sample is more likely to declare it significant, because its sample values vary less.",
+          "sourceId": "psu100-11",
+          "locator": "11.3 Test Yourself! (Question 2)",
+          "anchor": {
+            "start": "With a very small treatment effect,",
+            "end": "significant result more likely to occur)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiple_testing",
+      "title": "Many tests, false positives",
+      "outcome": "Explain why running many tests produces significant results by chance, and read such results with caution. (Corrections for many metrics in an experiment are taught in the A/B testing pack.)",
+      "aliases": [
+        "multiple comparisons",
+        "multiple testing caution"
+      ],
+      "keyPoints": [
+        {
+          "text": "When a large number of significance tests are run, some may come out significant by chance alone even if the null hypothesis is true; these are false positives.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (The Multiple Testing Caution)",
+          "anchor": {
+            "start": "When a large number of significance",
+            "end": "is true (false positives)."
+          }
+        },
+        {
+          "text": "There can be a very high chance of at least one Type I error when many significance tests are carried out.",
+          "sourceId": "psu100-11",
+          "locator": "11 Lesson Overview",
+          "anchor": {
+            "start": "There can be a very high",
+            "end": "tests are carried out."
+          }
+        },
+        {
+          "text": "One study linked breakfast cereal to having boys but had examined 132 foods. Since a true null gives a 1% chance of a p-value below 1%, one highly significant result among 132 tests is expected.",
+          "sourceId": "psu100-11",
+          "locator": "11.1 Significance Testing Caveats (Example 11.3)",
+          "anchor": {
+            "start": "But it turns out that 132",
+            "end": "very much expected."
+          }
+        },
+        {
+          "text": "If you run 100 significance tests and the null hypothesis is true, expect about 5 p-values smaller than 0.05.",
+          "sourceId": "psu100-11",
+          "locator": "11.3 Test Yourself! (Question 3)",
+          "anchor": {
+            "start": "Correct. For example, if you conduct",
+            "end": "when the null hypothesis is true."
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "what_a_test_does",
+      "after": "null_and_alternative",
+      "reason": "Hypotheses are the two claims a test weighs."
+    },
+    {
+      "before": "null_and_alternative",
+      "after": "test_logic",
+      "reason": "The logic assumes the null and looks for evidence against it."
+    },
+    {
+      "before": "test_logic",
+      "after": "test_statistic",
+      "reason": "The statistic measures how far the data sit from the null."
+    },
+    {
+      "before": "test_statistic",
+      "after": "null_distribution",
+      "reason": "The null distribution is the test statistic's distribution under the null."
+    },
+    {
+      "before": "null_distribution",
+      "after": "randomization_test",
+      "reason": "A randomization test builds the null distribution by simulation."
+    },
+    {
+      "before": "null_distribution",
+      "after": "p_value",
+      "reason": "The p-value is read from the null distribution."
+    },
+    {
+      "before": "p_value",
+      "after": "p_value_misreadings",
+      "reason": "Misreadings presume the definition."
+    },
+    {
+      "before": "p_value",
+      "after": "significance_level",
+      "reason": "The decision compares the p-value with the significance level."
+    },
+    {
+      "before": "test_logic",
+      "after": "fail_to_reject",
+      "reason": "Not accepting the null follows from assuming it."
+    },
+    {
+      "before": "significance_level",
+      "after": "fail_to_reject",
+      "reason": "Failing to reject is one outcome of the decision rule."
+    },
+    {
+      "before": "significance_level",
+      "after": "critical_values",
+      "reason": "Critical values are set by the significance level."
+    },
+    {
+      "before": "test_statistic",
+      "after": "critical_values",
+      "reason": "The test statistic is compared with the critical values."
+    },
+    {
+      "before": "significance_level",
+      "after": "steps_of_a_test",
+      "reason": "The steps include choosing a significance level and deciding."
+    },
+    {
+      "before": "p_value",
+      "after": "steps_of_a_test",
+      "reason": "The steps include finding and interpreting the p-value."
+    },
+    {
+      "before": "significance_level",
+      "after": "type_i_ii_errors",
+      "reason": "The significance level is the Type I error probability."
+    },
+    {
+      "before": "fail_to_reject",
+      "after": "type_i_ii_errors",
+      "reason": "A Type II error is failing to reject a false null."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "error_tradeoff",
+      "reason": "The trade-off is between the two errors."
+    },
+    {
+      "before": "error_tradeoff",
+      "after": "power",
+      "reason": "Power is one minus the Type II error probability."
+    },
+    {
+      "before": "p_value",
+      "after": "one_vs_two_sided",
+      "reason": "A two-sided p-value counts both tails."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "one_vs_two_sided",
+      "reason": "Switching sides after the data inflates Type I errors."
+    },
+    {
+      "before": "one_vs_two_sided",
+      "after": "tests_and_cis",
+      "reason": "The interval matches a two-sided test."
+    },
+    {
+      "before": "steps_of_a_test",
+      "after": "z_test_proportion",
+      "reason": "The proportion test follows the steps."
+    },
+    {
+      "before": "one_vs_two_sided",
+      "after": "z_test_proportion",
+      "reason": "The p-value depends on the alternative's direction."
+    },
+    {
+      "before": "steps_of_a_test",
+      "after": "t_test_mean",
+      "reason": "The mean test follows the steps."
+    },
+    {
+      "before": "z_test_proportion",
+      "after": "t_test_mean",
+      "reason": "The mean test proceeds like the proportion test."
+    },
+    {
+      "before": "t_test_mean",
+      "after": "z_or_t",
+      "reason": "Choosing z or t needs the t-test first."
+    },
+    {
+      "before": "p_value_misreadings",
+      "after": "statistical_vs_practical",
+      "reason": "A p-value does not measure importance."
+    },
+    {
+      "before": "power",
+      "after": "small_samples",
+      "reason": "Small samples have low power."
+    },
+    {
+      "before": "statistical_vs_practical",
+      "after": "small_samples",
+      "reason": "The small sample caution mirrors the large sample one."
+    },
+    {
+      "before": "type_i_ii_errors",
+      "after": "multiple_testing",
+      "reason": "Many tests make at least one Type I error likely."
+    }
+  ]
 }
