@@ -1,0 +1,126 @@
+{
+  "id": "hypothesis-testing",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Hypothesis testing: framing a null and an alternative, measuring the evidence against the null with a test statistic and a p-value, and reading the result without overclaiming",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "psu100-10",
+      "title": "STAT 100 Lesson 10: Hypothesis Testing",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-08",
+      "title": "STAT 200 Lesson 8: Inference for One Sample",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-06",
+      "title": "STAT 500 Lesson 6: Hypothesis Testing",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu415-09",
+      "title": "STAT 415 Lesson 9: Hypothesis Tests (Part I)",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat415/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu415-10",
+      "title": "STAT 415 Lesson 10: Hypothesis Tests (Part II)",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat415/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-11",
+      "title": "Introduction to Modern Statistics (2e), Chapter 11: Hypothesis testing with randomization",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-randomization.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-13",
+      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-14",
+      "title": "Introduction to Modern Statistics (2e), Chapter 14: Decision errors",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-errors.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-16",
+      "title": "Introduction to Modern Statistics (2e), Chapter 16: Inference for a single proportion",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-prop.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-19",
+      "title": "Introduction to Modern Statistics (2e), Chapter 19: Inference for a single mean",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-mean.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc13",
+      "title": "7.1.3 What are statistical tests?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section1/prc13.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc131",
+      "title": "7.1.3.1 Critical values and p values",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section1/prc131.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc22",
+      "title": "7.2.2 Are the data consistent with the assumed process mean?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section2/prc22.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc221",
+      "title": "7.2.2.1 Confidence interval approach",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section2/prc221.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc24",
+      "title": "7.2.4 Does the proportion of defectives meet requirements?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section2/prc24.htm",
+      "accessedAt": "2026-10-23"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
