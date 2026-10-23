@@ -9212,3 +9212,21 @@ and more than two classes.
 
 Both packs' concept and card ids are locked in `content/packs/ids/`. The
 branch is stacked on feat/more-courses (#32), so it merges cleanly after #32.
+
+## 2026-10-23 - next 16.3.8 -> 16.4.1 for three security advisories
+
+The CI audit step started failing on main with no change in this repo: on
+2026-10-22 GitHub published two critical and one high advisory against
+`next` 16.0.0-16.4.0 (GHSA-2464-fhr4-w9xw, RCE in the image optimizer via
+SVG; GHSA-673q-mjm6-r5xr, RCE in `use cache` typed arrays; GHSA-p3m5-59mp-jv5r,
+Server Actions DoS). 16.4.1 is the first patched 16.x and is a security-only
+release on top of 16.4.0, so `next` and `eslint-config-next` move to it,
+still pinned exactly. The image optimizer is the one Hugh actually exposes
+(`next/image` on four surfaces); there is no `use cache` and no Server
+Action. Nothing in the 16.4 notes changes `proxy.ts` or `after()`; the build
+still registers the proxy. 16.4.2 adds only Turbopack and docs backports.
+
+Left alone: a moderate `sprintf-js` DoS reaching us via `mammoth` >
+`argparse@1`. It has no patched version, and mammoth 1.13.0 (latest, what we
+run) still pins `argparse ~1.0.3`, so the only "fix" is downgrading mammoth to
+0.3.29. It is below the gate's `--audit-level=high`.
