@@ -1,7 +1,7 @@
 {
   "id": "categorical-data",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Categorical data: summarising counts in contingency tables, testing them with chi-square tests, describing an association with relative risk and odds ratios, and spotting Simpson's paradox",
   "outOfScope": [
     "The logic of hypothesis tests, p-values and errors (see the Hypothesis testing pack)",
@@ -989,5 +989,15 @@
       "after": "simpsons_paradox",
       "reason": "Confounders are what drive the paradox."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 67,
+    "itemsSupported": 67,
+    "errorsPlanted": 11,
+    "errorsCaught": 11,
+    "fingerprint": "sha256:41615a4e0d4234f25c0066ea352a2887"
+  }
 }
