@@ -1,7 +1,7 @@
 {
   "id": "hypothesis-testing",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Hypothesis testing: framing a null and an alternative, measuring the evidence against the null with a test statistic and a p-value, and reading the result without overclaiming",
   "outOfScope": [
     "Standard errors, the central limit theorem, the t-distribution and building confidence intervals (see the Sampling distributions pack); this pack only uses an interval to reach a test's decision",
@@ -353,7 +353,7 @@
       ],
       "keyPoints": [
         {
-          "text": "When an experiment is analysed by randomization, the goal is to understand what differences would arise if the null hypothesis were true and the treatment had no effect.",
+          "text": "In one experiment analysed by randomization, the goal was to understand what differences would arise if the null hypothesis were true and the treatment had no effect.",
           "sourceId": "ims-11",
           "locator": "11.2.2 Variability of the statistic",
           "anchor": {
@@ -432,7 +432,7 @@
           "sourceId": "psu100-10",
           "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
           "anchor": {
-            "start": "getting our test statistic of 2.67",
+            "start": "Fig 10.1 Interpretation of the p-value.",
             "end": "is true, is 0.004."
           }
         }
@@ -878,7 +878,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A two-sided alternative guards against departures in opposite directions, such as photomask linewidths that are too small or too large.",
+          "text": "A two-sided alternative guards against departures in opposite directions: values that are too small or too large.",
           "sourceId": "nist-prc13",
           "locator": "7.1.3 What are statistical tests? (Concept of null hypothesis)",
           "anchor": {
@@ -945,7 +945,7 @@
       ],
       "keyPoints": [
         {
-          "text": "For a two-sided test, compare the hypothesised value with the confidence interval: if it falls within the interval, fail to reject the null hypothesis; if it falls outside, reject it.",
+          "text": "To use a confidence interval in a test, compare the hypothesised value with it: if the value falls within the interval, fail to reject the null hypothesis; if it falls outside, reject it.",
           "sourceId": "psu500-06",
           "locator": "6.1.5 Relating the CI to a Two-Tailed Test",
           "anchor": {
@@ -1028,7 +1028,7 @@
           }
         },
         {
-          "text": "In one example with a null value of 10%, the standard error under the null was 0.03; a sample proportion of 0.18 gave z of 2.67, and the one-sided p-value was about 0.004.",
+          "text": "In one example with a null value of 10%, the standard error under the null was 0.03; a sample proportion of 0.18 gave z of 2.67, and the p-value was about 0.004.",
           "sourceId": "psu100-10",
           "locator": "10.2 Steps Used in a Hypothesis Test (Example 10.9)",
           "anchor": {
@@ -1048,11 +1048,11 @@
       ],
       "keyPoints": [
         {
-          "text": "Using the t distribution for a test about one mean needs quantitative data, and either a large sample, of at least 30, or a population known to be normally distributed.",
+          "text": "For a one-sample mean t-test, the data must be quantitative, and either the sample must be large, at least 30, or the population known to be normally distributed.",
           "sourceId": "psu200-08",
           "locator": "8.2.4 Hypothesis Testing (One Sample Mean t-Test)",
           "anchor": {
-            "start": "Data must be quantitative. In order",
+            "start": "One Sample Mean t-Test, Formulas Five-Step",
             "end": "known to be normally distributed."
           }
         },
@@ -1120,7 +1120,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A large sample leaves very little variability in an estimate, so even a small difference of no practical consequence can be statistically significant.",
+          "text": "In one study, a large sample of 198 pizza orders left very little variability in the estimate, so even a small difference of no practical consequence was statistically significant.",
           "sourceId": "psu100-11",
           "locator": "11.1 Significance Testing Caveats (Example 11.1)",
           "anchor": {
@@ -1405,5 +1405,15 @@
       "after": "multiple_testing",
       "reason": "Many tests make at least one Type I error likely."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 97,
+    "itemsSupported": 97,
+    "errorsPlanted": 12,
+    "errorsCaught": 12,
+    "fingerprint": "sha256:cd185fb50dc9e24da0e2e681d0849c25"
+  }
 }
