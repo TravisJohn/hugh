@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "status": "draft",
   "subject": "Categorical data: summarising counts in contingency tables, testing them with chi-square tests, describing an association with relative risk and odds ratios, and spotting Simpson's paradox",
-  "outOfScope": [],
+  "outOfScope": [
+    "The logic of hypothesis tests, p-values and errors (see the Hypothesis testing pack)",
+    "Comparing two proportions with a z-test and pooled proportion (see the Comparing groups pack); this pack only notes that a 2 × 2 chi-square equals its Z squared",
+    "Conditional probability and the multiplication rule in depth (see the Probability distributions pack); Bayes' theorem (see the Bayesian inference pack)",
+    "Confidence intervals for a relative risk or an odds ratio, and their log-scale standard errors",
+    "Exact tests (Fisher's exact test), likelihood-ratio (G) tests, McNemar's test for paired proportions and tests for ordinal tables, beyond naming them",
+    "Three-way tables in depth: Cochran-Mantel-Haenszel tests, conditional independence and log-linear models",
+    "Logistic regression and the odds ratio as a model coefficient (see the Classification metrics pack for classifiers)",
+    "Formulas and derivations, and the multinomial and Poisson sampling models behind the tests",
+    "Tooling: Minitab, R, Python, StatKey and spreadsheet functions"
+  ],
   "sources": [
     {
       "id": "psu100-06",
@@ -92,6 +102,909 @@
       "accessedAt": "2026-10-23"
     }
   ],
-  "concepts": [],
-  "prerequisites": []
+  "concepts": [
+    {
+      "id": "contingency_tables",
+      "title": "Contingency tables",
+      "outcome": "Lay out two categorical variables in a contingency table and read its counts and proportions.",
+      "aliases": [
+        "two-way table",
+        "cross-tabulation",
+        "2x2 table"
+      ],
+      "keyPoints": [
+        {
+          "text": "A contingency table shows how two categorical variables are related by giving how many individuals fall in each combination of categories; one variable's categories define the rows and the other's the columns.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "A contingency table displays how two",
+            "end": "define the columns of the table."
+          }
+        },
+        {
+          "text": "A 2×2 table is a contingency table with 2 rows and 2 columns: it shows how two categorical variables that each have only two possibilities are related.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "A 2×2 table is a contingency",
+            "end": "only two possibilities each are related)."
+          }
+        },
+        {
+          "text": "A contingency table presents the number or proportion of observations in each combination of values of the variables; proportions are often easier to compare visually than raw counts.",
+          "sourceId": "st21-12",
+          "locator": "12.3 Contingency tables and the two-way test",
+          "anchor": {
+            "start": "The standard way to represent data",
+            "end": "both absolute and relative numbers here."
+          }
+        },
+        {
+          "text": "Grouping quantitative data into categories, such as below average, average and above average, loses information that cannot be recovered; such data should be analysed with quantitative methods instead.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Caution)",
+          "anchor": {
+            "start": "Sometimes researchers will categorize quantitative data",
+            "end": "analyzed using quantitative methods."
+          }
+        }
+      ]
+    },
+    {
+      "id": "conditional_proportions",
+      "title": "Row, column and conditional proportions",
+      "outcome": "Compute row and column proportions, and choose which margin to condition on for the question being asked.",
+      "aliases": [
+        "conditional percent",
+        "row proportions",
+        "column proportions"
+      ],
+      "keyPoints": [
+        {
+          "text": "A conditional proportion is the proportion of times something occurs assuming a specific condition is true, such as using only the data from one row of a contingency table.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "A conditional proportion is the proportion",
+            "end": "row of a contingency table)"
+          }
+        },
+        {
+          "text": "Row proportions are the counts divided by their row totals; in one table, 0.411 was the proportion of individual applicants who rent.",
+          "sourceId": "ims-04",
+          "locator": "4.3 Row and column proportions",
+          "anchor": {
+            "start": "Table 4.3 shows row proportions for",
+            "end": "of individual applicants who rent."
+          }
+        },
+        {
+          "text": "A table of column proportions is computed the same way, dividing each count by its column total.",
+          "sourceId": "ims-04",
+          "locator": "4.3 Row and column proportions",
+          "anchor": {
+            "start": "A contingency table of the column",
+            "end": "the corresponding column total."
+          }
+        },
+        {
+          "text": "Which margin you condition on matters: 81% of seniors had a credit card, but seniors were only about 32% of card holders. For that comparison, conditioning on class rank was the relevant choice.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Example 6.2)",
+          "anchor": {
+            "start": "Conditioning on the class rank (i.e.",
+            "end": "condition on the class rank."
+          }
+        }
+      ]
+    },
+    {
+      "id": "independence_categorical",
+      "title": "Independence of two categorical variables",
+      "outcome": "Explain what it means for two categorical variables to be independent, and what that implies for the proportions in a table.",
+      "keyPoints": [
+        {
+          "text": "Two events are independent when they are unrelated: the outcome of one does not affect the outcome of the other.",
+          "sourceId": "psu200-11",
+          "locator": "11.1.2 Conditional Probabilities and Independence",
+          "anchor": {
+            "start": "Definition 11.4 (Independent Events) Unrelated",
+            "end": "the outcome of the other event."
+          }
+        },
+        {
+          "text": "If gender and passing are independent, the probability of passing does not change when a case's gender is known; in one sample, both probabilities were 0.4.",
+          "sourceId": "psu200-11",
+          "locator": "11.1.2 Conditional Probabilities and Independence (Example 11.4)",
+          "anchor": {
+            "start": "If gender and passing are independent,",
+            "end": "gender and passing are independent."
+          }
+        },
+        {
+          "text": "In a table of counts expected under independence, each opinion makes up the same proportion of every row: in one example, 0.404 of Democrats and 0.404 of Republicans favoured a bill.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Chi-Square Test Statistic)",
+          "anchor": {
+            "start": "If you find the proportion of",
+            "end": "Republicans are opposed."
+          }
+        }
+      ]
+    },
+    {
+      "id": "expected_counts",
+      "title": "Observed and expected counts",
+      "outcome": "Compute the counts a table would show if the null hypothesis were true, and compare them with what was observed.",
+      "aliases": [
+        "expected frequencies",
+        "expected cell count"
+      ],
+      "keyPoints": [
+        {
+          "text": "A chi-square test compares observed counts, the number of sample cases in each group, with expected counts, the number of cases we would expect in each cell if the null hypothesis were true.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test (Test Statistic)",
+          "anchor": {
+            "start": "In conducting a goodness-of-fit test, we",
+            "end": "if the null hypothesis were true."
+          }
+        },
+        {
+          "text": "The test of independence computes the expected value for each cell of a two-way table assuming the two variables are independent, that is, assuming the null hypothesis is true.",
+          "sourceId": "psu200-11",
+          "locator": "11.3 Chi-Square Test of Independence",
+          "anchor": {
+            "start": "The chi-square test of independence uses",
+            "end": "the null hypothesis is true)."
+          }
+        },
+        {
+          "text": "Expected counts for a two-way table can be computed from the row totals, the column totals and the table total.",
+          "sourceId": "ims-18",
+          "locator": "18.1.1 Expected counts in two-way tables",
+          "anchor": {
+            "start": "In general, expected counts for a",
+            "end": "and the table total."
+          }
+        },
+        {
+          "text": "The table of expected counts is designed to show what the sample counts would be if the two variables were independent.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Chi-Square Test Statistic)",
+          "anchor": {
+            "start": "first recall that the expected counts",
+            "end": "two variables were independent."
+          }
+        }
+      ]
+    },
+    {
+      "id": "chi_square_statistic",
+      "title": "The chi-square statistic",
+      "outcome": "Explain how the chi-square statistic measures the gap between observed and expected counts.",
+      "aliases": [
+        "Pearson chi-square",
+        "X-squared"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a two-way table, the chi-squared statistic compares, in every cell, how far the observed count is from the expected count, relative to the expected count.",
+          "sourceId": "ims-18",
+          "locator": "18.1.2 The observed chi-squared statistic",
+          "anchor": {
+            "start": "test statistic for a two-way table",
+            "end": "for every cell in the table."
+          }
+        },
+        {
+          "text": "To compute it, take each count's difference from its expectation under the null, square it, divide by that expectation, and add the results up.",
+          "sourceId": "st21-12",
+          "locator": "12.2 Pearson's chi-squared test",
+          "anchor": {
+            "start": "We then take the difference between",
+            "end": "obtain the chi-squared statistic."
+          }
+        },
+        {
+          "text": "On its own, a chi-squared statistic is not interpretable, because it depends on how many different values were added together.",
+          "sourceId": "st21-12",
+          "locator": "12.2 Pearson's chi-squared test",
+          "anchor": {
+            "start": "The chi-squared statistic for this analysis",
+            "end": "added together."
+          }
+        }
+      ]
+    },
+    {
+      "id": "chi_square_distribution",
+      "title": "The chi-square distribution and its p-value",
+      "outcome": "Find a chi-square test's p-value from the right tail, with the right degrees of freedom.",
+      "aliases": [
+        "degrees of freedom",
+        "right-tailed test"
+      ],
+      "keyPoints": [
+        {
+          "text": "The p-value is the area under the chi-square distribution to the right of the test statistic; a chi-square test is always right-tailed.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test",
+          "anchor": {
+            "start": "To find the p-value we find",
+            "end": "A chi-square test is always right-tailed."
+          }
+        },
+        {
+          "text": "The degrees of freedom change the shape of the chi-squared distribution: the larger they are, the longer the right tail; the smaller, the more peaked the mode on the left.",
+          "sourceId": "ims-18",
+          "locator": "18.2.1 The chi-squared test of independence",
+          "anchor": {
+            "start": "The degrees of freedom change the",
+            "end": "on the left becomes."
+          }
+        },
+        {
+          "text": "For a chi-square goodness-of-fit test, the degrees of freedom equal the number of groups minus 1.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test",
+          "anchor": {
+            "start": "Degrees of freedom for a chi-square",
+            "end": "number of groups minus 1."
+          }
+        },
+        {
+          "text": "When the null hypothesis is true, the chi-squared statistic follows a chi-squared distribution; for a two-way table, its degrees of freedom are the number of rows minus 1 times the number of columns minus 1.",
+          "sourceId": "ims-18",
+          "locator": "18.2.2 Variability of the chi-squared statistic",
+          "anchor": {
+            "start": "As it turns out, the chi-squared",
+            "end": "the degrees of freedom parameter is"
+          }
+        },
+        {
+          "text": "A chi-square test of independence on a 2 × 2 table gives a statistic equal to the square of the Z statistic from the test of two independent proportions.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Comparing Two Proportions)",
+          "anchor": {
+            "start": "When we run a Chi-square test",
+            "end": "test of two independent proportions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "gof_test",
+      "title": "The chi-square goodness-of-fit test",
+      "outcome": "Test whether one categorical variable's counts match a set of hypothesised proportions or a distribution.",
+      "aliases": [
+        "goodness of fit",
+        "GOF test"
+      ],
+      "keyPoints": [
+        {
+          "text": "A chi-square goodness-of-fit test is for one categorical variable with more than two levels; with exactly two, a one-proportion z-test can be used. The levels must be mutually exclusive.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test",
+          "anchor": {
+            "start": "A chi-square goodness-of-fit test can",
+            "end": "one and only one category."
+          }
+        },
+        {
+          "text": "It can test that the proportions are all equal to one another, or any specific set of proportions.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test",
+          "anchor": {
+            "start": "We can test that the proportions",
+            "end": "any specific set of proportions."
+          }
+        },
+        {
+          "text": "The null hypothesis contains the equalities, and the alternative is that at least one population proportion is not as specified in the null.",
+          "sourceId": "psu200-11",
+          "locator": "11.2.1 Five Step Hypothesis Testing Procedure",
+          "anchor": {
+            "start": "The null hypothesis will always contain",
+            "end": "not as specified in the null."
+          }
+        },
+        {
+          "text": "The chi-square goodness-of-fit test is used to test whether a sample of data came from a population with a specific distribution.",
+          "sourceId": "nist-eda35f",
+          "locator": "1.3.5.15 Chi-Square Goodness-of-Fit Test",
+          "anchor": {
+            "start": "The chi-square test (Snedecor and",
+            "end": "with a specific distribution."
+          }
+        },
+        {
+          "text": "The test is applied to binned data, put into classes; for unbinned data a frequency table can be made first, but the value of the statistic depends on how the data are binned.",
+          "sourceId": "nist-eda35f",
+          "locator": "1.3.5.15 Chi-Square Goodness-of-Fit Test",
+          "anchor": {
+            "start": "The chi-square goodness-of-fit test is applied",
+            "end": "how the data is binned."
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_of_independence",
+      "title": "The chi-square test of independence",
+      "outcome": "Test whether two categorical variables are related in the population, and state the hypotheses in context.",
+      "aliases": [
+        "chi-square test of association"
+      ],
+      "keyPoints": [
+        {
+          "text": "The chi-square test of independence is used to test for a relationship between two categorical variables.",
+          "sourceId": "psu200-11",
+          "locator": "11.3 Chi-Square Test of Independence",
+          "anchor": {
+            "start": "test of independence is used to",
+            "end": "between two categorical variables."
+          }
+        },
+        {
+          "text": "Even if two variables are independent in the population, samples vary, so the test asks whether there is convincing evidence they are not independent in the population, with the same logic as earlier tests.",
+          "sourceId": "psu200-11",
+          "locator": "11.3 Chi-Square Test of Independence",
+          "anchor": {
+            "start": "Even if two variables are independent",
+            "end": "one mean, one proportion, etc."
+          }
+        },
+        {
+          "text": "Until there is evidence that two categorical variables are related, we assume they are not: the null hypothesis is that they are independent in the population, the alternative that they are dependent.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence",
+          "anchor": {
+            "start": "In this lesson, we are interested",
+            "end": "the two categorical variables are dependent."
+          }
+        },
+        {
+          "text": "The hypotheses can also be phrased as no relationship versus a relationship, or no association versus an association, between the two categorical variables.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence",
+          "anchor": {
+            "start": "There are several ways to phrase",
+            "end": "an association between the two variables."
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_of_homogeneity",
+      "title": "Comparing proportions across several groups",
+      "outcome": "Use a chi-square test to compare a proportion across more than two groups. (Comparing two proportions with a z-test is in the Comparing groups pack.)",
+      "aliases": [
+        "test of homogeneity",
+        "homogeneity of proportions"
+      ],
+      "keyPoints": [
+        {
+          "text": "Chi-square methods can compare the proportions of more than two independent groups, as well as test for a relationship between two categorical variables.",
+          "sourceId": "psu200-11",
+          "locator": "11 Chi-Square Tests",
+          "anchor": {
+            "start": "In this lesson we will learn",
+            "end": "between two categorical variables."
+          }
+        },
+        {
+          "text": "To test homogeneity of proportions, a chi-square test on a contingency table checks whether samples from several populations, such as lots or vendors, differ in their proportion of defectives.",
+          "sourceId": "nist-prc46",
+          "locator": "7.4.6 Do all the processes have the same proportion of defectives?",
+          "anchor": {
+            "start": "Testing for homogeneity of proportions using",
+            "end": "contingency table approach."
+          }
+        },
+        {
+          "text": "Under the null hypothesis, the single overall proportion is estimated by pooling all the samples, and multiplying the proportions by each sample size gives the expected frequencies.",
+          "sourceId": "nist-prc46",
+          "locator": "7.4.6 Do all the processes have the same proportion of defectives? (An illustrative example)",
+          "anchor": {
+            "start": "Assuming the null hypothesis is true,",
+            "end": "nonconforming and conforming diodes."
+          }
+        },
+        {
+          "text": "In one example comparing five lots, the chi-square statistic of 12.131 exceeded the critical value of 9.488 for 4 degrees of freedom, so the null hypothesis was rejected.",
+          "sourceId": "nist-prc46",
+          "locator": "7.4.6 Do all the processes have the same proportion of defectives? (Conclusions)",
+          "anchor": {
+            "start": "If we choose a 0.05 level",
+            "end": "we reject the null hypothesis."
+          }
+        }
+      ]
+    },
+    {
+      "id": "expected_count_conditions",
+      "title": "When the chi-square approximation works",
+      "outcome": "Check the conditions for a chi-square test, especially the expected counts, before trusting its p-value.",
+      "aliases": [
+        "expected count condition",
+        "large counts condition"
+      ],
+      "keyPoints": [
+        {
+          "text": "The test of independence assumes the sample is randomly drawn from the population and that all expected values are at least 5.",
+          "sourceId": "psu200-11",
+          "locator": "11.3 Chi-Square Test of Independence",
+          "anchor": {
+            "start": "The assumptions are that the sample",
+            "end": "what expected values are later)."
+          }
+        },
+        {
+          "text": "Using the chi-squared distribution needs independent observations and large samples: 5 expected counts in each cell.",
+          "sourceId": "ims-18",
+          "locator": "18.2.3 Observed statistic vs. null chi-squared statistics",
+          "anchor": {
+            "start": "Conditions: Independent observations Large samples:",
+            "end": "expected counts in each cell"
+          }
+        },
+        {
+          "text": "A common rule is that at least 80% of the cells need an expected count of at least 5; in a 2 × 2 table, that means all four cells.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Comparing Two Proportions)",
+          "anchor": {
+            "start": "at least 80% of all cells",
+            "end": "satisfy the condition)."
+          }
+        },
+        {
+          "text": "When the expected counts are too small, even a significant result could not be trusted: in one example, 3 cells, a third of the table, had expected counts below 5.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Example)",
+          "anchor": {
+            "start": "Even if we did have a",
+            "end": "expected counts < 5.0"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A chi-square test can be trusted with any counts, however few cases fall in each cell.",
+          "correction": "The chi-square distribution may be used only if all the expected counts are at least five; if any expected count is less than five, a randomization test should be conducted.",
+          "sourceId": "psu200-11",
+          "locator": "11.2 Goodness of Fit Test",
+          "anchor": {
+            "start": "If the expected counts, which we’ll",
+            "end": "a randomization test should be conducted."
+          }
+        }
+      ]
+    },
+    {
+      "id": "standardized_residuals",
+      "title": "Which cells drive the result?",
+      "outcome": "Use standardised residuals to see which cells of a table differ most from what independence predicts.",
+      "aliases": [
+        "Pearson residuals",
+        "cell residuals"
+      ],
+      "keyPoints": [
+        {
+          "text": "A significant chi-squared test says the data are unlikely under the null, but not how they differ; the residuals, the deviation of observed from expected frequencies in each cell, give that insight.",
+          "sourceId": "st21-12",
+          "locator": "12.4 Standardized residuals",
+          "anchor": {
+            "start": "When we find a significant effect",
+            "end": "expected frequencies) in each cell."
+          }
+        },
+        {
+          "text": "Standardized residuals, sometimes called Pearson residuals, are used rather than raw residuals, which vary with the number of observations; they can be interpreted as Z scores.",
+          "sourceId": "st21-12",
+          "locator": "12.4 Standardized residuals",
+          "anchor": {
+            "start": "Rather than looking at the raw",
+            "end": "can be interpreted as Z scores"
+          }
+        },
+        {
+          "text": "In one example, the residuals showed searches of Black drivers were substantially higher than expected under independence, and searches of white drivers substantially lower.",
+          "sourceId": "st21-12",
+          "locator": "12.4 Standardized residuals",
+          "anchor": {
+            "start": "in this case, we see that",
+            "end": "lower than expected."
+          }
+        }
+      ]
+    },
+    {
+      "id": "risk_and_relative_risk",
+      "title": "Risk, relative risk and increased risk",
+      "outcome": "Compute and interpret risk, relative risk and increased risk from a 2 × 2 table.",
+      "aliases": [
+        "risk ratio",
+        "RR"
+      ],
+      "keyPoints": [
+        {
+          "text": "A risk is the proportion of individuals with an undesirable trait. A relative risk is the risk under one circumstance divided by the risk under another.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "Definition 6.8 (Risk) A risk",
+            "end": "the risk in another circumstance."
+          }
+        },
+        {
+          "text": "An increased risk is the percentage increase in risk under one circumstance over the baseline risk without it: 100% times the relative risk minus 1.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "Definition 6.10 (Increased Risk) An",
+            "end": "× (relative risk - 1)"
+          }
+        },
+        {
+          "text": "In one study, male high school athletes were 1.485 times as likely as female athletes to have a knee injury per sporting event, an increased risk of 48.5%.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Example 6.3)",
+          "anchor": {
+            "start": "Relative risk interpretation: For each high",
+            "end": "than for female athletes."
+          }
+        },
+        {
+          "text": "The risk measures describe outcomes that are undesirable, such as diseases or injuries; the measures involving odds are applied more generally.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables",
+          "anchor": {
+            "start": "The first three of these, involving",
+            "end": "are applied more generally."
+          }
+        },
+        {
+          "text": "Relative risk is a better measure of association than the difference in proportions when cell probabilities are close to 0 or 1, and it is used far more in medicine and epidemiology.",
+          "sourceId": "psu504-03",
+          "locator": "3.5 Relative Risk",
+          "anchor": {
+            "start": "Keep in mind that relative risk",
+            "end": "than difference of proportions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "reading_risks",
+      "title": "Reading a relative risk with care",
+      "outcome": "Judge a reported relative risk against its baseline, its population, and possible confounders.",
+      "aliases": [
+        "baseline risk"
+      ],
+      "keyPoints": [
+        {
+          "text": "Watch the baseline: commuter flights had about 2.7 times the crash risk of major carriers, yet the chance of being killed on a major-carrier flight is about 1 in 20 million, so the risk is very small regardless.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Cautions)",
+          "anchor": {
+            "start": "Watch the baseline: In reading about",
+            "end": "the risk is very small regardless."
+          }
+        },
+        {
+          "text": "Risk calculations are often conditional on a specific population or situation, so to evaluate your own risk, consider how closely the situation fits yours.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Cautions)",
+          "anchor": {
+            "start": "The lesson: risk calculations are often",
+            "end": "fits your own."
+          }
+        },
+        {
+          "text": "Relative and increased risks are almost always descriptive statistics from observational data, so examine possible confounders before drawing conclusions.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Example 6.3)",
+          "anchor": {
+            "start": "However, these measures are almost always",
+            "end": "before drawing conclusions."
+          }
+        },
+        {
+          "text": "A chi-square test says whether a relationship is likely, but with a large sample it may reject the null even for a weak relationship; computing the relative risk adds a look at practical significance.",
+          "sourceId": "psu200-11",
+          "locator": "11.3.2 Relative Risk",
+          "anchor": {
+            "start": "A chi-square test of independence will",
+            "end": "computing the relative risk."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A relative risk of 5 always means a serious danger.",
+          "correction": "Interpreting a relative risk needs its baseline risk, the denominator: if the baseline is high a relative risk of 5 would be alarming, but if it is small a relative risk of 5 may not be too serious.",
+          "sourceId": "psu500-08",
+          "locator": "8 Chi-Square Test for Independence (Relative Risk)",
+          "anchor": {
+            "start": "The baseline risk is the denominator",
+            "end": "may not be too serious."
+          }
+        }
+      ]
+    },
+    {
+      "id": "odds_and_odds_ratio",
+      "title": "Odds and odds ratios",
+      "outcome": "Compute odds and an odds ratio from a 2 × 2 table, and say how odds differ from a probability.",
+      "aliases": [
+        "OR",
+        "odds"
+      ],
+      "keyPoints": [
+        {
+          "text": "The odds of something are the proportion of times it happens divided by the proportion of times it does not. An odds ratio is the odds under one circumstance divided by the odds under another.",
+          "sourceId": "psu100-06",
+          "locator": "6 Relationships Between Categorical Variables (Describing Categorical Data)",
+          "anchor": {
+            "start": "Definition 6.6 (Odds) The odds",
+            "end": "the odds in another circumstance."
+          }
+        },
+        {
+          "text": "In one study, the odds of a sidewalk being uneven were about 7.84 times as big in a high-poverty neighbourhood as in a low-poverty one.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Odds Ratio)",
+          "anchor": {
+            "start": "Odds ratio interpretation: The odds of",
+            "end": "compared with a low poverty area."
+          }
+        },
+        {
+          "text": "The odds ratio can represent the relative likelihood of different outcomes in a contingency table, to better understand the magnitude of an effect.",
+          "sourceId": "st21-12",
+          "locator": "12.5 Odds ratios",
+          "anchor": {
+            "start": "We can also represent the relative",
+            "end": "the magnitude of the effect."
+          }
+        },
+        {
+          "text": "In one dataset, the odds ratio showed that the odds of being searched were 2.59 times higher for Black drivers than for white drivers.",
+          "sourceId": "st21-12",
+          "locator": "12.5 Odds ratios",
+          "anchor": {
+            "start": "The odds ratio shows that the",
+            "end": "based on this dataset."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The odds of an event and the percentage of times it happens are the same number.",
+          "correction": "They differ: 107 of 826 sidewalk segments, about 13%, were too uneven, but the odds of a segment being too uneven were 107 to 719, about 0.149, or 1 to 6.7.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Example 6.4)",
+          "anchor": {
+            "start": "sidewalk segments were too uneven for",
+            "end": "about 1 to 6.7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "odds_ratio_studies",
+      "title": "Odds ratios in prospective and retrospective studies",
+      "outcome": "Explain why an odds ratio, not a relative risk, is what a case-control (retrospective) study can estimate.",
+      "aliases": [
+        "case-control study",
+        "retrospective study",
+        "prospective study"
+      ],
+      "keyPoints": [
+        {
+          "text": "An odds ratio comes out the same whether you condition on the explanatory or the response variable, so it is the same for prospective studies, which condition on exposure, and retrospective studies, which condition on the outcome.",
+          "sourceId": "psu100-06",
+          "locator": "6.1 Numbers That Can Describe 2×2 Tables (Odds Ratio)",
+          "anchor": {
+            "start": "An interesting property of the odds",
+            "end": "condition on the outcome)."
+          }
+        },
+        {
+          "text": "A prospective study follows exposed and unexposed groups, both disease-free at the start; it can be very time-consuming and may need very large samples to find enough cases.",
+          "sourceId": "psu504-03",
+          "locator": "3.7 Prospective and Retrospective Studies",
+          "anchor": {
+            "start": "This is called a prospective study.",
+            "end": "very large samples to obtain enough"
+          }
+        },
+        {
+          "text": "In a retrospective study, subjects with the disease are located first and then classified by exposure, such as whether they smoke.",
+          "sourceId": "psu504-03",
+          "locator": "3.7 Prospective and Retrospective Studies",
+          "anchor": {
+            "start": "An alternative is the retrospective study,",
+            "end": "smokers and which are not."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A case-control study shows how common the disease is in the population.",
+          "correction": "A retrospective study gives no information about the overall incidence of the disease, because the investigator decided the numbers of cases and non-cases; it does give consistent estimates of the odds ratio.",
+          "sourceId": "psu504-03",
+          "locator": "3.7 Prospective and Retrospective Studies",
+          "anchor": {
+            "start": "A retrospective study provides no information",
+            "end": "consistent estimates of the odds ratio"
+          }
+        }
+      ]
+    },
+    {
+      "id": "simpsons_paradox",
+      "title": "Simpson's paradox",
+      "outcome": "Recognise when combining groups reverses an association, and look for the third variable responsible.",
+      "aliases": [
+        "Simpson's paradox",
+        "lurking variable",
+        "confounding in tables"
+      ],
+      "keyPoints": [
+        {
+          "text": "An observed association between two variables can change or even reverse direction when another variable interacts strongly with both of them.",
+          "sourceId": "psu100-06",
+          "locator": "6.2 Simpson's Paradox",
+          "anchor": {
+            "start": "two variables can change or even",
+            "end": "interacts strongly with both variables."
+          }
+        },
+        {
+          "text": "Simpson's paradox is when two variables have a marginal association and partial (conditional) associations in opposite directions; the association changes because of a third, possibly confounding, variable.",
+          "sourceId": "psu504-05",
+          "locator": "5 Three-Way Tables (Simpson's paradox)",
+          "anchor": {
+            "start": "Simpson’s paradox is the phenomenon that",
+            "end": "(possibly confounding) variable."
+          }
+        },
+        {
+          "text": "In one survival study, the smokers were much younger than the non-smokers at the start; among women over 64, 14% of the 49 smokers were still alive compared with 17% of the 193 non-smokers.",
+          "sourceId": "psu100-06",
+          "locator": "6.2 Simpson's Paradox (Example 6.6)",
+          "anchor": {
+            "start": "The smokers were much younger women",
+            "end": "of the 193 non-smokers."
+          }
+        },
+        {
+          "text": "One player had a higher batting average than another in each of three years, yet a lower one combined: a pattern in combined data may not appear in any subset, here because the number of at-bats varied across years.",
+          "sourceId": "st21-12",
+          "locator": "12.8 Beware of Simpson's paradox",
+          "anchor": {
+            "start": "In each individual year Justice had",
+            "end": "when batting averages were low)."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If one group has a higher rate than another in every subgroup, it must also have the higher rate overall.",
+          "correction": "In each chamber of Congress, Democrats had a higher percentage voting for the 1964 bill than Republicans in both the North and the South, yet a lower percentage overall, because most Southern members were Democrats.",
+          "sourceId": "psu100-06",
+          "locator": "6.2 Simpson's Paradox (Example 6.5)",
+          "anchor": {
+            "start": "For each chamber of Congress Democrats",
+            "end": "associated with that region."
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "contingency_tables",
+      "after": "conditional_proportions",
+      "reason": "Conditional proportions are read from a contingency table."
+    },
+    {
+      "before": "conditional_proportions",
+      "after": "independence_categorical",
+      "reason": "Independence means the conditional proportions match."
+    },
+    {
+      "before": "independence_categorical",
+      "after": "expected_counts",
+      "reason": "Expected counts assume independence."
+    },
+    {
+      "before": "expected_counts",
+      "after": "chi_square_statistic",
+      "reason": "The statistic compares observed with expected counts."
+    },
+    {
+      "before": "chi_square_statistic",
+      "after": "chi_square_distribution",
+      "reason": "The statistic's p-value comes from the chi-square distribution."
+    },
+    {
+      "before": "chi_square_distribution",
+      "after": "gof_test",
+      "reason": "The goodness-of-fit test uses the chi-square distribution."
+    },
+    {
+      "before": "chi_square_distribution",
+      "after": "test_of_independence",
+      "reason": "The test of independence uses the chi-square distribution."
+    },
+    {
+      "before": "independence_categorical",
+      "after": "test_of_independence",
+      "reason": "Its null hypothesis is independence."
+    },
+    {
+      "before": "test_of_independence",
+      "after": "test_of_homogeneity",
+      "reason": "Homogeneity uses the same contingency-table mechanics."
+    },
+    {
+      "before": "expected_counts",
+      "after": "expected_count_conditions",
+      "reason": "The conditions are about the expected counts."
+    },
+    {
+      "before": "chi_square_distribution",
+      "after": "expected_count_conditions",
+      "reason": "The conditions decide when the chi-square approximation holds."
+    },
+    {
+      "before": "test_of_independence",
+      "after": "standardized_residuals",
+      "reason": "Residuals explain a significant test of independence."
+    },
+    {
+      "before": "conditional_proportions",
+      "after": "risk_and_relative_risk",
+      "reason": "A risk is a conditional proportion."
+    },
+    {
+      "before": "risk_and_relative_risk",
+      "after": "reading_risks",
+      "reason": "Reading a relative risk presumes the definition."
+    },
+    {
+      "before": "test_of_independence",
+      "after": "reading_risks",
+      "reason": "Relative risk complements a significant test."
+    },
+    {
+      "before": "conditional_proportions",
+      "after": "odds_and_odds_ratio",
+      "reason": "Odds are built from conditional proportions."
+    },
+    {
+      "before": "odds_and_odds_ratio",
+      "after": "odds_ratio_studies",
+      "reason": "The study-design point is about the odds ratio."
+    },
+    {
+      "before": "risk_and_relative_risk",
+      "after": "odds_ratio_studies",
+      "reason": "The contrast is with relative risk."
+    },
+    {
+      "before": "conditional_proportions",
+      "after": "simpsons_paradox",
+      "reason": "The paradox compares conditional and combined proportions."
+    },
+    {
+      "before": "reading_risks",
+      "after": "simpsons_paradox",
+      "reason": "Confounders are what drive the paradox."
+    }
+  ]
 }
