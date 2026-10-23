@@ -1,7 +1,7 @@
 {
   "id": "comparing-groups",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Comparing groups: testing and estimating differences between two means, two proportions or several means, checking the assumptions, and reporting how big a difference is",
   "outOfScope": [
     "The logic of a hypothesis test: hypotheses, p-values, significance levels, Type I and II errors, and statistical versus practical significance (see the Hypothesis testing pack)",
@@ -300,7 +300,7 @@
           }
         },
         {
-          "text": "In one example, the hypothesis was rejected because the test statistic, t = 2.269, was greater than 1.746, so the new process was concluded to have improved assembly time, with a smaller mean.",
+          "text": "In one example, the hypothesis was rejected because the test statistic, t = 2.269, was greater than 1.746, so process 2 was concluded to have improved assembly time, with a smaller mean than process 1.",
           "sourceId": "nist-prc31",
           "locator": "7.3.1 Do two processes have the same mean? (Decision process)",
           "anchor": {
@@ -316,7 +316,7 @@
       "outcome": "Check the conditions a two-sample comparison of means needs, and name what to do when they fail.",
       "keyPoints": [
         {
-          "text": "The standardised difference of two means can use the t-distribution if the data are independent within and between the groups, as with independent random samples or a randomized experiment, and each group is checked for outliers.",
+          "text": "Inference on the standardised difference of two means needs data independent within and between the groups, as with independent random samples or a randomized experiment, and each group checked for outliers.",
           "sourceId": "ims-20",
           "locator": "20.4.1 Observed data",
           "anchor": {
@@ -628,7 +628,7 @@
       "misconceptions": [
         {
           "claim": "The alternative hypothesis in an ANOVA is that every group mean differs from every other.",
-          "correction": "An alternative that all the means are different would test whether ALL the means differ, which is not what is wanted; the ANOVA alternative is that at least one pair of means is not equal.",
+          "correction": "Setting the alternative as all the means being different would test whether ALL the means differ, which is not what ANOVA is meant to test.",
           "sourceId": "psu500-10",
           "locator": "10.2 A Statistical Test for One-Way ANOVA (Hypotheses)",
           "anchor": {
@@ -677,7 +677,7 @@
           }
         },
         {
-          "text": "In a one-way ANOVA, the total sum of squares splits into a sum of squares of treatments and a sum of squares of error; this decomposition is the guiding principle behind ANOVA.",
+          "text": "In a one-way ANOVA, the sums of squares split into two components, the sum of squares of treatments and of error; this decomposition is the guiding principle behind ANOVA.",
           "sourceId": "nist-prc431",
           "locator": "7.4.3.1 One-way ANOVA overview",
           "anchor": {
@@ -708,7 +708,7 @@
           }
         },
         {
-          "text": "When the null hypothesis of equal means is true, the treatment and error mean squares estimate the same error variance and should be of about equal size, so their ratio should be close to 1.",
+          "text": "When the null hypothesis of equal means is true, the two mean squares estimate the same error variance and should be of about equal size, so their ratio should be close to 1.",
           "sourceId": "nist-prc433",
           "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
           "anchor": {
@@ -726,7 +726,7 @@
           }
         },
         {
-          "text": "The F distribution has two degrees of freedom, between groups and within groups, which software calls the numerator and denominator degrees of freedom.",
+          "text": "The F distribution has two degrees of freedom, between groups and within groups, which Minitab calls the numerator and denominator degrees of freedom.",
           "sourceId": "psu200-10",
           "locator": "10.1 Introduction to the F Distribution",
           "anchor": {
@@ -810,11 +810,11 @@
           }
         },
         {
-          "text": "Violations of normality and equal variance that are not extreme can be considered not serious: the test is fairly robust, especially as sample sizes grow and when they are equal, so keep group sizes equal.",
+          "text": "Of ANOVA's assumptions, mild violations of normality and equal variance are not serious: the test is fairly robust, especially as sample sizes grow and when they are equal, so keep group sizes equal.",
           "sourceId": "psu500-10",
           "locator": "10.2.1 ANOVA Assumptions",
           "anchor": {
-            "start": "Violations to the first two that",
+            "start": "There are three primary assumptions in",
             "end": "sizes for each factor level."
           }
         },
@@ -828,11 +828,11 @@
           }
         },
         {
-          "text": "Equal variance can be checked by examining side-by-side box plots of the outcomes across the groups.",
+          "text": "The constant variance assumption, that the variance is about equal from group to group, can be checked by examining side-by-side box plots of the outcomes across the groups.",
           "sourceId": "ims-22",
           "locator": "22.3.4 Conditions for an ANOVA analysis (Constant variance)",
           "anchor": {
-            "start": "This assumption can be checked by",
+            "start": "Constant variance. The last assumption is",
             "end": "outcomes across the groups,"
           }
         }
@@ -857,7 +857,7 @@
           }
         },
         {
-          "text": "After rejecting equal means, we still do not know whether all the means are different, or which differs from the others, and by how much.",
+          "text": "In one example, it was still unknown at that point whether the three means were all different, or which one differed from the other two, and by how much.",
           "sourceId": "nist-prc433",
           "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means (Techniques for further analysis)",
           "anchor": {
@@ -899,7 +899,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Multiple comparison methods are essentially tests of two means, but with an adjustment that accounts for the number of comparisons taking place.",
+          "text": "Comparing pairs of groups after an ANOVA is essentially a test of two means, but with an adjustment that accounts for the number of comparisons taking place.",
           "sourceId": "psu500-10",
           "locator": "10.3 Multiple Comparisons",
           "anchor": {
@@ -908,7 +908,7 @@
           }
         },
         {
-          "text": "One common post-hoc test makes all possible pairwise comparisons and adjusts for the fact that multiple tests are performed, so the Type I error is not inflated.",
+          "text": "One specific post-hoc test makes all possible pairwise comparisons and adjusts for the fact that multiple tests are performed, so the Type I error is not inflated.",
           "sourceId": "psu200-10",
           "locator": "10.3 Pairwise Comparisons",
           "anchor": {
@@ -926,11 +926,11 @@
           }
         },
         {
-          "text": "Bonferroni's method applies when the analyst has picked out a particular set of pairwise comparisons or contrasts in advance.",
+          "text": "Bonferroni's method allows many comparisons while keeping an overall confidence coefficient, and applies when a particular set of pairwise comparisons or contrasts has been picked out in advance.",
           "sourceId": "nist-prc473",
           "locator": "7.4.7.3 Bonferroni's method",
           "anchor": {
-            "start": "This method applies to an ANOVA",
+            "start": "The Bonferroni method is a simple",
             "end": "linear combinations in advance."
           }
         },
@@ -1125,5 +1125,15 @@
       "after": "effect_size",
       "reason": "Cohen's d is contrasted with the t statistic."
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 75,
+    "itemsSupported": 75,
+    "errorsPlanted": 11,
+    "errorsCaught": 11,
+    "fingerprint": "sha256:fb58e34578e64fd9bbbc9d254bc38360"
+  }
 }
