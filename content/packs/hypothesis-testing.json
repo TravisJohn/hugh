@@ -1,7 +1,7 @@
 {
   "id": "hypothesis-testing",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Hypothesis testing: framing a null and an alternative, measuring the evidence against the null with a test statistic and a p-value, and reading the result without overclaiming",
   "outOfScope": [
     "Standard errors, the central limit theorem, the t-distribution and building confidence intervals (see the Sampling distributions pack); this pack only uses an interval to reach a test's decision",
@@ -49,34 +49,10 @@
       "accessedAt": "2026-10-23"
     },
     {
-      "id": "psu415-09",
-      "title": "STAT 415 Lesson 9: Hypothesis Tests (Part I)",
-      "publisher": "Penn State Department of Statistics",
-      "url": "https://online.stat.psu.edu/stat415/Lesson09",
-      "license": "CC BY-NC 4.0",
-      "accessedAt": "2026-10-23"
-    },
-    {
-      "id": "psu415-10",
-      "title": "STAT 415 Lesson 10: Hypothesis Tests (Part II)",
-      "publisher": "Penn State Department of Statistics",
-      "url": "https://online.stat.psu.edu/stat415/Lesson10",
-      "license": "CC BY-NC 4.0",
-      "accessedAt": "2026-10-23"
-    },
-    {
       "id": "ims-11",
       "title": "Introduction to Modern Statistics (2e), Chapter 11: Hypothesis testing with randomization",
       "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
       "url": "https://openintro-ims.netlify.app/foundations-randomization.html",
-      "license": "CC BY-SA 3.0",
-      "accessedAt": "2026-10-23"
-    },
-    {
-      "id": "ims-13",
-      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
-      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
-      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
       "license": "CC BY-SA 3.0",
       "accessedAt": "2026-10-23"
     },
@@ -131,13 +107,6 @@
       "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
       "url": "https://www.itl.nist.gov/div898/handbook/prc/section2/prc221.htm",
       "accessedAt": "2026-10-23"
-    },
-    {
-      "id": "nist-prc24",
-      "title": "7.2.4 Does the proportion of defectives meet requirements?",
-      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
-      "url": "https://www.itl.nist.gov/div898/handbook/prc/section2/prc24.htm",
-      "accessedAt": "2026-10-23"
     }
   ],
   "concepts": [
@@ -152,7 +121,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A hypothesis test is a statistical technique for using data to evaluate two competing claims.",
+          "text": "A hypothesis test is a statistical technique for using data to evaluate competing claims.",
           "sourceId": "ims-11",
           "locator": "11.1 Sex discrimination case study",
           "anchor": {
@@ -249,7 +218,7 @@
       ],
       "keyPoints": [
         {
-          "text": "Hypothesis testing works like a trial: the sceptical position, the null, is that the defendant is innocent until evidence convinces the jury, beyond reasonable doubt, of guilt, the alternative.",
+          "text": "In a trial framed as a hypothesis test, the sceptical position, the null, is that the defendant is innocent, until evidence convinces the jury of guilt, the alternative, with no reasonable doubt.",
           "sourceId": "ims-11",
           "locator": "11.3.1 The US court system",
           "anchor": {
@@ -363,7 +332,7 @@
           }
         },
         {
-          "text": "Comparing the observed result with the null distribution shows how rare it would be by chance: in one study, a difference at least as large as the one observed occurred in only about 2% of null simulations.",
+          "text": "In one study, a difference of at least 29.2% would happen only about 2% of the time under the null hypothesis; such a low probability means a difference that large is rare from chance alone.",
           "sourceId": "ims-11",
           "locator": "11.1.3 Observed statistic vs. null statistics",
           "anchor": {
@@ -384,7 +353,7 @@
       ],
       "keyPoints": [
         {
-          "text": "In a randomization test of an experiment, the goal is to see what differences would arise if the null hypothesis were true and the treatment had no effect, using randomization to simulate them.",
+          "text": "When an experiment is analysed by randomization, the goal is to understand what differences would arise if the null hypothesis were true and the treatment had no effect.",
           "sourceId": "ims-11",
           "locator": "11.2.2 Variability of the statistic",
           "anchor": {
@@ -393,7 +362,7 @@
           }
         },
         {
-          "text": "In one experiment, 1,000 simulated differences under the null showed a difference of at least 20% only about 0.6% of the time, so the data gave strong evidence of a treatment effect.",
+          "text": "In one experiment, a difference of at least 20% would arise under the null only about 0.6% of the time, so the data gave strong evidence of a treatment effect.",
           "sourceId": "ims-11",
           "locator": "11.2.3 Observed statistic vs. null statistics",
           "anchor": {
@@ -411,7 +380,7 @@
           }
         },
         {
-          "text": "Simulating a test of a hypothesised proportion has the advantage that it can be used with any sample size, which is a large benefit for small samples.",
+          "text": "A bootstrap simulation for hypothesis testing has the advantage that it can be used with any sample size, which is a large benefit for small samples.",
           "sourceId": "ims-16",
           "locator": "16.1 Bootstrap test for a proportion",
           "anchor": {
@@ -475,7 +444,7 @@
       "outcome": "Avoid the common misreadings of a p-value: as the chance the null is true, as a measure of importance, or as proof of cause. (The Bayesian inference pack contrasts this with posterior probabilities.)",
       "keyPoints": [
         {
-          "text": "A significance test or p-value does not give the chance that the null hypothesis is correct, or that the alternative is, because it is calculated assuming the null.",
+          "text": "A p-value does not tell you the chance that the null hypothesis is correct, or that the alternative is, because it is calculated assuming the null.",
           "sourceId": "psu100-11",
           "locator": "11.1 Significance Testing Caveats",
           "anchor": {
@@ -553,11 +522,11 @@
           }
         },
         {
-          "text": "A significance level of 0.05 means the null hypothesis is rejected 5% of the time when it is in fact true. The choice is somewhat arbitrary, though 0.1, 0.05 and 0.01 are common in practice.",
+          "text": "An alpha of 0.05 means a true null hypothesis is rejected 5% of the time. The choice of alpha is somewhat arbitrary, though values of 0.1, 0.05 and 0.01 are common in practice.",
           "sourceId": "nist-prc131",
           "locator": "7.1.3.1 Critical values and p values",
           "anchor": {
-            "start": "implies that the null hypothesis is",
+            "start": "which defines the sensitivity of the",
             "end": "0.05, and 0.01 are common."
           }
         },
@@ -719,7 +688,7 @@
           }
         },
         {
-          "text": "If a test's conditions are not satisfied, its statistic and p-value can still be calculated, but no decision or conclusion can be made; other methods, perhaps about another parameter such as the median, are needed.",
+          "text": "If a test's conditions are not satisfied, its statistic and p-value can still be calculated, but no decision or conclusion can be made; other methods, perhaps based on another parameter such as the median, can be used instead.",
           "sourceId": "psu500-06",
           "locator": "6.2.3 Further Considerations for Hypothesis Testing (How Important are the Conditions of a Test?)",
           "anchor": {
@@ -728,7 +697,7 @@
           }
         },
         {
-          "text": "The last step interprets the p-value: does the null hypothesis give a reasonable explanation of the data? If not, the result is statistically significant, and the conclusion is stated in terms of the problem.",
+          "text": "Interpreting the p-value means asking whether the null hypothesis gives a reasonable explanation of the data. If not, the result is statistically significant, and the conclusion is stated in terms of the problem.",
           "sourceId": "psu100-10",
           "locator": "10.2 Steps Used in a Hypothesis Test (Step 4)",
           "anchor": {
@@ -814,7 +783,7 @@
       "outcome": "Explain why lowering one error rate raises the other, and choose a significance level from the consequences of each error.",
       "keyPoints": [
         {
-          "text": "Reducing one type of error generally means making more of the other: raising a court's standard of proof means fewer innocent people are convicted, but more guilty people go free.",
+          "text": "In a court, raising the standard of proof to lower Type I errors means fewer people are wrongly convicted, but more guilty people go free, so more Type II errors are made.",
           "sourceId": "ims-14",
           "locator": "14 Decision Errors",
           "anchor": {
@@ -870,7 +839,7 @@
           }
         },
         {
-          "text": "Power and beta, the probability of a Type II error, are complements: increasing power decreases beta. One way to increase power is to increase the sample size.",
+          "text": "Power equals one minus beta, so increasing power decreases beta. One way to increase power is to increase the sample size.",
           "sourceId": "psu500-06",
           "locator": "6.2.3 Further Considerations for Hypothesis Testing (The Relationship Between Power, β, and α)",
           "anchor": {
@@ -888,7 +857,7 @@
           }
         },
         {
-          "text": "A Type II error is more likely with a small sample size, because the greater variability makes it impossible to rule out random chance as an explanation.",
+          "text": "A Type II error is more likely with a small sample size, because with the greater variability you would not be able to rule out random chance as an explanation.",
           "sourceId": "psu100-11",
           "locator": "11.3 Test Yourself! (Question 4)",
           "anchor": {
@@ -1079,7 +1048,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A one-sample mean t-test needs quantitative data, and either a large sample, of at least 30, or a population known to be normally distributed.",
+          "text": "Using the t distribution for a test about one mean needs quantitative data, and either a large sample, of at least 30, or a population known to be normally distributed.",
           "sourceId": "psu200-08",
           "locator": "8.2.4 Hypothesis Testing (One Sample Mean t-Test)",
           "anchor": {
@@ -1113,12 +1082,12 @@
       "outcome": "Decide whether a test about a mean should use the normal or the t-distribution.",
       "keyPoints": [
         {
-          "text": "The form of a test statistic for a mean depends on whether the population standard deviation is known or estimated from the data; having to estimate it is the more typical case.",
+          "text": "The form of the test statistic depends on whether the population standard deviation is known or estimated from the data; having to estimate it is the more typical case.",
           "sourceId": "nist-prc22",
           "locator": "7.2.2 Are the data consistent with the assumed process mean?",
           "anchor": {
             "start": "test statistic depends on whether the",
-            "end": "estimated from the data at hand."
+            "end": "standard deviation must be estimated"
           }
         },
         {
@@ -1169,7 +1138,7 @@
           }
         },
         {
-          "text": "'Statistically discernible', often called statistically significant, means only that the p-value fell below the chosen level; unlike everyday 'significant', it does not mean a difference is large or meaningful.",
+          "text": "'Statistically discernible', which you may have heard called statistically significant, means only that the p-value fell below the chosen level; unlike everyday 'significant', it does not mean a difference is large or meaningful.",
           "sourceId": "ims-11",
           "locator": "11.3.2 p-value and statistical discernibility",
           "anchor": {
@@ -1218,7 +1187,7 @@
           }
         },
         {
-          "text": "One trial with as few as 32 patients per group found no significant difference and endorsed the cheaper drug, but groups that small could easily miss important differences, so the conclusion was not justified.",
+          "text": "In one trial with as few as 32 patients per group, even important differences between two drugs could easily go undetected, so the authors' conclusion was not justified by the evidence.",
           "sourceId": "psu100-11",
           "locator": "11.1 Significance Testing Caveats (Example 11.2)",
           "anchor": {
@@ -1265,7 +1234,7 @@
           }
         },
         {
-          "text": "One study linked breakfast cereal to having boys but had examined 132 foods. Since a true null gives a 1% chance of a p-value below 1%, one highly significant result among 132 tests is expected.",
+          "text": "In one study that examined 132 foods, highly significant results were no surprise: a true null gives a 1% chance of a p-value below 1%, so one such result among 132 tests is expected.",
           "sourceId": "psu100-11",
           "locator": "11.1 Significance Testing Caveats (Example 11.3)",
           "anchor": {
