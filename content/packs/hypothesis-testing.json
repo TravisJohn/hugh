@@ -1406,6 +1406,97 @@
       "reason": "Many tests make at least one Type I error likely."
     }
   ],
+  "cards": [
+    {
+      "id": "what-a-test-is",
+      "title": "What a hypothesis test is",
+      "conceptIds": [
+        "what_a_test_does",
+        "null_and_alternative",
+        "test_logic"
+      ]
+    },
+    {
+      "id": "test-statistic",
+      "title": "The test statistic and the null distribution",
+      "conceptIds": [
+        "test_statistic",
+        "null_distribution",
+        "randomization_test"
+      ]
+    },
+    {
+      "id": "p-values",
+      "title": "The p-value, and what it is not",
+      "conceptIds": [
+        "p_value",
+        "p_value_misreadings"
+      ]
+    },
+    {
+      "id": "making-a-decision",
+      "title": "Significance levels and decisions",
+      "conceptIds": [
+        "significance_level",
+        "fail_to_reject",
+        "critical_values"
+      ]
+    },
+    {
+      "id": "steps",
+      "title": "The steps of a test",
+      "conceptIds": [
+        "steps_of_a_test"
+      ]
+    },
+    {
+      "id": "errors-and-power",
+      "title": "Type I and II errors, and power",
+      "conceptIds": [
+        "type_i_ii_errors",
+        "error_tradeoff",
+        "power"
+      ]
+    },
+    {
+      "id": "sides-and-intervals",
+      "title": "One- and two-sided tests, and confidence intervals",
+      "conceptIds": [
+        "one_vs_two_sided",
+        "tests_and_cis"
+      ]
+    },
+    {
+      "id": "one-proportion",
+      "title": "Testing one proportion",
+      "conceptIds": [
+        "z_test_proportion"
+      ]
+    },
+    {
+      "id": "one-mean",
+      "title": "Testing one mean: t or z",
+      "conceptIds": [
+        "t_test_mean",
+        "z_or_t"
+      ]
+    },
+    {
+      "id": "practical-significance",
+      "title": "Statistical versus practical significance",
+      "conceptIds": [
+        "statistical_vs_practical",
+        "small_samples"
+      ]
+    },
+    {
+      "id": "many-tests",
+      "title": "Many tests and false positives",
+      "conceptIds": [
+        "multiple_testing"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
