@@ -1,0 +1,34 @@
+{
+  "packId": "categorical-data",
+  "note": "Every concept and card id this pack has ever published to learners. Ids are permanent: a learner board stores them. Retire a concept instead of deleting it; never remove an id from this file.",
+  "concepts": [
+    "contingency_tables",
+    "conditional_proportions",
+    "independence_categorical",
+    "expected_counts",
+    "chi_square_statistic",
+    "chi_square_distribution",
+    "gof_test",
+    "test_of_independence",
+    "test_of_homogeneity",
+    "expected_count_conditions",
+    "standardized_residuals",
+    "risk_and_relative_risk",
+    "reading_risks",
+    "odds_and_odds_ratio",
+    "odds_ratio_studies",
+    "simpsons_paradox"
+  ],
+  "cards": [
+    "contingency-tables",
+    "independence-and-expected",
+    "chi-square-statistic",
+    "goodness-of-fit",
+    "test-of-independence",
+    "homogeneity",
+    "conditions",
+    "relative-risk",
+    "odds-ratios",
+    "simpsons-paradox"
+  ]
+}

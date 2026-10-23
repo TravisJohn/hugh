@@ -1,0 +1,35 @@
+{
+  "packId": "comparing-groups",
+  "note": "Every concept and card id this pack has ever published to learners. Ids are permanent: a learner board stores them. Retire a concept instead of deleting it; never remove an id from this file.",
+  "concepts": [
+    "choosing_a_comparison",
+    "independent_vs_paired",
+    "two_group_hypotheses",
+    "two_sample_t_test",
+    "two_sample_conditions",
+    "pooled_vs_unpooled",
+    "paired_t_test",
+    "two_proportions",
+    "why_not_many_t_tests",
+    "anova_hypotheses",
+    "between_within",
+    "f_statistic",
+    "anova_table",
+    "anova_assumptions",
+    "post_hoc",
+    "adjusting_comparisons",
+    "effect_size"
+  ],
+  "cards": [
+    "choosing-a-comparison",
+    "two-means",
+    "equal-variances",
+    "paired-means",
+    "two-proportions",
+    "many-groups",
+    "anova-logic",
+    "anova-assumptions",
+    "after-anova",
+    "effect-sizes"
+  ]
+}
