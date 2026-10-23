@@ -1,0 +1,1911 @@
+{
+  "id": "sampling-distributions",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Sampling distributions, standard error and confidence intervals: how much a statistic varies from sample to sample, and how to turn one sample into a range of plausible values",
+  "outOfScope": [
+    "Hypothesis tests, p-values and significance levels (the next pack); this pack only notes that values outside an interval are not plausible estimates",
+    "Confidence intervals for a difference between two groups, and comparing groups, beyond naming them (see the A/B testing pack); paired designs",
+    "Sample-size and power calculations, such as choosing n for a target margin of error (see the A/B testing pack)",
+    "Bayesian credible intervals and probability statements about a parameter (see the Bayesian inference pack)",
+    "Survey design and the sources of bias in depth: frames, non-response, question wording and weighting (see the Sampling and surveys pack)",
+    "Probability distributions themselves: the normal and binomial distributions, their tables and probabilities (see the Probability distributions pack)",
+    "Describing data with a mean, a standard deviation and the empirical rule (see the Descriptive statistics pack)",
+    "Intervals for a variance or standard deviation, a regression slope or a correlation, and exact or Wilson intervals for a proportion in detail",
+    "Derivations and proofs, such as those behind the t distribution and the central limit theorem",
+    "Finite population corrections when sampling without replacement from a small population",
+    "Tooling: Excel, R, Python, Minitab, StatKey and BI tools"
+  ],
+  "sources": [
+    {
+      "id": "psu100-08",
+      "title": "STAT 100 Lesson 8: The Diversity of Samples",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu100-09",
+      "title": "STAT 100 Lesson 9: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-04",
+      "title": "STAT 200 Lesson 4: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-07",
+      "title": "STAT 200 Lesson 7: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-08",
+      "title": "STAT 200 Lesson 8: Inference for One Sample",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-04",
+      "title": "STAT 500 Lesson 4: Sampling Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson04",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-05",
+      "title": "STAT 500 Lesson 5: Confidence Intervals",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson05",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu414-26",
+      "title": "STAT 414 Lesson 26: Random Functions Associated with Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson26",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu414-27",
+      "title": "STAT 414 Lesson 27: The Central Limit Theorem",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson27",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-12",
+      "title": "Introduction to Modern Statistics (2e), Chapter 12: Confidence intervals with bootstrapping",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-bootstrapping.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-13",
+      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-16",
+      "title": "Introduction to Modern Statistics (2e), Chapter 16: Inference for a single proportion",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-prop.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-19",
+      "title": "Introduction to Modern Statistics (2e), Chapter 19: Inference for a single mean",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-one-mean.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc14",
+      "title": "7.1.4 What are confidence intervals?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section1/prc14.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-eda352",
+      "title": "1.3.5.2 Confidence Limits for the Mean",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda352.htm",
+      "accessedAt": "2026-10-23"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "statistic_varies",
+      "title": "Statistics vary; parameters are fixed",
+      "outcome": "Explain why a sample statistic changes from sample to sample while the population parameter it estimates stays fixed. (Parameters and statistics are introduced in the Sampling and surveys pack.)",
+      "aliases": [
+        "sampling variability",
+        "sampling error",
+        "random error"
+      ],
+      "keyPoints": [
+        {
+          "text": "Population parameters are fixed values that are rarely known. Sample statistics are known values, but they are random variables because they vary from sample to sample.",
+          "sourceId": "psu200-04",
+          "locator": "4 Confidence Intervals (introduction)",
+          "anchor": {
+            "start": "Population parameters are fixed values.",
+            "end": "vary from sample to sample."
+          }
+        },
+        {
+          "text": "A statistic calculated from a random sample is itself a random variable, while the population parameter is fixed, so the statistic has a distribution of its own, called its sampling distribution.",
+          "sourceId": "psu500-04",
+          "locator": "4 Sampling Distributions (Overview)",
+          "anchor": {
+            "start": "If we obtain a random sample",
+            "end": "the sampling distribution of statistics"
+          }
+        },
+        {
+          "text": "Because a sample mean is random, using it to estimate the population mean involves some possible error. In one small example, the chance that the sample mean exactly equalled the population mean was only 1 in 15.",
+          "sourceId": "psu500-04",
+          "locator": "4.1 Sampling Distribution of the Sample Mean (Example 4.1)",
+          "anchor": {
+            "start": "One can see that the chance",
+            "end": "since the sample mean is random"
+          }
+        },
+        {
+          "text": "When the survey method is unbiased, the sample proportion equals the population proportion plus a random error, and that random error tells how far off the sample is from the population.",
+          "sourceId": "psu100-08",
+          "locator": "8 The Diversity of Samples (Lesson Overview, Example 8.1)",
+          "anchor": {
+            "start": "Since the survey method is unbiased,",
+            "end": "sample is from the population."
+          }
+        }
+      ]
+    },
+    {
+      "id": "law_of_large_numbers",
+      "title": "The law of large numbers",
+      "outcome": "Explain why averages and proportions from bigger random samples settle near the population value, and why small samples are volatile.",
+      "keyPoints": [
+        {
+          "text": "By the law of large numbers, a chance process repeated independently is unpredictable in the short run but regular in the long run. Averages and proportions from a random sample tend to home in on the population values.",
+          "sourceId": "psu100-08",
+          "locator": "8 The Diversity of Samples (Lesson Overview)",
+          "anchor": {
+            "start": "The Law of Large Numbers (Section",
+            "end": "on their corresponding population values"
+          }
+        },
+        {
+          "text": "As the sample size grows, there is less variation in the sample proportions we might get; that is the law of large numbers at work.",
+          "sourceId": "psu100-08",
+          "locator": "8 The Diversity of Samples (Lesson Overview)",
+          "anchor": {
+            "start": "With n = 100, the bulk",
+            "end": "that's the Law of Large Numbers"
+          }
+        },
+        {
+          "text": "Small samples are subject to unpredictable volatility, so they are not necessarily representative of the population.",
+          "sourceId": "psu100-08",
+          "locator": "8.1 There is no \"Law of Small Numbers\"",
+          "anchor": {
+            "start": "small samples are subject to unpredictable",
+            "end": "representative of the population."
+          }
+        },
+        {
+          "text": "Watch out for over-interpreting results from small samples: people tend to believe small samples hold more knowledge about how the world works than they possibly can.",
+          "sourceId": "psu100-08",
+          "locator": "8.1 There is no \"Law of Small Numbers\"",
+          "anchor": {
+            "start": "Watch out for over-interpreting the results",
+            "end": "than they possibly can"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "After a long run of one outcome, the law of large numbers makes the other outcome due, so the results even out.",
+          "correction": "The law of large numbers does not work by compensating for a run of bad luck. Expecting independent trials to correct themselves is a common misconception known as the gambler's fallacy.",
+          "sourceId": "psu100-08",
+          "locator": "8.1.1 The Gambler's Fallacy",
+          "anchor": {
+            "start": "The Law of Large Numbers does",
+            "end": "Gambler's Fallacy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_distribution",
+      "title": "The sampling distribution",
+      "outcome": "Describe a sampling distribution as the distribution of a statistic over all possible samples of one size, and explain why it cannot be seen in one dataset.",
+      "aliases": [
+        "sampling distribution of a statistic"
+      ],
+      "keyPoints": [
+        {
+          "text": "A sampling distribution is the distribution of all possible values of a statistic from samples of one size from one population. It describes how a statistic, such as a sample mean, varies from one study to another.",
+          "sourceId": "ims-13",
+          "locator": "13.1 Central Limit Theorem",
+          "anchor": {
+            "start": "A sampling distribution is the distribution",
+            "end": "varies from one study to another."
+          }
+        },
+        {
+          "text": "Because a sampling distribution describes statistics from many studies, it cannot be seen directly in a single dataset; it is estimated with computational or mathematical methods.",
+          "sourceId": "ims-13",
+          "locator": "13.1 Central Limit Theorem",
+          "anchor": {
+            "start": "However, because a sampling distribution describes",
+            "end": "in repeated studies."
+          }
+        },
+        {
+          "text": "To picture one, imagine taking 1000 random samples of size twenty, recording every sample mean and drawing a histogram of them. The distribution of all these means is the sampling distribution of the sample mean.",
+          "sourceId": "psu500-04",
+          "locator": "4 Sampling Distributions (Overview)",
+          "anchor": {
+            "start": "Consider now taking 1000 random samples",
+            "end": "sampling distribution of the sample mean."
+          }
+        },
+        {
+          "text": "To build a sampling distribution from a known population, take a simple random sample, record the statistic, return the observations to the population, and repeat many times.",
+          "sourceId": "psu200-04",
+          "locator": "4.1.1 StatKey Examples",
+          "anchor": {
+            "start": "In each case we take a",
+            "end": "known as the sampling distribution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "unbiased_estimates",
+      "title": "Centred on the parameter",
+      "outcome": "Explain that the sampling distribution of a sample mean or proportion is centred on the population value, so its errors average out over repeated samples.",
+      "aliases": [
+        "unbiased estimate",
+        "expected value of a statistic"
+      ],
+      "keyPoints": [
+        {
+          "text": "Each sample mean may carry some error, but its expected value is right on target: done over and over again, the sample mean averages out to exactly the population mean.",
+          "sourceId": "psu500-04",
+          "locator": "4.1 Sampling Distribution of the Sample Mean (Example 4.1)",
+          "anchor": {
+            "start": "Even though each sample may give",
+            "end": "is exactly the population mean."
+          }
+        },
+        {
+          "text": "The expected value of a sample proportion or a sample average is the corresponding population value.",
+          "sourceId": "psu100-08",
+          "locator": "8.2 The Normal Approximation",
+          "anchor": {
+            "start": "The expectation of a sample proportion",
+            "end": "the corresponding population value."
+          }
+        },
+        {
+          "text": "A sampling distribution constructed from population data has a mean approximately equal to the population parameter.",
+          "sourceId": "psu200-04",
+          "locator": "4.1 Sampling Distributions",
+          "anchor": {
+            "start": "If a sampling distribution is constructed",
+            "end": "equal to the population parameter."
+          }
+        }
+      ]
+    },
+    {
+      "id": "standard_error",
+      "title": "The standard error",
+      "outcome": "Define the standard error as the standard deviation of a statistic's sampling distribution, and say what it tells you.",
+      "aliases": [
+        "SE",
+        "standard error of the mean",
+        "standard error of the proportion"
+      ],
+      "keyPoints": [
+        {
+          "text": "The standard error is the standard deviation of a sampling distribution. For one categorical variable it may be called the standard error of the proportion; for one quantitative variable, the standard error of the mean.",
+          "sourceId": "psu200-04",
+          "locator": "4.1 Sampling Distributions",
+          "anchor": {
+            "start": "An important aspect of a sampling",
+            "end": "the standard error of the mean"
+          }
+        },
+        {
+          "text": "Point estimates vary from sample to sample, and the standard error quantifies that variability. Almost always, the standard error is itself an estimate calculated from the sample.",
+          "sourceId": "ims-13",
+          "locator": "13.3.2 Standard error",
+          "anchor": {
+            "start": "Point estimates vary from sample to",
+            "end": "calculated from the sample of data."
+          }
+        },
+        {
+          "text": "The standard error is the standard deviation of a statistic, such as the sample mean, though some books use the term for the estimated standard deviation of the sample mean instead.",
+          "sourceId": "psu500-04",
+          "locator": "4.1.1 Population is Normal",
+          "anchor": {
+            "start": "We use the term standard error",
+            "end": "we use the former definition"
+          }
+        },
+        {
+          "text": "The standard error, typically an estimate of the statistic's standard deviation, gives information on how far the observed statistic is from the unknown parameter when a confidence interval is built.",
+          "sourceId": "ims-13",
+          "locator": "13.7.1 Summary",
+          "anchor": {
+            "start": "Calculate the variability of the statistic.",
+            "end": "(if creating a confidence interval)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "se_vs_sd",
+      "title": "Standard error versus standard deviation",
+      "outcome": "Tell the standard deviation of the data from the standard error of a statistic, and read each in context. (The standard deviation itself is taught in the Descriptive statistics pack.)",
+      "keyPoints": [
+        {
+          "text": "The standard error describes how a statistic, such as a sample mean or proportion, varies from sample to sample. The standard deviation measures how far any list of numbers varies from its own average.",
+          "sourceId": "ims-19",
+          "locator": "19.1.3 Bootstrap SE confidence interval",
+          "anchor": {
+            "start": "The standard error describes how a",
+            "end": "vary from their own average."
+          }
+        },
+        {
+          "text": "A sampling distribution is different from a data distribution: the data distribution shows the variability of the observed values and can be drawn from the observations themselves.",
+          "sourceId": "ims-13",
+          "locator": "13.1 Central Limit Theorem",
+          "anchor": {
+            "start": "A sampling distribution is contrasted with",
+            "end": "from the observations themselves."
+          }
+        },
+        {
+          "text": "In one example, customers' gas purchases had a standard deviation of 5 gallons, while the average purchase of 100 customers had a standard deviation of about 0.5 gallons: the first is variation between customers, the second variation in the average.",
+          "sourceId": "psu100-08",
+          "locator": "8.2 The Normal Approximation (Example 8.2)",
+          "anchor": {
+            "start": "Example 8.2 The amount of gas",
+            "end": "average purchase of 100 customers)."
+          }
+        },
+        {
+          "text": "In one simulation of sample means, the sampling distribution's mean was very close to the population mean, and its standard deviation was smaller than the population's.",
+          "sourceId": "psu500-04",
+          "locator": "4.1 Sampling Distribution of the Sample Mean (Example 4.2)",
+          "anchor": {
+            "start": "You should start to see some",
+            "end": "the standard deviation of the population."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The standard error and the standard deviation are the same thing.",
+          "correction": "They describe different things: the standard error describes how a statistic varies from sample to sample, while the standard deviation measures how far a list of numbers varies from its own average.",
+          "sourceId": "ims-19",
+          "locator": "19.1.3 Bootstrap SE confidence interval",
+          "anchor": {
+            "start": "The standard error describes how a",
+            "end": "vary from their own average."
+          }
+        }
+      ]
+    },
+    {
+      "id": "estimating_the_se",
+      "title": "Estimating the standard error",
+      "outcome": "Estimate a standard error from the sample by plugging in the sample proportion or the sample standard deviation, and say why that is needed.",
+      "aliases": [
+        "estimated standard error",
+        "plug-in estimate"
+      ],
+      "keyPoints": [
+        {
+          "text": "A confidence interval uses an estimated standard error, not the standard error itself, because the population values the standard error depends on are typically unknown.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 Estimation and Confidence Intervals (Note)",
+          "anchor": {
+            "start": "We should stop here and explain",
+            "end": "have to estimate the standard error."
+          }
+        },
+        {
+          "text": "The standard deviation of a sample proportion depends on the unknown population proportion. Plugging in the sample proportion gives a very good approximation, called the standard error of the sample proportion.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Confidence Intervals for a Population Proportion",
+          "anchor": {
+            "start": "deviation of the sample proportion depends",
+            "end": "standard error of the sample proportion."
+          }
+        },
+        {
+          "text": "When the population standard deviation is unknown, plugging in the sample standard deviation still gives a good approximation, called the standard error of the mean.",
+          "sourceId": "psu100-09",
+          "locator": "9.2 Confidence Intervals for a Population Mean",
+          "anchor": {
+            "start": "When the population standard deviation is",
+            "end": "Standard Error of the Mean (SEM)."
+          }
+        },
+        {
+          "text": "Substituting the sample proportion into the standard error works well in the situations where the normal curve is appropriate, when np and n(1 - p) are both bigger than 5.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Properties of Confidence Intervals",
+          "anchor": {
+            "start": "The standard error calculation involves estimating",
+            "end": "both bigger than 5)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "se_and_sample_size",
+      "title": "How the standard error shrinks with sample size",
+      "outcome": "Explain how the standard error falls as the sample grows, at the rate of the square root of n, and what that costs.",
+      "aliases": [
+        "square root of n",
+        "precision and sample size"
+      ],
+      "keyPoints": [
+        {
+          "text": "Sample size and standard error are inversely related: as the sample size increases, the variability of the sampling distribution decreases.",
+          "sourceId": "psu200-04",
+          "locator": "4.1.2 Impact of Sample Size",
+          "anchor": {
+            "start": "There is an inverse relationship between",
+            "end": "the variability of sampling distribution decreases."
+          }
+        },
+        {
+          "text": "In one example, the standard error of the mean was 0.936 with samples of 10 and 0.296 with samples of 100.",
+          "sourceId": "psu200-04",
+          "locator": "4.1.2 Impact of Sample Size (Example 4.6)",
+          "anchor": {
+            "start": "Fig 4.2: Sample size of",
+            "end": "size increased the standard error decreased."
+          }
+        },
+        {
+          "text": "The variability of a sample statistic decreases with the square root of the sample size: a sample four times as large cuts the margin of error in half.",
+          "sourceId": "psu100-09",
+          "locator": "9 Confidence Intervals (Objectives)",
+          "anchor": {
+            "start": "The variability of a sample statistic",
+            "end": "will be cut in half."
+          }
+        },
+        {
+          "text": "As the sample size increases, the possible sample means cluster more closely around the population mean, so the possible sampling error decreases.",
+          "sourceId": "psu500-04",
+          "locator": "4.1 Sampling Error and Size",
+          "anchor": {
+            "start": "Sample size and sampling error: As",
+            "end": "decreases as sample size increases."
+          }
+        },
+        {
+          "text": "A larger sample shrinks the variance of the sample mean, but the trade-off is that large samples typically cost a lot more money than small ones.",
+          "sourceId": "psu414-27",
+          "locator": "27.2 Implications in Practice (Example 27.1)",
+          "anchor": {
+            "start": "There is another interesting thing worth",
+            "end": "money than small sample sizes."
+          }
+        }
+      ]
+    },
+    {
+      "id": "good_estimators",
+      "title": "Unbiased and precise estimators",
+      "outcome": "Judge an estimator by the centre and the spread of its sampling distribution, and explain why the sample mean beats the median for normal data.",
+      "aliases": [
+        "properties of estimators",
+        "efficiency"
+      ],
+      "keyPoints": [
+        {
+          "text": "A good estimator has two key features: its sampling distribution is centred on the population value, which makes it unbiased, and it has the smallest standard error compared with other estimators.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 Properties of 'Good' Estimators",
+          "anchor": {
+            "start": "In determining what makes a good",
+            "end": "when compared to other estimators."
+          }
+        },
+        {
+          "text": "In a normal distribution the mean and median are essentially the same, but the median's standard error is about 1.25 times the mean's, which is why the mean is the better estimator for normal data.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 Properties of 'Good' Estimators",
+          "anchor": {
+            "start": "in the normal distribution, the mean",
+            "end": "(or approximately normal)."
+          }
+        },
+        {
+          "text": "For IQ, one person's score, the mean of 4 people and the mean of 8 people are all unbiased estimates of the population mean, but the mean of 8 is the most precise.",
+          "sourceId": "psu414-26",
+          "locator": "26.2 Sampling Distribution of Sample Mean (example)",
+          "anchor": {
+            "start": "the average IQ of 4 random",
+            "end": "will be the most precise estimate"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_dist_mean",
+      "title": "The sampling distribution of a sample mean",
+      "outcome": "State the centre, spread and shape of a sample mean's sampling distribution, and say when it is normal.",
+      "aliases": [
+        "distribution of the sample mean",
+        "sigma over root n"
+      ],
+      "keyPoints": [
+        {
+          "text": "If the population is normal, the sampling distribution of the sample mean is also normal, whatever the sample size.",
+          "sourceId": "psu500-04",
+          "locator": "4.1.1 Population is Normal",
+          "anchor": {
+            "start": "If the population is normally distributed",
+            "end": "matter what the sample size is."
+          }
+        },
+        {
+          "text": "The sample mean's sampling distribution has the population's mean and a standard error of sigma over the square root of n. It is normal, or approximately normal, if the population is normal or the sample size is large.",
+          "sourceId": "psu500-04",
+          "locator": "4.1.2 Sampling Distribution of the Sample Mean (Definition 4.3)",
+          "anchor": {
+            "start": "4.3 (Sampling Distribution of the Sample",
+            "end": "The sample size is large"
+          }
+        },
+        {
+          "text": "In one example, the normal approximation was fine for the mean of only 4 values, because the population already followed the normal distribution.",
+          "sourceId": "psu100-08",
+          "locator": "8.3 The Quality of the Normal Approximation (Example 8.7)",
+          "anchor": {
+            "start": "Even though n is only 4,",
+            "end": "follows the normal distribution already."
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_dist_proportion",
+      "title": "The sampling distribution of a sample proportion",
+      "outcome": "Treat a sample proportion as a mean of 0s and 1s, and state the centre and spread of its sampling distribution.",
+      "aliases": [
+        "distribution of the sample proportion",
+        "p-hat"
+      ],
+      "keyPoints": [
+        {
+          "text": "Label each success 1 and each failure 0: the sample proportion is the sum of the successes divided by the sample size, so it can be thought of as a mean, and the central limit theorem applies for large samples.",
+          "sourceId": "psu500-04",
+          "locator": "4.2.1 Normal Approximation to the Binomial",
+          "anchor": {
+            "start": "We can label the successes as",
+            "end": "Central Limit Theorem for large samples!"
+          }
+        },
+        {
+          "text": "When its conditions hold, the sample proportion's sampling distribution is approximately normal, with mean equal to the population proportion p and standard error equal to the square root of p(1 - p)/n.",
+          "sourceId": "psu500-04",
+          "locator": "4.2.2 Sampling Distribution of the Sample Proportion (Definition 4.5)",
+          "anchor": {
+            "start": "4.5 (Sampling Distribution of the Sample",
+            "end": "If the sampling distribution of"
+          }
+        },
+        {
+          "text": "As with the sample mean, the sample proportion has sampling error, and the larger the sample, the smaller the spread of its sampling distribution.",
+          "sourceId": "psu500-04",
+          "locator": "4.2 Sampling Distribution of the Sample Proportion",
+          "anchor": {
+            "start": "As with the sampling distribution of",
+            "end": "smaller the spread of the distribution."
+          }
+        },
+        {
+          "text": "In one example, with a smaller sample there were large gaps between the possible sample proportions; with a larger sample the gaps shrank and the sampling distribution approximated a normal distribution.",
+          "sourceId": "psu200-04",
+          "locator": "4.1.2 Impact of Sample Size (Example 4.7)",
+          "anchor": {
+            "start": "Also note how the shape of",
+            "end": "approximates a normal distribution."
+          }
+        }
+      ]
+    },
+    {
+      "id": "clt",
+      "title": "The central limit theorem",
+      "outcome": "State what the central limit theorem says about the sampling distribution of a mean or a proportion, and what it does not say about the data.",
+      "aliases": [
+        "CLT"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a large sample, the sample mean is approximately normally distributed, whatever the distribution of the population it was drawn from.",
+          "sourceId": "psu500-04",
+          "locator": "4.1.2 Population is Not Normal (Central Limit Theorem)",
+          "anchor": {
+            "start": "For a large sample size (we",
+            "end": "the population one samples from."
+          }
+        },
+        {
+          "text": "The theorem applies whether the individual observations come from a discrete distribution, such as the Poisson or binomial, or a continuous one, such as the exponential.",
+          "sourceId": "psu414-27",
+          "locator": "27.1 The Theorem",
+          "anchor": {
+            "start": "In fact, the CLT applies regardless",
+            "end": "(for example, exponential or chi-square)."
+          }
+        },
+        {
+          "text": "With a sufficiently large sample, the central limit theorem makes the sampling distribution approximately normal for many common statistics: one mean, one proportion, differences in two means or two proportions, a regression slope and a correlation.",
+          "sourceId": "psu200-07",
+          "locator": "7.4 Central Limit Theorem (Definition 7.2)",
+          "anchor": {
+            "start": "(Central Limit Theorem) The Central Limit",
+            "end": "and Pearson's r correlation."
+          }
+        },
+        {
+          "text": "Bell-shaped sampling distributions are no coincidence but are guaranteed by mathematical theory: under certain conditions, a sample proportion will appear to follow a bell-shaped curve called the normal distribution.",
+          "sourceId": "ims-13",
+          "locator": "13.1 Central Limit Theorem",
+          "anchor": {
+            "start": "The bell-shaped curve similarity is not",
+            "end": "called the normal distribution."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "With a large enough sample, the central limit theorem makes the data themselves normally distributed.",
+          "correction": "With a large sample and no particularly extreme outliers, the sampling distribution of the sample mean is typically assumed to be nearly normal, even if the distribution of the individual observations is not.",
+          "sourceId": "ims-19",
+          "locator": "19.2.2 Evaluating the two conditions required for modeling the mean",
+          "anchor": {
+            "start": "to satisfy the condition. Large",
+            "end": "of individual observations is not."
+          }
+        }
+      ]
+    },
+    {
+      "id": "clt_conditions",
+      "title": "How large is large enough?",
+      "outcome": "Judge whether a sample is large enough for the central limit theorem, given how skewed the population is and whether the observations are independent.",
+      "aliases": [
+        "normality condition",
+        "independence condition",
+        "n of 30"
+      ],
+      "keyPoints": [
+        {
+          "text": "The sample size needed depends on the population's skew: as few as 4 or 5 can be adequate for a symmetric population, at least 25 or 30 for a skewed one, and an extremely skewed one may need even more.",
+          "sourceId": "psu414-27",
+          "locator": "27.1 The Theorem",
+          "anchor": {
+            "start": "that's because the necessary sample size",
+            "end": "you may need an even larger"
+          }
+        },
+        {
+          "text": "Rough guidelines: slight skew is acceptable with a sample size of 15, moderate skew with 30 and strong skew with 60.",
+          "sourceId": "ims-19",
+          "locator": "19.2.2 Evaluating the two conditions required for modeling the mean",
+          "anchor": {
+            "start": "Some guidelines for determining whether",
+            "end": "skew for sample sizes of 60."
+          }
+        },
+        {
+          "text": "For sample means, the normal approximation works better the closer the population is to a normal curve, so more strongly skewed populations need larger samples.",
+          "sourceId": "psu100-08",
+          "locator": "8.3 The Quality of the Normal Approximation",
+          "anchor": {
+            "start": "For sample means: the normal approximation",
+            "end": "closer to a normal curve."
+          }
+        },
+        {
+          "text": "The observations must be independent; the most common way to satisfy this is a simple random sample from the population.",
+          "sourceId": "ims-19",
+          "locator": "19.2.2 Evaluating the two conditions required for modeling the mean",
+          "anchor": {
+            "start": "Independence. The sample observations must be",
+            "end": "simple random sample from the population."
+          }
+        },
+        {
+          "text": "In one sample of more than 30, an outlier about 5 times further from the centre than the next furthest observation was extreme enough that the normality condition was not satisfied.",
+          "sourceId": "ims-19",
+          "locator": "19.2.2 Evaluating the two conditions required for modeling the mean",
+          "anchor": {
+            "start": "The second sample has a sample",
+            "end": "would not be satisfied."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A sample of 30 is always large enough for the central limit theorem.",
+          "correction": "The sample size needed depends on skew: 25 or 30 is adequate for a skewed population, but an extremely skewed one may need an even larger sample.",
+          "sourceId": "psu414-27",
+          "locator": "27.1 The Theorem",
+          "anchor": {
+            "start": "that's because the necessary sample size",
+            "end": "you may need an even larger"
+          }
+        }
+      ]
+    },
+    {
+      "id": "success_failure",
+      "title": "Conditions for a sample proportion",
+      "outcome": "Check the independence and success-failure conditions before treating a sample proportion as normal, and know what to do when they fail.",
+      "aliases": [
+        "success-failure condition",
+        "np at least 10"
+      ],
+      "keyPoints": [
+        {
+          "text": "A sample proportion's sampling distribution is nearly normal when the observations are independent and the sample is expected to hold at least 10 successes and 10 failures, the success-failure condition.",
+          "sourceId": "ims-16",
+          "locator": "16.2.1 Conditions",
+          "anchor": {
+            "start": "Particularly, it can underestimate the variability",
+            "end": "is called the success-failure condition."
+          }
+        },
+        {
+          "text": "When the observations are independent and the sample is large enough, the normal model describes a sample proportion well; when the conditions are violated it can be inaccurate, and can underestimate the proportion's variability.",
+          "sourceId": "ims-16",
+          "locator": "16.2.1 Conditions",
+          "anchor": {
+            "start": "When the observations are independent and",
+            "end": "variability of the sample proportion."
+          }
+        },
+        {
+          "text": "The threshold has changed over the years: one course uses 5, but other books or software may use 10 or 15.",
+          "sourceId": "psu500-04",
+          "locator": "4.2.2 Sampling Distribution of the Sample Proportion",
+          "anchor": {
+            "start": "Over the years the values of",
+            "end": "10 or 15 for this value."
+          }
+        },
+        {
+          "text": "When 49 of 50 sampled homes had a refrigerator, the usual formulas could not be used: with only 1 home without one, the normal curve is a very poor approximation to the distribution of sample proportions.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Confidence Intervals for a Population Proportion (Example 9.2)",
+          "anchor": {
+            "start": "Example 9.2 We take a random",
+            "end": "distribution of sample proportions."
+          }
+        },
+        {
+          "text": "If np or n(1 - p) is not at least 10, the sampling distribution may be approximated with a binomial distribution instead, which is known as the exact method.",
+          "sourceId": "psu200-08",
+          "locator": "8.1 One Sample Proportion",
+          "anchor": {
+            "start": "If the assumptions for the normal",
+            "end": "is known as the exact method."
+          }
+        }
+      ]
+    },
+    {
+      "id": "point_vs_interval",
+      "title": "Point estimates and interval estimates",
+      "outcome": "Contrast a single-number point estimate with an interval estimate, and explain why the interval is more useful.",
+      "aliases": [
+        "point estimate",
+        "interval estimate"
+      ],
+      "keyPoints": [
+        {
+          "text": "A point estimate is a single number, such as the sample mean or the sample proportion. An interval estimate gives an interval as the estimate, built around a point estimate.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 Estimation and Confidence Intervals",
+          "anchor": {
+            "start": "(Point Estimates) An estimate for a",
+            "end": "important to understanding interval estimates."
+          }
+        },
+        {
+          "text": "A point estimate is rarely perfect, so a plausible range of values, a confidence interval, is given as well. A single estimate is like fishing in a murky lake with a spear; an interval is like fishing with a net.",
+          "sourceId": "ims-12",
+          "locator": "12.3 Confidence intervals",
+          "anchor": {
+            "start": "a point estimate is rarely perfect;",
+            "end": "is like fishing with a net."
+          }
+        },
+        {
+          "text": "An interval estimate for a mean is useful because the estimated mean varies from sample to sample: its lower and upper limits indicate how uncertain the estimate is, and a narrower interval means a more precise estimate.",
+          "sourceId": "nist-eda352",
+          "locator": "1.3.5.2 Confidence Limits for the Mean (Purpose)",
+          "anchor": {
+            "start": "are an interval estimate for the",
+            "end": "the more precise is our estimate."
+          }
+        },
+        {
+          "text": "A confidence interval is an interval of values computed from sample data that is likely to cover the true parameter of interest.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 Estimation and Confidence Intervals (Definition 5.5)",
+          "anchor": {
+            "start": "(Confidence Interval) An interval of values",
+            "end": "cover the true parameter of interest."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ci_general_form",
+      "title": "Estimate plus or minus a margin of error",
+      "outcome": "Build a confidence interval as a point estimate plus or minus a margin of error, where the margin is a multiplier times the standard error. (Intervals for a difference between two groups are taught in the A/B testing pack.)",
+      "aliases": [
+        "margin of error",
+        "general form of a confidence interval"
+      ],
+      "keyPoints": [
+        {
+          "text": "At the centre of a confidence interval is the sample statistic, the point estimate. The margin of error, subtracted from and added to it, determines the interval's width.",
+          "sourceId": "psu200-04",
+          "locator": "4.2 Introduction to Confidence Intervals",
+          "anchor": {
+            "start": "At the center of a confidence",
+            "end": "to construct the confidence interval."
+          }
+        },
+        {
+          "text": "The margin of error is half the width of a confidence interval and equals the multiplier times the standard error. It depends on the confidence level, which sets the multiplier, and on the standard error.",
+          "sourceId": "psu200-04",
+          "locator": "4.2 Introduction to Confidence Intervals (Definition 4.6)",
+          "anchor": {
+            "start": "(Margin of Error) Half of the",
+            "end": "The value of the standard error."
+          }
+        },
+        {
+          "text": "For example, a survey that finds 44% approval with a margin of error of 3.5% gives an interval from 40.5% to 47.5%.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 General Format of a Confidence Interval",
+          "anchor": {
+            "start": "In such surveys, you may hear",
+            "end": "would be from 40.5% to 47.5%."
+          }
+        },
+        {
+          "text": "The multiplier comes from the same distribution as the point estimate's sampling distribution; for a sample proportion, that is the standard normal distribution.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 General Format of a Confidence Interval",
+          "anchor": {
+            "start": "The margin of error will consist",
+            "end": "come from the standard normal distribution."
+          }
+        },
+        {
+          "text": "A confidence interval can be two-sided, bracketing the parameter from above and below, or one-sided, giving only an upper or a lower bound.",
+          "sourceId": "nist-prc14",
+          "locator": "7.1.4 One and two-sided confidence intervals",
+          "anchor": {
+            "start": "In the same way that statistical",
+            "end": "lower bound to its magnitude."
+          }
+        }
+      ]
+    },
+    {
+      "id": "multipliers",
+      "title": "Multipliers and the 95% rule",
+      "outcome": "Pick the normal multiplier for a confidence level, and explain where the familiar 'plus or minus 2 standard errors' comes from.",
+      "aliases": [
+        "z-star",
+        "critical value",
+        "1.96"
+      ],
+      "keyPoints": [
+        {
+          "text": "When a point estimate's sampling distribution is close to normal, the estimate lands within 1.96 standard errors of the true value about 95% of the time, so a 95% interval is the estimate plus or minus 1.96 standard errors.",
+          "sourceId": "ims-13",
+          "locator": "13.6 Case study (interval): Stents",
+          "anchor": {
+            "start": "When the sampling distribution of a",
+            "end": "this interval captures the true value."
+          }
+        },
+        {
+          "text": "A multiplier of 2 for a 95% interval comes from the empirical rule: approximately 95% of a normal distribution falls within two standard deviations of the mean.",
+          "sourceId": "psu200-04",
+          "locator": "4.2 Introduction to Confidence Intervals",
+          "anchor": {
+            "start": "In Lesson 2, you first learned",
+            "end": "can use a multiplier of 2."
+          }
+        },
+        {
+          "text": "Common normal multipliers are 1.645 for 90% confidence, 1.960 (often rounded to 2) for 95%, 2.327 for 98% and 2.576 for 99%.",
+          "sourceId": "psu200-08",
+          "locator": "8.1.1 Confidence Intervals (Finding the z* multiplier)",
+          "anchor": {
+            "start": "Below is a table of frequently",
+            "end": "99% 2.576"
+          }
+        },
+        {
+          "text": "For a 99% interval, replace 1.96 with 2.58, because a normal random variable is within 2.58 standard deviations of its mean 99% of the time.",
+          "sourceId": "ims-16",
+          "locator": "16.2.4 Changing the confidence level",
+          "anchor": {
+            "start": "To create a 99% confidence interval,",
+            "end": "standard deviations of its mean."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The multiplier for a 95% confidence interval is exactly 2.",
+          "correction": "Two is the empirical rule's rounded value. Many students use it instead of 1.96, but it is best to use the exact value rather than the rounded one.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.1 Construct and Interpret the CI (Example 5.3)",
+          "anchor": {
+            "start": "Important Note: Many students tend to",
+            "end": "rather than the rounded value."
+          }
+        }
+      ]
+    },
+    {
+      "id": "confidence_level_meaning",
+      "title": "What the confidence level means",
+      "outcome": "Explain a confidence level as the long-run share of intervals, from repeated samples, that capture the parameter. (Credible intervals, which are probability statements about the parameter, are taught in the Bayesian inference pack.)",
+      "aliases": [
+        "coverage",
+        "confidence coefficient",
+        "95% confidence"
+      ],
+      "keyPoints": [
+        {
+          "text": "A 95% confidence level means that if the same population were sampled on numerous occasions and an interval made each time, the intervals would bracket the true parameter in approximately 95% of cases.",
+          "sourceId": "nist-prc14",
+          "locator": "7.1.4 Confidence levels",
+          "anchor": {
+            "start": "Confidence intervals are constructed at a",
+            "end": "approximately 95 % of the cases."
+          }
+        },
+        {
+          "text": "Confidence intervals are random quantities that vary from sample to sample: sometimes they cover the true parameter and sometimes not. The chance that the interval covers it, the coverage probability, is called the confidence level.",
+          "sourceId": "psu100-09",
+          "locator": "9 Confidence Intervals (Objectives)",
+          "anchor": {
+            "start": "Confidence intervals are random quantities, varying",
+            "end": "is called the confidence level."
+          }
+        },
+        {
+          "text": "In one demonstration, 8 of 10 intervals at 80% confidence contained the parameter. With so few repetitions, 7 or 9 was quite possible, but over 10,000 repetitions the share would be very close to 80%.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.2 Interpreting the CI",
+          "anchor": {
+            "start": "In the graph below, we show",
+            "end": "will be very close to 80%."
+          }
+        },
+        {
+          "text": "About 1 in 20 properly constructed 95% confidence intervals will fail to capture the parameter, simply because of natural variability in the data.",
+          "sourceId": "ims-13",
+          "locator": "13.6.2 Variability of the statistic",
+          "anchor": {
+            "start": "About 1-in-20 properly constructed 95%",
+            "end": "natural variability in the observed data."
+          }
+        },
+        {
+          "text": "Over a lifetime of making 95% intervals, expect 5% of them to miss the parameter, without ever knowing which ones did.",
+          "sourceId": "ims-13",
+          "locator": "13.6.2 Variability of the statistic",
+          "anchor": {
+            "start": "Indeed, over a lifetime of creating",
+            "end": "and which missed the parameter)."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A 95% confidence interval has a 95% probability of containing the true value.",
+          "correction": "An interval computed from one sample either contains the true mean or it does not. The 95% belongs to the method: over many samples, in the long run about 95% of the intervals would contain the true mean.",
+          "sourceId": "nist-eda352",
+          "locator": "1.3.5.2 Confidence Limits for the Mean (Purpose)",
+          "anchor": {
+            "start": "As a technical note, a 95",
+            "end": "would contain the true mean."
+          }
+        }
+      ]
+    },
+    {
+      "id": "interpreting_ci",
+      "title": "Reading a confidence interval correctly",
+      "outcome": "Word a confidence interval correctly, use it to judge which parameter values are plausible, and avoid reading it as a statement about individual data values.",
+      "aliases": [
+        "interpretation of a confidence interval",
+        "plausible values"
+      ],
+      "keyPoints": [
+        {
+          "text": "The correct wording for a 95% interval [L, U] is that we are 95% confident that the population parameter is between L and U, with the parameter described in the problem's own language.",
+          "sourceId": "psu200-04",
+          "locator": "4.2.1 Interpreting Confidence Intervals",
+          "anchor": {
+            "start": "For example, the correct interpretation of",
+            "end": "the specific language from the problem."
+          }
+        },
+        {
+          "text": "With only a sample, we do not know whether the statistic is above, below or close to the parameter, and we do not know for sure whether a given interval contains the parameter.",
+          "sourceId": "psu200-04",
+          "locator": "4.2.1 Interpreting Confidence Intervals",
+          "anchor": {
+            "start": "Remember that when we're constructing a",
+            "end": "contains the population parameter or not."
+          }
+        },
+        {
+          "text": "Describing a confidence interval as capturing the parameter with a certain probability is one of the most common errors; the confidence level only quantifies how plausible it is that the parameter is in the interval.",
+          "sourceId": "ims-13",
+          "locator": "13.6.3 Interpreting confidence intervals",
+          "anchor": {
+            "start": "Incorrect language might try to describe",
+            "end": "the parameter is in the interval."
+          }
+        },
+        {
+          "text": "Values inside a confidence interval are reasonable estimates of the population value; values outside it are not.",
+          "sourceId": "psu200-04",
+          "locator": "4.2.2 Applying Confidence Intervals",
+          "anchor": {
+            "start": "A confidence interval contains a range",
+            "end": "reasonable estimates for the population value."
+          }
+        },
+        {
+          "text": "Confidence intervals only try to capture the population parameter. They say nothing about capturing individual observations, a proportion of the observations, or point estimates.",
+          "sourceId": "ims-13",
+          "locator": "13.6.3 Interpreting confidence intervals",
+          "anchor": {
+            "start": "Another especially important consideration of confidence",
+            "end": "attempt to capture population parameters."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "95% of the data values fall inside a 95% confidence interval.",
+          "correction": "A confidence interval only gives a range of plausible values for a population parameter, such as the population mean. It does not describe what individual observations will be.",
+          "sourceId": "ims-19",
+          "locator": "19.2.4 One sample t-intervals (footnote 8)",
+          "anchor": {
+            "start": "No, a confidence interval only provides",
+            "end": "observe for individual observations."
+          }
+        }
+      ]
+    },
+    {
+      "id": "confidence_vs_width",
+      "title": "Confidence against precision",
+      "outcome": "Explain the trade-off between a higher confidence level and a wider, less precise interval, and why 100% confidence is useless.",
+      "aliases": [
+        "precision",
+        "confidence level and width"
+      ],
+      "keyPoints": [
+        {
+          "text": "Full confidence is of no practical use: the only interval one can be truly confident captures an approval rating runs from 0% to 100%.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 General Format of a Confidence Interval (Note)",
+          "anchor": {
+            "start": "For instance, what value comes from",
+            "end": "capture the actual proportion."
+          }
+        },
+        {
+          "text": "Most confidence levels range from 90% to 99%, with 95% the most widely used; a reported margin of error can usually be assumed to carry 95% confidence unless stated otherwise.",
+          "sourceId": "psu500-05",
+          "locator": "5.2 General Format of a Confidence Interval (Note)",
+          "anchor": {
+            "start": "However, one does want to be",
+            "end": "unless otherwise stated."
+          }
+        },
+        {
+          "text": "The multiplier increases as the confidence level increases, so higher confidence gives a wider interval; a wider interval makes us more confident of catching the population value.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.1 Commonly Used Alpha Levels",
+          "anchor": {
+            "start": "The value of the multiplier increases",
+            "end": "when we use a wider interval."
+          }
+        },
+        {
+          "text": "The wider the interval, the poorer the precision, and higher confidence means a wider interval. Since the confidence level is the method's success rate, the aim is a narrow interval at a reasonably high confidence level.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.3 Sample Size Computation (Definition 5.6)",
+          "anchor": {
+            "start": "(Precision) The wider the interval, the",
+            "end": "at a reasonably higher level."
+          }
+        },
+        {
+          "text": "Higher confidence has a price: accept a larger margin of error, meaning a wider interval, or pay for a larger sample.",
+          "sourceId": "psu100-09",
+          "locator": "9 Confidence Intervals (Objectives)",
+          "anchor": {
+            "start": "There is a trade-off between confidence",
+            "end": "price of a larger sample size."
+          }
+        }
+      ]
+    },
+    {
+      "id": "what_narrows_ci",
+      "title": "What makes an interval narrower",
+      "outcome": "Name the levers on a confidence interval's width: the confidence level, the sample size and the variability in the data. (Planning a sample size for a target margin is taught in the A/B testing pack.)",
+      "aliases": [
+        "interval width",
+        "precision"
+      ],
+      "keyPoints": [
+        {
+          "text": "For a mean, the interval gets narrower as the sample size increases, through the square root of n, so one way to get a more precise estimate is a larger sample.",
+          "sourceId": "nist-eda352",
+          "locator": "1.3.5.2 Confidence Limits for the Mean (Definition)",
+          "anchor": {
+            "start": "From the formula, it is clear",
+            "end": "is to increase the sample size."
+          }
+        },
+        {
+          "text": "Noisy data, with a large standard deviation, give wider intervals than data with a smaller standard deviation.",
+          "sourceId": "nist-eda352",
+          "locator": "1.3.5.2 Confidence Limits for the Mean (Definition)",
+          "anchor": {
+            "start": "The larger the sample standard deviation,",
+            "end": "data with a smaller standard deviation."
+          }
+        },
+        {
+          "text": "To shrink the margin of error, increase the sample size or lower the confidence level, say to 90%. A 90% interval must be reported as 90%, because people will otherwise assume 95%.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.3 Sample Size Computation",
+          "anchor": {
+            "start": "If we want the margin of",
+            "end": "people will assume 95% confidence."
+          }
+        },
+        {
+          "text": "In a study of 66,831 dairy cows, the standard error of the mean milk yield was only about 0.0166 kg, small because the sample was very large.",
+          "sourceId": "psu200-08",
+          "locator": "8.2.2 Confidence Intervals (Example 8.19)",
+          "anchor": {
+            "start": "Example 8.19 (Milk) A study of",
+            "end": "the sample size is very large."
+          }
+        }
+      ]
+    },
+    {
+      "id": "t_distribution",
+      "title": "The t distribution",
+      "outcome": "Explain why an interval for a mean uses the t distribution when the population standard deviation is estimated, and how t compares with the normal. (The normal distribution itself is taught in the Probability distributions pack.)",
+      "aliases": [
+        "Student's t",
+        "degrees of freedom",
+        "t-distribution"
+      ],
+      "keyPoints": [
+        {
+          "text": "Usually the population standard deviation is unknown and is estimated by the sample standard deviation s. With s in its place, the standardised sample mean no longer has a standard normal distribution but a t distribution.",
+          "sourceId": "psu500-05",
+          "locator": "5.4.1 Case 2: sigma is unknown",
+          "anchor": {
+            "start": "Usually, we don't know",
+            "end": "Instead, it has a t-distribution."
+          }
+        },
+        {
+          "text": "The t distribution is symmetric about 0 and more variable than the standard normal. There is a different t distribution for each number of degrees of freedom, and the larger n gets, the closer t is to the standard normal.",
+          "sourceId": "psu500-05",
+          "locator": "5.4.2 The t-distribution (Properties)",
+          "anchor": {
+            "start": "Properties of the t-distribution t is",
+            "end": "The meaning of"
+          }
+        },
+        {
+          "text": "The t distribution's tails are thicker than the normal's, so values beyond two standard deviations are more likely. Those thick tails are the correction for the extra variability that comes from using s in place of the population standard deviation.",
+          "sourceId": "ims-19",
+          "locator": "19.2.3 Introducing the t-distribution",
+          "anchor": {
+            "start": "We'll find it useful to use",
+            "end": "Figure 19.8: Comparison of a"
+          }
+        },
+        {
+          "text": "For one mean, use a t distribution with n - 1 degrees of freedom. With more observations it looks more like the standard normal, and from about 30 degrees of freedom it is nearly indistinguishable from it.",
+          "sourceId": "ims-19",
+          "locator": "19.2.3 Introducing the t-distribution",
+          "anchor": {
+            "start": "In general, we'll use a",
+            "end": "indistinguishable from the normal distribution."
+          }
+        },
+        {
+          "text": "When the standard deviation must be estimated from limited data, intervals at the same confidence level are necessarily wider, because of the uncertainty in that estimate.",
+          "sourceId": "nist-prc14",
+          "locator": "7.1.4 Problem with unknown standard deviation",
+          "anchor": {
+            "start": "In the normal course of events,",
+            "end": "uncertainty in this estimate."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ci_one_proportion",
+      "title": "A confidence interval for one proportion",
+      "outcome": "Build and interpret a confidence interval for a single population proportion, checking its conditions first.",
+      "aliases": [
+        "one-sample z-interval for a proportion",
+        "normal approximation interval"
+      ],
+      "keyPoints": [
+        {
+          "text": "Three steps: check that the observations are independent and that the success-failure condition holds using the sample proportion; calculate the standard error with the sample proportion in place of p; then apply the general interval formula.",
+          "sourceId": "ims-16",
+          "locator": "16.2.3 Variability of the sample proportion",
+          "anchor": {
+            "start": "There are three steps to constructing",
+            "end": "Apply the general confidence interval formula."
+          }
+        },
+        {
+          "text": "For large random samples, the interval for a population proportion is the sample proportion plus or minus a normal-curve multiplier, which sets the confidence level, times the square root of the sample proportion times one minus it, over n.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Confidence Intervals for a Population Proportion",
+          "anchor": {
+            "start": "For large random samples a confidence",
+            "end": "for some common multiplier numbers)."
+          }
+        },
+        {
+          "text": "In one example, a sample proportion of 660/1500 = 0.44 gave a 95% interval for an approval rating of 41.5% to 46.5%, which can also be reported as 44% with a 95% margin of error of 2.5%.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.1 Construct and Interpret the CI (Example 5.3)",
+          "anchor": {
+            "start": "of 660/1500 = 0.44 and",
+            "end": "95% margin of error of 2.5%."
+          }
+        },
+        {
+          "text": "The exact interval is always appropriate; when the success and failure counts are at least 5, the z-interval can approximate it, and the two should be very similar.",
+          "sourceId": "psu500-05",
+          "locator": "5.3.1 Minitab: 1-proportion confidence interval",
+          "anchor": {
+            "start": "The exact interval is always appropriate",
+            "end": "when the conditions are satisfied."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ci_one_mean",
+      "title": "A confidence interval for one mean",
+      "outcome": "Build and interpret a t interval for a single population mean, and check when it is appropriate.",
+      "aliases": [
+        "one-sample t-interval",
+        "t interval"
+      ],
+      "keyPoints": [
+        {
+          "text": "Because the population standard deviation will almost always be unknown when building an interval for a mean, the t distribution is used to estimate the sampling distribution.",
+          "sourceId": "psu200-08",
+          "locator": "8.2.2 Confidence Intervals",
+          "anchor": {
+            "start": "Confidence intervals are used to estimate",
+            "end": "used to estimate the sampling distribution."
+          }
+        },
+        {
+          "text": "The interval is the sample mean plus or minus a percentile of the t distribution with n - 1 degrees of freedom times the sample standard deviation over the square root of n.",
+          "sourceId": "nist-eda352",
+          "locator": "1.3.5.2 Confidence Limits for the Mean (Definition)",
+          "anchor": {
+            "start": "Confidence limits are defined as:",
+            "end": "N - 1 degrees of freedom."
+          }
+        },
+        {
+          "text": "One of two conditions must hold: the sample comes from a normal distribution, so the sample mean is normal too, or the sample is large (at least 30), so the central limit theorem applies.",
+          "sourceId": "psu500-05",
+          "locator": "5.4.1 Constructing the Confidence Interval (Step 1)",
+          "anchor": {
+            "start": "One of the following conditions need",
+            "end": "Central Limit Theorem and state that"
+          }
+        },
+        {
+          "text": "In one sample of 15, a normal-curve multiplier was not appropriate: estimating the standard deviation from so few adds quite a bit of extra variability, and an s that large relative to the mean signalled quite skewed data.",
+          "sourceId": "psu100-09",
+          "locator": "9.2 Confidence Intervals for a Population Mean (Example 9.4)",
+          "anchor": {
+            "start": "No, with n = 15, using",
+            "end": "to the sampling distribution regardless."
+          }
+        },
+        {
+          "text": "If the population may not be normal and the sample is small, check normality with a normal probability plot, or consider nonparametric methods such as the one-sample Wilcoxon procedure.",
+          "sourceId": "psu500-05",
+          "locator": "5.4.1 What can one do if the conditions are NOT satisfied?",
+          "anchor": {
+            "start": "If you do not know if",
+            "end": "the one-sample Wilcoxon procedure."
+          }
+        }
+      ]
+    },
+    {
+      "id": "bootstrap",
+      "title": "Bootstrapping: resampling the sample",
+      "outcome": "Describe how a bootstrap distribution is built by resampling one sample with replacement, and why it approximates the sampling distribution.",
+      "aliases": [
+        "bootstrap",
+        "resampling",
+        "sampling with replacement"
+      ],
+      "keyPoints": [
+        {
+          "text": "Bootstrapping is a resampling procedure that uses the data from one sample to generate a sampling distribution, by repeatedly taking random samples from that sample.",
+          "sourceId": "psu200-04",
+          "locator": "4.3 Introduction to Bootstrapping",
+          "anchor": {
+            "start": "Bootstrapping is a resampling procedure that",
+            "end": "samples from the known sample."
+          }
+        },
+        {
+          "text": "Resampling is done with replacement, putting each case back after it is drawn, so a case can appear in a bootstrap sample more than once. The distribution of many bootstrapped sample means is the bootstrap distribution.",
+          "sourceId": "psu200-04",
+          "locator": "4.3 Introduction to Bootstrapping (Example 4.17)",
+          "anchor": {
+            "start": "\"sampling with replacement\" because we are",
+            "end": "or bootstrap sampling distribution."
+          }
+        },
+        {
+          "text": "Theory shows that bootstrap proportions vary around the sample proportion much as sample proportions vary around the true parameter, so the bootstrap values can produce an interval estimate for the parameter.",
+          "sourceId": "ims-12",
+          "locator": "12.3.2 Bootstrap confidence interval",
+          "anchor": {
+            "start": "Based on theory that is beyond",
+            "end": "values themselves."
+          }
+        },
+        {
+          "text": "Taking repeated samples from the population makes no sense, because one larger sample would serve you better. Bootstrapping instead measures how samples behave under an estimate of the population.",
+          "sourceId": "ims-12",
+          "locator": "12.1.2 Variability of the statistic",
+          "anchor": {
+            "start": "By sampling with replacement from the",
+            "end": "under an estimate of the population."
+          }
+        },
+        {
+          "text": "The bootstrap standard error measures how much the means vary from resample to resample, and it is a good approximation to the standard error of means from repeated samples of the population.",
+          "sourceId": "ims-19",
+          "locator": "19.1.3 Bootstrap SE confidence interval",
+          "anchor": {
+            "start": "SE of the bootstrapped means measures",
+            "end": "because of wasted resources)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "bootstrap_ci",
+      "title": "Bootstrap confidence intervals",
+      "outcome": "Build a bootstrap interval by the percentile method or the standard error method, and know when each applies.",
+      "aliases": [
+        "percentile method",
+        "bootstrap SE method"
+      ],
+      "keyPoints": [
+        {
+          "text": "A 95% bootstrap confidence interval runs from the 2.5% point to the 97.5% point of the sorted bootstrap proportions.",
+          "sourceId": "ims-12",
+          "locator": "12.3.2 Bootstrap confidence interval",
+          "anchor": {
+            "start": "The 95% bootstrap confidence interval for",
+            "end": "is given by: (lower, upper)"
+          }
+        },
+        {
+          "text": "One method takes the statistic plus or minus 2 bootstrap standard errors for 95%, given an approximately normal distribution. The percentile method takes the middle 95% of bootstrap statistics and is preferred, because it works whatever the shape.",
+          "sourceId": "psu200-04",
+          "locator": "4.4 Bootstrap Confidence Interval",
+          "anchor": {
+            "start": "Once we have a bootstrap sampling",
+            "end": "the shape of the sampling distribution."
+          }
+        },
+        {
+          "text": "In one example, 95% of 10,000 bootstrap proportions fell between 0% and 11.3%, so the bootstrap percentile interval for the true complication probability was 0% to 11.3%.",
+          "sourceId": "ims-12",
+          "locator": "12.1.2 Variability of the statistic",
+          "anchor": {
+            "start": "Figure 12.6 shows the distribution from",
+            "end": "a bootstrap percentile confidence interval"
+          }
+        },
+        {
+          "text": "In one example, two bootstrap methods gave very similar but not identical intervals; the larger the samples, the better and closer the interval estimates will be.",
+          "sourceId": "ims-19",
+          "locator": "19.1.3 Bootstrap SE confidence interval",
+          "anchor": {
+            "start": "The intervals were created using different",
+            "end": "the interval estimates will be."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Bootstrapping solves the problem of a small sample by creating more data.",
+          "correction": "Bootstrapping is not a method for navigating small samples. Like methods built on mathematical models, it works best when a large random sample has been taken; it captures a statistic's variability when the mathematical model is unknown.",
+          "sourceId": "ims-19",
+          "locator": "19.1.5 Bootstrapping is not a solution to small sample sizes!",
+          "anchor": {
+            "start": "The example presented above is done",
+            "end": "navigating small samples)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ci_ignores_bias",
+      "title": "What a confidence interval leaves out: bias",
+      "outcome": "Explain that a confidence interval measures only sampling variability, so a biased sample can miss the truth however narrow its interval. (Sources of bias are taught in the Sampling and surveys pack.)",
+      "aliases": [
+        "bias and confidence intervals",
+        "non-sampling error"
+      ],
+      "keyPoints": [
+        {
+          "text": "A confidence interval reflects only sampling variability. If the survey is biased, the probability that the interval captures the true population value could be much lower.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Properties of Confidence Intervals",
+          "anchor": {
+            "start": "A confidence Interval is only related",
+            "end": "if your survey is biased"
+          }
+        },
+        {
+          "text": "The formulas for confidence intervals are based on the probabilities that come from the randomisation used to collect the data.",
+          "sourceId": "psu100-09",
+          "locator": "9 Confidence Intervals (Objectives)",
+          "anchor": {
+            "start": "Formulas for making confidence intervals are",
+            "end": "used to collect the data."
+          }
+        },
+        {
+          "text": "No statistical method can truly correct the biases built into the data from a convenience sample.",
+          "sourceId": "ims-16",
+          "locator": "16.2.1 Conditions",
+          "anchor": {
+            "start": "For example, there exist no statistical",
+            "end": "data from a convenience sample."
+          }
+        },
+        {
+          "text": "Measurements are random quantities that can come out differently when repeated; if the measurement process is unbiased, averaging many repetitions gives a better estimate of the true value.",
+          "sourceId": "psu100-09",
+          "locator": "9.2 Confidence Intervals for a Population Mean (Example 9.3)",
+          "anchor": {
+            "start": "But measurements are random quantities that",
+            "end": "better estimate of the true value."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "With a large enough sample, a 95% confidence interval captures the true value 95% of the time even if the survey was biased.",
+          "correction": "An interval accounts only for sampling variability. When a survey is biased, the chance that its interval captures the true population value could be much lower.",
+          "sourceId": "psu100-09",
+          "locator": "9.1 Properties of Confidence Intervals",
+          "anchor": {
+            "start": "A confidence Interval is only related",
+            "end": "if your survey is biased"
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "statistic_varies",
+      "after": "law_of_large_numbers",
+      "reason": "The law describes how a varying statistic settles as the sample grows."
+    },
+    {
+      "before": "statistic_varies",
+      "after": "sampling_distribution",
+      "reason": "A sampling distribution is the distribution of a statistic that varies."
+    },
+    {
+      "before": "sampling_distribution",
+      "after": "unbiased_estimates",
+      "reason": "Being centred on the parameter is a property of the sampling distribution."
+    },
+    {
+      "before": "sampling_distribution",
+      "after": "standard_error",
+      "reason": "The standard error is the standard deviation of a sampling distribution."
+    },
+    {
+      "before": "standard_error",
+      "after": "se_vs_sd",
+      "reason": "Telling the two apart needs the standard error first."
+    },
+    {
+      "before": "standard_error",
+      "after": "estimating_the_se",
+      "reason": "Estimating a standard error presumes knowing what it is."
+    },
+    {
+      "before": "standard_error",
+      "after": "se_and_sample_size",
+      "reason": "How the standard error changes with n builds on what it is."
+    },
+    {
+      "before": "law_of_large_numbers",
+      "after": "se_and_sample_size",
+      "reason": "Both describe statistics varying less in bigger samples."
+    },
+    {
+      "before": "unbiased_estimates",
+      "after": "good_estimators",
+      "reason": "Unbiasedness is the first property of a good estimator."
+    },
+    {
+      "before": "standard_error",
+      "after": "good_estimators",
+      "reason": "The second property is the smallest standard error."
+    },
+    {
+      "before": "standard_error",
+      "after": "sampling_dist_mean",
+      "reason": "The sample mean's spread is its standard error."
+    },
+    {
+      "before": "unbiased_estimates",
+      "after": "sampling_dist_mean",
+      "reason": "The sample mean's sampling distribution is centred on the population mean."
+    },
+    {
+      "before": "sampling_dist_mean",
+      "after": "sampling_dist_proportion",
+      "reason": "A sample proportion is treated as a mean of 0s and 1s."
+    },
+    {
+      "before": "sampling_dist_mean",
+      "after": "clt",
+      "reason": "The theorem extends the sample mean's distribution to non-normal populations."
+    },
+    {
+      "before": "clt",
+      "after": "clt_conditions",
+      "reason": "Judging when n is large enough presumes the theorem."
+    },
+    {
+      "before": "clt",
+      "after": "success_failure",
+      "reason": "The success-failure condition is the theorem's large-sample check for proportions."
+    },
+    {
+      "before": "sampling_dist_proportion",
+      "after": "success_failure",
+      "reason": "The conditions are for the sample proportion's distribution."
+    },
+    {
+      "before": "statistic_varies",
+      "after": "point_vs_interval",
+      "reason": "An interval is needed because the point estimate varies."
+    },
+    {
+      "before": "point_vs_interval",
+      "after": "ci_general_form",
+      "reason": "A confidence interval is built around the point estimate."
+    },
+    {
+      "before": "standard_error",
+      "after": "ci_general_form",
+      "reason": "The margin of error is a multiple of the standard error."
+    },
+    {
+      "before": "ci_general_form",
+      "after": "multipliers",
+      "reason": "The multiplier is one part of the margin of error."
+    },
+    {
+      "before": "clt",
+      "after": "multipliers",
+      "reason": "Normal multipliers rely on an approximately normal sampling distribution."
+    },
+    {
+      "before": "ci_general_form",
+      "after": "confidence_level_meaning",
+      "reason": "The confidence level describes intervals built this way."
+    },
+    {
+      "before": "multipliers",
+      "after": "confidence_level_meaning",
+      "reason": "The 95% comes from the share of a normal curve the multiplier covers."
+    },
+    {
+      "before": "confidence_level_meaning",
+      "after": "interpreting_ci",
+      "reason": "Correct wording rests on what the confidence level means."
+    },
+    {
+      "before": "multipliers",
+      "after": "confidence_vs_width",
+      "reason": "Higher confidence widens the interval through a bigger multiplier."
+    },
+    {
+      "before": "confidence_level_meaning",
+      "after": "confidence_vs_width",
+      "reason": "The trade-off weighs the confidence level against width."
+    },
+    {
+      "before": "se_and_sample_size",
+      "after": "what_narrows_ci",
+      "reason": "Sample size narrows an interval through the standard error."
+    },
+    {
+      "before": "confidence_vs_width",
+      "after": "what_narrows_ci",
+      "reason": "The confidence level is one lever on width."
+    },
+    {
+      "before": "estimating_the_se",
+      "after": "t_distribution",
+      "reason": "The t distribution corrects for estimating the standard deviation."
+    },
+    {
+      "before": "sampling_dist_mean",
+      "after": "t_distribution",
+      "reason": "The t distribution models the standardised sample mean."
+    },
+    {
+      "before": "success_failure",
+      "after": "ci_one_proportion",
+      "reason": "The interval needs the success-failure condition."
+    },
+    {
+      "before": "estimating_the_se",
+      "after": "ci_one_proportion",
+      "reason": "The interval uses the estimated standard error of the proportion."
+    },
+    {
+      "before": "multipliers",
+      "after": "ci_one_proportion",
+      "reason": "The interval uses a normal multiplier."
+    },
+    {
+      "before": "interpreting_ci",
+      "after": "ci_one_proportion",
+      "reason": "The interval is read with the standard wording."
+    },
+    {
+      "before": "t_distribution",
+      "after": "ci_one_mean",
+      "reason": "The interval for a mean uses a t multiplier."
+    },
+    {
+      "before": "clt_conditions",
+      "after": "ci_one_mean",
+      "reason": "The t interval needs normal data or a large enough sample."
+    },
+    {
+      "before": "interpreting_ci",
+      "after": "ci_one_mean",
+      "reason": "The interval is read with the standard wording."
+    },
+    {
+      "before": "sampling_distribution",
+      "after": "bootstrap",
+      "reason": "Bootstrapping approximates a sampling distribution."
+    },
+    {
+      "before": "standard_error",
+      "after": "bootstrap",
+      "reason": "The bootstrap standard error approximates the standard error."
+    },
+    {
+      "before": "bootstrap",
+      "after": "bootstrap_ci",
+      "reason": "A bootstrap interval is read off the bootstrap distribution."
+    },
+    {
+      "before": "ci_general_form",
+      "after": "bootstrap_ci",
+      "reason": "The standard error method uses the general form."
+    },
+    {
+      "before": "confidence_level_meaning",
+      "after": "ci_ignores_bias",
+      "reason": "Bias lowers the coverage the confidence level promises."
+    },
+    {
+      "before": "interpreting_ci",
+      "after": "ci_ignores_bias",
+      "reason": "Knowing what an interval claims comes before what it leaves out."
+    }
+  ],
+  "cards": [
+    {
+      "id": "sampling-variability",
+      "title": "Statistics vary from sample to sample",
+      "conceptIds": [
+        "statistic_varies",
+        "law_of_large_numbers"
+      ]
+    },
+    {
+      "id": "sampling-distributions",
+      "title": "The sampling distribution and its centre",
+      "conceptIds": [
+        "sampling_distribution",
+        "unbiased_estimates"
+      ]
+    },
+    {
+      "id": "standard-error",
+      "title": "The standard error",
+      "conceptIds": [
+        "standard_error",
+        "se_vs_sd",
+        "estimating_the_se"
+      ]
+    },
+    {
+      "id": "precision",
+      "title": "Sample size, precision and good estimators",
+      "conceptIds": [
+        "se_and_sample_size",
+        "good_estimators"
+      ]
+    },
+    {
+      "id": "mean-and-proportion",
+      "title": "Sampling distributions of a mean and a proportion",
+      "conceptIds": [
+        "sampling_dist_mean",
+        "sampling_dist_proportion"
+      ]
+    },
+    {
+      "id": "central-limit-theorem",
+      "title": "The central limit theorem and its conditions",
+      "conceptIds": [
+        "clt",
+        "clt_conditions",
+        "success_failure"
+      ]
+    },
+    {
+      "id": "interval-estimates",
+      "title": "From a point estimate to an interval",
+      "conceptIds": [
+        "point_vs_interval",
+        "ci_general_form",
+        "multipliers"
+      ]
+    },
+    {
+      "id": "confidence-level",
+      "title": "What 95% confidence means",
+      "conceptIds": [
+        "confidence_level_meaning",
+        "interpreting_ci"
+      ]
+    },
+    {
+      "id": "interval-width",
+      "title": "What makes an interval wider or narrower",
+      "conceptIds": [
+        "confidence_vs_width",
+        "what_narrows_ci"
+      ]
+    },
+    {
+      "id": "one-proportion-one-mean",
+      "title": "Intervals for one proportion and one mean",
+      "conceptIds": [
+        "ci_one_proportion",
+        "t_distribution",
+        "ci_one_mean"
+      ]
+    },
+    {
+      "id": "bootstrap",
+      "title": "Bootstrap intervals",
+      "conceptIds": [
+        "bootstrap",
+        "bootstrap_ci"
+      ]
+    },
+    {
+      "id": "what-intervals-miss",
+      "title": "What an interval leaves out",
+      "conceptIds": [
+        "ci_ignores_bias"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 124,
+    "itemsSupported": 124,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:c93c9a10ce834bf6c22840b2e607e275"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "packId": "comparing-groups",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "paired_t_test:2",
+      "type": "negation",
+      "sentence": "For paired data, the parameter of interest is the difference between the two group means, not the mean of the differences, and it is never compared with zero."
+    },
+    {
+      "ref": "anova_assumptions:3",
+      "type": "overstatement",
+      "sentence": "Violations of normality and equal variance never matter: the ANOVA test is completely robust to any departure from them, whatever the sample sizes."
+    },
+    {
+      "ref": "pooled_vs_unpooled:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "When the sample sizes are nearly equal, a rule of thumb is that the variances can be treated as equal if neither sample standard deviation is more than four times the other."
+    },
+    {
+      "ref": "f_statistic:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "When the null hypothesis of equal means is true, the treatment mean square should be far larger than the error mean square, so their ratio should be well above 1."
+    },
+    {
+      "ref": "effect_size:3",
+      "type": "unsupported_addition",
+      "sentence": "Cohen's d, one of the most common effect sizes, quantifies the difference between two means in terms of their standard deviation, and most journals require a d above 0.5 for publication."
+    },
+    {
+      "ref": "paired_t_test:3",
+      "type": "causal_from_association",
+      "sentence": "When before and after measurements are made on the same objects, any difference between them is caused by the cleaning process, so pairing proves that the process changes the objects."
+    }
+  ]
+}

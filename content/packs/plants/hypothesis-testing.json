@@ -1,0 +1,36 @@
+{
+  "packId": "hypothesis-testing",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "test_statistic:2",
+      "type": "negation",
+      "sentence": "A test statistic is calculated without assuming the null hypothesis is true: it compares the sample statistic with the parameter value in the null and incorporates a standard error."
+    },
+    {
+      "ref": "multiple_testing:1",
+      "type": "overstatement",
+      "sentence": "When a large number of significance tests are run, every one of them will come out significant by chance alone, even if the null hypothesis is true."
+    },
+    {
+      "ref": "error_tradeoff:4",
+      "type": "wrong_number_or_direction",
+      "sentence": "With a fixed sample size, decreasing alpha decreases beta and so increases power. To decrease both alpha and beta, decrease the sample size."
+    },
+    {
+      "ref": "one_vs_two_sided:3",
+      "type": "wrong_number_or_direction",
+      "sentence": "Default to a two-sided test, and use a one-sided test only if you truly care about one direction. For a two-sided p-value, compute the p-value for one tail and halve it."
+    },
+    {
+      "ref": "significance_level:2",
+      "type": "unsupported_addition",
+      "sentence": "An alpha of 0.05 means a true null hypothesis is rejected 5% of the time. The choice of alpha is somewhat arbitrary, but 0.05 was fixed by Fisher in 1925 and most journals require it."
+    },
+    {
+      "ref": "statistical_vs_practical:2",
+      "type": "causal_from_association",
+      "sentence": "In one study, quoting a longer delivery time over the phone caused pizzas to arrive 3 minutes early on average, an effect that chance could not explain."
+    }
+  ]
+}
