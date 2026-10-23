@@ -990,6 +990,84 @@
       "reason": "Confounders are what drive the paradox."
     }
   ],
+  "cards": [
+    {
+      "id": "contingency-tables",
+      "title": "Contingency tables and conditional proportions",
+      "conceptIds": [
+        "contingency_tables",
+        "conditional_proportions"
+      ]
+    },
+    {
+      "id": "independence-and-expected",
+      "title": "Independence and expected counts",
+      "conceptIds": [
+        "independence_categorical",
+        "expected_counts"
+      ]
+    },
+    {
+      "id": "chi-square-statistic",
+      "title": "The chi-square statistic and its distribution",
+      "conceptIds": [
+        "chi_square_statistic",
+        "chi_square_distribution"
+      ]
+    },
+    {
+      "id": "goodness-of-fit",
+      "title": "The goodness-of-fit test",
+      "conceptIds": [
+        "gof_test"
+      ]
+    },
+    {
+      "id": "test-of-independence",
+      "title": "The test of independence, and which cells drive it",
+      "conceptIds": [
+        "test_of_independence",
+        "standardized_residuals"
+      ]
+    },
+    {
+      "id": "homogeneity",
+      "title": "Comparing proportions across several groups",
+      "conceptIds": [
+        "test_of_homogeneity"
+      ]
+    },
+    {
+      "id": "conditions",
+      "title": "When the chi-square approximation works",
+      "conceptIds": [
+        "expected_count_conditions"
+      ]
+    },
+    {
+      "id": "relative-risk",
+      "title": "Risk and relative risk, read with care",
+      "conceptIds": [
+        "risk_and_relative_risk",
+        "reading_risks"
+      ]
+    },
+    {
+      "id": "odds-ratios",
+      "title": "Odds, odds ratios and study design",
+      "conceptIds": [
+        "odds_and_odds_ratio",
+        "odds_ratio_studies"
+      ]
+    },
+    {
+      "id": "simpsons-paradox",
+      "title": "Simpson's paradox",
+      "conceptIds": [
+        "simpsons_paradox"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
