@@ -3,7 +3,17 @@
   "version": "1.0.0",
   "status": "draft",
   "subject": "Comparing groups: testing and estimating differences between two means, two proportions or several means, checking the assumptions, and reporting how big a difference is",
-  "outOfScope": [],
+  "outOfScope": [
+    "The logic of a hypothesis test: hypotheses, p-values, significance levels, Type I and II errors, and statistical versus practical significance (see the Hypothesis testing pack)",
+    "Standard errors, the t-distribution and building confidence intervals (see the Sampling distributions pack); intervals for a difference in two means or proportions beyond naming them",
+    "Designing and reading product experiments: randomisation units, metrics, sample-size and power calculations, peeking, and corrections for many metrics (see the A/B testing pack)",
+    "Comparing counts across many categories, and chi-square tests (see the Categorical data pack)",
+    "Two-way and higher ANOVA, interactions, random effects, repeated-measures and mixed models",
+    "Formulas and derivations: pooled standard deviations, Welch-Satterthwaite degrees of freedom, sums of squares and the studentized range",
+    "Nonparametric tests (Mann-Whitney, Wilcoxon, Kruskal-Wallis) and the F-test for two variances, beyond naming them",
+    "Effect sizes other than Cohen's d, such as eta-squared, correlation or odds ratios",
+    "Tooling: Minitab, R, Python and spreadsheet functions"
+  ],
   "sources": [
     {
       "id": "psu200-09",
@@ -141,6 +151,985 @@
       "accessedAt": "2026-10-23"
     }
   ],
-  "concepts": [],
-  "prerequisites": []
+  "concepts": [
+    {
+      "id": "choosing_a_comparison",
+      "title": "Which comparison fits the data?",
+      "outcome": "Choose between comparing two proportions, two independent means or paired means from the type of response and how the data were collected.",
+      "keyPoints": [
+        {
+          "text": "To compare two groups, first decide whether the response variable is categorical or quantitative, then whether the two measurements come from independent samples or dependent samples.",
+          "sourceId": "psu500-07",
+          "locator": "7 Comparing Two Population Parameters (Overview)",
+          "anchor": {
+            "start": "To begin, just as we did",
+            "end": "independent samples or dependent samples."
+          }
+        },
+        {
+          "text": "Categorical measurements from two distinct groups lead to comparing two independent proportions; quantitative measurements from two distinct groups lead to comparing two independent means.",
+          "sourceId": "psu500-07",
+          "locator": "7 Comparing Two Population Parameters (Two-Sample Cases)",
+          "anchor": {
+            "start": "Categorical - taken from two distinct",
+            "end": "comparing two independent means."
+          }
+        },
+        {
+          "text": "Quantitative measurements taken twice from each subject, such as weight before and after a diet, lead to comparing two dependent means.",
+          "sourceId": "psu500-07",
+          "locator": "7 Comparing Two Population Parameters (Two-Sample Cases)",
+          "anchor": {
+            "start": "Quantitative - taken twice from each",
+            "end": "comparing two dependent means."
+          }
+        },
+        {
+          "text": "Comparing two groups extends the one-sample methods: check the conditions, calculate the test statistic, and compare it with a critical value or find its p-value, as before.",
+          "sourceId": "psu500-07",
+          "locator": "7 Comparing Two Population Parameters (Overview)",
+          "anchor": {
+            "start": "You will find that much of",
+            "end": "(p-value approach)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "independent_vs_paired",
+      "title": "Independent and paired samples",
+      "outcome": "Tell independent samples from paired (dependent) samples, and explain why the difference decides the analysis.",
+      "aliases": [
+        "dependent samples",
+        "matched pairs",
+        "paired data"
+      ],
+      "keyPoints": [
+        {
+          "text": "Two samples are independent if the units selected from one population have no relationship with those selected from the other. They are dependent, or paired, if each measurement in one sample is matched with a particular measurement in the other.",
+          "sourceId": "psu500-07",
+          "locator": "7.3 Comparing Two Population Means (Independent and Dependent Samples)",
+          "anchor": {
+            "start": "It is important to be able",
+            "end": "particular measurement in the other sample."
+          }
+        },
+        {
+          "text": "A quick check: one measurement per subject usually means independent samples, two means paired. Studies of spouses or twins are exceptions, and are almost always treated as paired.",
+          "sourceId": "psu500-07",
+          "locator": "7.3 Comparing Two Population Means (Independent and Dependent Samples)",
+          "anchor": {
+            "start": "Another way to consider this is",
+            "end": "treated as paired data."
+          }
+        },
+        {
+          "text": "Two sets of observations are paired if each observation in one set has a special correspondence or connection with exactly one observation in the other.",
+          "sourceId": "ims-21",
+          "locator": "21 Inference for comparing paired means",
+          "anchor": {
+            "start": "Paired data. Two sets of observations",
+            "end": "observation in the other dataset."
+          }
+        },
+        {
+          "text": "Paired means a one-to-one correspondence between the values in the two samples; for paired samples, the difference between each pair of values is usually calculated.",
+          "sourceId": "nist-eda353",
+          "locator": "1.3.5.3 Two-Sample t-Test for Equal Means",
+          "anchor": {
+            "start": "By paired, we mean that there",
+            "end": "is usually calculated."
+          }
+        }
+      ]
+    },
+    {
+      "id": "two_group_hypotheses",
+      "title": "Framing a two-group comparison",
+      "outcome": "Set up hypotheses for a two-group comparison, including a one-sided or threshold version when that is the real question. (General hypothesis framing is taught in the Hypothesis testing pack.)",
+      "keyPoints": [
+        {
+          "text": "When we hope to prove something new with the data, we make it the alternative hypothesis; when we want to keep assuming a traditional hypothesis unless there is very strong contrary evidence, we make it the null.",
+          "sourceId": "nist-prc31",
+          "locator": "7.3.1 Do two processes have the same mean? (Typical null hypotheses)",
+          "anchor": {
+            "start": "When we are hoping to prove",
+            "end": "null hypothesis, whenever possible."
+          }
+        },
+        {
+          "text": "Two-sample t-tests can ask whether two processes are equivalent, whether a new process is better than the current one, or whether it is better by at least a pre-set threshold.",
+          "sourceId": "nist-eda353",
+          "locator": "1.3.5.3 Two-Sample t-Test for Equal Means (Questions)",
+          "anchor": {
+            "start": "Two-sample t-tests can be used",
+            "end": "pre-determined threshold amount?"
+          }
+        },
+        {
+          "text": "If a new process should be adopted only when it beats the current one by some threshold, the null hypothesis can state that the difference between the two means equals that threshold.",
+          "sourceId": "nist-eda353",
+          "locator": "1.3.5.3 Two-Sample t-Test for Equal Means",
+          "anchor": {
+            "start": "In some applications, you may want",
+            "end": "is the desired threshold."
+          }
+        }
+      ]
+    },
+    {
+      "id": "two_sample_t_test",
+      "title": "Comparing two independent means",
+      "outcome": "Test whether two independent groups have the same mean with a two-sample t-test, and read its result.",
+      "aliases": [
+        "two-sample t-test",
+        "independent samples t-test",
+        "Welch t-test"
+      ],
+      "keyPoints": [
+        {
+          "text": "The two-sample t-test is used to determine whether two population means are equal; a common use is testing whether a new process or treatment is better than the current one.",
+          "sourceId": "nist-eda353",
+          "locator": "1.3.5.3 Two-Sample t-Test for Equal Means",
+          "anchor": {
+            "start": "The two-sample t-test (Snedecor and",
+            "end": "current process or treatment."
+          }
+        },
+        {
+          "text": "The test statistic for comparing two means is a T score: the ratio of how much the groups differ to how much the observations within a group vary.",
+          "sourceId": "ims-20",
+          "locator": "20.3.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "The test statistic for comparing two",
+            "end": "within a group vary."
+          }
+        },
+        {
+          "text": "The official degrees-of-freedom formula is complex and usually left to software; without software, you may use the smaller of the two sample sizes minus one.",
+          "sourceId": "ims-20",
+          "locator": "20.4.1 Observed data",
+          "anchor": {
+            "start": "The official formula for the degrees",
+            "end": "if software isn’t readily available."
+          }
+        },
+        {
+          "text": "In one example, the null hypothesis was rejected because the test statistic, t = 2.269, was greater than the critical value of 1.746, so the new process was concluded to have a smaller mean assembly time.",
+          "sourceId": "nist-prc31",
+          "locator": "7.3.1 Do two processes have the same mean? (Decision process)",
+          "anchor": {
+            "start": "Thus, hypothesis (2) is rejected because",
+            "end": "(smaller mean) over process 1."
+          }
+        }
+      ]
+    },
+    {
+      "id": "two_sample_conditions",
+      "title": "Conditions for comparing two means",
+      "outcome": "Check the conditions a two-sample comparison of means needs, and name what to do when they fail.",
+      "keyPoints": [
+        {
+          "text": "The standardised difference of two means can use the t-distribution if the data are independent within and between the groups, as with independent random samples or a randomized experiment, and each group is checked for outliers.",
+          "sourceId": "ims-20",
+          "locator": "20.4.1 Observed data",
+          "anchor": {
+            "start": "standardized difference of two means if",
+            "end": "outliers for each group separately."
+          }
+        },
+        {
+          "text": "Even with unequal variances, the two-sample comparison assumes the populations are independent and that each population is either normal or has a large sample.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.1 Inference for Independent Means (Unpooled Variances)",
+          "anchor": {
+            "start": "We still have the following assumptions:",
+            "end": "or the sample size is large."
+          }
+        },
+        {
+          "text": "If the normality assumption is not satisfied, considering a nonparametric test would be wise.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.2 Inference for Paired Means",
+          "anchor": {
+            "start": "What if the assumption of normality",
+            "end": "a nonparametric test would be wise."
+          }
+        }
+      ]
+    },
+    {
+      "id": "pooled_vs_unpooled",
+      "title": "Equal or unequal variances",
+      "outcome": "Decide between a pooled and an unpooled (Welch) two-sample test from the spread of the two groups.",
+      "aliases": [
+        "pooled variance",
+        "unpooled variance",
+        "Welch-Satterthwaite"
+      ],
+      "keyPoints": [
+        {
+          "text": "When we are reasonably sure the two populations have nearly equal variances, we use the pooled variance test; otherwise we use the unpooled, or separate, variance test.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.1 Inference for Independent Means",
+          "anchor": {
+            "start": "When we are reasonably sure that",
+            "end": "unpooled (or separate) variance test."
+          }
+        },
+        {
+          "text": "When the sample sizes are nearly equal, a rule of thumb is that the variances can be treated as equal if neither sample standard deviation is more than twice the other.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.1 Inference for Independent Means (Pooled Variances)",
+          "anchor": {
+            "start": "When the sample sizes are nearly",
+            "end": "assume the variances are equal."
+          }
+        },
+        {
+          "text": "If the standard deviations of the two processes are equivalent, which should be tested before it is assumed, the t statistic uses a pooled standard deviation.",
+          "sourceId": "nist-prc31",
+          "locator": "7.3.1 Do two processes have the same mean?",
+          "anchor": {
+            "start": "If the standard deviations from the",
+            "end": "the pooled standard deviation is estimated"
+          }
+        },
+        {
+          "text": "If equal standard deviations cannot be assumed, the degrees of freedom are not known exactly but can be estimated with the Welch-Satterthwaite approximation.",
+          "sourceId": "nist-prc31",
+          "locator": "7.3.1 Do two processes have the same mean?",
+          "anchor": {
+            "start": "If it cannot be assumed that",
+            "end": "the Welch-Satterthwaite approximation"
+          }
+        },
+        {
+          "text": "Assuming equal variances gives somewhat simpler formulas, although with computers this is no longer a significant issue.",
+          "sourceId": "nist-eda353",
+          "locator": "1.3.5.3 Two-Sample t-Test for Equal Means",
+          "anchor": {
+            "start": "The variances of the two samples",
+            "end": "no longer a significant issue."
+          }
+        }
+      ]
+    },
+    {
+      "id": "paired_t_test",
+      "title": "Comparing paired means",
+      "outcome": "Analyse paired data as one sample of differences, and explain why pairing can make a comparison more powerful.",
+      "aliases": [
+        "paired t-test",
+        "paired-sample t-test",
+        "mean difference"
+      ],
+      "keyPoints": [
+        {
+          "text": "With paired data, such as weights before and after a diet, condense each pair into one difference; the analysis is then back to the one-sample case, applied to the differences.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.2 Inference for Paired Means",
+          "anchor": {
+            "start": "Since the interest is focusing on",
+            "end": "back to the one sample case!"
+          }
+        },
+        {
+          "text": "For paired data, the parameter of interest is the mean difference, the mean of the differences, and we are still interested in comparing it with zero.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.2 Inference for Paired Means",
+          "anchor": {
+            "start": "When we consider the difference of",
+            "end": "comparing this difference to zero."
+          }
+        },
+        {
+          "text": "When before and after measurements are made on the same objects, such as checking whether a cleaning process changes them, each before measurement is paired with its after measurement and the differences are calculated.",
+          "sourceId": "nist-prc311",
+          "locator": "7.3.1.1 Analysis of paired observations",
+          "anchor": {
+            "start": "measurements are made with the same",
+            "end": "are calculated."
+          }
+        },
+        {
+          "text": "Paired data are analysed much like one sample, yet measurements are made at two levels of the explanatory variable; because each unit is paired across the two groups, only the difference is kept.",
+          "sourceId": "ims-21",
+          "locator": "21 Inference for comparing paired means",
+          "anchor": {
+            "start": "Paired data represent a particular type",
+            "end": "only the difference is retained."
+          }
+        },
+        {
+          "text": "An independent t-test is often less powerful than a paired t-test; but depending on how the data are collected, there is not always a way to pair the data and reduce the variability across observations.",
+          "sourceId": "ims-20",
+          "locator": "20.3.3 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "A small note on the power",
+            "end": "variability across observations."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Before-and-after measurements on the same subjects can be analysed with an ordinary two-sample t-test for independent groups.",
+          "correction": "In one example, treating paired measurements as independent samples meant the null hypothesis could not be rejected, although the paired analysis rejected it; this shows why the two types of samples must be distinguished.",
+          "sourceId": "psu500-07",
+          "locator": "7.3.2 Inference for Paired Means (Additional Notes)",
+          "anchor": {
+            "start": "For the zinc concentration problem, if",
+            "end": "distinguishing the two types of samples."
+          }
+        }
+      ]
+    },
+    {
+      "id": "two_proportions",
+      "title": "Comparing two proportions",
+      "outcome": "Test whether two groups share the same proportion with a two-proportion z-test, using the pooled proportion. (Intervals for a difference in an experiment are taught in the A/B testing pack.)",
+      "aliases": [
+        "two-proportion z-test",
+        "pooled proportion"
+      ],
+      "keyPoints": [
+        {
+          "text": "When a categorical variable is measured in two populations, we are often interested in comparing the proportion in a certain category between them.",
+          "sourceId": "psu500-07",
+          "locator": "7.2 Comparing Two Population Proportions",
+          "anchor": {
+            "start": "When we have a categorical variable",
+            "end": "category for the two populations."
+          }
+        },
+        {
+          "text": "The difference in two sample proportions can be modelled with a normal distribution when the data are independent within and between the groups, as with two random samples or a randomized experiment, and the success-failure condition holds in each group.",
+          "sourceId": "ims-17",
+          "locator": "17.3.1 Variability of the difference between two proportions",
+          "anchor": {
+            "start": "normal distribution when Independence (extended).",
+            "end": "in each group separately."
+          }
+        },
+        {
+          "text": "When the null hypothesis says the two proportions are equal, a pooled proportion of successes is used to check the success-failure condition and to estimate the standard error.",
+          "sourceId": "ims-17",
+          "locator": "17.3.3 Hypothesis test for the difference between two proportions",
+          "anchor": {
+            "start": "However, when the null hypothesis is",
+            "end": "estimate the standard error:"
+          }
+        },
+        {
+          "text": "The test statistic for two proportions is a Z score: how far apart the two sample proportions are, compared with the expected variability of their difference.",
+          "sourceId": "ims-17",
+          "locator": "17.3.3 Hypothesis test for the difference between two proportions",
+          "anchor": {
+            "start": "The test statistic for assessing two",
+            "end": "difference between the proportions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "why_not_many_t_tests",
+      "title": "Why not a t-test for every pair?",
+      "outcome": "Explain why comparing many groups pair by pair inflates false positives, and why one overall test comes first.",
+      "aliases": [
+        "data snooping",
+        "inflated Type I error"
+      ],
+      "keyPoints": [
+        {
+          "text": "Comparing every pair instead needs many tests, 10 t-tests for 5 groups, and those tests would still give no information about the independent variable overall.",
+          "sourceId": "psu200-10",
+          "locator": "10 One-Way ANOVA (Why not multiple independent t-tests?)",
+          "anchor": {
+            "start": "If you were to perform multiple",
+            "end": "about the independent variable overall."
+          }
+        },
+        {
+          "text": "With many groups and many pairwise comparisons, a difference is likely to turn up by chance even if the populations do not differ; a single holistic test checks whether at least one pair of groups differs.",
+          "sourceId": "ims-22",
+          "locator": "22 Inference for comparing many means",
+          "anchor": {
+            "start": "However, this strategy can be treacherous.",
+            "end": "where ANOVA saves the day."
+          }
+        },
+        {
+          "text": "Looking at the data first and then formally testing only the groups that look most different is data snooping, and it inflates the Type I error rate.",
+          "sourceId": "ims-22",
+          "locator": "22.2 Randomization test for comparing many means",
+          "anchor": {
+            "start": "The primary issue here is that",
+            "end": "in the Type I error rate."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Running a separate t-test on each pair of groups controls the error rate just as well as one ANOVA.",
+          "correction": "Multiple t-tests lead to a greater chance of making a Type I error; an ANOVA avoids inflating alpha and the likelihood of a Type I error.",
+          "sourceId": "psu200-10",
+          "locator": "10 One-Way ANOVA (Why not multiple independent t-tests?)",
+          "anchor": {
+            "start": "tests would lead to a greater",
+            "end": "likelihood of a Type I error."
+          }
+        }
+      ]
+    },
+    {
+      "id": "anova_hypotheses",
+      "title": "One-way ANOVA: factors and hypotheses",
+      "outcome": "Set up a one-way ANOVA: a quantitative response, one categorical factor with several levels, and hypotheses about the group means.",
+      "aliases": [
+        "ANOVA",
+        "analysis of variance",
+        "one-way ANOVA",
+        "factor",
+        "levels"
+      ],
+      "keyPoints": [
+        {
+          "text": "ANOVA, the analysis of variance, is used to test hypotheses about means when there are several populations.",
+          "sourceId": "nist-prc43",
+          "locator": "7.4.3 Are the means equal?",
+          "anchor": {
+            "start": "The procedure known as the Analysis",
+            "end": "when we have several populations."
+          }
+        },
+        {
+          "text": "ANOVA analyses variances to decide whether the means of more than two populations are the same: the response is quantitative and the explanatory variable is categorical with more than two levels, called the factor.",
+          "sourceId": "psu500-10",
+          "locator": "10 Introduction to ANOVA (Overview)",
+          "anchor": {
+            "start": "ANOVA is a statistical method that",
+            "end": "typically referred to as the factor."
+          }
+        },
+        {
+          "text": "A factor is a treatment variable whose settings, its levels, are controlled and varied by the experimenter. With only one factor, the analysis is a one-way or one-factor ANOVA.",
+          "sourceId": "nist-prc43",
+          "locator": "7.4.3 Are the means equal? (What is a factor?)",
+          "anchor": {
+            "start": "A factor is an independent treatment",
+            "end": "called a one-way or one-factor ANOVA."
+          }
+        },
+        {
+          "text": "The null hypothesis is that all the groups' population means are equal; the alternative is that they are not all equal, so at least two population means differ from one another.",
+          "sourceId": "psu200-10",
+          "locator": "10.2 Hypothesis Testing (ANOVA)",
+          "anchor": {
+            "start": "In other words, the null hypothesis",
+            "end": "not equal to one another."
+          }
+        },
+        {
+          "text": "A one-way ANOVA comparing just two groups gives the same results as the independent t-test.",
+          "sourceId": "psu200-10",
+          "locator": "10.2 Hypothesis Testing (ANOVA)",
+          "anchor": {
+            "start": "A one-way between groups ANOVA comparing",
+            "end": "you conducted in Lesson 8."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The alternative hypothesis in an ANOVA is that every group mean differs from every other.",
+          "correction": "An alternative that all the means are different would test whether ALL the means differ, which is not what is wanted; the ANOVA alternative is that at least one pair of means is not equal.",
+          "sourceId": "psu500-10",
+          "locator": "10.2 A Statistical Test for One-Way ANOVA (Hypotheses)",
+          "anchor": {
+            "start": "If we set up the alternative",
+            "end": "This is not what we want."
+          }
+        }
+      ]
+    },
+    {
+      "id": "between_within",
+      "title": "Variation between and within groups",
+      "outcome": "Explain why ANOVA compares the spread between group means with the spread inside each group.",
+      "aliases": [
+        "between-group variation",
+        "within-group variation",
+        "sum of squares",
+        "partitioning variation"
+      ],
+      "keyPoints": [
+        {
+          "text": "To judge whether several population means differ, compare the variation between samples with the variation within samples: a difference is more convincing when the between-sample variation is large compared with the within-sample variation.",
+          "sourceId": "psu500-10",
+          "locator": "10.1 Introduction to Analysis of Variance",
+          "anchor": {
+            "start": "We need to compare the between-sample-variation",
+            "end": "the Analysis of Variance (or ANOVA)."
+          }
+        },
+        {
+          "text": "Differences between group centres are noticeable when they are large relative to the variability of individual observations within each group, and hard to discern when the data within each group are very volatile.",
+          "sourceId": "ims-22",
+          "locator": "22 Inference for comparing many means (Figure 22.1)",
+          "anchor": {
+            "start": "Any real difference in the means",
+            "end": "observations within each group."
+          }
+        },
+        {
+          "text": "An analysis of variance splits the total variation in the data into a portion due to random error and portions due to changes in the values of the independent variable.",
+          "sourceId": "nist-prc431",
+          "locator": "7.4.3.1 One-way ANOVA overview",
+          "anchor": {
+            "start": "In an analysis of variance the",
+            "end": "values of the independent variable(s)."
+          }
+        },
+        {
+          "text": "In a one-way ANOVA, the total sum of squares splits into a sum of squares of treatments and a sum of squares of error; this decomposition is the guiding principle behind ANOVA.",
+          "sourceId": "nist-prc431",
+          "locator": "7.4.3.1 One-way ANOVA overview",
+          "anchor": {
+            "start": "in a one-way ANOVA can be",
+            "end": "decomposition of the sums of squares,"
+          }
+        }
+      ]
+    },
+    {
+      "id": "f_statistic",
+      "title": "The F statistic",
+      "outcome": "Interpret the F statistic as a ratio of between-group to within-group variability, and read its p-value from the upper tail.",
+      "aliases": [
+        "F-test",
+        "F ratio",
+        "F distribution",
+        "mean square"
+      ],
+      "keyPoints": [
+        {
+          "text": "Conceptually, F is a ratio of between-groups variability to within-groups variability: how much individuals in different groups vary from one another, over how much individuals within groups vary.",
+          "sourceId": "psu200-10",
+          "locator": "10.2 Hypothesis Testing (ANOVA)",
+          "anchor": {
+            "start": "Conceptually, the F statistic is a",
+            "end": "within groups vary from one another."
+          }
+        },
+        {
+          "text": "When the null hypothesis of equal means is true, the treatment and error mean squares estimate the same error variance and should be of about equal size, so their ratio should be close to 1.",
+          "sourceId": "nist-prc433",
+          "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
+          "anchor": {
+            "start": "When the null hypothesis of equal",
+            "end": "ratio should be close to 1."
+          }
+        },
+        {
+          "text": "The larger the variability of the sample means relative to the within-group observations, the larger F and the stronger the evidence against the null; so the p-value comes from the upper tail.",
+          "sourceId": "ims-22",
+          "locator": "22.3.1 Variability of the statistic",
+          "anchor": {
+            "start": "The larger the observed variability in",
+            "end": "to compute a p-value."
+          }
+        },
+        {
+          "text": "The F distribution has two degrees of freedom, between groups and within groups, which software calls the numerator and denominator degrees of freedom.",
+          "sourceId": "psu200-10",
+          "locator": "10.1 Introduction to the F Distribution",
+          "anchor": {
+            "start": "The F distribution has two different",
+            "end": "denominator degrees of freedom, respectively."
+          }
+        },
+        {
+          "text": "In one example, an F of 9.59 was much larger than the critical value of 3.89, so the null hypothesis of equal population means was rejected; the p-value was 0.00325.",
+          "sourceId": "nist-prc433",
+          "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means (Interpretation of the ANOVA table)",
+          "anchor": {
+            "start": "value of 9.59. Using an",
+            "end": "significant at that level."
+          }
+        }
+      ]
+    },
+    {
+      "id": "anova_table",
+      "title": "Reading an ANOVA table",
+      "outcome": "Read an ANOVA table: sources of variation, sums of squares, degrees of freedom, mean squares, F and the p-value.",
+      "aliases": [
+        "ANOVA source table"
+      ],
+      "keyPoints": [
+        {
+          "text": "The treatment and error sums of squares are turned into two mean squares, which are usually shown in an ANOVA table along with the statistics used to test hypotheses about the population means.",
+          "sourceId": "nist-prc433",
+          "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
+          "anchor": {
+            "start": "The sums of squares SST and",
+            "end": "hypotheses about the population means."
+          }
+        },
+        {
+          "text": "The mean squares are formed by dividing each sum of squares by its associated degrees of freedom.",
+          "sourceId": "nist-prc433",
+          "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
+          "anchor": {
+            "start": "The mean squares are formed by",
+            "end": "the associated degrees of freedom."
+          }
+        },
+        {
+          "text": "Statistical software computes the F ratio and an ANOVA source table, which gives information about the variability between groups and within groups.",
+          "sourceId": "psu200-10",
+          "locator": "10.2 Hypothesis Testing (ANOVA)",
+          "anchor": {
+            "start": "Statistical software will compute the F",
+            "end": "between groups and within groups."
+          }
+        }
+      ]
+    },
+    {
+      "id": "anova_assumptions",
+      "title": "ANOVA's assumptions and how to check them",
+      "outcome": "Check independence, normality and equal variance before trusting an ANOVA, and know which matters most when.",
+      "aliases": [
+        "constant variance",
+        "homogeneity of variance"
+      ],
+      "keyPoints": [
+        {
+          "text": "An ANOVA needs three conditions: all observations independent, the data in each group nearly normal (or each group reasonably large), and approximately equal variance within each group.",
+          "sourceId": "ims-22",
+          "locator": "22.3.4 Conditions for an ANOVA analysis",
+          "anchor": {
+            "start": "There are three conditions we must",
+            "end": "must be approximately equal."
+          }
+        },
+        {
+          "text": "Independence is always important. Normality matters most when group sizes are small; large groups need only no large outliers. Constant variance matters most when sample sizes differ between groups.",
+          "sourceId": "ims-22",
+          "locator": "22.3.4 Conditions for an ANOVA analysis (Diagnostics for an ANOVA analysis)",
+          "anchor": {
+            "start": "Independence is always important to an",
+            "end": "sample sizes differ between groups."
+          }
+        },
+        {
+          "text": "Violations of normality and equal variance that are not extreme can be considered not serious: the test is fairly robust, especially as sample sizes grow and when they are equal, so keep group sizes equal.",
+          "sourceId": "psu500-10",
+          "locator": "10.2.1 ANOVA Assumptions",
+          "anchor": {
+            "start": "Violations to the first two that",
+            "end": "sizes for each factor level."
+          }
+        },
+        {
+          "text": "If the largest sample standard deviation divided by the smallest is not greater than two, assume the population variances are equal.",
+          "sourceId": "psu200-10",
+          "locator": "10.2 Hypothesis Testing (ANOVA)",
+          "anchor": {
+            "start": "Assumption 3: The population variances are",
+            "end": "the population variances are equal)"
+          }
+        },
+        {
+          "text": "Equal variance can be checked by examining side-by-side box plots of the outcomes across the groups.",
+          "sourceId": "ims-22",
+          "locator": "22.3.4 Conditions for an ANOVA analysis (Constant variance)",
+          "anchor": {
+            "start": "This assumption can be checked by",
+            "end": "outcomes across the groups,"
+          }
+        }
+      ]
+    },
+    {
+      "id": "post_hoc",
+      "title": "After ANOVA: which groups differ?",
+      "outcome": "Explain why a significant ANOVA calls for a follow-up, and when such follow-up comparisons are run.",
+      "aliases": [
+        "post-hoc test",
+        "follow-up comparisons"
+      ],
+      "keyPoints": [
+        {
+          "text": "A one-way ANOVA tells you whether there is a main effect of the explanatory variable, not which groups differ; a post-hoc test, run after the ANOVA, is needed for that.",
+          "sourceId": "psu200-10",
+          "locator": "10.3 Pairwise Comparisons",
+          "anchor": {
+            "start": "While the results of a one-way",
+            "end": "which groups differ from one another."
+          }
+        },
+        {
+          "text": "After rejecting equal means, we still do not know whether all the means are different, or which differs from the others, and by how much.",
+          "sourceId": "nist-prc433",
+          "locator": "7.4.3.3 The ANOVA table and tests of hypotheses about means (Techniques for further analysis)",
+          "anchor": {
+            "start": "What we do not know at",
+            "end": "two, and by how much."
+          }
+        },
+        {
+          "text": "A multiple comparison technique is used in ANOVA only when the overall result is significant.",
+          "sourceId": "psu500-10",
+          "locator": "10.3 Multiple Comparisons",
+          "anchor": {
+            "start": "Just note that we only use",
+            "end": "when we have a significant result."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A significant ANOVA result tells you which group means differ from which.",
+          "correction": "The ANOVA test itself gives statistical evidence of a difference, but no statistical evidence about which mean or means differ.",
+          "sourceId": "psu500-10",
+          "locator": "10.3 Multiple Comparisons",
+          "anchor": {
+            "start": "The ANOVA test itself provides only",
+            "end": "means are statistically different."
+          }
+        }
+      ]
+    },
+    {
+      "id": "adjusting_comparisons",
+      "title": "Adjusting for many comparisons",
+      "outcome": "Describe, at a conceptual level, how Tukey's and Bonferroni's methods keep follow-up comparisons from inflating false positives. (Corrections across many metrics in an experiment are in the A/B testing pack.)",
+      "aliases": [
+        "Tukey HSD",
+        "Bonferroni correction",
+        "multiple comparisons"
+      ],
+      "keyPoints": [
+        {
+          "text": "Multiple comparison methods are essentially tests of two means, but with an adjustment that accounts for the number of comparisons taking place.",
+          "sourceId": "psu500-10",
+          "locator": "10.3 Multiple Comparisons",
+          "anchor": {
+            "start": "These are essentially tests of two",
+            "end": "number of comparisons taking place."
+          }
+        },
+        {
+          "text": "Tukey's Honestly Significant Differences test makes all possible pairwise comparisons, taking into account that multiple tests are run so the Type I error is not inflated.",
+          "sourceId": "psu200-10",
+          "locator": "10.3 Pairwise Comparisons",
+          "anchor": {
+            "start": "This specific post-hoc test makes all",
+            "end": "Type I error is not inflated."
+          }
+        },
+        {
+          "text": "Bonferroni's method applies when the analyst has picked out a particular set of pairwise comparisons or contrasts in advance.",
+          "sourceId": "nist-prc473",
+          "locator": "7.4.7.3 Bonferroni's method",
+          "anchor": {
+            "start": "This method applies to an ANOVA",
+            "end": "linear combinations in advance."
+          }
+        },
+        {
+          "text": "Learning about multiple comparisons matters so that extra comparisons, after rejecting the null in an ANOVA, do not lead to undue false positive conclusions.",
+          "sourceId": "ims-22",
+          "locator": "22.3.2 Observed statistic vs. null statistics",
+          "anchor": {
+            "start": "We encourage you to learn more",
+            "end": "undue false positive conclusions."
+          }
+        }
+      ]
+    },
+    {
+      "id": "effect_size",
+      "title": "Effect sizes",
+      "outcome": "Report how big a difference is with an effect size such as Cohen's d, and explain why it is not the same as a test statistic. (Statistical versus practical significance is taught in the Hypothesis testing pack.)",
+      "aliases": [
+        "Cohen's d",
+        "standardized mean difference"
+      ],
+      "keyPoints": [
+        {
+          "text": "Because statistical significance may not reflect practical significance, we need a standard way to describe the size of an effect in terms of the data, called an effect size.",
+          "sourceId": "st21-10",
+          "locator": "10.2 Effect sizes",
+          "anchor": {
+            "start": "In the previous chapter, we discussed",
+            "end": "refer to as an effect size."
+          }
+        },
+        {
+          "text": "An effect size is a standardised measurement that compares the size of an effect with a reference quantity, such as the variability of the statistic; some fields call this a signal-to-noise ratio.",
+          "sourceId": "st21-10",
+          "locator": "10.2 Effect sizes",
+          "anchor": {
+            "start": "An effect size is a standardized",
+            "end": "“signal to noise ratio”."
+          }
+        },
+        {
+          "text": "Cohen's d, one of the most common effect sizes, quantifies the difference between two means in terms of their standard deviation.",
+          "sourceId": "st21-10",
+          "locator": "10.2.1 Cohen's D",
+          "anchor": {
+            "start": "One of the most common measures",
+            "end": "in terms of their standard deviation:"
+          }
+        },
+        {
+          "text": "A commonly used scale reads Cohen's d of 0.2 to 0.5 as small, 0.5 to 0.8 as medium, and above 0.8 as large.",
+          "sourceId": "st21-10",
+          "locator": "10.2.1 Cohen's D (Table 10.1)",
+          "anchor": {
+            "start": "0.0 - 0.2 neglibible 0.2 -",
+            "end": "shown in Table 10.1."
+          }
+        },
+        {
+          "text": "Even with a very large effect size, the two groups' distributions overlap: some individuals in each group are more like the other group.",
+          "sourceId": "st21-10",
+          "locator": "10.2.1 Cohen's D",
+          "anchor": {
+            "start": "highlighting the fact that even when",
+            "end": "more like the other group."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A larger t statistic shows that the difference between the groups is larger.",
+          "correction": "The t statistic's denominator is the standard error, while Cohen's d uses the standard deviation of the data, so t grows as the sample gets larger while d stays the same.",
+          "sourceId": "st21-10",
+          "locator": "10.2.1 Cohen's D",
+          "anchor": {
+            "start": "Note that this is very similar",
+            "end": "Cohen’s D will remain the same."
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "choosing_a_comparison",
+      "after": "independent_vs_paired",
+      "reason": "Choosing a comparison asks whether the samples are independent."
+    },
+    {
+      "before": "choosing_a_comparison",
+      "after": "two_group_hypotheses",
+      "reason": "The hypotheses depend on the comparison chosen."
+    },
+    {
+      "before": "independent_vs_paired",
+      "after": "two_sample_t_test",
+      "reason": "The two-sample t-test is for independent samples."
+    },
+    {
+      "before": "two_group_hypotheses",
+      "after": "two_sample_t_test",
+      "reason": "The t-test tests the two-group hypotheses."
+    },
+    {
+      "before": "two_sample_t_test",
+      "after": "two_sample_conditions",
+      "reason": "Conditions are checked for the t-test."
+    },
+    {
+      "before": "two_sample_conditions",
+      "after": "pooled_vs_unpooled",
+      "reason": "The variance choice is one of the conditions."
+    },
+    {
+      "before": "two_sample_t_test",
+      "after": "pooled_vs_unpooled",
+      "reason": "Pooling changes the t statistic."
+    },
+    {
+      "before": "independent_vs_paired",
+      "after": "paired_t_test",
+      "reason": "The paired test is for dependent samples."
+    },
+    {
+      "before": "two_sample_t_test",
+      "after": "paired_t_test",
+      "reason": "Pairing is contrasted with the independent t-test."
+    },
+    {
+      "before": "choosing_a_comparison",
+      "after": "two_proportions",
+      "reason": "Two proportions is one of the comparisons."
+    },
+    {
+      "before": "two_group_hypotheses",
+      "after": "two_proportions",
+      "reason": "The test compares two proportions under a null of equality."
+    },
+    {
+      "before": "two_sample_t_test",
+      "after": "why_not_many_t_tests",
+      "reason": "The problem is running many two-sample t-tests."
+    },
+    {
+      "before": "why_not_many_t_tests",
+      "after": "anova_hypotheses",
+      "reason": "ANOVA is the single overall test."
+    },
+    {
+      "before": "anova_hypotheses",
+      "after": "between_within",
+      "reason": "ANOVA judges the hypotheses by comparing variation."
+    },
+    {
+      "before": "between_within",
+      "after": "f_statistic",
+      "reason": "F is the ratio of between to within variation."
+    },
+    {
+      "before": "f_statistic",
+      "after": "anova_table",
+      "reason": "The table reports F and its parts."
+    },
+    {
+      "before": "anova_hypotheses",
+      "after": "anova_assumptions",
+      "reason": "The assumptions are for the ANOVA test."
+    },
+    {
+      "before": "pooled_vs_unpooled",
+      "after": "anova_assumptions",
+      "reason": "The equal-variance rule of thumb mirrors the two-sample one."
+    },
+    {
+      "before": "f_statistic",
+      "after": "post_hoc",
+      "reason": "Follow-up comes after a significant F test."
+    },
+    {
+      "before": "why_not_many_t_tests",
+      "after": "post_hoc",
+      "reason": "Follow-up comparisons risk the same inflation."
+    },
+    {
+      "before": "post_hoc",
+      "after": "adjusting_comparisons",
+      "reason": "Adjustments are how follow-up comparisons are done."
+    },
+    {
+      "before": "two_sample_t_test",
+      "after": "effect_size",
+      "reason": "Cohen's d is contrasted with the t statistic."
+    }
+  ]
 }
