@@ -1126,6 +1126,85 @@
       "reason": "Cohen's d is contrasted with the t statistic."
     }
   ],
+  "cards": [
+    {
+      "id": "choosing-a-comparison",
+      "title": "Which comparison? Independent or paired",
+      "conceptIds": [
+        "choosing_a_comparison",
+        "independent_vs_paired",
+        "two_group_hypotheses"
+      ]
+    },
+    {
+      "id": "two-means",
+      "title": "Comparing two independent means",
+      "conceptIds": [
+        "two_sample_t_test",
+        "two_sample_conditions"
+      ]
+    },
+    {
+      "id": "equal-variances",
+      "title": "Pooled or unpooled: equal or unequal variances",
+      "conceptIds": [
+        "pooled_vs_unpooled"
+      ]
+    },
+    {
+      "id": "paired-means",
+      "title": "Comparing paired means",
+      "conceptIds": [
+        "paired_t_test"
+      ]
+    },
+    {
+      "id": "two-proportions",
+      "title": "Comparing two proportions",
+      "conceptIds": [
+        "two_proportions"
+      ]
+    },
+    {
+      "id": "many-groups",
+      "title": "Many groups: why one ANOVA, not many t-tests",
+      "conceptIds": [
+        "why_not_many_t_tests",
+        "anova_hypotheses"
+      ]
+    },
+    {
+      "id": "anova-logic",
+      "title": "Between- and within-group variation, and the F statistic",
+      "conceptIds": [
+        "between_within",
+        "f_statistic",
+        "anova_table"
+      ]
+    },
+    {
+      "id": "anova-assumptions",
+      "title": "ANOVA's assumptions",
+      "conceptIds": [
+        "anova_assumptions"
+      ]
+    },
+    {
+      "id": "after-anova",
+      "title": "After ANOVA: post-hoc comparisons",
+      "conceptIds": [
+        "post_hoc",
+        "adjusting_comparisons"
+      ]
+    },
+    {
+      "id": "effect-sizes",
+      "title": "How big is the difference? Effect sizes",
+      "conceptIds": [
+        "effect_size"
+      ]
+    }
+  ],
   "machineCheck": {
     "judgeModel": "claude-opus-5-5",
     "instructionsVersion": "1",
