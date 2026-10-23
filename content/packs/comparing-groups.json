@@ -1,7 +1,7 @@
 {
   "id": "comparing-groups",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Comparing groups: testing and estimating differences between two means, two proportions or several means, checking the assumptions, and reporting how big a difference is",
   "outOfScope": [
     "The logic of a hypothesis test: hypotheses, p-values, significance levels, Type I and II errors, and statistical versus practical significance (see the Hypothesis testing pack)",
@@ -15,14 +15,6 @@
     "Tooling: Minitab, R, Python and spreadsheet functions"
   ],
   "sources": [
-    {
-      "id": "psu200-09",
-      "title": "STAT 200 Lesson 9: Inference for Two Samples",
-      "publisher": "Penn State Department of Statistics",
-      "url": "https://online.stat.psu.edu/stat200/Lesson09",
-      "license": "CC BY-NC 4.0",
-      "accessedAt": "2026-10-23"
-    },
     {
       "id": "psu200-10",
       "title": "STAT 200 Lesson 10: One-Way ANOVA",
@@ -108,13 +100,6 @@
       "accessedAt": "2026-10-23"
     },
     {
-      "id": "nist-prc432",
-      "title": "7.4.3.2 The one-way ANOVA model and assumptions",
-      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
-      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc432.htm",
-      "accessedAt": "2026-10-23"
-    },
-    {
       "id": "nist-prc433",
       "title": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
       "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
@@ -176,7 +161,7 @@
           }
         },
         {
-          "text": "Quantitative measurements taken twice from each subject, such as weight before and after a diet, lead to comparing two dependent means.",
+          "text": "Quantitative measurements taken twice from each subject lead to comparing two dependent means.",
           "sourceId": "psu500-07",
           "locator": "7 Comparing Two Population Parameters (Two-Sample Cases)",
           "anchor": {
@@ -215,7 +200,7 @@
           }
         },
         {
-          "text": "A quick check: one measurement per subject usually means independent samples, two means paired. Studies of spouses or twins are exceptions, and are almost always treated as paired.",
+          "text": "A quick check: one measurement per subject means independent samples, two means paired. Studies of spouses or twins are exceptions, and are almost always treated as paired.",
           "sourceId": "psu500-07",
           "locator": "7.3 Comparing Two Population Means (Independent and Dependent Samples)",
           "anchor": {
@@ -315,7 +300,7 @@
           }
         },
         {
-          "text": "In one example, the null hypothesis was rejected because the test statistic, t = 2.269, was greater than the critical value of 1.746, so the new process was concluded to have a smaller mean assembly time.",
+          "text": "In one example, the hypothesis was rejected because the test statistic, t = 2.269, was greater than 1.746, so the new process was concluded to have improved assembly time, with a smaller mean.",
           "sourceId": "nist-prc31",
           "locator": "7.3.1 Do two processes have the same mean? (Decision process)",
           "anchor": {
@@ -340,11 +325,11 @@
           }
         },
         {
-          "text": "Even with unequal variances, the two-sample comparison assumes the populations are independent and that each population is either normal or has a large sample.",
+          "text": "When equal variances cannot be assumed, separate (unpooled) variances are used, and the assumptions remain that the populations are independent and each is either normal or has a large sample.",
           "sourceId": "psu500-07",
           "locator": "7.3.1 Inference for Independent Means (Unpooled Variances)",
           "anchor": {
-            "start": "We still have the following assumptions:",
+            "start": "When the assumption of equal variances",
             "end": "or the sample size is large."
           }
         },
@@ -475,7 +460,7 @@
       "misconceptions": [
         {
           "claim": "Before-and-after measurements on the same subjects can be analysed with an ordinary two-sample t-test for independent groups.",
-          "correction": "In one example, treating paired measurements as independent samples meant the null hypothesis could not be rejected, although the paired analysis rejected it; this shows why the two types of samples must be distinguished.",
+          "correction": "In one example, mistakenly treating paired measurements as independent samples meant the null hypothesis could not be rejected, which shows why the two types of samples must be distinguished.",
           "sourceId": "psu500-07",
           "locator": "7.3.2 Inference for Paired Means (Additional Notes)",
           "anchor": {
@@ -508,7 +493,7 @@
           "sourceId": "ims-17",
           "locator": "17.3.1 Variability of the difference between two proportions",
           "anchor": {
-            "start": "normal distribution when Independence (extended).",
+            "start": "to be normal. The difference",
             "end": "in each group separately."
           }
         },
@@ -923,12 +908,21 @@
           }
         },
         {
-          "text": "Tukey's Honestly Significant Differences test makes all possible pairwise comparisons, taking into account that multiple tests are run so the Type I error is not inflated.",
+          "text": "One common post-hoc test makes all possible pairwise comparisons and adjusts for the fact that multiple tests are performed, so the Type I error is not inflated.",
           "sourceId": "psu200-10",
           "locator": "10.3 Pairwise Comparisons",
           "anchor": {
             "start": "This specific post-hoc test makes all",
             "end": "Type I error is not inflated."
+          }
+        },
+        {
+          "text": "Tukey's method considers all possible pairwise differences of means at the same time.",
+          "sourceId": "nist-prc471",
+          "locator": "7.4.7.1 Tukey's method",
+          "anchor": {
+            "start": "Tukey's method considers all possible pairwise",
+            "end": "set of all pairwise comparisons"
           }
         },
         {
@@ -997,7 +991,7 @@
           }
         },
         {
-          "text": "Even with a very large effect size, the two groups' distributions overlap: some individuals in each group are more like the other group.",
+          "text": "Even when the effect size for a difference between two groups is very large, some individuals from each group will be more like the other group.",
           "sourceId": "st21-10",
           "locator": "10.2.1 Cohen's D",
           "anchor": {
