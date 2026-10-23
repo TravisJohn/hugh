@@ -1,0 +1,97 @@
+{
+  "id": "categorical-data",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Categorical data: summarising counts in contingency tables, testing them with chi-square tests, describing an association with relative risk and odds ratios, and spotting Simpson's paradox",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "psu100-06",
+      "title": "STAT 100 Lesson 6: Relationships Between Categorical Variables",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-11",
+      "title": "STAT 200 Lesson 11: Chi-Square Tests",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-08",
+      "title": "STAT 500 Lesson 8: Chi-Square Test for Independence",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu504-02",
+      "title": "STAT 504 Lesson 2: Binomial and Multinomial Inference",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat504/Lesson02",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu504-03",
+      "title": "STAT 504 Lesson 3: Two-Way Tables: Independence and Association",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat504/Lesson03",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu504-05",
+      "title": "STAT 504 Lesson 5: Three-Way Tables: Types of Independence",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat504/Lesson05",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-04",
+      "title": "Introduction to Modern Statistics (2e), Chapter 4: Exploring categorical data",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/explore-categorical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-18",
+      "title": "Introduction to Modern Statistics (2e), Chapter 18: Inference for two-way tables",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-tables.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "st21-12",
+      "title": "Statistical Thinking for the 21st Century, Chapter 12: Modeling categorical relationships",
+      "publisher": "Russell A. Poldrack, Statistical Thinking for the 21st Century",
+      "url": "https://statsthinking21.github.io/statsthinking21-core-site/modeling-categorical-relationships.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-eda35f",
+      "title": "1.3.5.15 Chi-Square Goodness-of-Fit Test",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda35f.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc46",
+      "title": "7.4.6 Do all the processes have the same proportion of defects?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc46.htm",
+      "accessedAt": "2026-10-23"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
