@@ -1,0 +1,146 @@
+{
+  "id": "comparing-groups",
+  "version": "1.0.0",
+  "status": "draft",
+  "subject": "Comparing groups: testing and estimating differences between two means, two proportions or several means, checking the assumptions, and reporting how big a difference is",
+  "outOfScope": [],
+  "sources": [
+    {
+      "id": "psu200-09",
+      "title": "STAT 200 Lesson 9: Inference for Two Samples",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu200-10",
+      "title": "STAT 200 Lesson 10: One-Way ANOVA",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-07",
+      "title": "STAT 500 Lesson 7: Comparing Two Population Parameters",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "psu500-10",
+      "title": "STAT 500 Lesson 10: Introduction to ANOVA",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-17",
+      "title": "Introduction to Modern Statistics (2e), Chapter 17: Inference for comparing two proportions",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-two-props.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-20",
+      "title": "Introduction to Modern Statistics (2e), Chapter 20: Inference for comparing two independent means",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-two-means.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-21",
+      "title": "Introduction to Modern Statistics (2e), Chapter 21: Inference for comparing paired means",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-paired-means.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "ims-22",
+      "title": "Introduction to Modern Statistics (2e), Chapter 22: Inference for comparing many means",
+      "publisher": "OpenIntro (Cetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/inference-many-means.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc31",
+      "title": "7.3.1 Do two processes have the same mean?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section3/prc31.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc311",
+      "title": "7.3.1.1 Analysis of paired observations",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section3/prc311.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc43",
+      "title": "7.4.3 Are the means equal?",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc43.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc431",
+      "title": "7.4.3.1 One-way ANOVA overview",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc431.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc432",
+      "title": "7.4.3.2 The one-way ANOVA model and assumptions",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc432.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc433",
+      "title": "7.4.3.3 The ANOVA table and tests of hypotheses about means",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc433.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc471",
+      "title": "7.4.7.1 Tukey's method",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc471.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-prc473",
+      "title": "7.4.7.3 Bonferroni's method",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/prc/section4/prc473.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "nist-eda353",
+      "title": "1.3.5.3 Two-Sample t-Test for Equal Means",
+      "publisher": "NIST/SEMATECH e-Handbook of Statistical Methods",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm",
+      "accessedAt": "2026-10-23"
+    },
+    {
+      "id": "st21-10",
+      "title": "Statistical Thinking for the 21st Century, Chapter 10: Quantifying effects and designing studies",
+      "publisher": "Russell A. Poldrack, Statistical Thinking for the 21st Century",
+      "url": "https://statsthinking21.github.io/statsthinking21-core-site/ci-effect-size-power.html",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-23"
+    }
+  ],
+  "concepts": [],
+  "prerequisites": []
+}
