@@ -1,7 +1,7 @@
 {
   "id": "categorical-data",
   "version": "1.0.0",
-  "status": "draft",
+  "status": "provisional",
   "subject": "Categorical data: summarising counts in contingency tables, testing them with chi-square tests, describing an association with relative risk and odds ratios, and spotting Simpson's paradox",
   "outOfScope": [
     "The logic of hypothesis tests, p-values and errors (see the Hypothesis testing pack)",
@@ -36,14 +36,6 @@
       "title": "STAT 500 Lesson 8: Chi-Square Test for Independence",
       "publisher": "Penn State Department of Statistics",
       "url": "https://online.stat.psu.edu/stat500/Lesson08",
-      "license": "CC BY-NC 4.0",
-      "accessedAt": "2026-10-23"
-    },
-    {
-      "id": "psu504-02",
-      "title": "STAT 504 Lesson 2: Binomial and Multinomial Inference",
-      "publisher": "Penn State Department of Statistics",
-      "url": "https://online.stat.psu.edu/stat504/Lesson02",
       "license": "CC BY-NC 4.0",
       "accessedAt": "2026-10-23"
     },
@@ -243,7 +235,7 @@
       ],
       "keyPoints": [
         {
-          "text": "A chi-square test compares observed counts, the number of sample cases in each group, with expected counts, the number of cases we would expect in each cell if the null hypothesis were true.",
+          "text": "A goodness-of-fit test compares observed counts, the number of sample cases in each group, with expected counts, the number of cases we would expect in each cell if the null hypothesis were true.",
           "sourceId": "psu200-11",
           "locator": "11.2 Goodness of Fit Test (Test Statistic)",
           "anchor": {
@@ -308,7 +300,7 @@
           }
         },
         {
-          "text": "On its own, a chi-squared statistic is not interpretable, because it depends on how many different values were added together.",
+          "text": "In one example, a chi-squared statistic of 0.74 was not interpretable on its own, since it depends on how many different values were added together.",
           "sourceId": "st21-12",
           "locator": "12.2 Pearson's chi-squared test",
           "anchor": {
@@ -486,15 +478,6 @@
       ],
       "keyPoints": [
         {
-          "text": "Chi-square methods can compare the proportions of more than two independent groups, as well as test for a relationship between two categorical variables.",
-          "sourceId": "psu200-11",
-          "locator": "11 Chi-Square Tests",
-          "anchor": {
-            "start": "In this lesson we will learn",
-            "end": "between two categorical variables."
-          }
-        },
-        {
           "text": "To test homogeneity of proportions, a chi-square test on a contingency table checks whether samples from several populations, such as lots or vendors, differ in their proportion of defectives.",
           "sourceId": "nist-prc46",
           "locator": "7.4.6 Do all the processes have the same proportion of defectives?",
@@ -513,7 +496,7 @@
           }
         },
         {
-          "text": "In one example comparing five lots, the chi-square statistic of 12.131 exceeded the critical value of 9.488 for 4 degrees of freedom, so the null hypothesis was rejected.",
+          "text": "In one example, the chi-square statistic of 12.131 exceeded the critical value of 9.488 for 4 degrees of freedom, so the null hypothesis was rejected.",
           "sourceId": "nist-prc46",
           "locator": "7.4.6 Do all the processes have the same proportion of defectives? (Conclusions)",
           "anchor": {
@@ -533,7 +516,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The test of independence assumes the sample is randomly drawn from the population and that all expected values are at least 5.",
+          "text": "The test's assumptions are a sample randomly drawn from the population and all expected values of at least 5.",
           "sourceId": "psu200-11",
           "locator": "11.3 Chi-Square Test of Independence",
           "anchor": {
@@ -542,11 +525,11 @@
           }
         },
         {
-          "text": "Using the chi-squared distribution needs independent observations and large samples: 5 expected counts in each cell.",
+          "text": "When the conditions are met, the statistic has a chi-squared distribution; the conditions are independent observations and large samples, with 5 expected counts in each cell.",
           "sourceId": "ims-18",
           "locator": "18.2.3 Observed statistic vs. null chi-squared statistics",
           "anchor": {
-            "start": "Conditions: Independent observations Large samples:",
+            "start": "true and the conditions are met,",
             "end": "expected counts in each cell"
           }
         },
@@ -614,7 +597,7 @@
           "sourceId": "st21-12",
           "locator": "12.4 Standardized residuals",
           "anchor": {
-            "start": "in this case, we see that",
+            "start": "These standardized residuals can be interpreted",
             "end": "lower than expected."
           }
         }
@@ -813,7 +796,7 @@
           }
         },
         {
-          "text": "A prospective study follows exposed and unexposed groups, both disease-free at the start; it can be very time-consuming and may need very large samples to find enough cases.",
+          "text": "A prospective study follows exposed and unexposed groups, both disease-free at the start; it can be very time-consuming and may need very large samples.",
           "sourceId": "psu504-03",
           "locator": "3.7 Prospective and Retrospective Studies",
           "anchor": {
@@ -822,7 +805,7 @@
           }
         },
         {
-          "text": "In a retrospective study, subjects with the disease are located first and then classified by exposure, such as whether they smoke.",
+          "text": "In a retrospective study, a group of subjects with a condition such as lymphoma is located first, and then each is identified as a smoker or not.",
           "sourceId": "psu504-03",
           "locator": "3.7 Prospective and Retrospective Studies",
           "anchor": {
@@ -859,7 +842,7 @@
           "sourceId": "psu100-06",
           "locator": "6.2 Simpson's Paradox",
           "anchor": {
-            "start": "two variables can change or even",
+            "start": "This was an example of Simpson’s",
             "end": "interacts strongly with both variables."
           }
         },
