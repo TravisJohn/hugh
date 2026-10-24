@@ -1,0 +1,36 @@
+{
+  "packId": "categorical-data",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "independence_categorical:1",
+      "type": "negation",
+      "sentence": "Two events are independent when they are related: the outcome of one event changes the outcome of the other."
+    },
+    {
+      "ref": "risk_and_relative_risk:5",
+      "type": "overstatement",
+      "sentence": "Relative risk is always a better measure of association than the difference in proportions, whatever the cell probabilities, and it is the only measure used in medicine and epidemiology."
+    },
+    {
+      "ref": "chi_square_distribution:3",
+      "type": "wrong_number_or_direction",
+      "sentence": "For a chi-square goodness-of-fit test, the degrees of freedom equal the number of groups plus 1."
+    },
+    {
+      "ref": "chi_square_distribution:1",
+      "type": "wrong_number_or_direction",
+      "sentence": "The p-value is the area under the chi-square distribution to the left of the test statistic; a chi-square test is always left-tailed."
+    },
+    {
+      "ref": "contingency_tables:1",
+      "type": "unsupported_addition",
+      "sentence": "A contingency table shows how two categorical variables are related by giving how many individuals fall in each combination of categories; the format was introduced by Karl Pearson in 1904."
+    },
+    {
+      "ref": "odds_and_odds_ratio:2",
+      "type": "causal_from_association",
+      "sentence": "In one study, high poverty caused sidewalks to deteriorate, making the odds of a sidewalk being uneven about 7.84 times as big in a high-poverty neighbourhood as in a low-poverty one."
+    }
+  ]
+}

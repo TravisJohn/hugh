@@ -1,0 +1,31 @@
+{
+  "packId": "descriptive-statistics",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "range_iqr:2",
+      "type": "negation",
+      "sentence": "Although the range is heavily influenced by outliers, the interquartile range, the difference between the first and third quartiles, is no better: it is not resistant to outliers either."
+    },
+    {
+      "ref": "choosing_centre:1",
+      "type": "overstatement",
+      "sentence": "With skewed data the mean is always useless as a representative value and the median must always be used; the mean is only valid when the data are perfectly symmetric."
+    },
+    {
+      "ref": "skew_mean_median:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "In a skewed distribution the mean is pulled away from the skew: a heavier right tail puts the mean below the median, and a heavier left tail puts it above."
+    },
+    {
+      "ref": "dot_plots_histograms:2",
+      "type": "unsupported_addition",
+      "sentence": "The most common histogram splits the range of the data into equal-sized bins, called classes, counts how many data points fall into each bin, and works best with between 5 and 20 bins."
+    },
+    {
+      "ref": "row_column_proportions:2",
+      "type": "causal_from_association",
+      "sentence": "Column proportions divide each count by its column total; when these rates differ across the levels of one variable, that shows the one variable causes the other."
+    }
+  ]
+}

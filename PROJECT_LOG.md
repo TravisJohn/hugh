@@ -9230,3 +9230,27 @@ Left alone: a moderate `sprintf-js` DoS reaching us via `mammoth` >
 `argparse@1`. It has no patched version, and mammoth 1.13.0 (latest, what we
 run) still pins `argparse ~1.0.3`, so the only "fix" is downgrading mammoth to
 0.3.29. It is below the gate's `--audit-level=high`.
+
+## 2026-10-23 - The statistics foundations join the catalog (16 courses)
+
+Seven statistics packs were authored one at a time, each machine-checked by
+a blind Opus judge with every real item supported and every planted error
+caught:
+- descriptive statistics, probability distributions, sampling and survey
+  design, and sampling distributions with confidence intervals, from the
+  statistics series;
+- hypothesis testing, comparing groups (t-tests, ANOVA) and categorical data
+  (chi-square, risk, Simpson's paradox), which finish the spine.
+
+I re-checked each one: its machine-check record, and cards covering every
+concept once in prerequisite order. Travis approved all seven card orders.
+
+They are gathered on feat/stats-foundations by one octopus merge. Each pack
+branch touched only its own pack and planted-errors file, so there were no
+conflicts and every milestone commit is kept. Each pack has an id lock and a
+catalog entry under Statistics.
+
+The seven sit first in the catalog, in path order, because catalog order is
+picker order: describe, then probability, then sampling, then inference,
+then comparing groups and categories, then the existing statistics courses
+(Linear Regression onwards). The catalog now holds 16 courses.

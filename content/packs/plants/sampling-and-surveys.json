@@ -1,0 +1,31 @@
+{
+  "packId": "sampling-and-surveys",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "probability_vs_nonprobability:4",
+      "type": "negation",
+      "sentence": "Probability sampling does not remove human subjectivity: who ends up in the sample still depends on the interviewer's own judgement."
+    },
+    {
+      "ref": "nonresponse_bias:2",
+      "type": "overstatement",
+      "sentence": "Any survey with a response rate below 60% is guaranteed to give biased results, so such a survey can never be used."
+    },
+    {
+      "ref": "open_closed_questions:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "Offered the economy in a list, only 35% chose it, but 58% named it unprompted when the question was open-ended."
+    },
+    {
+      "ref": "cluster_sampling:1",
+      "type": "unsupported_addition",
+      "sentence": "To take a cluster sample, divide the population into clusters, randomly select some of them, and collect data on every unit in each; Gallup first used this design in 1936."
+    },
+    {
+      "ref": "response_bias:5",
+      "type": "causal_from_association",
+      "sentence": "Having less education causes respondents to agree with whatever statement they are given, so better-educated samples would be free of acquiescence bias."
+    }
+  ]
+}

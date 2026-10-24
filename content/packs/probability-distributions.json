@@ -1,0 +1,1976 @@
+{
+  "id": "probability-distributions",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Probability distributions: random variables and the common distributions",
+  "outOfScope": [
+    "Probability axioms, set theory and rules of probability in depth; conditional probability and Bayes' theorem are taught in the Bayesian inference pack",
+    "Counting and combinatorics beyond the number of ways the binomial needs",
+    "Sampling distributions and the central limit theorem (a later pack)",
+    "Confidence intervals and hypothesis tests (later packs)",
+    "Joint, conditional and multivariate distributions, covariance between random variables",
+    "Moment generating functions, derivations and proofs",
+    "Describing data with means, standard deviations, z-scores and the empirical rule (see the Descriptive statistics pack)",
+    "The beta distribution and other priors (see the Bayesian inference pack)",
+    "Tooling: Excel, R, Python, Minitab and statistical tables"
+  ],
+  "sources": [
+    {
+      "id": "psu414-07",
+      "title": "STAT 414 Lesson 7: Discrete Random Variables",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-08",
+      "title": "STAT 414 Lesson 8: Mathematical Expectation",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson08",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-10",
+      "title": "STAT 414 Lesson 10: The Binomial Distribution",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson10",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-12",
+      "title": "STAT 414 Lesson 12: The Poisson Distribution",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson12",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-14",
+      "title": "STAT 414 Lesson 14: Continuous Random Variables",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson14",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-15",
+      "title": "STAT 414 Lesson 15: Exponential, Gamma and Chi-Square Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson15",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-16",
+      "title": "STAT 414 Lesson 16: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson16",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu414-28",
+      "title": "STAT 414 Lesson 28: Approximations for Discrete Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat414/Lesson28",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu500-03",
+      "title": "STAT 500 Lesson 3: Probability Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat500/Lesson03",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-07",
+      "title": "STAT 200 Lesson 7: Normal Distributions",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-what",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.1: What is a Probability Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda361.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-related",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.2: Related Distributions",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda362.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-families",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.3: Families of Distributions",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda363.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-loc-scale",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.4: Location and Scale Parameters",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda364.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-normal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.1: Normal Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3661.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-uniform",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.2: Uniform Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3662.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-exponential",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.7: Exponential Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3667.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-poisson",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.6.6.19: Poisson Distribution",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda366j.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21: Normal Probability Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprpl.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-normal",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.1: Normal Probability Plot: Normally Distributed Data",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp1.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-short",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.2: Normal Probability Plot: Data Have Short Tails",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp2.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-long",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.3: Normal Probability Plot: Data Have Long Tails",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp3.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-npp-right",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.21.4: Normal Probability Plot: Data are Skewed Right",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/normprp4.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "nist-probplot",
+      "title": "NIST/SEMATECH e-Handbook of Statistical Methods, 1.3.3.22: Probability Plot",
+      "publisher": "NIST/SEMATECH",
+      "url": "https://www.itl.nist.gov/div898/handbook/eda/section3/probplot.htm",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-math",
+      "title": "Introduction to Modern Statistics (2e), Chapter 13: Inference with mathematical models",
+      "publisher": "OpenIntro (Çetinkaya-Rundel and Hardin)",
+      "url": "https://openintro-ims.netlify.app/foundations-mathematical.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "random_variables",
+      "title": "Random variables",
+      "outcome": "Explain what a random variable is, and why turning chance outcomes into numbers makes them easier to work with.",
+      "keyPoints": [
+        {
+          "text": "A random variable is a variable whose value is determined by chance: a numerical quantity that varies at random.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "(Random Variable) A random variable",
+            "end": "quantity that varies at random."
+          }
+        },
+        {
+          "text": "Rather than list every outcome, such as the 1,024 head-and-tail sequences of ten coin flips, you can define a random variable such as the number of heads in the flips.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "How about ten times?",
+            "end": "flips of a fair coin."
+          }
+        },
+        {
+          "text": "Formally, a random variable assigns exactly one real number to each outcome in the sample space, and the set of values it can take is called its support.",
+          "sourceId": "psu414-07",
+          "locator": "7.1 Random Variables",
+          "anchor": {
+            "start": "Def. 7.1 (Random Variable",
+            "end": "the support, or space, of"
+          }
+        },
+        {
+          "text": "By convention a capital letter such as X names the random variable, and the matching lowercase letter stands for one of its possible values.",
+          "sourceId": "psu414-07",
+          "locator": "7.1 Random Variables",
+          "anchor": {
+            "start": "Note that the capital letters",
+            "end": "random variable's possible values."
+          }
+        }
+      ],
+      "aliases": [
+        "random variable",
+        "variable determined by chance"
+      ]
+    },
+    {
+      "id": "discrete_continuous_rv",
+      "title": "Discrete and continuous random variables",
+      "outcome": "Tell a discrete random variable from a continuous one by the values it can take. (Discrete and continuous data are introduced in the Descriptive statistics pack.)",
+      "keyPoints": [
+        {
+          "text": "A discrete random variable can take only a countable number of values, possibly infinitely many; a continuous one can take any of the uncountably many values in an interval.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "(Discrete Random Variable) When the",
+            "end": "values in a line interval."
+          }
+        },
+        {
+          "text": "Discrete variables usually take whole-number values: six coin tosses can give 2 or 3 heads, but never 2 and a half.",
+          "sourceId": "nist-what",
+          "locator": "Discrete Distributions",
+          "anchor": {
+            "start": "mean? A discrete probability function",
+            "end": "but not 2 1/2 heads."
+          }
+        },
+        {
+          "text": "A continuous random variable takes an uncountably infinite number of possible values; the height of a randomly chosen maple tree is one example.",
+          "sourceId": "psu414-14",
+          "locator": "Lesson 14 introduction",
+          "anchor": {
+            "start": "Overview A continuous random variable",
+            "end": "is a continuous random variable."
+          }
+        }
+      ]
+    },
+    {
+      "id": "probability_distributions",
+      "title": "Probability distributions as models",
+      "outcome": "Explain a probability distribution as a model of how a random variable's values vary, and why named distributions save work.",
+      "keyPoints": [
+        {
+          "text": "A probability function gives the probabilities of a random variable's possible outcomes, and comes in two classes: probability mass functions and probability density functions.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "(Probability Function) A probability function",
+            "end": "and Probability Density Functions."
+          }
+        },
+        {
+          "text": "Turning outcomes into a random variable lets you quantify them and work out their characteristics through the variable's probability function.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "Transforming the outcomes to a random",
+            "end": "find its probability function."
+          }
+        },
+        {
+          "text": "As the class intervals of a density histogram shrink, the histogram turns into a curve that represents the probability distribution.",
+          "sourceId": "psu414-14",
+          "locator": "14.1 Probability Density Functions",
+          "anchor": {
+            "start": "Now, what if we pushed",
+            "end": "case, might look like this"
+          }
+        },
+        {
+          "text": "When a situation meets certain conditions, a general formula for its probabilities can be derived, so you can use the formula instead of working from first principles.",
+          "sourceId": "psu414-10",
+          "locator": "Lesson 10 overview",
+          "anchor": {
+            "start": "The basic idea behind this lesson,",
+            "end": "resorting to first principles."
+          }
+        }
+      ],
+      "aliases": [
+        "probability distribution",
+        "probability function",
+        "probability model"
+      ]
+    },
+    {
+      "id": "pmf",
+      "title": "Probability mass functions",
+      "outcome": "Read and check a probability mass function for a discrete variable, given as a table or a formula.",
+      "keyPoints": [
+        {
+          "text": "For a discrete random variable, the probability mass function gives the probability that the variable equals each particular value, and can be written as an equation or a table.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "(Probability Mass Function (PMF)) If",
+            "end": "the form of a table."
+          }
+        },
+        {
+          "text": "Every probability in a mass function lies between 0 and 1, and the probabilities add up to 1, which means at least one of the values has to occur.",
+          "sourceId": "nist-what",
+          "locator": "Discrete Distributions",
+          "anchor": {
+            "start": "Each of the discrete values has",
+            "end": "the values has to occur."
+          }
+        },
+        {
+          "text": "Values outside the support have probability zero, and the probability of an event is the sum of the probabilities of the values that make it up.",
+          "sourceId": "psu414-07",
+          "locator": "7.3 Probability Mass Functions",
+          "anchor": {
+            "start": "First item basically says that,",
+            "end": "you just sum up the probabilities"
+          }
+        }
+      ],
+      "aliases": [
+        "PMF",
+        "probability mass function"
+      ]
+    },
+    {
+      "id": "pdf_density",
+      "title": "Probability density and areas",
+      "outcome": "Find probabilities for a continuous variable as areas under its density curve, and explain why any single exact value has probability zero.",
+      "keyPoints": [
+        {
+          "text": "For a continuous distribution, the probability of an interval of values is the area under the density curve over it, and the whole area under the curve is 1.",
+          "sourceId": "psu200-07",
+          "locator": "7.1 Normal Distributions",
+          "anchor": {
+            "start": "While we cannot determine the",
+            "end": "is 1.00, or 100%."
+          }
+        },
+        {
+          "text": "A density value is the height of the curve, not a probability (a density can equal 2.43, for example); in the continuous case, probabilities come from areas under the curve.",
+          "sourceId": "psu414-14",
+          "locator": "14.1 Probability Density Functions",
+          "anchor": {
+            "start": "First, note again that",
+            "end": "curve that define the probabilities."
+          }
+        },
+        {
+          "text": "For a continuous random variable, the probability of any one particular value is 0, so instead you find the probability that it falls in an interval.",
+          "sourceId": "psu414-14",
+          "locator": "14.1 Probability Density Functions",
+          "anchor": {
+            "start": "For continuous random variables, as we",
+            "end": "falls in some interval"
+          }
+        },
+        {
+          "text": "Because single values carry no probability, you can be careless about whether an interval includes its endpoints when finding probabilities for a continuous variable.",
+          "sourceId": "psu414-14",
+          "locator": "14.1 Probability Density Functions",
+          "anchor": {
+            "start": "An implication of the fact",
+            "end": "probabilities of continuous random variables."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The probability that a continuous variable takes one exact value equals the density at that value.",
+          "correction": "A single exact value has probability zero; probabilities are areas over intervals, and the height of a density can even be greater than 1.",
+          "sourceId": "nist-what",
+          "locator": "Continuous Distributions",
+          "anchor": {
+            "start": "Since continuous probability functions are",
+            "end": "be greater than one."
+          }
+        }
+      ],
+      "aliases": [
+        "PDF",
+        "probability density function",
+        "density curve"
+      ]
+    },
+    {
+      "id": "cdf",
+      "title": "Cumulative distribution functions",
+      "outcome": "Read a cumulative distribution function as the probability of a value at or below x, for discrete and continuous variables.",
+      "keyPoints": [
+        {
+          "text": "The cumulative distribution function gives the probability that the random variable is less than or equal to a value x, and it is defined the same way for discrete and continuous variables.",
+          "sourceId": "psu500-03",
+          "locator": "3.1 Random Variables",
+          "anchor": {
+            "start": "(Cumulative Distribution Function (CDF)) A",
+            "end": "or a continuous random variable."
+          }
+        },
+        {
+          "text": "A cumulative distribution function ranges from 0 to 1, as it must, because its values are probabilities.",
+          "sourceId": "psu414-07",
+          "locator": "7.4 Cumulative Distribution Functions",
+          "anchor": {
+            "start": "The cdf, \\(F_X(t)\\), ranges from",
+            "end": "is a probability."
+          }
+        },
+        {
+          "text": "For a discrete variable the cumulative distribution function is a non-decreasing step function; for a continuous variable it is a non-decreasing continuous function.",
+          "sourceId": "psu414-14",
+          "locator": "14.2 Cumulative Distribution Functions",
+          "anchor": {
+            "start": "You might recall, for discrete",
+            "end": "non-decreasing continuous function."
+          }
+        },
+        {
+          "text": "The standard way to report a distribution's probabilities, in statistical software or in printed tables, is as cumulative probabilities.",
+          "sourceId": "psu414-10",
+          "locator": "10.3 Cumulative Binomial Probabilities",
+          "anchor": {
+            "start": "Now the standard procedure is",
+            "end": "or in a table"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "For a discrete variable, 'at most 2' and 'fewer than 2' have the same probability.",
+          "correction": "For a discrete variable they differ: at most 2 includes the value 2 and fewer than 2 does not, so the wording has to be read carefully.",
+          "sourceId": "psu414-07",
+          "locator": "7.4 Cumulative Distribution Functions",
+          "anchor": {
+            "start": "It is worth noting that",
+            "end": "correctly set up the probabilities."
+          }
+        }
+      ],
+      "aliases": [
+        "CDF",
+        "cumulative distribution function",
+        "cumulative probability"
+      ]
+    },
+    {
+      "id": "cdf_probabilities",
+      "title": "Probabilities from cumulative probabilities",
+      "outcome": "Use cumulative probabilities and the complement rule to find 'more than', 'at least', 'exactly' and 'between' probabilities.",
+      "keyPoints": [
+        {
+          "text": "A 'more than' probability can be found as 1 minus a cumulative probability: the chance of more than 7 is 1 minus the chance of 7 or fewer.",
+          "sourceId": "psu414-10",
+          "locator": "10.3 Cumulative Binomial Probabilities",
+          "anchor": {
+            "start": "Alternatively, we could calculate",
+            "end": "and subtracting it from 1."
+          }
+        },
+        {
+          "text": "For 'at least one', adding up every case is the long way; the short way is the complement rule.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "There are two ways to solve",
+            "end": "by using the complement rule."
+          }
+        },
+        {
+          "text": "A 'between' probability is the difference of two cumulative probabilities: find the cumulative probability at each end, then subtract.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.2 The Standard Normal Distribution",
+          "anchor": {
+            "start": "To find the area between 2.0",
+            "end": "3.0 and then subtract."
+          }
+        }
+      ]
+    },
+    {
+      "id": "percentiles_quantiles",
+      "title": "Percentiles of a distribution",
+      "outcome": "Find a distribution's percentiles, and explain the percent point function as the cumulative distribution function run backwards.",
+      "keyPoints": [
+        {
+          "text": "The 100p-th percentile of a continuous random variable is the value with area p under the density to its left; the 50th percentile is the median.",
+          "sourceId": "psu414-14",
+          "locator": "14.3 Finding Percentiles",
+          "anchor": {
+            "start": "Def. 14.3 (Percentile) If",
+            "end": "is called the median"
+          }
+        },
+        {
+          "text": "The percent point function is the inverse of the cumulative distribution function: it starts from a probability and returns the value x with that cumulative probability.",
+          "sourceId": "nist-related",
+          "locator": "Percent Point Function",
+          "anchor": {
+            "start": "The percent point function (ppf) is",
+            "end": "x for the cumulative distribution."
+          }
+        },
+        {
+          "text": "The cumulative probability at a value, the proportion at or below it, is also called a percentile.",
+          "sourceId": "psu200-07",
+          "locator": "7.2 Minitab: Finding Proportions Under a Normal Distribution",
+          "anchor": {
+            "start": "The cumulative probability for a value",
+            "end": "known as a percentile."
+          }
+        }
+      ],
+      "aliases": [
+        "percentile",
+        "quantile",
+        "percent point function",
+        "inverse CDF"
+      ]
+    },
+    {
+      "id": "expected_value",
+      "title": "Expected value",
+      "outcome": "Compute the expected value of a discrete random variable and interpret it as a long-run average, not a likely single result.",
+      "keyPoints": [
+        {
+          "text": "The expected value of a discrete random variable multiplies each possible value by its probability and adds the results: an average weighted by how likely each value is.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.1 Expected Value and Variance",
+          "anchor": {
+            "start": "The formula means that we multiply",
+            "end": "the likelihood of the value."
+          }
+        },
+        {
+          "text": "The expected value says what the average of a large number of repetitions would be in the long run; it is a theoretical average, not one actually observed.",
+          "sourceId": "psu414-08",
+          "locator": "8.1 A Definition",
+          "anchor": {
+            "start": "All the expected value tells us",
+            "end": "not an actual, realized one!"
+          }
+        },
+        {
+          "text": "The expected value need not be a value the variable can take: nine flips of a fair coin have an expected 4.5 heads.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.1 Expected Value and Variance",
+          "anchor": {
+            "start": "For this example, the expected value",
+            "end": "not a valid number of heads."
+          }
+        },
+        {
+          "text": "An expected loss of 20 cents a play describes the average over thousands of plays; it says nothing about one or two plays, where a loss is a full dollar.",
+          "sourceId": "psu414-08",
+          "locator": "8.1 A Definition",
+          "anchor": {
+            "start": "If you play and lose, you",
+            "end": "thousands and thousands of plays."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "The expected value is the most likely value, the result you should expect on a single try.",
+          "correction": "The expected value is a long-run average, not the result to expect on one try: a fair die's expected value is 3.5, yet you should not expect any single toss to be 3.5.",
+          "sourceId": "psu414-08",
+          "locator": "8.1 A Definition",
+          "anchor": {
+            "start": "Therefore, the average toss, that is,",
+            "end": "to be in the long run."
+          }
+        }
+      ],
+      "aliases": [
+        "expected value",
+        "mean of a random variable",
+        "E(X)"
+      ]
+    },
+    {
+      "id": "variance_of_rv",
+      "title": "Variance and standard deviation of a random variable",
+      "outcome": "Compute and interpret the variance and standard deviation of a random variable as the spread of its distribution.",
+      "keyPoints": [
+        {
+          "text": "The variance of a discrete random variable takes each value's distance from the expected value, squares it, weights it by the value's probability, and adds them up.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.1 Expected Value and Variance",
+          "anchor": {
+            "start": "The formula means that we take",
+            "end": "sum all of those values."
+          }
+        },
+        {
+          "text": "The standard deviation of a random variable is the square root of its variance.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.1 Expected Value and Variance",
+          "anchor": {
+            "start": "(Standard Deviation of a Discrete Random",
+            "end": "the square root of the variance."
+          }
+        },
+        {
+          "text": "Two random variables can have the same mean and different distributions, so the mean alone is not enough to summarise a distribution.",
+          "sourceId": "psu414-08",
+          "locator": "8.3 Variance of X",
+          "anchor": {
+            "start": "It is a straightforward calculation to",
+            "end": "summarizing their probability distributions."
+          }
+        },
+        {
+          "text": "The mean measures the middle of a random variable's distribution, while the variance and standard deviation quantify the spread, or dispersion, of its possible values.",
+          "sourceId": "psu414-08",
+          "locator": "8.3 Variance of X",
+          "anchor": {
+            "start": "Although most students understand that",
+            "end": "spread or dispersion of the values"
+          }
+        }
+      ],
+      "aliases": [
+        "variance of a random variable",
+        "standard deviation of a random variable",
+        "Var(X)"
+      ]
+    },
+    {
+      "id": "population_vs_sample",
+      "title": "A distribution's mean versus a sample's mean",
+      "outcome": "Tell a random variable's expected value and variance from a sample's mean and variance, and use the sample values as estimates. (Computing a sample's mean and standard deviation is taught in the Descriptive statistics pack.)",
+      "keyPoints": [
+        {
+          "text": "You can take a random sample and use its sample mean and sample variance as estimates of the population mean and population variance.",
+          "sourceId": "psu414-08",
+          "locator": "8.5 Sample Means and Variances",
+          "anchor": {
+            "start": "We could take a random sample",
+            "end": "estimate the population variance"
+          }
+        },
+        {
+          "text": "Even the average of a thousand tosses of a fair die will probably not be exactly the expected 3.5, though it can be expected to be close.",
+          "sourceId": "psu414-08",
+          "locator": "8.1 A Definition",
+          "anchor": {
+            "start": "fair, six-sided die a thousand",
+            "end": "be close to 3.5."
+          }
+        },
+        {
+          "text": "Comparing a distribution's theoretical mean and variance with a sample's mean and variance is one way to check whether data follow it, but on its own it is hardly sufficient.",
+          "sourceId": "psu414-14",
+          "locator": "14.6 Uniform Applications",
+          "anchor": {
+            "start": "One possibility is to compare the",
+            "end": "such a comparison is hardly sufficient."
+          }
+        },
+        {
+          "text": "The location and scale parameters of a normal distribution can be estimated with the sample mean and the sample standard deviation.",
+          "sourceId": "nist-normal",
+          "locator": "Parameter Estimation",
+          "anchor": {
+            "start": "Parameter Estimation The location and scale",
+            "end": "sample standard deviation, respectively."
+          }
+        }
+      ],
+      "aliases": [
+        "population mean",
+        "sample mean",
+        "parameter versus statistic"
+      ]
+    },
+    {
+      "id": "binomial_conditions",
+      "title": "When the binomial applies",
+      "outcome": "Decide whether a count follows a binomial distribution by checking its four conditions, and define 'success' for the question at hand.",
+      "keyPoints": [
+        {
+          "text": "A binomial experiment has a fixed number n of identical trials, each with one of two outcomes, the same probability of success on every trial, and independent trials.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "We have a binomial experiment if",
+            "end": "affect the outcome of the others."
+          }
+        },
+        {
+          "text": "When all four conditions hold, the number of successes in the n trials is a binomial random variable.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "If the four conditions are satisfied,",
+            "end": "is a binomial random variable"
+          }
+        },
+        {
+          "text": "'Success' is simply whichever outcome the researcher decides to count; it need not be a positive outcome.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "\"Success\" is defined as",
+            "end": "not just a positive outcome."
+          }
+        },
+        {
+          "text": "Any random variable can be turned into a binary one by calling one event a success and everything else a failure, such as rolling a three versus not rolling a three.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "A random variable can be transformed",
+            "end": "is now a binary variable."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Any count of outcomes that each have two possibilities follows a binomial distribution.",
+          "correction": "Two outcomes are not enough: sampling students until four volunteers are found is not binomial, because the number of trials is not fixed in advance.",
+          "sourceId": "psu414-10",
+          "locator": "10.2 Is X Binomial?",
+          "anchor": {
+            "start": "Example 10.3 A college administrator",
+            "end": "number of volunteers in the sample."
+          }
+        }
+      ],
+      "aliases": [
+        "binomial distribution",
+        "Bernoulli trials",
+        "binomial experiment"
+      ]
+    },
+    {
+      "id": "binomial_probabilities",
+      "title": "Binomial probabilities",
+      "outcome": "Compute a binomial probability by counting the ways to get x successes and multiplying by the chance of each way.",
+      "keyPoints": [
+        {
+          "text": "The pattern behind the binomial formula is to multiply the number of ways of getting x successes by the probability of x successes and then by the probability of the remaining failures.",
+          "sourceId": "psu414-10",
+          "locator": "10.1 The Probability Mass Function",
+          "anchor": {
+            "start": "It seems that, in each case,",
+            "end": "mass function of a binomial"
+          }
+        },
+        {
+          "text": "With three independent crimes each solved with probability 0.2, exactly one is solved in three possible orders, each with probability 0.128, so the chance is 0.384.",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "To find the probability that only",
+            "end": "probabilities up to get 0.384."
+          }
+        },
+        {
+          "text": "Adding up many individual binomial probabilities by hand is laborious, so cumulative binomial probabilities are the alternative typically used.",
+          "sourceId": "psu414-10",
+          "locator": "10.3 Cumulative Binomial Probabilities",
+          "anchor": {
+            "start": "Either way, it becomes readily apparent",
+            "end": "involves cumulative binomial probabilities."
+          }
+        }
+      ],
+      "aliases": [
+        "binomial formula",
+        "binomial PMF"
+      ]
+    },
+    {
+      "id": "binomial_mean_shape",
+      "title": "A binomial's mean and shape",
+      "outcome": "State a binomial distribution's mean, spread and range, and predict its shape from n and p.",
+      "keyPoints": [
+        {
+          "text": "A binomial random variable has mean np, variance np(1 - p), and standard deviation equal to the square root of np(1 - p).",
+          "sourceId": "psu500-03",
+          "locator": "3.2.2 Binomial Random Variables",
+          "anchor": {
+            "start": "If the four conditions are satisfied,",
+            "end": "A Note on Notation!"
+          }
+        },
+        {
+          "text": "With a small p and a small n, a binomial distribution is skewed right: most of the probability sits on small counts and it tails off to the right.",
+          "sourceId": "psu414-10",
+          "locator": "10.4 Effect of n and p on Shape",
+          "anchor": {
+            "start": "For small \\(p\\) and small",
+            "end": "tails off to the right."
+          }
+        },
+        {
+          "text": "With p = 0.5 a binomial distribution is symmetric whatever n is, and with a small p it approaches symmetry as n grows large.",
+          "sourceId": "psu414-10",
+          "locator": "10.4 Effect of n and p on Shape",
+          "anchor": {
+            "start": "For \\(p=0.5\\) and large and",
+            "end": "the distribution is nearly symmetric."
+          }
+        },
+        {
+          "text": "The mean of a count need not be a whole number: an average of 7.2 germinating seeds is a long-run average over repeated experiments, each of which gives a whole number.",
+          "sourceId": "psu414-10",
+          "locator": "10.5 The Mean and Variance",
+          "anchor": {
+            "start": "Recall that the mean is a",
+            "end": "need not be an integer."
+          }
+        }
+      ]
+    },
+    {
+      "id": "without_replacement",
+      "title": "Sampling without replacement",
+      "outcome": "Recognise sampling without replacement, when it breaks the binomial, and when a binomial is still a fair approximation.",
+      "keyPoints": [
+        {
+          "text": "When 5 skeins are sampled without replacement from a lot of 15, the chance of an acceptable skein changes from draw to draw, so the count of acceptable skeins is not binomial.",
+          "sourceId": "psu414-10",
+          "locator": "10.2 Is X Binomial?",
+          "anchor": {
+            "start": "A Quality Control Inspector (QCI) investigates",
+            "end": "changes from trial to trial."
+          }
+        },
+        {
+          "text": "The hypergeometric distribution is the model for sampling without replacement; when samples are drawn with replacement, the count follows a binomial distribution.",
+          "sourceId": "psu414-07",
+          "locator": "7.5 Hypergeometric Distribution",
+          "anchor": {
+            "start": "Note that one of the key",
+            "end": "called the binomial distribution."
+          }
+        },
+        {
+          "text": "When the sample is small compared with the population, a count from sampling without replacement is treated as approximately binomial; when the sample is close to the population size, it is treated as hypergeometric.",
+          "sourceId": "psu414-10",
+          "locator": "10.2 Is X Binomial?",
+          "anchor": {
+            "start": "In general, when the sample size",
+            "end": "follows a hypergeometric distribution."
+          }
+        }
+      ],
+      "aliases": [
+        "hypergeometric distribution",
+        "finite population"
+      ]
+    },
+    {
+      "id": "poisson_setting",
+      "title": "When the Poisson applies",
+      "outcome": "Recognise when a count of events in an interval of time or space can be modelled with a Poisson distribution.",
+      "keyPoints": [
+        {
+          "text": "A Poisson random variable counts how many times an event occurs in an interval of time or space, such as typos on a printed page or cars through an intersection in one minute.",
+          "sourceId": "psu414-12",
+          "locator": "12.1 Poisson Distributions",
+          "anchor": {
+            "start": "Let the discrete random variable",
+            "end": "the time being one minute.)"
+          }
+        },
+        {
+          "text": "A count follows an approximate Poisson process when counts in non-overlapping intervals are independent, one event in a short interval has probability proportional to its length, and two or more events there essentially never happen.",
+          "sourceId": "psu414-12",
+          "locator": "12.1 Poisson Distributions",
+          "anchor": {
+            "start": "denote the number of events in",
+            "end": "is essentially zero."
+          }
+        },
+        {
+          "text": "The Poisson distribution is used to model the number of events occurring within a given time interval.",
+          "sourceId": "nist-poisson",
+          "locator": "Probability Mass Function",
+          "anchor": {
+            "start": "The Poisson distribution is used to",
+            "end": "within a given time interval."
+          }
+        },
+        {
+          "text": "There are infinitely many Poisson distributions, and which specific one applies depends on the distribution's parameter.",
+          "sourceId": "psu414-12",
+          "locator": "12.1 Poisson Distributions",
+          "anchor": {
+            "start": "Also, note that there are (theoretically)",
+            "end": "depends on the parameter"
+          }
+        }
+      ],
+      "aliases": [
+        "Poisson distribution",
+        "Poisson process",
+        "count data"
+      ]
+    },
+    {
+      "id": "poisson_mean_and_approx",
+      "title": "A Poisson's mean, and approximating a binomial",
+      "outcome": "Use the fact that a Poisson's mean and variance are both lambda, rescale lambda to a new interval, and know when a Poisson approximates a binomial.",
+      "keyPoints": [
+        {
+          "text": "A Poisson distribution's parameter lambda is the average number of events in the given interval.",
+          "sourceId": "nist-poisson",
+          "locator": "Probability Mass Function",
+          "anchor": {
+            "start": "The Poisson distribution is used to",
+            "end": "in the given time interval."
+          }
+        },
+        {
+          "text": "A Poisson random variable's mean and variance are both equal to lambda.",
+          "sourceId": "psu414-12",
+          "locator": "12.1 Poisson Distributions",
+          "anchor": {
+            "start": "Def. 12.1 (Poisson Random Variable)",
+            "end": "both the mean and the variance"
+          }
+        },
+        {
+          "text": "Lambda scales with the size of the interval: at an average of 3 typos per page, the count on 3 pages has an average of 9 typos.",
+          "sourceId": "psu414-12",
+          "locator": "12.2 Finding Poisson Probabilities",
+          "anchor": {
+            "start": "Solving this problem involves taking one",
+            "end": "typos per 3 pages"
+          }
+        },
+        {
+          "text": "The Poisson approximation to the binomial works well only when n is large and p is small.",
+          "sourceId": "psu414-12",
+          "locator": "12.4 Approximating the Binomial",
+          "anchor": {
+            "start": "It is important to keep in",
+            "end": "and p is small."
+          }
+        }
+      ]
+    },
+    {
+      "id": "location_scale",
+      "title": "Location, scale and standard form",
+      "outcome": "Explain how location and scale parameters shift and stretch a distribution, and why they are the mean and standard deviation only for the normal.",
+      "keyPoints": [
+        {
+          "text": "A location parameter shifts the graph of a distribution left or right along the horizontal axis.",
+          "sourceId": "nist-loc-scale",
+          "locator": "Location Parameter",
+          "anchor": {
+            "start": "A location parameter of -10 would",
+            "end": "right on the horizontal axis."
+          }
+        },
+        {
+          "text": "A scale parameter above 1 stretches a density out, one below 1 compresses it, and a scale parameter must be positive.",
+          "sourceId": "nist-loc-scale",
+          "locator": "Scale Parameter",
+          "anchor": {
+            "start": "a scale parameter greater than one",
+            "end": "parameters are not allowed."
+          }
+        },
+        {
+          "text": "A distribution's standard form has location 0 and scale 1; software often computes only the standard form, and general formulas convert it to other locations and scales.",
+          "sourceId": "nist-loc-scale",
+          "locator": "Standard Form",
+          "anchor": {
+            "start": "The standard form of any distribution",
+            "end": "of the particular probability distribution."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A distribution's location and scale parameters are always its mean and standard deviation.",
+          "correction": "That holds for the normal distribution, but for most other distributions the location and scale parameters are not the mean and standard deviation.",
+          "sourceId": "nist-loc-scale",
+          "locator": "Relationship to Mean and Standard Deviation",
+          "anchor": {
+            "start": "Relationship to Mean and Standard Deviation",
+            "end": "not true for most distributions."
+          }
+        }
+      ],
+      "aliases": [
+        "location parameter",
+        "scale parameter",
+        "shape parameter"
+      ]
+    },
+    {
+      "id": "normal_distribution",
+      "title": "The normal distribution",
+      "outcome": "Describe the normal distribution: its bell shape, its two parameters and what each does, and the kinds of data it models.",
+      "keyPoints": [
+        {
+          "text": "The normal distribution is a family of continuous distributions that can model many real-life histograms that are mound-shaped and symmetric, such as height and weight.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.1 The Normal Distribution",
+          "anchor": {
+            "start": "The Normal Distribution is a family",
+            "end": "height, weight, etc.)."
+          }
+        },
+        {
+          "text": "A normal distribution is always a symmetric, single-peaked bell curve; changing its mean shifts the curve left or right, and changing its standard deviation stretches or narrows it.",
+          "sourceId": "ims-math",
+          "locator": "13.2 The normal distribution",
+          "anchor": {
+            "start": "The normal distribution always describes a",
+            "end": "stretches or constricts the curve."
+          }
+        },
+        {
+          "text": "The mean and standard deviation describe a normal distribution exactly, which is why they are called its parameters.",
+          "sourceId": "ims-math",
+          "locator": "13.2 The normal distribution",
+          "anchor": {
+            "start": "Because the mean and standard deviation",
+            "end": "called the distribution's parameters."
+          }
+        },
+        {
+          "text": "A normal random variable can fall 4 or more standard deviations from the mean, but such values are very rare if the data are nearly normal.",
+          "sourceId": "ims-math",
+          "locator": "13.2.6 68-95-99.7 rule",
+          "anchor": {
+            "start": "It is possible for a normal",
+            "end": "if the data are nearly normal."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Real variables such as heights are exactly normally distributed.",
+          "correction": "Many variables are nearly normal, but none is exactly normal; the normal model is useful for many problems without being perfect for any one.",
+          "sourceId": "ims-math",
+          "locator": "13.2 The normal distribution",
+          "anchor": {
+            "start": "Distributions of many variables are nearly",
+            "end": "useful for a variety of problems."
+          }
+        }
+      ],
+      "aliases": [
+        "normal distribution",
+        "Gaussian distribution",
+        "bell curve"
+      ]
+    },
+    {
+      "id": "standard_normal",
+      "title": "The standard normal and standardising",
+      "outcome": "Standardise a normal value and explain why one standard normal table serves every normal distribution. (Z-scores as a description of data are taught in the Descriptive statistics pack.)",
+      "keyPoints": [
+        {
+          "text": "The standard normal distribution is the normal distribution with mean 0 and standard deviation 1, also called the z distribution.",
+          "sourceId": "psu200-07",
+          "locator": "7.1 Normal Distributions",
+          "anchor": {
+            "start": "A standard normal distribution has a",
+            "end": "known as the z distribution."
+          }
+        },
+        {
+          "text": "Because a table for every normal distribution would mean infinitely many tables, cumulative probabilities are tabled for the standard normal, and other normal distributions are transformed to it.",
+          "sourceId": "psu414-16",
+          "locator": "16.2 Finding Normal Probabilities",
+          "anchor": {
+            "start": "Aw, geez, there'd have to be",
+            "end": "calculate our desired probability."
+          }
+        },
+        {
+          "text": "Standardising a normal value into a z-score transforms the variable into a standard normal one, so its probabilities can be read from the standard normal table.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.3 Probabilities for Normal Random Variables",
+          "anchor": {
+            "start": "For any normal random variable, if",
+            "end": "using the standard normal table."
+          }
+        },
+        {
+          "text": "Standardising keeps a normal variable normal: the z-scores follow a normal distribution with mean 0 and standard deviation 1.",
+          "sourceId": "ims-math",
+          "locator": "13.2.2 Standardizing with Z scores",
+          "anchor": {
+            "start": "comes from a normal distribution centered",
+            "end": "as well as the spread."
+          }
+        }
+      ],
+      "aliases": [
+        "standard normal",
+        "z distribution",
+        "standardising",
+        "N(0,1)"
+      ]
+    },
+    {
+      "id": "normal_probabilities",
+      "title": "Finding normal probabilities and values",
+      "outcome": "Find normal probabilities below, above and between values, and the value at a given percentile, with a table or software.",
+      "keyPoints": [
+        {
+          "text": "Software and most normal tables give the area to the left of a value; for the area to the right, subtract that from 1.",
+          "sourceId": "ims-math",
+          "locator": "13.2.4 Normal probability calculations",
+          "anchor": {
+            "start": "Most statistical software, as well as",
+            "end": "subtract the amount from one."
+          }
+        },
+        {
+          "text": "Every normal probability question is one of three kinds: below a value, above a value, or between two values.",
+          "sourceId": "psu414-16",
+          "locator": "16.2 Finding Normal Probabilities",
+          "anchor": {
+            "start": "The previous three examples have illustrated",
+            "end": "and between two numbers."
+          }
+        },
+        {
+          "text": "Before calculating, draw and label the normal curve and shade the area you want; the picture gives an estimate of the answer.",
+          "sourceId": "ims-math",
+          "locator": "13.2.4 Normal probability calculations",
+          "anchor": {
+            "start": "For any normal probability situation, always",
+            "end": "an estimate of the probability."
+          }
+        },
+        {
+          "text": "Going the other way, from a known lower-tail probability to the value that has it, you can work on the original curve or through the z-score on the standard normal curve.",
+          "sourceId": "ims-math",
+          "locator": "13.2.4 Normal probability calculations",
+          "anchor": {
+            "start": "In this case, the lower tail",
+            "end": "a standard deviation of one."
+          }
+        },
+        {
+          "text": "The 68-95-99.7 rule gives only a quick estimate of normal probabilities; use the more precise values from a table or software when possible.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.4 The Empirical Rule",
+          "anchor": {
+            "start": "Students tend to use these approximations",
+            "end": "should be used when possible."
+          }
+        }
+      ],
+      "aliases": [
+        "normal table",
+        "z table",
+        "normal percentile"
+      ]
+    },
+    {
+      "id": "normal_approx_binomial",
+      "title": "The normal approximation to the binomial",
+      "outcome": "Approximate binomial probabilities with a normal distribution, using a continuity correction and checking that n is large enough for p.",
+      "keyPoints": [
+        {
+          "text": "When a count is a sum of independent, identically distributed variables, the central limit theorem lets you approximate its probabilities with the normal distribution once n is sufficiently large.",
+          "sourceId": "psu414-28",
+          "locator": "28.1 Normal Approximation to Binomial",
+          "anchor": {
+            "start": "Note, however, that",
+            "end": "to approximate some probabilities for"
+          }
+        },
+        {
+          "text": "Using a continuous curve for a discrete count needs a continuity correction: the bar for exactly 5 covers every value between 4.5 and 5.5.",
+          "sourceId": "psu414-28",
+          "locator": "28.1 Normal Approximation to Binomial",
+          "anchor": {
+            "start": "we should see that we would",
+            "end": "a \"continuity correction.\""
+          }
+        },
+        {
+          "text": "How large n must be depends on p: n = 10 suffices when p = 0.5, but p = 0.1 needs n of at least 50.",
+          "sourceId": "psu414-28",
+          "locator": "28.1 Normal Approximation to Binomial",
+          "anchor": {
+            "start": "That is, the only way both",
+            "end": "a much larger sample size,"
+          }
+        },
+        {
+          "text": "If a binomial table or statistical software is available, calculate exact probabilities rather than approximate ones.",
+          "sourceId": "psu414-28",
+          "locator": "28.1 Normal Approximation to Binomial",
+          "anchor": {
+            "start": "In truth, if you have the",
+            "end": "instead of approximate probabilities."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Once n is at least 10, the normal approximation to the binomial works well for any p.",
+          "correction": "The farther p is from 0.5, the larger n must be: n = 10 is enough when p = 0.5, but p = 0.1 needs n of at least 50.",
+          "sourceId": "psu414-28",
+          "locator": "28.1 Normal Approximation to Binomial",
+          "anchor": {
+            "start": "In general, the farther",
+            "end": "a much larger sample size,"
+          }
+        }
+      ],
+      "aliases": [
+        "normal approximation",
+        "continuity correction"
+      ]
+    },
+    {
+      "id": "uniform_distribution",
+      "title": "The uniform distribution",
+      "outcome": "Recognise a uniform distribution, read its flat density, and know its main use.",
+      "keyPoints": [
+        {
+          "text": "A continuous uniform distribution gives equal probability across a range, which makes it important as a reference distribution.",
+          "sourceId": "nist-uniform",
+          "locator": "Comments",
+          "anchor": {
+            "start": "The uniform distribution defines equal probability",
+            "end": "important as a reference distribution."
+          }
+        },
+        {
+          "text": "A continuous uniform density is a rectangle: its base is the interval's length and its height is one over that length, so the area under it is 1.",
+          "sourceId": "psu414-14",
+          "locator": "14.5 Uniform Distributions",
+          "anchor": {
+            "start": "Note that the length of the",
+            "end": "\\(b\\) is 1."
+          }
+        },
+        {
+          "text": "The uniform distribution is not especially useful for describing randomness in the natural world; its main use is random number generation, for random assignment to treatments or random selection for surveys.",
+          "sourceId": "psu414-14",
+          "locator": "14.6 Uniform Applications",
+          "anchor": {
+            "start": "Perhaps not surprisingly, the uniform distribution",
+            "end": "participation in a survey."
+          }
+        },
+        {
+          "text": "Almost all random number generators produce numbers on the interval from 0 to 1, and numbers from other distributions come from transforming these uniform numbers.",
+          "sourceId": "nist-uniform",
+          "locator": "Comments",
+          "anchor": {
+            "start": "One of the most important applications",
+            "end": "applied to the uniform random numbers."
+          }
+        }
+      ],
+      "aliases": [
+        "uniform distribution",
+        "rectangular distribution"
+      ]
+    },
+    {
+      "id": "exponential_distribution",
+      "title": "The exponential distribution",
+      "outcome": "Use the exponential distribution for waiting times between events, and link its mean to the Poisson rate.",
+      "keyPoints": [
+        {
+          "text": "In an approximate Poisson process, the waiting time until the first event follows an exponential distribution.",
+          "sourceId": "psu414-15",
+          "locator": "Lesson 15 overview",
+          "anchor": {
+            "start": "In this lesson, we will investigate",
+            "end": "is the exponential distribution"
+          }
+        },
+        {
+          "text": "If customers arrive at an average rate of 10 an hour, the average wait until the first customer is a tenth of an hour, or 6 minutes.",
+          "sourceId": "psu414-15",
+          "locator": "15.1 Exponential Distributions",
+          "anchor": {
+            "start": "For example, suppose the mean number",
+            "end": "of an hour, or 6 minutes."
+          }
+        },
+        {
+          "text": "The exponential distribution is memoryless: the chance that a battery lasts more than another 5,000 miles does not depend on how many miles it has already run.",
+          "sourceId": "psu414-15",
+          "locator": "15.1 Exponential Distributions",
+          "anchor": {
+            "start": "If it is true, it would",
+            "end": "exponential distribution is \"memoryless.\""
+          }
+        },
+        {
+          "text": "The exponential distribution is used mainly in reliability, to model data with a constant failure rate.",
+          "sourceId": "nist-exponential",
+          "locator": "Comments",
+          "anchor": {
+            "start": "The exponential distribution is primarily used",
+            "end": "with a constant failure rate"
+          }
+        }
+      ],
+      "aliases": [
+        "exponential distribution",
+        "waiting time",
+        "time between events"
+      ]
+    },
+    {
+      "id": "other_shapes",
+      "title": "Skewed, heavy-tailed and flexible distributions",
+      "outcome": "Name other common distribution shapes (skewed, heavy-tailed, and families with a shape parameter) and when they are used.",
+      "keyPoints": [
+        {
+          "text": "Distributions with a shape parameter are really families that can take on many shapes, which makes them flexible enough to model many kinds of data set.",
+          "sourceId": "nist-families",
+          "locator": "Shape Parameters",
+          "anchor": {
+            "start": "Shape parameters allow a distribution to",
+            "end": "model a variety of data sets."
+          }
+        },
+        {
+          "text": "The Weibull family, for example, includes an exponential shape, a right-skewed shape and a fairly symmetric shape.",
+          "sourceId": "nist-families",
+          "locator": "Example: Weibull Distribution",
+          "anchor": {
+            "start": "The Weibull distribution is an example",
+            "end": "a relatively symmetric distribution."
+          }
+        },
+        {
+          "text": "The t distribution is bell-shaped and symmetric like the normal but has heavier tails, and it gets closer to the standard normal as its degrees of freedom increase.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.5 Other Continuous Distributions",
+          "anchor": {
+            "start": "The t-distribution is a bell-shaped distribution,",
+            "end": "to the standard normal distribution."
+          }
+        },
+        {
+          "text": "The chi-square distribution is right-skewed and depends on a degrees-of-freedom parameter, and the F distribution is right-skewed too.",
+          "sourceId": "psu500-03",
+          "locator": "3.3.5 Other Continuous Distributions",
+          "anchor": {
+            "start": "The chi-square distribution is a right-skewed",
+            "end": "The F-distribution is a right-skewed"
+          }
+        },
+        {
+          "text": "When a normal probability plot shows the signature of significantly right-skewed data, the data should be modelled with a right-skewed distribution such as the Weibull or lognormal.",
+          "sourceId": "nist-npp-right",
+          "locator": "Discussion",
+          "anchor": {
+            "start": "This quadratic pattern in the normal",
+            "end": "such as the Weibull or lognormal."
+          }
+        }
+      ],
+      "aliases": [
+        "skewed distribution",
+        "t distribution",
+        "chi-square distribution",
+        "Weibull",
+        "lognormal"
+      ]
+    },
+    {
+      "id": "normal_probability_plot",
+      "title": "Normal probability (Q-Q) plots",
+      "outcome": "Use a normal probability (Q-Q) plot to judge whether data are approximately normal.",
+      "keyPoints": [
+        {
+          "text": "A normal probability plot sets the data against a theoretical normal distribution so that normal data form a roughly straight line; departures from the line indicate departures from normality.",
+          "sourceId": "nist-npp",
+          "locator": "Purpose",
+          "anchor": {
+            "start": "The normal probability plot (Chambers et",
+            "end": "indicate departures from normality."
+          }
+        },
+        {
+          "text": "A q-q plot compares the theoretical quantiles of a supposed distribution with the sample quantiles from the data; if they match, that is good evidence the data follow that distribution.",
+          "sourceId": "psu414-14",
+          "locator": "14.6 Uniform Applications",
+          "anchor": {
+            "start": "The basic idea behind a q-q",
+            "end": "follow the supposed probability distribution."
+          }
+        },
+        {
+          "text": "Interpret a q-q plot loosely: if the points generally follow an approximate straight line, conclude that the data follow the distribution being tested.",
+          "sourceId": "psu414-14",
+          "locator": "14.6 Uniform Applications",
+          "anchor": {
+            "start": "Now, the key to interpreting q-q",
+            "end": "follow the tested probability distribution."
+          }
+        },
+        {
+          "text": "The most frequent use of a normal probability plot is on the residuals of a fitted model: if they are not normally distributed, a major assumption of the model has been violated.",
+          "sourceId": "nist-npp",
+          "locator": "Importance: Check Normality Assumption",
+          "anchor": {
+            "start": "This is the most frequent application",
+            "end": "of the model has been violated."
+          }
+        },
+        {
+          "text": "Probability plots for other distributions are made the same way, so one can be drawn for any distribution whose percent point function you have.",
+          "sourceId": "nist-npp",
+          "locator": "Definition",
+          "anchor": {
+            "start": "Probability plots for distributions other than",
+            "end": "you have the percent point function."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Data fit a distribution only if every point on its probability plot lies exactly on the line.",
+          "correction": "A plot whose points show only minor deviations from the line still shows the normal distribution is a good model for the data.",
+          "sourceId": "nist-npp-normal",
+          "locator": "Conclusions",
+          "anchor": {
+            "start": "There are only minor deviations",
+            "end": "a good model for these data."
+          }
+        }
+      ],
+      "aliases": [
+        "Q-Q plot",
+        "quantile-quantile plot",
+        "normal probability plot",
+        "probability plot"
+      ]
+    },
+    {
+      "id": "qq_patterns",
+      "title": "Reading departures on a probability plot",
+      "outcome": "Read the shape of departures on a normal probability plot: skew, heavy or light tails, and outliers.",
+      "keyPoints": [
+        {
+          "text": "A curved pattern with all points below a straight line joining the first and last points signals right-skewed data; all points above that line signals left-skewed data.",
+          "sourceId": "nist-npp-right",
+          "locator": "Discussion",
+          "anchor": {
+            "start": "This quadratic pattern in the normal",
+            "end": "significantly left-skewed data set."
+          }
+        },
+        {
+          "text": "Data with short tails relative to the normal show an S-like pattern in the middle, which long tails share, and the first few and last few points depart markedly from the line.",
+          "sourceId": "nist-npp-short",
+          "locator": "Discussion",
+          "anchor": {
+            "start": "For data with short tails relative",
+            "end": "from the reference fitted line."
+          }
+        },
+        {
+          "text": "The direction tells long tails from short: with long tails the first few points fall increasingly below the line and the last few rise above it; with short tails the pattern is reversed.",
+          "sourceId": "nist-npp-long",
+          "locator": "Discussion",
+          "anchor": {
+            "start": "For long tails, the first few",
+            "end": "this pattern is reversed."
+          }
+        },
+        {
+          "text": "If the points at the lower and upper extremes stay on the straight-line pattern, there are no significant outliers relative to a normal distribution.",
+          "sourceId": "nist-npp-normal",
+          "locator": "Discussion",
+          "anchor": {
+            "start": "The fact that the points in",
+            "end": "relative to a normal distribution"
+          }
+        },
+        {
+          "text": "The intercept and slope of the line fitted to a probability plot give estimates of the distribution's location and scale parameters.",
+          "sourceId": "nist-probplot",
+          "locator": "Purpose",
+          "anchor": {
+            "start": "Estimates of the location and scale",
+            "end": "by the intercept and slope."
+          }
+        }
+      ],
+      "aliases": [
+        "skew on a Q-Q plot",
+        "heavy tails",
+        "light tails"
+      ]
+    },
+    {
+      "id": "choosing_a_distribution",
+      "title": "Choosing a distribution for real data",
+      "outcome": "Choose a distribution to model real data by comparing how well candidates fit, and check a normality assumption rather than take it for granted.",
+      "keyPoints": [
+        {
+          "text": "Probability plots for several competing distributions can be compared, and the one with the highest correlation coefficient, the straightest plot, is the best choice.",
+          "sourceId": "nist-probplot",
+          "locator": "Purpose",
+          "anchor": {
+            "start": "Probability plots can be generated for",
+            "end": "the straightest probability plot."
+          }
+        },
+        {
+          "text": "A probability plot answers three questions: whether a given distribution fits the data, which distribution fits best, and what good estimates of its location and scale are.",
+          "sourceId": "nist-probplot",
+          "locator": "Questions",
+          "anchor": {
+            "start": "The probability plot is used to",
+            "end": "parameters of the chosen distribution?"
+          }
+        },
+        {
+          "text": "Some models assume a specific type of distribution, such as the Weibull, lognormal or exponential common in reliability work, and probability plots can check that assumption.",
+          "sourceId": "nist-probplot",
+          "locator": "Importance: Check distributional assumption",
+          "anchor": {
+            "start": "Some statistical models assume data have",
+            "end": "checking this distributional assumption."
+          }
+        },
+        {
+          "text": "It is common for distributions of data to be skewed or to contain outliers.",
+          "sourceId": "ims-math",
+          "locator": "13.1 Central Limit Theorem",
+          "anchor": {
+            "start": "As we observed in Chapter 1,",
+            "end": "skewed or contain outliers."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Data can be assumed to be normally distributed without checking.",
+          "correction": "Many classical statistical tests are based on the assumption that the data are normal, and that assumption should be tested before the tests are applied.",
+          "sourceId": "nist-normal",
+          "locator": "Comments",
+          "anchor": {
+            "start": "Many classical statistical tests are based",
+            "end": "before applying these tests."
+          }
+        },
+        {
+          "claim": "Every dataset is approximately normally distributed.",
+          "correction": "Some data are not: for one data set the normal probability plot showed a strongly non-linear pattern, and the normal distribution was not a good model.",
+          "sourceId": "nist-npp-right",
+          "locator": "Conclusions",
+          "anchor": {
+            "start": "shows a strongly non-linear pattern.",
+            "end": "a good model for these data."
+          }
+        }
+      ],
+      "aliases": [
+        "distribution fitting",
+        "goodness of fit",
+        "model selection"
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "random_variables",
+      "after": "discrete_continuous_rv",
+      "reason": "Discrete and continuous are the two main kinds of random variable."
+    },
+    {
+      "before": "random_variables",
+      "after": "probability_distributions",
+      "reason": "A probability distribution describes how a random variable's values vary."
+    },
+    {
+      "before": "discrete_continuous_rv",
+      "after": "pmf",
+      "reason": "Mass functions belong to discrete random variables."
+    },
+    {
+      "before": "probability_distributions",
+      "after": "pmf",
+      "reason": "A mass function is one of the two classes of probability function."
+    },
+    {
+      "before": "discrete_continuous_rv",
+      "after": "pdf_density",
+      "reason": "Density functions belong to continuous random variables."
+    },
+    {
+      "before": "probability_distributions",
+      "after": "pdf_density",
+      "reason": "A density function is one of the two classes of probability function."
+    },
+    {
+      "before": "pmf",
+      "after": "cdf",
+      "reason": "A discrete CDF accumulates the mass function's probabilities."
+    },
+    {
+      "before": "pdf_density",
+      "after": "cdf",
+      "reason": "A continuous CDF accumulates area under the density."
+    },
+    {
+      "before": "cdf",
+      "after": "cdf_probabilities",
+      "reason": "Other probabilities are built from cumulative ones."
+    },
+    {
+      "before": "cdf",
+      "after": "percentiles_quantiles",
+      "reason": "A percentile is the CDF read backwards."
+    },
+    {
+      "before": "pmf",
+      "after": "expected_value",
+      "reason": "The expected value weights each value by its mass-function probability."
+    },
+    {
+      "before": "expected_value",
+      "after": "variance_of_rv",
+      "reason": "Variance measures spread around the expected value."
+    },
+    {
+      "before": "variance_of_rv",
+      "after": "population_vs_sample",
+      "reason": "Comparing a distribution's mean and variance with a sample's needs both defined."
+    },
+    {
+      "before": "pmf",
+      "after": "binomial_conditions",
+      "reason": "The binomial is a named discrete distribution with its own mass function."
+    },
+    {
+      "before": "binomial_conditions",
+      "after": "binomial_probabilities",
+      "reason": "The probability formula applies only once the conditions hold."
+    },
+    {
+      "before": "cdf_probabilities",
+      "after": "binomial_probabilities",
+      "reason": "Binomial ranges are found from cumulative binomial probabilities."
+    },
+    {
+      "before": "binomial_probabilities",
+      "after": "binomial_mean_shape",
+      "reason": "A binomial's shape is the pattern of its probabilities."
+    },
+    {
+      "before": "expected_value",
+      "after": "binomial_mean_shape",
+      "reason": "A binomial's mean np is its expected value."
+    },
+    {
+      "before": "binomial_conditions",
+      "after": "without_replacement",
+      "reason": "Sampling without replacement breaks the constant-probability condition."
+    },
+    {
+      "before": "pmf",
+      "after": "poisson_setting",
+      "reason": "The Poisson is a named discrete distribution with its own mass function."
+    },
+    {
+      "before": "poisson_setting",
+      "after": "poisson_mean_and_approx",
+      "reason": "Lambda's meaning comes from the Poisson setting."
+    },
+    {
+      "before": "binomial_conditions",
+      "after": "poisson_mean_and_approx",
+      "reason": "Approximating a binomial needs the binomial first."
+    },
+    {
+      "before": "variance_of_rv",
+      "after": "poisson_mean_and_approx",
+      "reason": "The Poisson's mean equals its variance."
+    },
+    {
+      "before": "pdf_density",
+      "after": "location_scale",
+      "reason": "Location and scale act on a density curve."
+    },
+    {
+      "before": "variance_of_rv",
+      "after": "location_scale",
+      "reason": "Comparing location and scale with the mean and standard deviation needs both."
+    },
+    {
+      "before": "location_scale",
+      "after": "normal_distribution",
+      "reason": "The normal's mean and standard deviation are its location and scale."
+    },
+    {
+      "before": "pdf_density",
+      "after": "normal_distribution",
+      "reason": "Normal probabilities are areas under a density curve."
+    },
+    {
+      "before": "normal_distribution",
+      "after": "standard_normal",
+      "reason": "The standard normal is one member of the normal family."
+    },
+    {
+      "before": "location_scale",
+      "after": "standard_normal",
+      "reason": "The standard normal is the normal's standard form."
+    },
+    {
+      "before": "standard_normal",
+      "after": "normal_probabilities",
+      "reason": "Normal probabilities are read from the standard normal."
+    },
+    {
+      "before": "cdf_probabilities",
+      "after": "normal_probabilities",
+      "reason": "Above and between probabilities come from cumulative ones."
+    },
+    {
+      "before": "percentiles_quantiles",
+      "after": "normal_probabilities",
+      "reason": "Finding a value from a probability is a percentile question."
+    },
+    {
+      "before": "normal_probabilities",
+      "after": "normal_approx_binomial",
+      "reason": "The approximation reduces to a normal probability calculation."
+    },
+    {
+      "before": "binomial_mean_shape",
+      "after": "normal_approx_binomial",
+      "reason": "The approximation uses the binomial's mean and spread, and its shape decides when it works."
+    },
+    {
+      "before": "pdf_density",
+      "after": "uniform_distribution",
+      "reason": "The uniform is a continuous density."
+    },
+    {
+      "before": "poisson_setting",
+      "after": "exponential_distribution",
+      "reason": "The exponential is the waiting time in a Poisson process."
+    },
+    {
+      "before": "pdf_density",
+      "after": "exponential_distribution",
+      "reason": "The exponential is a continuous density."
+    },
+    {
+      "before": "location_scale",
+      "after": "other_shapes",
+      "reason": "A shape parameter is the third kind of parameter, beside location and scale."
+    },
+    {
+      "before": "normal_distribution",
+      "after": "other_shapes",
+      "reason": "Other shapes are described against the normal."
+    },
+    {
+      "before": "percentiles_quantiles",
+      "after": "normal_probability_plot",
+      "reason": "A probability plot compares sample and theoretical percentiles."
+    },
+    {
+      "before": "normal_distribution",
+      "after": "normal_probability_plot",
+      "reason": "A normal probability plot checks data against the normal."
+    },
+    {
+      "before": "normal_probability_plot",
+      "after": "qq_patterns",
+      "reason": "Reading departures needs the plot first."
+    },
+    {
+      "before": "other_shapes",
+      "after": "qq_patterns",
+      "reason": "The patterns signal skewed and heavy-tailed shapes."
+    },
+    {
+      "before": "qq_patterns",
+      "after": "choosing_a_distribution",
+      "reason": "Choosing a model rests on reading probability plots."
+    },
+    {
+      "before": "other_shapes",
+      "after": "choosing_a_distribution",
+      "reason": "The candidates include skewed and flexible families."
+    },
+    {
+      "before": "exponential_distribution",
+      "after": "choosing_a_distribution",
+      "reason": "The exponential is one of the common candidate models."
+    },
+    {
+      "before": "population_vs_sample",
+      "after": "choosing_a_distribution",
+      "reason": "Matching sample and theoretical moments is a weak check on fit."
+    }
+  ],
+  "cards": [
+    {
+      "id": "random-variables",
+      "title": "Random variables and probability distributions",
+      "conceptIds": [
+        "random_variables",
+        "discrete_continuous_rv",
+        "probability_distributions"
+      ]
+    },
+    {
+      "id": "mass-and-density",
+      "title": "Probability mass and probability density",
+      "conceptIds": [
+        "pmf",
+        "pdf_density"
+      ]
+    },
+    {
+      "id": "cumulative-probabilities",
+      "title": "Cumulative probabilities and percentiles",
+      "conceptIds": [
+        "cdf",
+        "cdf_probabilities",
+        "percentiles_quantiles"
+      ]
+    },
+    {
+      "id": "expected-value-and-variance",
+      "title": "Expected value and variance",
+      "conceptIds": [
+        "expected_value",
+        "variance_of_rv",
+        "population_vs_sample"
+      ]
+    },
+    {
+      "id": "binomial-setting",
+      "title": "When the binomial applies",
+      "conceptIds": [
+        "binomial_conditions",
+        "without_replacement"
+      ]
+    },
+    {
+      "id": "binomial-probabilities",
+      "title": "Binomial probabilities, mean and shape",
+      "conceptIds": [
+        "binomial_probabilities",
+        "binomial_mean_shape"
+      ]
+    },
+    {
+      "id": "poisson",
+      "title": "The Poisson distribution for counts",
+      "conceptIds": [
+        "poisson_setting",
+        "poisson_mean_and_approx"
+      ]
+    },
+    {
+      "id": "normal-distribution",
+      "title": "Location, scale and the normal distribution",
+      "conceptIds": [
+        "location_scale",
+        "normal_distribution"
+      ]
+    },
+    {
+      "id": "standard-normal",
+      "title": "Standardising and normal probabilities",
+      "conceptIds": [
+        "standard_normal",
+        "normal_probabilities"
+      ]
+    },
+    {
+      "id": "normal-approximation",
+      "title": "Approximating the binomial with the normal",
+      "conceptIds": [
+        "normal_approx_binomial"
+      ]
+    },
+    {
+      "id": "other-distributions",
+      "title": "Uniform, exponential and skewed distributions",
+      "conceptIds": [
+        "uniform_distribution",
+        "exponential_distribution",
+        "other_shapes"
+      ]
+    },
+    {
+      "id": "probability-plots",
+      "title": "Normal probability (Q-Q) plots",
+      "conceptIds": [
+        "normal_probability_plot",
+        "qq_patterns"
+      ]
+    },
+    {
+      "id": "choosing-a-distribution",
+      "title": "Choosing a distribution for real data",
+      "conceptIds": [
+        "choosing_a_distribution"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-22",
+    "itemsJudged": 119,
+    "itemsSupported": 119,
+    "errorsPlanted": 15,
+    "errorsCaught": 15,
+    "fingerprint": "sha256:7f9c331b74c6f08a92f97ff8892636a7"
+  }
+}

@@ -1,0 +1,1929 @@
+{
+  "id": "sampling-and-surveys",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Sampling and survey design: how data are collected from a population, and what can go wrong",
+  "outOfScope": [
+    "Sampling distributions, standard errors, margins of error and confidence intervals (the next pack); this pack only says that a margin of error does not measure bias",
+    "Sample-size formulas and how to choose a sample size",
+    "The mathematics of survey estimators: expansion, ratio and Hansen-Hurwitz estimators, optimal allocation, design effects and variance formulas",
+    "Randomisation and experimental design in depth (see the A/B testing pack); this pack names observational studies and experiments and the difference between them",
+    "Probability, random variables and the binomial distribution (see the Probability distributions pack)",
+    "Snowball and respondent-driven sampling of hidden populations",
+    "Weighting methods in detail, such as raking algorithms, propensity models, matching and multilevel regression and poststratification",
+    "Polling methodology for specific elections, and forecasting election results",
+    "Survey tooling such as Qualtrics, SurveyMonkey and Google Forms"
+  ],
+  "sources": [
+    {
+      "id": "psu100-01",
+      "title": "STAT 100 Lesson 1: Statistics: Benefits, Risks, and Measurements",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu100-02",
+      "title": "STAT 100 Lesson 2: Characteristics of Good Sample Surveys and Comparative Studies",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat100/Lesson02",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu200-01",
+      "title": "STAT 200 Lesson 1: Collecting Data",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat200/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-01",
+      "title": "STAT 506 Lesson 1: Estimating Population Mean and Total under SRS",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson01",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-06",
+      "title": "STAT 506 Lesson 6: Stratified Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson06",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-07",
+      "title": "STAT 506 Lesson 7: Cluster and Systematic Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson07",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-09",
+      "title": "STAT 506 Lesson 9: Multi-Stage Designs",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson09",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "psu506-11",
+      "title": "STAT 506 Lesson 11: Applied Problems for Survey Sampling",
+      "publisher": "Penn State Department of Statistics",
+      "url": "https://online.stat.psu.edu/stat506/Lesson11",
+      "license": "CC BY-NC 4.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "ims-design",
+      "title": "Introduction to Modern Statistics, 2nd ed., Chapter 2: Study design",
+      "publisher": "OpenIntro (Mine Çetinkaya-Rundel and Johanna Hardin)",
+      "url": "https://openintro-ims.netlify.app/data-design.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-questions",
+      "title": "Writing Survey Questions",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/our-methods/u-s-surveys/writing-survey-questions/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-faq",
+      "title": "Frequently Asked Questions",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/our-methods/u-s-surveys/frequently-asked-questions/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-nonprob",
+      "title": "Methods 101: What are nonprobability surveys?",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/08/06/video-explainer-what-are-nonprobability-surveys/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-weighting",
+      "title": "For Weighting Online Opt-In Samples, What Matters Most?",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/01/26/for-weighting-online-opt-in-samples-what-matters-most/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-modes",
+      "title": "From Telephone to the Web: The Challenge of Mode of Interview Effects in Public Opinion Polls",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2015/05/13/from-telephone-to-the-web-the-challenge-of-mode-of-interview-effects-in-public-opinion-polls/",
+      "accessedAt": "2026-10-22"
+    },
+    {
+      "id": "pew-weight-methods",
+      "title": "How different weighting methods work",
+      "publisher": "Pew Research Center",
+      "url": "https://www.pewresearch.org/methods/2018/01/26/how-different-weighting-methods-work/",
+      "accessedAt": "2026-10-22"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "population_and_sample",
+      "title": "Population, sample and census",
+      "outcome": "Name the population, the sampling unit and the sample in a study, and tell a census from a sample survey.",
+      "aliases": [
+        "population",
+        "sample",
+        "census",
+        "sampling unit",
+        "sample survey"
+      ],
+      "keyPoints": [
+        {
+          "text": "A census tries to collect data from every member of the population, while a sample survey collects data from a subset the researcher chooses. A sample survey is a kind of observational study.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Defining a Common Language for Sampling",
+          "anchor": {
+            "start": "first necessary to distinguish between",
+            "end": "a type of observational study"
+          }
+        },
+        {
+          "text": "The population is the whole group we want to learn about. The sampling unit is the individual person, animal or object on which a measurement is taken.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Defining a Common Language for Sampling",
+          "anchor": {
+            "start": "Sampling Unit: The individual person,",
+            "end": "wish to know something about"
+          }
+        },
+        {
+          "text": "The population is the entire set of possible cases; the sample is the subset of the population from which data are actually collected.",
+          "sourceId": "psu200-01",
+          "locator": "1.2 Sampling Bias (Definitions 1.8 and 1.9)",
+          "anchor": {
+            "start": "Definition 1.8 (Population) The entire",
+            "end": "population from which data are collected"
+          }
+        }
+      ]
+    },
+    {
+      "id": "parameters_and_statistics",
+      "title": "Parameters and statistics",
+      "outcome": "Tell a parameter, which describes a population, from a statistic, which is computed from a sample and used to estimate it.",
+      "aliases": [
+        "parameter",
+        "statistic",
+        "sample statistic",
+        "population parameter",
+        "inferential statistics"
+      ],
+      "keyPoints": [
+        {
+          "text": "A value that describes a sample is a sample statistic; a value that describes a population is a population parameter.",
+          "sourceId": "psu200-01",
+          "locator": "1.2 Sampling Bias",
+          "anchor": {
+            "start": "Values concerning a sample are",
+            "end": "referred to as population parameters"
+          }
+        },
+        {
+          "text": "The sample is the individuals or objects who provide the data. Numbers computed from the sample are called statistics, and they are typically used to estimate population parameters.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Defining a Common Language for Sampling",
+          "anchor": {
+            "start": "Sample: Those individuals or objects",
+            "end": "as estimates of population parameters"
+          }
+        },
+        {
+          "text": "Using sample statistics to draw conclusions about population parameters is called inferential statistics.",
+          "sourceId": "psu200-01",
+          "locator": "1.2 Sampling Bias (Definition 1.12)",
+          "anchor": {
+            "start": "The process of using sample statistics",
+            "end": "is known as inferential statistics"
+          }
+        },
+        {
+          "text": "Measuring every unit of a population is usually prohibitive, so a summary such as an average is usually calculated from a sample, though we can still imagine calculating it for the whole population.",
+          "sourceId": "ims-design",
+          "locator": "2.1.2 Parameters and statistics",
+          "anchor": {
+            "start": "A numerical summary can be calculated",
+            "end": "all adults in Argentina"
+          }
+        }
+      ]
+    },
+    {
+      "id": "why_sample",
+      "title": "Why sample instead of taking a census",
+      "outcome": "Explain why most studies measure a sample rather than the whole population, and what the sample is for.",
+      "aliases": [
+        "why sample",
+        "census versus sample"
+      ],
+      "keyPoints": [
+        {
+          "text": "Collecting data on every case in a population, a census, is often not feasible: it can cost too much, and the whole population may be hard or impossible even to identify. So a sample is taken instead.",
+          "sourceId": "ims-design",
+          "locator": "2.1.1 Populations and samples",
+          "anchor": {
+            "start": "Oftentimes, it is not feasible to",
+            "end": "Instead, a sample is taken"
+          }
+        },
+        {
+          "text": "Time, access and cost can make it impossible to gather information from a whole population, so information is often gathered from a smaller subset, the sample.",
+          "sourceId": "psu200-01",
+          "locator": "1.2 Sampling Bias",
+          "anchor": {
+            "start": "Gathering information from the entire population",
+            "end": "population, known as a sample"
+          }
+        },
+        {
+          "text": "We sample in order to make inferences about the population, and which inferences can be made depends strongly on how the sample is drawn.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Overview of Sampling",
+          "anchor": {
+            "start": "One important objective of statistics is",
+            "end": "how you do the sampling"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_frame",
+      "title": "The sampling frame",
+      "outcome": "Identify a study's sampling frame and explain why a frame that does not match the population matters.",
+      "aliases": [
+        "sampling frame",
+        "frame",
+        "intended sample"
+      ],
+      "keyPoints": [
+        {
+          "text": "The sampling frame is the list of sampling units from which the people to contact are drawn. It lies between the population and the sample; ideally it matches the population, but it rarely does.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Defining a Common Language for Sampling",
+          "anchor": {
+            "start": "Sampling Frame: The list of the",
+            "end": "list all members of the population"
+          }
+        },
+        {
+          "text": "You want to know about a population, but you can reach only a sampling frame. From it you draw an intended sample, and in the end you get observations only from the actual sample.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Summary",
+          "anchor": {
+            "start": "The process: You want to know",
+            "end": "from the actual SAMPLE"
+          }
+        },
+        {
+          "text": "A report that a random sample was used usually means the intended sample was drawn at random from the frame. You still have to judge whether the frame represented the population and whether the sample represented the intended sample.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Summary",
+          "anchor": {
+            "start": "When a report says that a",
+            "end": "representative of the intended sample"
+          }
+        },
+        {
+          "text": "When questionnaires went to 100,000 women, those women were the intended sample. The frame was the list they came from: women affiliated with some organisation, the only ones with any chance of being contacted.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Example 2.1 (Who are those angry women?)",
+          "anchor": {
+            "start": "Some might think that the sampling",
+            "end": "possibility of being contacted"
+          }
+        },
+        {
+          "text": "One poll's random sample of residential postal addresses still misses people who do not live at a residential address, such as those incarcerated or in group facilities, and places without standard mail delivery.",
+          "sourceId": "pew-faq",
+          "locator": "How are people selected for your polls?",
+          "anchor": {
+            "start": "We draw a random sample of",
+            "end": "some Native American reservations"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_bias",
+      "title": "Bias and representative samples",
+      "outcome": "Define bias in sampling and judge whether a sample is likely to represent its population.",
+      "aliases": [
+        "bias",
+        "sampling bias",
+        "representative sample",
+        "anecdotal evidence"
+      ],
+      "keyPoints": [
+        {
+          "text": "A representative sample accurately reflects its population. Bias is the systematic favouring of certain outcomes, and sampling bias is that favouring caused by the methods used to obtain the sample.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.1 Sampling Bias (Definitions 1.13-1.15)",
+          "anchor": {
+            "start": "Definition 1.13 (Representative Sample) A",
+            "end": "employed to obtain the sample"
+          }
+        },
+        {
+          "text": "A sample should be selected from the population at random, otherwise it may be biased. The goal is a sample that is representative of the population.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.1 Sampling Bias",
+          "anchor": {
+            "start": "A sample should be selected from",
+            "end": "representative of the population"
+          }
+        },
+        {
+          "text": "In one example, a retailer that surveyed purchasers in one store on a Tuesday morning had sampling bias: customers of other stores, people at work at that hour and people who left without buying are all left out.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.1 Example 1.10 (NYC Advertising Study)",
+          "anchor": {
+            "start": "There is sampling bias for a",
+            "end": "not be included in their sample"
+          }
+        },
+        {
+          "text": "Data collected in a haphazard fashion are anecdotal evidence. Such evidence may be true, but it may represent only extraordinary cases rather than the population.",
+          "sourceId": "ims-design",
+          "locator": "2.1.3 Anecdotal evidence",
+          "anchor": {
+            "start": "Data collected in this haphazard fashion",
+            "end": "good representation of the population"
+          }
+        }
+      ]
+    },
+    {
+      "id": "probability_vs_nonprobability",
+      "title": "Probability and non-probability samples",
+      "outcome": "Tell probability samples from non-probability samples and explain why only the first support inference to a population.",
+      "aliases": [
+        "probability sampling",
+        "non-probability sampling",
+        "nonprobability sample",
+        "random selection"
+      ],
+      "keyPoints": [
+        {
+          "text": "In probability sampling, the sample has a known probability of being selected. In non-probability sampling, such as convenience or voluntary-response surveys, it does not.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Sampling Methods",
+          "anchor": {
+            "start": "Sampling methods can be classified into",
+            "end": "convenience or voluntary response surveys"
+          }
+        },
+        {
+          "text": "In probability sampling you can say which units belong to each possible sample and how likely each sample is. Simple random, stratified, cluster, systematic and multistage sampling are all probability methods.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling",
+          "anchor": {
+            "start": "In probability sampling, it is possible",
+            "end": "are combined in stages"
+          }
+        },
+        {
+          "text": "Probability sampling builds randomness into the design, so the properties of the estimates can be assessed with probability.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design (Definition 1.1)",
+          "anchor": {
+            "start": "When we use probability sampling, randomness",
+            "end": "can be assessed probabilistically"
+          }
+        },
+        {
+          "text": "Probability sampling removes human subjectivity: who ends up in the sample does not depend on anyone's judgement.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design",
+          "anchor": {
+            "start": "The main difference between these two",
+            "end": "subjective judgment for determining samples"
+          }
+        },
+        {
+          "text": "Volunteer and haphazard (convenience) samples rest on human choice rather than random selection, so no statistical theory can say how they behave, and possible sources of bias are rampant.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Non-probability Sampling",
+          "anchor": {
+            "start": "types of non-probability sampling that",
+            "end": "potential sources of bias are rampant"
+          }
+        }
+      ]
+    },
+    {
+      "id": "simple_random_sampling",
+      "title": "Simple random sampling",
+      "outcome": "Describe how a simple random sample is drawn and what makes it random.",
+      "aliases": [
+        "simple random sample",
+        "SRS",
+        "random sample"
+      ],
+      "keyPoints": [
+        {
+          "text": "A simple random sample is like drawing names out of a hat: every case in the population has an equal chance of being included, and the cases in the sample are not related to each other.",
+          "sourceId": "ims-design",
+          "locator": "2.1.4 Sampling from a population",
+          "anchor": {
+            "start": "The most basic random sample is",
+            "end": "are not related to each other"
+          }
+        },
+        {
+          "text": "Formally, simple random sampling without replacement makes every possible sample of n units equally likely to be selected.",
+          "sourceId": "psu506-01",
+          "locator": "1.2 Simple Random Sampling (Definition 1.5)",
+          "anchor": {
+            "start": "Definition 1.5 (Simple Random Sampling) Random",
+            "end": "same probability of selection"
+          }
+        },
+        {
+          "text": "To choose 120 of a hospital's 1,125 patient records at random, number the records from 1 to 1,125 and randomly select 120 of those numbers without replacement.",
+          "sourceId": "psu506-01",
+          "locator": "1.2 Example 1.2 (Patient Records)",
+          "anchor": {
+            "start": "Example 1.2 (Patient Records) A hospital",
+            "end": "1,125 without replacement"
+          }
+        },
+        {
+          "text": "Simple random sampling, the most common probability method, selects without replacement: once someone is in the sample, they cannot be selected a second time.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.2 Simple Random Sampling",
+          "anchor": {
+            "start": "The most common probability-based sampling method",
+            "end": "be selected a second time"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A random sample just means picking people haphazardly, without any particular plan.",
+          "correction": "Letting someone pick cases can bias a sample even when nobody intends it. A random sample uses a chance mechanism, such as drawing names out of a hat, instead of anyone's choice.",
+          "sourceId": "ims-design",
+          "locator": "2.1.4 Sampling from a population",
+          "anchor": {
+            "start": "If someone was permitted to pick",
+            "end": "a hat to select cases"
+          }
+        }
+      ]
+    },
+    {
+      "id": "systematic_sampling",
+      "title": "Systematic sampling",
+      "outcome": "Describe a systematic sample with a random start and say when it is convenient.",
+      "aliases": [
+        "systematic sample",
+        "every kth unit",
+        "1-in-k sampling"
+      ],
+      "keyPoints": [
+        {
+          "text": "In a one-in-three systematic sample, you pick a random starting point among the first three units and then take every third unit from there.",
+          "sourceId": "psu506-07",
+          "locator": "7.1 Systematic Sampling",
+          "anchor": {
+            "start": "Example: A one-in-three systematic sampling",
+            "end": "choose every three from that on"
+          }
+        },
+        {
+          "text": "Systematic sampling is easier to carry out in the field, especially when no good frame is available, and it often gives more information per unit of cost than simple random sampling.",
+          "sourceId": "psu506-07",
+          "locator": "7.1 Advantages of Systematic Sampling",
+          "anchor": {
+            "start": "Advantages of Systematic Sampling Easier",
+            "end": "in the sense of smaller variances"
+          }
+        },
+        {
+          "text": "Because it selects evenly along a sequence, a systematic sample from a batch of chips whose last 300 were defective covers both parts and estimates the defective fraction very accurately.",
+          "sourceId": "psu506-07",
+          "locator": "7.1 Advantages of Systematic Sampling",
+          "anchor": {
+            "start": "a systematic sample was drawn from",
+            "end": "fraction of defective items"
+          }
+        },
+        {
+          "text": "Following a fixed rule, such as interviewing every third person through a door regardless of who they are, is a probability procedure because it leaves no room for the interviewer's choice.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design",
+          "anchor": {
+            "start": "Interviewers in probability sampling are given",
+            "end": "regardless of who they are"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stratified_sampling",
+      "title": "Stratified sampling",
+      "outcome": "Describe how a stratified sample is drawn and explain when stratifying gives more precise estimates.",
+      "aliases": [
+        "stratified sample",
+        "strata",
+        "stratum",
+        "stratification"
+      ],
+      "keyPoints": [
+        {
+          "text": "To stratify, split the population into groups (strata) by a factor that may affect what is being measured, take a simple random sample within each stratum, and collect data on every unit sampled.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling: Stratified Sampling",
+          "anchor": {
+            "start": "Stratified Sampling is possible when it",
+            "end": "randomly sampled from each group (stratum)"
+          }
+        },
+        {
+          "text": "Stratifying works best when a varied population is split into fairly similar groups. Then it generally gives more precise estimates of population percentages than a simple random sample would.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling: Stratified Sampling",
+          "anchor": {
+            "start": "Stratified sampling works best when a",
+            "end": "found from a simple random sample"
+          }
+        },
+        {
+          "text": "When the cases within a stratum are very similar, that stratum's estimate may be more stable and precise, and combining such estimates tends to give a more precise estimate for the whole population.",
+          "sourceId": "ims-design",
+          "locator": "2.1.5 Four sampling methods",
+          "anchor": {
+            "start": "We might get a more stable",
+            "end": "estimate is itself more precise"
+          }
+        },
+        {
+          "text": "Reasons to stratify: a smaller estimation error than a simple random sample of the same size, especially when strata are very homogeneous; a lower cost per observation; and estimates for subgroups of interest.",
+          "sourceId": "psu506-06",
+          "locator": "6.1 How to Use Stratified Sampling",
+          "anchor": {
+            "start": "The principal reasons for using stratified",
+            "end": "subgroups should then be identified"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Stratifying always makes estimates more precise than a simple random sample.",
+          "correction": "A stratified sample may be no better than a simple random sample when the variable used to form the strata is not related to the response.",
+          "sourceId": "psu506-06",
+          "locator": "Lesson 6 overview (Section 6.3)",
+          "anchor": {
+            "start": "In Section 6.3, we use an",
+            "end": "not related to the response"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cluster_sampling",
+      "title": "Cluster sampling",
+      "outcome": "Describe how a cluster sample is drawn and what makes a good cluster.",
+      "aliases": [
+        "cluster sample",
+        "clusters",
+        "primary sampling unit"
+      ],
+      "keyPoints": [
+        {
+          "text": "To take a cluster sample, divide the population into groups (clusters), randomly select some of the clusters, and collect data on every unit in each selected cluster.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling: Cluster Sampling",
+          "anchor": {
+            "start": "With cluster sampling, one should: divide",
+            "end": "each of the randomly selected clusters"
+          }
+        },
+        {
+          "text": "Unlike strata, clusters should be microcosms of the population rather than subsections of it: each cluster should be varied. Analysing a cluster sample is also more complicated than analysing a stratified one.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling: Cluster Sampling",
+          "anchor": {
+            "start": "note that, unlike with the strata",
+            "end": "used with stratified sampling"
+          }
+        },
+        {
+          "text": "Clusters should be formed so that one cluster is similar to another and each contains the full diversity of the population. That is very different from the units within a cluster being similar.",
+          "sourceId": "psu506-07",
+          "locator": "7.2 Basic principles",
+          "anchor": {
+            "start": "Clusters should be formed so that",
+            "end": "full diversity of the population"
+          }
+        }
+      ]
+    },
+    {
+      "id": "multistage_sampling",
+      "title": "Multistage sampling",
+      "outcome": "Describe a multistage sample and recognise one in a large survey.",
+      "aliases": [
+        "multistage sample",
+        "two-stage sampling",
+        "multi-stage design"
+      ],
+      "keyPoints": [
+        {
+          "text": "A multistage sample is like a cluster sample, except that instead of keeping every unit in each selected cluster, you take a random sample within each one.",
+          "sourceId": "ims-design",
+          "locator": "2.1.5 Four sampling methods",
+          "anchor": {
+            "start": "A multistage sample is like a",
+            "end": "within each selected cluster"
+          }
+        },
+        {
+          "text": "Multistage designs are used in practice: in large surveys of housing units, the U.S. Census Bureau selects geographic areas within each state, then housing units within each selected area.",
+          "sourceId": "psu506-09",
+          "locator": "9.1 Multi-Stage Design",
+          "anchor": {
+            "start": "Multi-stage designs are used in many",
+            "end": "within each selected geographical area"
+          }
+        },
+        {
+          "text": "Quality control often samples in stages too: to check a supplier of air filters, first sample some cartons, then inspect some filters inside each selected carton.",
+          "sourceId": "psu506-09",
+          "locator": "9.1 Multi-Stage Design",
+          "anchor": {
+            "start": "Practical quality control problems: Often involve",
+            "end": "inside these selected cartons"
+          }
+        },
+        {
+          "text": "Two-stage sampling includes both one-stage cluster sampling and stratified random sampling as special cases.",
+          "sourceId": "psu506-09",
+          "locator": "9.1 Multi-Stage Design",
+          "anchor": {
+            "start": "Two-stage sampling includes both one-stage",
+            "end": "random sampling as special cases"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stratified_vs_cluster",
+      "title": "Stratified or cluster sampling?",
+      "outcome": "Tell stratified from cluster sampling and choose between them for a given question.",
+      "aliases": [
+        "stratified versus cluster sampling"
+      ],
+      "keyPoints": [
+        {
+          "text": "Of five common sampling methods, stratified and cluster sampling are the two that students find hardest to tell apart.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling",
+          "anchor": {
+            "start": "Of the five methods listed above,",
+            "end": "stratified sampling and cluster sampling"
+          }
+        },
+        {
+          "text": "Unlike stratified sampling, cluster and multistage designs help most when cases within a cluster vary a lot but the clusters look alike, such as very diverse neighbourhoods. They can also be more economical.",
+          "sourceId": "ims-design",
+          "locator": "2.1.5 Four sampling methods",
+          "anchor": {
+            "start": "Sometimes cluster or multistage sampling can",
+            "end": "inside each neighborhood are very diverse"
+          }
+        },
+        {
+          "text": "With time zones as groups, stratifying is preferred if answers depend on time zone, as live sports viewing may. Cluster sampling works best with a reasonable number of clusters; 2 of only 4 offers little over simple random sampling.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling (Tables 2.2 and 2.3)",
+          "anchor": {
+            "start": "With Example 1: Stratified sampling would",
+            "end": "advantages over simple random sampling"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Stratified and cluster sampling are the same thing, since both split the population into groups.",
+          "correction": "They are very different. In cluster sampling you randomly select some of the clusters and collect data on every unit in each selected cluster.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling: Cluster Sampling",
+          "anchor": {
+            "start": "Cluster Sampling is very different from",
+            "end": "each of the randomly selected clusters"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cluster_cost_precision",
+      "title": "Cost against precision in cluster designs",
+      "outcome": "Explain the trade-off cluster and multistage designs make: lower cost against less precision.",
+      "aliases": [
+        "design trade-off",
+        "cost and precision"
+      ],
+      "keyPoints": [
+        {
+          "text": "Cluster sampling is more often carried out for convenience or practicality than to get the lowest variance.",
+          "sourceId": "psu506-07",
+          "locator": "7.2 Basic principles",
+          "anchor": {
+            "start": "Cluster sampling is more often than",
+            "end": "obtain the lowest variances"
+          }
+        },
+        {
+          "text": "Cluster sampling sometimes gives more information per unit of cost, as units within a cluster can be cheaper to sample. It suits cases where clusters are easy to list but units are not, or where cost grows with distance.",
+          "sourceId": "psu506-07",
+          "locator": "7.2 Why or When Do We Use Cluster Sampling?",
+          "anchor": {
+            "start": "If the objective of sampling is",
+            "end": "distance separating the elements increases"
+          }
+        },
+        {
+          "text": "Where a simple random sample would draw people from all 30 villages and make collection expensive, randomly sampling half the villages and then 10 people in each could cut costs substantially.",
+          "sourceId": "ims-design",
+          "locator": "2.1.5 Four sampling methods",
+          "anchor": {
+            "start": "A simple random sample would likely",
+            "end": "data collection costs substantially"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Cluster sampling gives more precise estimates than other designs because it measures whole groups.",
+          "correction": "In most cases cluster sampling does not give a more precise estimate; it is used out of necessity even though its variance is larger.",
+          "sourceId": "psu506-07",
+          "locator": "7.2 Basic principles",
+          "anchor": {
+            "start": "Will it give us a more",
+            "end": "give us a larger variance"
+          }
+        }
+      ]
+    },
+    {
+      "id": "convenience_and_voluntary",
+      "title": "Convenience and voluntary-response samples",
+      "outcome": "Recognise convenience and voluntary-response samples and explain why they cannot be generalised to a population.",
+      "aliases": [
+        "convenience sample",
+        "voluntary response sample",
+        "volunteer sample",
+        "self-selected sample",
+        "haphazard sample"
+      ],
+      "keyPoints": [
+        {
+          "text": "A convenience sample is chosen by ease of access. It is not random and may not represent the intended population.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.3 Convenience Sampling (Definition 1.17)",
+          "anchor": {
+            "start": "Definition 1.17 (Convenience Sampling) A method",
+            "end": "representative of the intended population"
+          }
+        },
+        {
+          "text": "Stopping people walking in the Bronx for a political survey is a convenience sample that will not represent all of New York City, and it is often hard to tell what sub-population such a sample represents.",
+          "sourceId": "ims-design",
+          "locator": "2.1.4 Sampling from a population",
+          "anchor": {
+            "start": "Another common downfall is a convenience",
+            "end": "a convenience sample represents"
+          }
+        },
+        {
+          "text": "When one study recruited volunteers through a social media advert, the sample was limited to that site's users, and those who chose to take part, such as people already trying to lose weight, may differ from the population.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.1 Example 1.9 (Weight Loss Study Volunteers)",
+          "anchor": {
+            "start": "They advertise on a social media",
+            "end": "actively trying to lose weight"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Letting anyone who wants to take part join a poll makes it more representative, because more voices are heard.",
+          "correction": "A good poll cannot be built on volunteers: people who put themselves forward are likely to differ from the average person, for example by being more politically engaged.",
+          "sourceId": "pew-faq",
+          "locator": "Can I volunteer to be polled?",
+          "anchor": {
+            "start": "we can't base our polls on",
+            "end": "representation of the general population"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quota_sampling",
+      "title": "Quota sampling",
+      "outcome": "Explain quota sampling and why leaving the choice of respondents to interviewers makes it unreliable.",
+      "aliases": [
+        "quota sample",
+        "quotas"
+      ],
+      "keyPoints": [
+        {
+          "text": "In quota sampling, each interviewer fills quotas meant to mirror the population, but chooses the respondents by subjective judgement, so selection is in the interviewers' hands.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design (Definition 1.2)",
+          "anchor": {
+            "start": "Definition 1.2 (Quota Sampling) This is",
+            "end": "in the hands of the interviewers"
+          }
+        },
+        {
+          "text": "In one poll, quota sampling gave Dewey 52% and Truman 45.3%, while a probability sample gave Dewey 46% and Truman 50.5%. The quota result was well off, and probability sampling then became the norm.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Example 1.1 (1948 Washington State Presidential Poll)",
+          "anchor": {
+            "start": "Using quota sampling Dewey had 52%",
+            "end": "probability sampling became the norm"
+          }
+        },
+        {
+          "text": "Subjective selection is the main reason quota samples give poor results, and once that bias is in the data, some of it cannot be removed even by collecting more samples.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design",
+          "anchor": {
+            "start": "The major reason for poor results",
+            "end": "even by acquiring additional samples"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A quota sample that matches the population's make-up is as good as a random sample.",
+          "correction": "Even when the quotas mirror the population, the choice of respondents is left to the interviewers' subjective judgement, and that is the drawback of quota sampling.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 Sampling Design (Definition 1.2)",
+          "anchor": {
+            "start": "Definition 1.2 (Quota Sampling) This is",
+            "end": "in the hands of the interviewers"
+          }
+        }
+      ]
+    },
+    {
+      "id": "online_opt_in",
+      "title": "Online opt-in polls",
+      "outcome": "Explain how online opt-in polls recruit people and why their results are hard to trust as population estimates.",
+      "aliases": [
+        "opt-in panel",
+        "online panel",
+        "nonprobability survey",
+        "web poll"
+      ],
+      "keyPoints": [
+        {
+          "text": "There is no master list of internet users to draw a random sample from, so online opt-in polls recruit people through website ads, customer loyalty programmes, or people signing themselves up to a survey panel.",
+          "sourceId": "pew-nonprob",
+          "locator": "Methods 101: What are nonprobability surveys?",
+          "anchor": {
+            "start": "The problem with doing surveys online",
+            "end": "join a survey panel"
+          }
+        },
+        {
+          "text": "With opt-in samples, pollsters know much less about how participants differ from the public, and vendors rarely publish how they recruit and select people, which makes it harder to adjust the data.",
+          "sourceId": "pew-nonprob",
+          "locator": "Methods 101: What are nonprobability surveys?",
+          "anchor": {
+            "start": "With opt-in surveys, we have a",
+            "end": "data to represent the population"
+          }
+        },
+        {
+          "text": "Online opt-in samples by definition miss the more than 10% of Americans who do not use the internet, and because respondents select themselves, there is a substantial risk the sample will not resemble the population.",
+          "sourceId": "pew-weighting",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "the online opt-in variety face additional",
+            "end": "not resemble the larger population"
+          }
+        },
+        {
+          "text": "Not every online survey is opt-in: probability-based panels recruit adults offline through a probability sample, and those adults then agree to take surveys online periodically.",
+          "sourceId": "pew-nonprob",
+          "locator": "Methods 101: What are nonprobability surveys?",
+          "anchor": {
+            "start": "polling people online but with probability-based",
+            "end": "take surveys online periodically"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "An online poll with thousands of respondents represents the population, because so many people took part.",
+          "correction": "A non-probability poll has no random selection, so nobody knows each person's chance of being included; if the participants differ from the broader population, their views may not represent it.",
+          "sourceId": "pew-nonprob",
+          "locator": "Methods 101: What are nonprobability surveys?",
+          "anchor": {
+            "start": "With non-probability polls, there's no random",
+            "end": "representative of the entire population"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sampling_vs_nonsampling_error",
+      "title": "Sampling error and non-sampling error",
+      "outcome": "Tell sampling error from non-sampling error and explain why only the first shrinks as the sample grows.",
+      "aliases": [
+        "sampling error",
+        "non-sampling error",
+        "nonsampling error",
+        "total survey error"
+      ],
+      "keyPoints": [
+        {
+          "text": "Sampling error is the error that comes from observing a sample rather than the whole population. Non-sampling error includes other problems, such as non-response and variables measured with error.",
+          "sourceId": "psu506-01",
+          "locator": "1.1 (Definitions 1.3 and 1.4)",
+          "anchor": {
+            "start": "Definition 1.3 (Sampling Error) error due",
+            "end": "measured with error, etc"
+          }
+        },
+        {
+          "text": "Non-sampling error is any difference between an estimate and the population value that does not arise merely from observing a sample instead of the whole population.",
+          "sourceId": "psu506-11",
+          "locator": "11.1 Non-Sampling Error (Definition 11.1)",
+          "anchor": {
+            "start": "Definition 11.1 (Nonsampling error) The differences",
+            "end": "the whole population, is observed"
+          }
+        },
+        {
+          "text": "Non-sampling error tends to persist even as the sample size gets larger and larger.",
+          "sourceId": "psu506-11",
+          "locator": "Lesson 11 overview",
+          "anchor": {
+            "start": "In Section 11.1, we discuss non-sampling",
+            "end": "sample size gets larger and larger"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A poll's margin of error covers every source of error, including bias from people it could not reach.",
+          "correction": "A margin of error reflects only the variability that comes from random selection. It says nothing about bias, such as undercoverage when part of the population cannot be reached.",
+          "sourceId": "psu100-02",
+          "locator": "2.2 Example 2.2 (Margin of Error and the Gallup Emotions Report)",
+          "anchor": {
+            "start": "the margin of error in Syria",
+            "end": "a third of the population"
+          }
+        }
+      ]
+    },
+    {
+      "id": "undercoverage",
+      "title": "Selection bias and undercoverage",
+      "outcome": "Spot undercoverage and other selection bias, and say which part of the population a survey missed.",
+      "aliases": [
+        "undercoverage",
+        "selection bias",
+        "coverage error"
+      ],
+      "keyPoints": [
+        {
+          "text": "Using the wrong sampling frame can bias results: when the frame leaves out major portions of the population, that undercoverage is a kind of selection bias.",
+          "sourceId": "psu100-02",
+          "locator": "2.1 Defining a Common Language for Sampling",
+          "anchor": {
+            "start": "Using the wrong sampling frame. As",
+            "end": "is a type of selection bias"
+          }
+        },
+        {
+          "text": "A survey distributed only through organisations let only 'joiners' into the sample, so people with no group membership had no chance of selection. That is selection bias.",
+          "sourceId": "psu100-01",
+          "locator": "1.1 Example 1.1 (Angry Women)",
+          "anchor": {
+            "start": "The first problem found in this",
+            "end": "an example of selection bias"
+          }
+        },
+        {
+          "text": "Telephone directories are an inadequate frame for a whole city, because they miss unlisted numbers and homeless people without telephones.",
+          "sourceId": "psu506-11",
+          "locator": "11.1 Non-Sampling Error",
+          "anchor": {
+            "start": "For telephone surveys, if we are",
+            "end": "do not have telephones"
+          }
+        },
+        {
+          "text": "Selection bias arises when the kinds of people who take part differ systematically, on what the survey measures, from those who do not. It can occur in probability surveys through non-response as well as in opt-in surveys.",
+          "sourceId": "pew-weight-methods",
+          "locator": "Footnote on selection bias",
+          "anchor": {
+            "start": "When survey respondents are self-selected, there",
+            "end": "as well as online opt-in surveys"
+          }
+        }
+      ]
+    },
+    {
+      "id": "nonresponse_bias",
+      "title": "Non-response bias and response rates",
+      "outcome": "Explain how non-response biases a survey, read a response rate, and name ways to reduce non-response.",
+      "aliases": [
+        "non-response",
+        "nonresponse",
+        "response rate",
+        "callbacks"
+      ],
+      "keyPoints": [
+        {
+          "text": "Non-response bias arises when the people who choose to take part in a study differ from those who choose not to.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.4 Non-Response Bias (Definition 1.18)",
+          "anchor": {
+            "start": "Definition 1.18 (Non-Response Bias) Systematic",
+            "end": "who choose to not participate"
+          }
+        },
+        {
+          "text": "Non-response bias can occur when many of those selected do not respond. When 4,500 of 100,000 questionnaires come back, the response rate is only 4.5%; most researchers like at least 60% or 70%.",
+          "sourceId": "psu100-01",
+          "locator": "1.1 Example 1.1 (Angry Women)",
+          "anchor": {
+            "start": "Nonresponse bias can occur when a",
+            "end": "at least 60% or 70%"
+          }
+        },
+        {
+          "text": "In one example, a restaurant invited recent customers to an online survey; those with strong feelings, good or bad, were far more likely to respond than those with a neutral experience. That is non-response bias.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.4 Non-Response Bias",
+          "anchor": {
+            "start": "A restaurant invited their recent customers",
+            "end": "those who chose to not participate"
+          }
+        },
+        {
+          "text": "Good survey practice is to find out why non-response happens and fix as many of the causes as possible before the survey starts.",
+          "sourceId": "psu506-11",
+          "locator": "11.1 Designing surveys to reduce non-response",
+          "anchor": {
+            "start": "Good survey practice is to discover",
+            "end": "before commencing the survey"
+          }
+        },
+        {
+          "text": "Non-response can be followed up: after 46 of 106 sampled students answered a mailed questionnaire, a random 20 of the 60 non-respondents were chased intensively by telephone and personal visits.",
+          "sourceId": "psu506-11",
+          "locator": "11.1 Example 11.1 (Time Spent Studying)",
+          "anchor": {
+            "start": "Example 11.1 (Time Spent Studying) In",
+            "end": "personal visits to obtain responses"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If the sample was chosen at random, the people who respond can be treated as a random sample too.",
+          "correction": "Random selection does not cure non-response: if only 30% of those randomly sampled respond, it is unclear whether the results represent the population.",
+          "sourceId": "ims-design",
+          "locator": "2.1.4 Sampling from a population",
+          "anchor": {
+            "start": "The act of taking a simple",
+            "end": "non-response bias can skew results"
+          }
+        }
+      ]
+    },
+    {
+      "id": "response_bias",
+      "title": "Response bias and social desirability",
+      "outcome": "Recognise response bias, including social desirability and acquiescence, and how question design reduces it.",
+      "aliases": [
+        "response bias",
+        "social desirability bias",
+        "acquiescence bias"
+      ],
+      "keyPoints": [
+        {
+          "text": "Response bias is the systematic favouring of certain outcomes when participants do not answer truthfully, for example to fit social norms or to please the researcher.",
+          "sourceId": "psu200-01",
+          "locator": "1.2.4 Response Bias (Definition 1.19)",
+          "anchor": {
+            "start": "Definition 1.19 (Response Bias) Systematic favoring",
+            "end": "or to appease the researcher"
+          }
+        },
+        {
+          "text": "Social desirability bias: wanting to be accepted, people understate things like drug use, tax evasion and racial bias, and may overstate things like church attendance, charitable giving and their likelihood of voting.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "One other challenge in developing questionnaires",
+            "end": "they will vote in an election"
+          }
+        },
+        {
+          "text": "More people say they voted than voting records show, and checks of records have found respondents who said they voted but had not.",
+          "sourceId": "pew-faq",
+          "locator": "Do people lie to pollsters?",
+          "anchor": {
+            "start": "More people say they voted in",
+            "end": "said they voted but did not"
+          }
+        },
+        {
+          "text": "Question design can ease this bias: asking about voting in a way that admits things may have kept someone from voting, or offering several answer options for infrequent attendance, makes honest answers easier.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "Researchers attempt to account for this",
+            "end": "indicate infrequent attendance"
+          }
+        },
+        {
+          "text": "Asked whether they agree or disagree with a statement, less educated and less informed respondents agree more readily than others. This acquiescence bias is stronger with an interviewer present; offering a choice between alternative statements is better.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "In this type of question, respondents",
+            "end": "choice between alternative statements"
+          }
+        }
+      ]
+    },
+    {
+      "id": "question_wording",
+      "title": "Neutral question wording",
+      "outcome": "Explain how wording changes answers and rewrite a loaded or one-sided question neutrally.",
+      "aliases": [
+        "question wording",
+        "leading question",
+        "loaded question",
+        "wording effects"
+      ],
+      "keyPoints": [
+        {
+          "text": "Wording can change answers a lot: 68% favoured military action in Iraq, but when the question added that U.S. forces might suffer thousands of casualties, only 43% did.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "An example of a wording difference",
+            "end": "43% said they favored military action"
+          }
+        },
+        {
+          "text": "Words can carry emotional weight: 51% favoured letting doctors give terminally ill patients the means to end their lives, but only 44% favoured letting doctors assist them in committing suicide.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "Similarly, it is important to consider",
+            "end": "patients in committing suicide"
+          }
+        },
+        {
+          "text": "People tend to agree with one-sided statements, even with two contradictory ones in the same survey, so revised wordings that are at least two-sided are preferred.",
+          "sourceId": "psu100-01",
+          "locator": "1.2 Example 1.4 (Deliberate Bias, Such as One-Sided Statements)",
+          "anchor": {
+            "start": "Although Wording 1 and Wording 2",
+            "end": "are now at least two-sided"
+          }
+        },
+        {
+          "text": "People tend to answer 'oppose' or 'no' to a question containing words such as forbid, ban or outlaw, whatever is really being asked, because people do not like being told they cannot do something.",
+          "sourceId": "psu100-01",
+          "locator": "1.2 Example 1.8 (Unintentional Bias)",
+          "anchor": {
+            "start": "People will tend to answer",
+            "end": "they can't do something"
+          }
+        },
+        {
+          "text": "A reference point in a question acts as an anchor: answers drift towards it, because people know little about the topic or are distracted by the anchor.",
+          "sourceId": "psu100-01",
+          "locator": "1.2 Example 1.7 (Anchoring)",
+          "anchor": {
+            "start": "People's perceptions can be severely distorted",
+            "end": "being distracted by the anchor"
+          }
+        }
+      ]
+    },
+    {
+      "id": "questionnaire_design",
+      "title": "Clear, single-barrelled questions",
+      "outcome": "Write clear, specific, single-barrelled survey questions and catch common faults such as double negatives and jargon.",
+      "aliases": [
+        "double-barreled question",
+        "double-barrelled question",
+        "questionnaire design",
+        "pretesting"
+      ],
+      "keyPoints": [
+        {
+          "text": "Questions should be clear and specific so every respondent can answer them. A closed question should list every reasonable answer, and its answer options should not overlap.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "First, it is important to ask",
+            "end": "options should be mutually exclusive"
+          }
+        },
+        {
+          "text": "Ask one question at a time. A double-barrelled question, such as confidence in a president's handling of domestic and foreign policy, is hard to answer and to interpret; ask two questions instead.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "It is also important to ask",
+            "end": "another about foreign policy"
+          }
+        },
+        {
+          "text": "Simple, concrete language is easier to understand. Double negatives and unfamiliar abbreviations or jargon confuse respondents and should be avoided.",
+          "sourceId": "pew-questions",
+          "locator": "Question wording",
+          "anchor": {
+            "start": "In general, questions that use simple",
+            "end": "confusion and should be avoided"
+          }
+        },
+        {
+          "text": "Pilot tests and focus groups show how people understand a question, and pretesting the questionnaire is an essential step, especially for questions asked for the first time.",
+          "sourceId": "pew-questions",
+          "locator": "Writing Survey Questions",
+          "anchor": {
+            "start": "Surveyors may conduct pilot tests or",
+            "end": "introduced for the first time"
+          }
+        }
+      ]
+    },
+    {
+      "id": "open_closed_questions",
+      "title": "Open and closed questions",
+      "outcome": "Choose between open and closed questions and design closed answer options that do not steer responses.",
+      "aliases": [
+        "open-ended question",
+        "closed-ended question",
+        "answer options",
+        "filtering"
+      ],
+      "keyPoints": [
+        {
+          "text": "An open-ended question lets people answer in their own words; a closed-ended one asks them to choose from a list. This choice is one of the most significant decisions affecting how people answer.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "One of the most significant decisions",
+            "end": "from a list of answer choices"
+          }
+        },
+        {
+          "text": "Offered the economy in a list, 58% chose it, but only 35% named it unprompted. And 43% of open-ended answers named something the closed list did not include.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "When explicitly offered the economy as",
+            "end": "not listed in the closed-ended version"
+          }
+        },
+        {
+          "text": "A pilot study with open-ended questions can reveal the most common answers, which then become the answer choices in a closed-ended question.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "Researchers will sometimes conduct a pilot",
+            "end": "common responses as answer choices"
+          }
+        },
+        {
+          "text": "Keep the number of answer choices small, about four or five at most, especially on the phone, because people find it hard to keep more choices in mind at once.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "In most circumstances, the number of",
+            "end": "choices in mind at one time"
+          }
+        },
+        {
+          "text": "Whether 'undecided' or 'don't know' is offered matters: people tend to give those answers only when they are included in the list. Leaving them out is called filtering.",
+          "sourceId": "psu100-01",
+          "locator": "1.2 Example 1.5 (Filtering)",
+          "anchor": {
+            "start": "This example illustrates the problem of",
+            "end": "only when these choices are included"
+          }
+        }
+      ]
+    },
+    {
+      "id": "order_effects",
+      "title": "Question and answer order effects",
+      "outcome": "Explain how the order of questions and of answer options can shift responses, and how surveys spread that effect.",
+      "aliases": [
+        "order effects",
+        "question order",
+        "primacy effect",
+        "recency effect",
+        "contrast effect"
+      ],
+      "keyPoints": [
+        {
+          "text": "Questions early in a questionnaire can give context that changes how people answer later ones. These are called order effects.",
+          "sourceId": "pew-questions",
+          "locator": "Question order",
+          "anchor": {
+            "start": "Surveyors must be attentive to how",
+            "end": "these effects are called \"order effects"
+          }
+        },
+        {
+          "text": "In one poll, 88% said they were dissatisfied with how things were going in the country when asked right after a question on presidential approval, against 78% without it: a contrast effect.",
+          "sourceId": "pew-questions",
+          "locator": "Question order",
+          "anchor": {
+            "start": "Another experiment embedded in a December",
+            "end": "context of the prior question"
+          }
+        },
+        {
+          "text": "The order of answer options matters too: on the phone people more often pick items heard later in a list (a recency effect), while people reading a list tend to pick items at the top (a primacy effect).",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "In addition to the number and",
+            "end": "list (a \"primacy\" effect"
+          }
+        },
+        {
+          "text": "Randomising the order of answer options does not eliminate order effects, but it spreads that bias randomly.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "Randomization of response items does not",
+            "end": "bias is spread randomly"
+          }
+        },
+        {
+          "text": "Options with a natural order, such as excellent to poor, are generally not shuffled, because the order helps people answer; the order can instead be reversed for some respondents.",
+          "sourceId": "pew-questions",
+          "locator": "Open- and closed-ended questions",
+          "anchor": {
+            "start": "Questions with ordinal response categories",
+            "end": "reversed for some respondents"
+          }
+        }
+      ]
+    },
+    {
+      "id": "survey_modes",
+      "title": "Survey modes: online, phone and in person",
+      "outcome": "Explain how the survey mode (online, phone, in person) affects both who responds and how they answer.",
+      "aliases": [
+        "survey mode",
+        "mode effect",
+        "web survey",
+        "telephone survey",
+        "interviewer-administered"
+      ],
+      "keyPoints": [
+        {
+          "text": "Answers to self-administered and interviewer-administered surveys sometimes differ. A difference in answers caused by the way a question is administered is called a mode effect.",
+          "sourceId": "pew-modes",
+          "locator": "Overview",
+          "anchor": {
+            "start": "But the results from self-administered and",
+            "end": "which the question is administered"
+          }
+        },
+        {
+          "text": "Mode effects are fairly common but usually not large: across 60 questions, answers differed by survey mode by 5.5 percentage points on average, ranging from 0 to 18.",
+          "sourceId": "pew-modes",
+          "locator": "Overview",
+          "anchor": {
+            "start": "The study finds that differences in",
+            "end": "from 0 to 18 percentage points"
+          }
+        },
+        {
+          "text": "An interviewer, on the phone or in person, can subtly pressure people to present themselves well, so they overstate socially desirable behaviour and understate what might draw disapproval.",
+          "sourceId": "pew-modes",
+          "locator": "Why mode effects occur",
+          "anchor": {
+            "start": "But the social interaction inherent in",
+            "end": "disapproval from another person"
+          }
+        },
+        {
+          "text": "Automated 'robocall' polls can be very biased: response rates are extremely low because people dislike talking to a machine, they cannot legally call cell phones, and landline users tend to be older.",
+          "sourceId": "psu100-02",
+          "locator": "2.4 Probability Sampling",
+          "anchor": {
+            "start": "Such \"robocall polls\" can be very",
+            "end": "potential source of bias is introduced"
+          }
+        },
+        {
+          "text": "For one online panel, the ATP, to be nationally representative, people who do not use the internet must be represented on it; they can now take its surveys by phone with a live interviewer.",
+          "sourceId": "pew-faq",
+          "locator": "Do you survey people who don't use the internet?",
+          "anchor": {
+            "start": "For the online ATP panel to",
+            "end": "phone with a live interviewer"
+          }
+        }
+      ]
+    },
+    {
+      "id": "weighting",
+      "title": "Weighting a sample",
+      "outcome": "Explain at a conceptual level how weighting adjusts a sample towards the population, and what it cannot fix.",
+      "aliases": [
+        "weighting",
+        "survey weights",
+        "raking",
+        "post-stratification"
+      ],
+      "keyPoints": [
+        {
+          "text": "Weighting adjusts for differences between the sample's demographics and what is known about the population, for example from the U.S. Census Bureau, so that the sample resembles the population it represents.",
+          "sourceId": "pew-faq",
+          "locator": "How can a small sample represent the views of all Americans?",
+          "anchor": {
+            "start": "To ensure that samples drawn ultimately",
+            "end": "such as the U.S. Census Bureau"
+          }
+        },
+        {
+          "text": "If people had different chances of selection, weighting each by the inverse of its selection probability removes the bias from groups being over- or under-represented. Probability samples know these chances; opt-in samples can only estimate them.",
+          "sourceId": "pew-weight-methods",
+          "locator": "Propensity weighting",
+          "anchor": {
+            "start": "A key concept in probability-based sampling",
+            "end": "can only be estimated"
+          }
+        },
+        {
+          "text": "For public opinion surveys, the most common weighting method is raking: it takes variables whose population distribution is known and repeatedly adjusts each case's weight until the sample matches the population on them.",
+          "sourceId": "pew-weight-methods",
+          "locator": "Raking",
+          "anchor": {
+            "start": "For public opinion surveys, the most",
+            "end": "population for those variables"
+          }
+        },
+        {
+          "text": "For accuracy, choosing the right variables to weight on matters more than choosing the right statistical method.",
+          "sourceId": "pew-weighting",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "When it comes to accuracy, choosing",
+            "end": "the right statistical method"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Weighting can correct any biased sample, as long as the method is sophisticated enough.",
+          "correction": "Even the most effective weighting procedures tested on online opt-in samples could not remove most of the bias: the best removed only about 30% of it.",
+          "sourceId": "pew-weighting",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "Even the most effective adjustment procedures",
+            "end": "about 30% of the original bias"
+          }
+        }
+      ]
+    },
+    {
+      "id": "bigger_sample_bias",
+      "title": "A bigger sample does not fix bias",
+      "outcome": "Explain why a bigger sample reduces random error but cannot fix a biased way of sampling.",
+      "aliases": [
+        "sample size and bias",
+        "Literary Digest poll"
+      ],
+      "keyPoints": [
+        {
+          "text": "Size does not guarantee representativeness: a sample can be quite large and still not adequately represent the population.",
+          "sourceId": "psu100-01",
+          "locator": "1.1 Example 1.1 (Angry Women)",
+          "anchor": {
+            "start": "So with Example 1.1, the overall",
+            "end": "adequately represent the population"
+          }
+        },
+        {
+          "text": "In 1936 Gallup correctly predicted that Roosevelt would beat Landon, in contrast to the Literary Digest's prediction, which came from a non-random convenience sample more than 40 times as large.",
+          "sourceId": "psu100-01",
+          "locator": "1.3 Example 1.14 (Sample Surveys)",
+          "anchor": {
+            "start": "Three years later Gallup founded the",
+            "end": "more than 40 times as large"
+          }
+        },
+        {
+          "text": "A bigger sample reduces the variability of estimates but not their bias: in one study, average bias held at 6.3 points with both 2,000 and 8,000 interviews, so estimates clustered tightly around the wrong value.",
+          "sourceId": "pew-weighting",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "While a large sample size may",
+            "end": "around the wrong (biased) value"
+          }
+        },
+        {
+          "text": "Past about 1,500 respondents, a bigger poll barely improves its margin of error, so extra resources are usually better spent on reducing sources of bias.",
+          "sourceId": "psu100-02",
+          "locator": "2.3 Relationship between Sample Size and Margin of Error",
+          "anchor": {
+            "start": "In contrast, the margin of error",
+            "end": "same order as the margin"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A larger sample always removes bias.",
+          "correction": "Very large samples do not fix the shortcomings of online opt-in samples: an opt-in survey of 8,000 interviews was found to be virtually no more accurate than one of 2,000.",
+          "sourceId": "pew-weighting",
+          "locator": "Introduction",
+          "anchor": {
+            "start": "Very large sample sizes do not",
+            "end": "virtually no difference in accuracy"
+          }
+        }
+      ]
+    },
+    {
+      "id": "observational_vs_experiment",
+      "title": "Observational studies and experiments",
+      "outcome": "Tell an observational study from an experiment, and explain why only a randomised experiment supports cause-and-effect conclusions (the A/B testing pack teaches experiments).",
+      "aliases": [
+        "observational study",
+        "experiment",
+        "randomized experiment",
+        "confounding variable",
+        "random assignment"
+      ],
+      "keyPoints": [
+        {
+          "text": "Observational studies record people in their naturally occurring groups. In an experiment the researcher assigns the groups, and in a randomised experiment that assignment uses a chance mechanism such as a coin flip.",
+          "sourceId": "psu100-01",
+          "locator": "1.1 Example 1.2 (Pets and Marriage)",
+          "anchor": {
+            "start": "A comparative study can either be",
+            "end": "chance mechanism (like flipping a coin"
+          }
+        },
+        {
+          "text": "A randomised experiment can support cause-and-effect conclusions; an observational study can only describe associations.",
+          "sourceId": "psu100-01",
+          "locator": "1.1 Example 1.2 (Pets and Marriage)",
+          "anchor": {
+            "start": "With a randomized experiment, appropriate evidence",
+            "end": "demonstrate a cause-and-effect relationship"
+          }
+        },
+        {
+          "text": "A confounding variable is associated with both the explanatory and the response variable, such as outside temperature with ice-cream sales and boating accidents, and it prevents concluding that one causes the other.",
+          "sourceId": "ims-design",
+          "locator": "2.2.1 Principles of experimental design",
+          "anchor": {
+            "start": "A confounding variable is one that",
+            "end": "cause of more boating accidents"
+          }
+        },
+        {
+          "text": "Random sampling and random assignment do different jobs: random sampling helps a sample reflect its population, while random assignment helps the groups in a comparative study give a fair comparison.",
+          "sourceId": "psu100-02",
+          "locator": "Lesson 2 overview",
+          "anchor": {
+            "start": "For a sample survey, we want",
+            "end": "and random assignment can help"
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "With enough data, an observational study can establish cause and effect as well as an experiment can.",
+          "correction": "Drawing causal conclusions from observational data is treacherous; observational studies are generally only enough to show associations or to form hypotheses that experiments can later check.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies",
+          "anchor": {
+            "start": "Making causal conclusions based on experiments",
+            "end": "later checked with experiments"
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "population_and_sample",
+      "after": "parameters_and_statistics",
+      "reason": "A parameter describes the population and a statistic the sample."
+    },
+    {
+      "before": "population_and_sample",
+      "after": "why_sample",
+      "reason": "Choosing a sample over a census presumes knowing both."
+    },
+    {
+      "before": "population_and_sample",
+      "after": "sampling_frame",
+      "reason": "The frame sits between the population and the sample."
+    },
+    {
+      "before": "population_and_sample",
+      "after": "sampling_bias",
+      "reason": "A biased sample is one that misrepresents its population."
+    },
+    {
+      "before": "sampling_bias",
+      "after": "probability_vs_nonprobability",
+      "reason": "Probability sampling is the defence against sampling bias."
+    },
+    {
+      "before": "probability_vs_nonprobability",
+      "after": "simple_random_sampling",
+      "reason": "Simple random sampling is the basic probability method."
+    },
+    {
+      "before": "simple_random_sampling",
+      "after": "systematic_sampling",
+      "reason": "A systematic sample is compared with a simple random one."
+    },
+    {
+      "before": "simple_random_sampling",
+      "after": "stratified_sampling",
+      "reason": "Stratified sampling takes a simple random sample within each stratum."
+    },
+    {
+      "before": "simple_random_sampling",
+      "after": "cluster_sampling",
+      "reason": "Cluster sampling takes a simple random sample of clusters."
+    },
+    {
+      "before": "cluster_sampling",
+      "after": "multistage_sampling",
+      "reason": "A multistage sample is a cluster sample that samples within clusters."
+    },
+    {
+      "before": "stratified_sampling",
+      "after": "stratified_vs_cluster",
+      "reason": "Comparing the two designs needs both."
+    },
+    {
+      "before": "cluster_sampling",
+      "after": "stratified_vs_cluster",
+      "reason": "Comparing the two designs needs both."
+    },
+    {
+      "before": "multistage_sampling",
+      "after": "cluster_cost_precision",
+      "reason": "The cost trade-off covers cluster and multistage designs."
+    },
+    {
+      "before": "stratified_vs_cluster",
+      "after": "cluster_cost_precision",
+      "reason": "The trade-off is judged against stratified and simple random sampling."
+    },
+    {
+      "before": "probability_vs_nonprobability",
+      "after": "convenience_and_voluntary",
+      "reason": "Convenience and volunteer samples are non-probability samples."
+    },
+    {
+      "before": "probability_vs_nonprobability",
+      "after": "quota_sampling",
+      "reason": "Quota sampling is defined by its contrast with probability sampling."
+    },
+    {
+      "before": "convenience_and_voluntary",
+      "after": "online_opt_in",
+      "reason": "Online opt-in polls are self-selected samples."
+    },
+    {
+      "before": "sampling_bias",
+      "after": "sampling_vs_nonsampling_error",
+      "reason": "Bias is the main non-sampling error."
+    },
+    {
+      "before": "sampling_frame",
+      "after": "undercoverage",
+      "reason": "Undercoverage is a frame that leaves out part of the population."
+    },
+    {
+      "before": "sampling_vs_nonsampling_error",
+      "after": "undercoverage",
+      "reason": "Undercoverage is a non-sampling error."
+    },
+    {
+      "before": "sampling_vs_nonsampling_error",
+      "after": "nonresponse_bias",
+      "reason": "Non-response is a non-sampling error."
+    },
+    {
+      "before": "sampling_vs_nonsampling_error",
+      "after": "response_bias",
+      "reason": "Response bias is a non-sampling error."
+    },
+    {
+      "before": "response_bias",
+      "after": "question_wording",
+      "reason": "Wording is one source of response bias."
+    },
+    {
+      "before": "question_wording",
+      "after": "questionnaire_design",
+      "reason": "Clear questions build on neutral wording."
+    },
+    {
+      "before": "questionnaire_design",
+      "after": "open_closed_questions",
+      "reason": "Answer options are designed once the question is clear."
+    },
+    {
+      "before": "open_closed_questions",
+      "after": "order_effects",
+      "reason": "Order effects on answer options presume closed questions."
+    },
+    {
+      "before": "response_bias",
+      "after": "survey_modes",
+      "reason": "Mode effects work partly through social desirability."
+    },
+    {
+      "before": "nonresponse_bias",
+      "after": "survey_modes",
+      "reason": "Mode affects who responds."
+    },
+    {
+      "before": "undercoverage",
+      "after": "weighting",
+      "reason": "Weighting adjusts for groups a sample under-represents."
+    },
+    {
+      "before": "nonresponse_bias",
+      "after": "weighting",
+      "reason": "Weighting is a correction for non-response."
+    },
+    {
+      "before": "online_opt_in",
+      "after": "weighting",
+      "reason": "The limits of weighting are shown on opt-in samples."
+    },
+    {
+      "before": "sampling_vs_nonsampling_error",
+      "after": "bigger_sample_bias",
+      "reason": "Only sampling error shrinks as the sample grows."
+    },
+    {
+      "before": "convenience_and_voluntary",
+      "after": "bigger_sample_bias",
+      "reason": "The large samples that failed were convenience samples."
+    },
+    {
+      "before": "simple_random_sampling",
+      "after": "observational_vs_experiment",
+      "reason": "Random sampling is contrasted with random assignment."
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-23",
+    "itemsJudged": 124,
+    "itemsSupported": 124,
+    "errorsPlanted": 17,
+    "errorsCaught": 17,
+    "fingerprint": "sha256:9c22fe9ec98ae9f26f9cdbc934359cc8"
+  },
+  "cards": [
+    {
+      "id": "populations-and-samples",
+      "title": "Populations, samples and why we sample",
+      "conceptIds": [
+        "population_and_sample",
+        "parameters_and_statistics",
+        "why_sample"
+      ]
+    },
+    {
+      "id": "frame-and-bias",
+      "title": "The sampling frame and sampling bias",
+      "conceptIds": [
+        "sampling_frame",
+        "sampling_bias"
+      ]
+    },
+    {
+      "id": "random-samples",
+      "title": "Probability samples: simple random and systematic",
+      "conceptIds": [
+        "probability_vs_nonprobability",
+        "simple_random_sampling",
+        "systematic_sampling"
+      ]
+    },
+    {
+      "id": "stratified-sampling",
+      "title": "Stratified sampling",
+      "conceptIds": [
+        "stratified_sampling"
+      ]
+    },
+    {
+      "id": "cluster-and-multistage",
+      "title": "Cluster and multistage sampling",
+      "conceptIds": [
+        "cluster_sampling",
+        "multistage_sampling"
+      ]
+    },
+    {
+      "id": "choosing-a-design",
+      "title": "Choosing a design: strata, clusters and cost",
+      "conceptIds": [
+        "stratified_vs_cluster",
+        "cluster_cost_precision"
+      ]
+    },
+    {
+      "id": "non-probability-samples",
+      "title": "Samples that cannot speak for a population",
+      "conceptIds": [
+        "convenience_and_voluntary",
+        "quota_sampling",
+        "online_opt_in"
+      ]
+    },
+    {
+      "id": "errors-and-coverage",
+      "title": "Sampling error, undercoverage and non-response",
+      "conceptIds": [
+        "sampling_vs_nonsampling_error",
+        "undercoverage",
+        "nonresponse_bias"
+      ]
+    },
+    {
+      "id": "response-bias-and-wording",
+      "title": "Response bias and question wording",
+      "conceptIds": [
+        "response_bias",
+        "question_wording"
+      ]
+    },
+    {
+      "id": "writing-questions",
+      "title": "Writing clear questions and answer options",
+      "conceptIds": [
+        "questionnaire_design",
+        "open_closed_questions"
+      ]
+    },
+    {
+      "id": "order-and-mode",
+      "title": "Order effects and survey modes",
+      "conceptIds": [
+        "order_effects",
+        "survey_modes"
+      ]
+    },
+    {
+      "id": "weighting-and-size",
+      "title": "Weighting, and why size does not fix bias",
+      "conceptIds": [
+        "weighting",
+        "bigger_sample_bias"
+      ]
+    },
+    {
+      "id": "surveys-and-experiments",
+      "title": "Observational studies and experiments",
+      "conceptIds": [
+        "observational_vs_experiment"
+      ]
+    }
+  ]
+}

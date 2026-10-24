@@ -12,6 +12,13 @@
 
 import type { ReferencePack } from "@/types/pack";
 import { checkPack, parsePack } from "./validate";
+import descriptiveStatistics from "@/content/packs/descriptive-statistics.json";
+import probabilityDistributions from "@/content/packs/probability-distributions.json";
+import samplingAndSurveys from "@/content/packs/sampling-and-surveys.json";
+import samplingDistributions from "@/content/packs/sampling-distributions.json";
+import hypothesisTesting from "@/content/packs/hypothesis-testing.json";
+import comparingGroups from "@/content/packs/comparing-groups.json";
+import categoricalData from "@/content/packs/categorical-data.json";
 import linearRegression from "@/content/packs/linear-regression.json";
 import abTesting from "@/content/packs/ab-testing.json";
 import timeSeriesForecasting from "@/content/packs/time-series-forecasting.json";
@@ -29,7 +36,17 @@ export interface CatalogEntry {
   raw:    unknown;
 }
 
+// Catalog order is the order the course picker shows. The statistics
+// foundations come first, as a path: describe, then probability, then
+// sampling, then inference, then comparing groups and categories.
 const CATALOG: readonly CatalogEntry[] = [
+  { id: "descriptive-statistics",    region: "stats", raw: descriptiveStatistics },
+  { id: "probability-distributions", region: "stats", raw: probabilityDistributions },
+  { id: "sampling-and-surveys",      region: "stats", raw: samplingAndSurveys },
+  { id: "sampling-distributions",    region: "stats", raw: samplingDistributions },
+  { id: "hypothesis-testing",        region: "stats", raw: hypothesisTesting },
+  { id: "comparing-groups",          region: "stats", raw: comparingGroups },
+  { id: "categorical-data",          region: "stats", raw: categoricalData },
   { id: "linear-regression", region: "stats", raw: linearRegression },
   { id: "ab-testing",        region: "stats", raw: abTesting },
   { id: "time-series-forecasting", region: "stats", raw: timeSeriesForecasting },
