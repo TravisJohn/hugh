@@ -9271,3 +9271,44 @@ Analytics, Data Engineering, Cloud and Automation still have no courses.
 This entry is recorded here, as the first commit of the phase 2 branch,
 rather than on main: main only ever receives commits through PR merges, and
 Travis chose not to open a PR for a log-only change.
+
+## 2026-10-25 - Narrow Learn phase 2: architecture approved
+
+Phase 2 is the launch: every learner gets the course catalog, and the open
+topic path closes. Its architecture is a new section of
+`PRD-narrow-learn.md`. Travis approved it on 2026-10-25, with all five
+decisions as recommended. Nothing is deleted in phase 2; that is phase 3.
+
+It ships as two PRs:
+- **PR C, the catalog for everyone:** courses for every unblocked learner;
+  `/home/learn` becomes "Choose a course"; a request-a-topic box backed by
+  migration 061 (`topic_requests`); the carousel limited to topics that have
+  a course; and the new copy in place of "You can learn anything".
+- **PR D, the open path closes:** goal creation takes only a course; the five
+  open-input routes return 410, and each hit is recorded as a
+  `learn.retired_route` operation; legacy goals become read-only.
+
+The recorded hits are what makes phase 3 measurable. It starts after a week
+of PR D in production with no hits from real use.
+
+The five decisions:
+1. `PACK_LEARN_ENABLED` is deleted. Once the topic input is gone, turning the
+   flag off would leave learners nothing to start, so the undo is Vercel's
+   instant rollback; 061 is additive.
+2. A legacy goal is fully read-only: Ask, quiz, mastery, the diary check,
+   rebuild, card moves and new diary entries are all off, and deleting stays
+   on. It is enforced at one point: `cardGrounding` already returns `none`
+   for a card with no concept ids, and phase 2 makes `none` mean read-only.
+3. Each legacy goal gets one "Choose a course" link, rather than a matcher
+   from its topic to a pack. This narrows row 5 of the PRD.
+4. Outlier detection stays under Statistics.
+5. The picker groups courses instead of fitting all 16 on one screen. This
+   was Travis's direction: one group per view, so Rule 4 holds without an
+   exception. The groups are data in `lib/packs/groups.ts`, and each catalog
+   entry names its group and reads its region from it. They start as four:
+   - Statistics foundations: a 7-course path
+   - Statistical modelling: Linear regression, Bayesian inference, Time
+     series forecasting
+   - Statistics in practice: A/B testing, Outlier detection
+   - Machine learning: Classification metrics, Decision trees, Neural
+     networks, Clustering

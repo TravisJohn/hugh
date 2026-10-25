@@ -253,7 +253,7 @@ untouched, and no learner sees anything new.
    for the reason in migration 060 above.
 4. **Two PRs, not one,** so each can be checked on the live site on its own.
 
-## Phase 2 architecture (DRAFT, 2026-10-25, awaiting Travis's approval)
+## Phase 2 architecture (APPROVED by Travis, 2026-10-25, all five decisions as recommended)
 
 Phase 2 is the launch (row 8): every learner gets the catalog, and the open
 topic path closes. Nothing is deleted; that is phase 3. Main holds 16
