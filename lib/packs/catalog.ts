@@ -12,6 +12,7 @@
 
 import type { ReferencePack } from "@/types/pack";
 import { checkPack, parsePack } from "./validate";
+import { COURSE_GROUPS, courseGroup, type CourseGroup, type CourseGroupId } from "./groups";
 import descriptiveStatistics from "@/content/packs/descriptive-statistics.json";
 import probabilityDistributions from "@/content/packs/probability-distributions.json";
 import samplingAndSurveys from "@/content/packs/sampling-and-surveys.json";
@@ -30,32 +31,32 @@ import neuralNetworks from "@/content/packs/neural-networks.json";
 import classificationMetrics from "@/content/packs/classification-metrics.json";
 
 export interface CatalogEntry {
-  id:     string;
-  /** The learner-map region a course is filed under (lib/learn/regions.ts). */
-  region: string;
-  raw:    unknown;
+  id:    string;
+  /** The picker group a course is shown in. Its learner-map region comes from the group. */
+  group: CourseGroupId;
+  raw:   unknown;
 }
 
-// Catalog order is the order the course picker shows. The statistics
-// foundations come first, as a path: describe, then probability, then
-// sampling, then inference, then comparing groups and categories.
+// Within a group, catalog order is the order the picker shows. The statistics
+// foundations are a path: describe, then probability, then sampling, then
+// inference, then comparing groups and categories.
 const CATALOG: readonly CatalogEntry[] = [
-  { id: "descriptive-statistics",    region: "stats", raw: descriptiveStatistics },
-  { id: "probability-distributions", region: "stats", raw: probabilityDistributions },
-  { id: "sampling-and-surveys",      region: "stats", raw: samplingAndSurveys },
-  { id: "sampling-distributions",    region: "stats", raw: samplingDistributions },
-  { id: "hypothesis-testing",        region: "stats", raw: hypothesisTesting },
-  { id: "comparing-groups",          region: "stats", raw: comparingGroups },
-  { id: "categorical-data",          region: "stats", raw: categoricalData },
-  { id: "linear-regression", region: "stats", raw: linearRegression },
-  { id: "ab-testing",        region: "stats", raw: abTesting },
-  { id: "time-series-forecasting", region: "stats", raw: timeSeriesForecasting },
-  { id: "clustering",              region: "ml",    raw: clustering },
-  { id: "decision-trees",          region: "ml",    raw: decisionTrees },
-  { id: "bayesian-inference",      region: "stats", raw: bayesianInference },
-  { id: "outlier-detection",       region: "stats", raw: outlierDetection },
-  { id: "neural-networks",         region: "ml",    raw: neuralNetworks },
-  { id: "classification-metrics",  region: "ml",    raw: classificationMetrics },
+  { id: "descriptive-statistics",    group: "stats-foundations", raw: descriptiveStatistics },
+  { id: "probability-distributions", group: "stats-foundations", raw: probabilityDistributions },
+  { id: "sampling-and-surveys",      group: "stats-foundations", raw: samplingAndSurveys },
+  { id: "sampling-distributions",    group: "stats-foundations", raw: samplingDistributions },
+  { id: "hypothesis-testing",        group: "stats-foundations", raw: hypothesisTesting },
+  { id: "comparing-groups",          group: "stats-foundations", raw: comparingGroups },
+  { id: "categorical-data",          group: "stats-foundations", raw: categoricalData },
+  { id: "linear-regression",         group: "stats-modelling",   raw: linearRegression },
+  { id: "bayesian-inference",        group: "stats-modelling",   raw: bayesianInference },
+  { id: "time-series-forecasting",   group: "stats-modelling",   raw: timeSeriesForecasting },
+  { id: "ab-testing",                group: "stats-in-practice", raw: abTesting },
+  { id: "outlier-detection",         group: "stats-in-practice", raw: outlierDetection },
+  { id: "classification-metrics",    group: "machine-learning",  raw: classificationMetrics },
+  { id: "decision-trees",            group: "machine-learning",  raw: decisionTrees },
+  { id: "neural-networks",           group: "machine-learning",  raw: neuralNetworks },
+  { id: "clustering",                group: "machine-learning",  raw: clustering },
 ];
 
 /** The statuses Hugh may teach from. */
@@ -87,7 +88,7 @@ export function loadEntry(entry: CatalogEntry): LoadedPack {
   if (checkPack(pack).some(i => i.level === "error")) return { ok: false, reason: "invalid" };
   if (!TEACHABLE_STATUSES.has(pack.status)) return { ok: false, reason: "below-status" };
   if (!pack.cards || pack.cards.length === 0) return { ok: false, reason: "no-cards" };
-  return { ok: true, pack, region: entry.region };
+  return { ok: true, pack, region: courseGroup(entry.group).region };
 }
 
 // Validated once per server instance. The packs are bundled, so they cannot
@@ -129,16 +130,33 @@ export function courseSummary(pack: ReferencePack): CourseSummary {
  * empty picker can only mean an empty catalog (CLAUDE.md Rule 5).
  */
 export type CourseListing =
-  | { packId: string; course: CourseSummary; problem: null }
-  | { packId: string; course: null;          problem: string };
+  | { packId: string; group: CourseGroupId; course: CourseSummary; problem: null }
+  | { packId: string; group: CourseGroupId; course: null;          problem: string };
 
 export function catalogListing(entries: readonly CatalogEntry[] = CATALOG): CourseListing[] {
   return entries.map(e => {
     const result = entries === CATALOG ? loadPack(e.id) : loadEntry(e);
     return result.ok
-      ? { packId: e.id, course: courseSummary(result.pack), problem: null }
-      : { packId: e.id, course: null, problem: PACK_REFUSAL_MESSAGE[result.reason] };
+      ? { packId: e.id, group: e.group, course: courseSummary(result.pack), problem: null }
+      : { packId: e.id, group: e.group, course: null, problem: PACK_REFUSAL_MESSAGE[result.reason] };
   });
+}
+
+/** One group as the picker shows it: the group, then its courses in catalog order. */
+export interface CatalogGroup {
+  group:    CourseGroup;
+  listings: CourseListing[];
+}
+
+/**
+ * The listings arranged into groups, in the groups' display order. A group
+ * with no courses yet is left out rather than shown empty. A broken course
+ * still counts, because catalogListing lists it as broken.
+ */
+export function groupedCatalog(listings: readonly CourseListing[] = catalogListing()): CatalogGroup[] {
+  return COURSE_GROUPS
+    .map(group => ({ group, listings: listings.filter(l => l.group === group.id) }))
+    .filter(g => g.listings.length > 0);
 }
 
 /** The catalog's ids, for tests and for the CI guard. */

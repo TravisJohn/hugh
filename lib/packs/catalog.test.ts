@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
-  catalogIds, catalogListing, courseSummary, loadEntry, loadPack,
+  catalogIds, catalogListing, courseSummary, groupedCatalog, loadEntry, loadPack,
   PACK_REFUSAL_MESSAGE, refusalStatus,
 } from "./catalog";
 import { packTrack } from "./track";
@@ -52,27 +52,27 @@ describe("loadEntry: a pack below the bar is refused, with a reason", () => {
   it("refuses a pack that is only provisional, because Hugh teaches from machine-checked up", () => {
     const p = { ...lr(), status: "provisional" as const };
     delete p.machineCheck;
-    expect(loadEntry({ id: p.id, region: "stats", raw: p })).toEqual({ ok: false, reason: "below-status" });
+    expect(loadEntry({ id: p.id, group: "stats-modelling", raw: p })).toEqual({ ok: false, reason: "below-status" });
   });
 
   it("refuses a pack with no cards, because there would be no track to build", () => {
     const p = lr();
     delete p.cards;
-    expect(loadEntry({ id: p.id, region: "stats", raw: p })).toEqual({ ok: false, reason: "no-cards" });
+    expect(loadEntry({ id: p.id, group: "stats-modelling", raw: p })).toEqual({ ok: false, reason: "no-cards" });
   });
 
   it("refuses a pack edited after its machine check, so an unjudged sentence is never taught", () => {
     const p = lr();
     p.concepts[0]!.keyPoints[0]!.text = "A sentence nobody judged.";
-    expect(loadEntry({ id: p.id, region: "stats", raw: p })).toEqual({ ok: false, reason: "invalid" });
+    expect(loadEntry({ id: p.id, group: "stats-modelling", raw: p })).toEqual({ ok: false, reason: "invalid" });
   });
 
   it("refuses something that is not a pack at all", () => {
-    expect(loadEntry({ id: "x", region: "stats", raw: { nope: true } })).toEqual({ ok: false, reason: "invalid" });
+    expect(loadEntry({ id: "x", group: "stats-modelling", raw: { nope: true } })).toEqual({ ok: false, reason: "invalid" });
   });
 
   it("returns the pack and its map region when everything holds", () => {
-    const result = loadEntry({ id: "linear-regression", region: "stats", raw: lr() });
+    const result = loadEntry({ id: "linear-regression", group: "stats-modelling", raw: lr() });
     expect(result.ok && result.region).toBe("stats");
   });
 });
@@ -102,12 +102,56 @@ describe("catalogListing", () => {
     const broken = lr();
     delete broken.cards;
     const listing = catalogListing([
-      { id: "linear-regression", region: "stats", raw: lr() },
-      { id: "broken", region: "stats", raw: broken },
+      { id: "linear-regression", group: "stats-modelling", raw: lr() },
+      { id: "broken", group: "stats-modelling", raw: broken },
     ]);
     expect(listing.map(l => l.packId)).toEqual(["linear-regression", "broken"]);
     expect(listing[0]!.course?.cardCount).toBe(12);
-    expect(listing[1]).toEqual({ packId: "broken", course: null, problem: PACK_REFUSAL_MESSAGE["no-cards"] });
+    expect(listing[1]).toEqual({
+      packId: "broken", group: "stats-modelling", course: null, problem: PACK_REFUSAL_MESSAGE["no-cards"],
+    });
+  });
+});
+
+describe("course groups (phase 2, decision 5)", () => {
+  it("takes a course's map region from its group, not from the pack, so the picker and the map can't disagree", () => {
+    const result = loadEntry({ id: "linear-regression", group: "machine-learning", raw: lr() });
+    expect(result.ok && result.region).toBe("ml");
+  });
+
+  it("files every catalog course in exactly one group", () => {
+    const placed = groupedCatalog().flatMap(g => g.listings.map(l => l.packId));
+    expect(placed.sort()).toEqual(catalogIds().sort());
+  });
+
+  it("keeps the statistics foundations path in its approved teaching order", () => {
+    const path = groupedCatalog().find(g => g.group.id === "stats-foundations");
+    expect(path?.group.path).toBe(true);
+    expect(path?.listings.map(l => l.packId)).toEqual([
+      "descriptive-statistics", "probability-distributions", "sampling-and-surveys",
+      "sampling-distributions", "hypothesis-testing", "comparing-groups", "categorical-data",
+    ]);
+  });
+
+  it("shows groups in display order, whatever order the listings arrive in", () => {
+    const listings = catalogListing([
+      { id: "linear-regression", group: "machine-learning", raw: lr() },
+      { id: "linear-regression", group: "stats-foundations", raw: lr() },
+    ]);
+    expect(groupedCatalog(listings).map(g => g.group.id)).toEqual(["stats-foundations", "machine-learning"]);
+  });
+
+  it("leaves out a group with no courses, rather than showing an empty shelf", () => {
+    const listings = catalogListing([{ id: "linear-regression", group: "stats-modelling", raw: lr() }]);
+    expect(groupedCatalog(listings).map(g => g.group.id)).toEqual(["stats-modelling"]);
+  });
+
+  it("still shows a group whose only course is broken, because a broken course is listed as broken", () => {
+    const broken = lr();
+    delete broken.cards;
+    const listings = catalogListing([{ id: "broken", group: "stats-in-practice", raw: broken }]);
+    expect(groupedCatalog(listings)).toHaveLength(1);
+    expect(groupedCatalog(listings)[0]!.listings[0]!.problem).toBe(PACK_REFUSAL_MESSAGE["no-cards"]);
   });
 });
 
