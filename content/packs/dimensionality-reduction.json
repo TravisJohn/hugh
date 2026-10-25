@@ -87,37 +87,55 @@
       "id": "why_reduce_dimensions",
       "title": "Why reduce dimensions",
       "outcome": "Explain why a large number of variables is hard to study, and what reducing dimensions buys.",
-      "aliases": ["dimension reduction", "data reduction"],
+      "aliases": [
+        "dimension reduction",
+        "data reduction"
+      ],
       "keyPoints": [
         {
           "text": "With a large number of variables, the dispersion matrix can be too large to study and interpret, there are too many pairwise correlations to consider, and graphs help little: 12 variables already give more than 200 three-dimensional scatterplots.",
           "sourceId": "psu505-11",
           "locator": "11 Principal Components Analysis (Overview: Objective)",
-          "anchor": { "start": "With a large number of variables,", "end": "more than 200 three-dimensional scatterplots." }
+          "anchor": {
+            "start": "With a large number of variables,",
+            "end": "more than 200 three-dimensional scatterplots."
+          }
         },
         {
           "text": "To make such data easier to interpret, the variables are reduced to a few interpretable linear combinations of the data, and each of those linear combinations corresponds to a principal component.",
           "sourceId": "psu505-11",
           "locator": "11 Principal Components Analysis (Overview: Objective)",
-          "anchor": { "start": "To interpret the data in a", "end": "correspond to a principal component." }
+          "anchor": {
+            "start": "To interpret the data in a",
+            "end": "correspond to a principal component."
+          }
         },
         {
           "text": "The number of parameters to estimate grows quickly with the number of variables because each pair has a covariance: 2 variables need 5 parameters and 10 need 65. Uncorrelated variables need no covariances, which makes the task far easier.",
           "sourceId": "nist-pca",
           "locator": "6.5.5 Principal Components (Number of parameters to estimate increases rapidly)",
-          "anchor": { "start": "number of parameters to be estimated", "end": "since there are no covariances." }
+          "anchor": {
+            "start": "number of parameters to be estimated",
+            "end": "since there are no covariances."
+          }
         },
         {
           "text": "Reasons to reduce dimensions include computation (compressed data saves time and space), statistics (fewer dimensions can generalise better), visualisation (seeing the structure of the data) and anomaly detection (describing normal data in order to detect outliers).",
           "sourceId": "psu508-07",
           "locator": "7.6 More Examples (Why do dimensionality reduction?)",
-          "anchor": { "start": "Why do dimensionality reduction?", "end": "describe normal data, detect outliers." }
+          "anchor": {
+            "start": "Why do dimensionality reduction?",
+            "end": "describe normal data, detect outliers."
+          }
         },
         {
           "text": "PCA aims to capture the intrinsic variability in the data and to reduce its dimensionality, either to make it easier to interpret or to help avoid overfitting and prepare for a later analysis.",
           "sourceId": "psu508-07",
           "locator": "7.3 Principal Components Analysis (Objective)",
-          "anchor": { "start": "Capture the intrinsic variability in", "end": "to prepare for subsequent analysis." }
+          "anchor": {
+            "start": "Capture the intrinsic variability in",
+            "end": "to prepare for subsequent analysis."
+          }
         }
       ]
     },
@@ -125,37 +143,55 @@
       "id": "redundancy_and_correlation",
       "title": "Correlated variables and intrinsic dimension",
       "outcome": "Recognise when correlated or redundant variables mean the data has fewer real dimensions than columns.",
-      "aliases": ["intrinsic dimensionality", "redundant features"],
+      "aliases": [
+        "intrinsic dimensionality",
+        "redundant features"
+      ],
       "keyPoints": [
         {
           "text": "Correlated variables may lie close to a line or plane in fewer dimensions; the points of two nearly perfectly correlated variables fall close to a straight line, which could serve as one new axis for their variation.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients? (Why It May Be Possible to Reduce Dimensions)",
-          "anchor": { "start": "When we have a correlation (multicollinearity)", "end": "variation among data points." }
+          "anchor": {
+            "start": "When we have a correlation (multicollinearity)",
+            "end": "variation among data points."
+          }
         },
         {
           "text": "A variable fully determined by others adds no dimension: verbal, math and total SAT scores are three variables but at most two dimensions, since total is verbal plus math, and a strong verbal-math correlation could leave only one true dimension.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients? (Why It May Be Possible to Reduce Dimensions)",
-          "anchor": { "start": "As another example, suppose that", "end": "one true dimension to the data." }
+          "anchor": {
+            "start": "As another example, suppose that",
+            "end": "one true dimension to the data."
+          }
         },
         {
           "text": "Data can have far fewer intrinsic dimensions than features: 64x64-pixel face images have 4096 dimensions, but because faces look somewhat alike they lie on a manifold of much lower dimension, around 200 for instance.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.3 PCA using randomized SVD",
-          "anchor": { "start": "if we work with 64x64 pixel", "end": "(say around 200 for instance)." }
+          "anchor": {
+            "start": "if we work with 64x64 pixel",
+            "end": "(say around 200 for instance)."
+          }
         },
         {
           "text": "Many mathematical techniques capture the important structure of a high-dimensional space in a low-dimensional one; PCA, for example, has been used to create word embeddings by finding highly correlated dimensions that can be collapsed into a single dimension.",
           "sourceId": "g-embeddings-obtaining",
           "locator": "Dimensionality reduction techniques",
-          "anchor": { "start": "There are many mathematical techniques", "end": "collapsed into a single dimension." }
+          "anchor": {
+            "start": "There are many mathematical techniques",
+            "end": "collapsed into a single dimension."
+          }
         },
         {
           "text": "When several variables are highly interdependent, they can be replaced by linear combinations that are orthogonal to one another while preserving as much of the sample's total variability as possible.",
           "sourceId": "psu508-07",
           "locator": "7.2 Principal Components",
-          "anchor": { "start": "In a multivariate situation, it", "end": "preserved as much as possible." }
+          "anchor": {
+            "start": "In a multivariate situation, it",
+            "end": "preserved as much as possible."
+          }
         }
       ]
     },
@@ -163,25 +199,37 @@
       "id": "first_component",
       "title": "The first principal component",
       "outcome": "Define the first principal component as the weighted combination of the variables with the greatest variance.",
-      "aliases": ["PC1", "first PC"],
+      "aliases": [
+        "PC1",
+        "first PC"
+      ],
       "keyPoints": [
         {
           "text": "The first principal component is the linear combination of the variables that has the largest variance among all linear combinations, so it accounts for as much of the variation in the data as possible.",
           "sourceId": "psu505-11",
           "locator": "11.1 Principal Component Analysis (PCA) Procedure (First Principal Component)",
-          "anchor": { "start": "first principal component is the linear", "end": "variation in the data as possible." }
+          "anchor": {
+            "start": "first principal component is the linear",
+            "end": "variation in the data as possible."
+          }
         },
         {
           "text": "Its coefficients are chosen to maximise its variance subject to the sum of the squared coefficients equalling one, a constraint needed so that a unique answer can be obtained.",
           "sourceId": "psu505-11",
           "locator": "11.1 Principal Component Analysis (PCA) Procedure (First Principal Component)",
-          "anchor": { "start": "Specifically, we define coefficients", "end": "a unique answer may be obtained." }
+          "anchor": {
+            "start": "Specifically, we define coefficients",
+            "end": "a unique answer may be obtained."
+          }
         },
         {
           "text": "Each component can be thought of as a linear regression with no intercept that predicts the component from the original variables, with its coefficients viewed as regression coefficients.",
           "sourceId": "psu505-11",
           "locator": "11.1 Principal Component Analysis (PCA) Procedure",
-          "anchor": { "start": "Each of these can be thought", "end": "viewed as regression coefficients." }
+          "anchor": {
+            "start": "Each of these can be thought",
+            "end": "viewed as regression coefficients."
+          }
         }
       ],
       "misconceptions": [
@@ -190,7 +238,10 @@
           "correction": "PCA reduces the variables to a few linear combinations of the data, and each of those combinations corresponds to a principal component; the components are new variables built from the originals, not a subset of them.",
           "sourceId": "psu505-11",
           "locator": "11 Principal Components Analysis (Overview: Objective)",
-          "anchor": { "start": "To interpret the data in a", "end": "correspond to a principal component." }
+          "anchor": {
+            "start": "To interpret the data in a",
+            "end": "correspond to a principal component."
+          }
         }
       ]
     },
@@ -198,25 +249,37 @@
       "id": "later_components",
       "title": "Later components",
       "outcome": "Describe how each later component captures the most remaining variance while staying uncorrelated with the earlier ones.",
-      "aliases": ["PC2", "second principal component"],
+      "aliases": [
+        "PC2",
+        "second principal component"
+      ],
       "keyPoints": [
         {
           "text": "The second principal component is the linear combination that accounts for as much of the remaining variation as possible, under the constraint that its correlation with the first component is zero.",
           "sourceId": "psu505-11",
           "locator": "11.1 Principal Component Analysis (PCA) Procedure (Second Principal Component)",
-          "anchor": { "start": "The second principal component is the", "end": "first and second components is 0" }
+          "anchor": {
+            "start": "The second principal component is the",
+            "end": "first and second components is 0"
+          }
         },
         {
           "text": "Every later component follows the same rule: it is the linear combination that accounts for as much of the remaining variation as possible while not being correlated with the other principal components.",
           "sourceId": "psu505-11",
           "locator": "11.1 Principal Component Analysis (PCA) Procedure",
-          "anchor": { "start": "All subsequent principal components have", "end": "the other principal components." }
+          "anchor": {
+            "start": "All subsequent principal components have",
+            "end": "the other principal components."
+          }
         },
         {
           "text": "The second principal component direction is the one orthogonal to the first that has the largest projected variance; it is the eigenvector for the second largest eigenvalue, and so on for the later directions.",
           "sourceId": "psu508-07",
           "locator": "7.3 Principal Components Analysis (PCA)",
-          "anchor": { "start": "The second principal component direction", "end": "and so on." }
+          "anchor": {
+            "start": "The second principal component direction",
+            "end": "and so on."
+          }
         }
       ]
     },
@@ -224,31 +287,46 @@
       "id": "component_variance",
       "title": "Eigenvalues: each component's variance",
       "outcome": "Read each eigenvalue as the variance its component carries, and the total variance as their sum.",
-      "aliases": ["eigenvalues", "component variance"],
+      "aliases": [
+        "eigenvalues",
+        "component variance"
+      ],
       "keyPoints": [
         {
           "text": "The elements of the eigenvectors are the coefficients of the principal components, and the variance of the ith principal component equals the ith eigenvalue.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients? (Solution)",
-          "anchor": { "start": "denote the corresponding eigenvectors.", "end": "equal to the ith eigenvalue." }
+          "anchor": {
+            "start": "denote the corresponding eigenvectors.",
+            "end": "equal to the ith eigenvalue."
+          }
         },
         {
           "text": "The total variation of the data, defined as the sum of the variances of the individual variables, is also equal to the sum of the eigenvalues.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients?",
-          "anchor": { "start": "Earlier in the course, we defined", "end": "sum of the eigenvalues as shown" }
+          "anchor": {
+            "start": "Earlier in the course, we defined",
+            "end": "sum of the eigenvalues as shown"
+          }
         },
         {
           "text": "Principal components already have zero means, but their variances are not 1: their variances are the eigenvalues.",
           "sourceId": "nist-pca-properties",
           "locator": "6.5.5.1 Properties of Principal Components (Deriving unit variances for principal components)",
-          "anchor": { "start": "Now, the principal components already have", "end": "comprising the diagonal elements of" }
+          "anchor": {
+            "start": "Now, the principal components already have",
+            "end": "comprising the diagonal elements of"
+          }
         },
         {
           "text": "Finding the largest eigenvalue and its vector, and then the rest, is a large numerical task that can realistically only be done by a computer, using software with complex algorithms.",
           "sourceId": "nist-pca-properties",
           "locator": "6.5.5.1 Properties of Principal Components (Largest eigenvalue)",
-          "anchor": { "start": "Solving for this eigenvalue and vector", "end": "the algorithms are complex." }
+          "anchor": {
+            "start": "Solving for this eigenvalue and vector",
+            "end": "the algorithms are complex."
+          }
         }
       ]
     },
@@ -256,25 +334,38 @@
       "id": "explained_variance",
       "title": "Explained variance",
       "outcome": "Compute and read the proportion and cumulative proportion of variance that components explain.",
-      "aliases": ["proportion of variance explained", "cumulative variance", "explained variance ratio"],
+      "aliases": [
+        "proportion of variance explained",
+        "cumulative variance",
+        "explained variance ratio"
+      ],
       "keyPoints": [
         {
           "text": "The proportion of the total variation explained by a principal component is its eigenvalue divided by the sum of the eigenvalues.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients?",
-          "anchor": { "start": "variation explained by the ith principal", "end": "by the sum of the eigenvalues." }
+          "anchor": {
+            "start": "variation explained by the ith principal",
+            "end": "by the sum of the eigenvalues."
+          }
         },
         {
           "text": "The proportion explained by the first k components together is the sum of their eigenvalues divided by the total variation; if it is large, not much information is lost by considering only those k components.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients?",
-          "anchor": { "start": "A related quantity is the proportion", "end": "only the first k principal components." }
+          "anchor": {
+            "start": "A related quantity is the proportion",
+            "end": "only the first k principal components."
+          }
         },
         {
           "text": "In the Places Rated example, the first eigenvalue divided by the total variance is about 0.72, so about 72% of the variation is explained by the first component; adding the next proportion gives a cumulative 82% for the first two.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Data Analysis, Step 1)",
-          "anchor": { "start": "variation explained by each eigenvalue is", "end": "by the first two eigenvalues together." }
+          "anchor": {
+            "start": "variation explained by each eigenvalue is",
+            "end": "by the first two eigenvalues together."
+          }
         }
       ]
     },
@@ -282,37 +373,55 @@
       "id": "choosing_components",
       "title": "How many components to keep",
       "outcome": "Choose how many components to keep by weighing simplicity against variance explained, using a cut-off or a sharp drop.",
-      "aliases": ["number of components", "choosing k"],
+      "aliases": [
+        "number of components",
+        "choosing k"
+      ],
       "keyPoints": [
         {
           "text": "To avoid losing information, the proportion of variation explained by the first k components should be large, ideally as close to one as possible.",
           "sourceId": "psu505-11",
           "locator": "11.2 How do we find the coefficients? (Procedure)",
-          "anchor": { "start": "To avoid loss of information,", "end": "as close to one as possible;" }
+          "anchor": {
+            "start": "To avoid loss of information,",
+            "end": "as close to one as possible;"
+          }
         },
         {
           "text": "Often the cut-off is fixed in advance, such as keeping components until 70% of the variation is explained; this kind of judgment is arbitrary, hard to make without experience, and depends partly on the problem at hand.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
-          "anchor": { "start": "In most cases, the required cut-off", "end": "the type of problem at hand." }
+          "anchor": {
+            "start": "In most cases, the required cut-off",
+            "end": "the type of problem at hand."
+          }
         },
         {
           "text": "A sharp drop from one eigenvalue to the next can indicate how many components to consider; in the Places Rated example the difference between the first two eigenvalues is far larger than the differences after it.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Data Analysis, Step 1)",
-          "anchor": { "start": "we need to look at successive", "end": "how many eigenvalues to consider." }
+          "anchor": {
+            "start": "we need to look at successive",
+            "end": "how many eigenvalues to consider."
+          }
         },
         {
           "text": "A sharp drop is not enough on its own: with the standardised Places Rated data the only clear drop comes after the first component, but one component is probably too few because it explains only 37% of the variation.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
-          "anchor": { "start": "Another approach would be to plot", "end": "explained 37% of the variation." }
+          "anchor": {
+            "start": "Another approach would be to plot",
+            "end": "explained 37% of the variation."
+          }
         },
         {
           "text": "The choice of how many components to extract is fairly arbitrary, and when PCA comes before further analyses it is risky to keep too few components, which may fail to explain enough of the variability in the data.",
           "sourceId": "psu508-07",
           "locator": "7.4 Geometric Interpretation (Choice of How Many Components to Extract)",
-          "anchor": { "start": "The choice of how many components", "end": "the variability in the data." }
+          "anchor": {
+            "start": "The choice of how many components",
+            "end": "the variability in the data."
+          }
         }
       ],
       "misconceptions": [
@@ -321,7 +430,10 @@
           "correction": "How much the first components explain depends on the data: in the standardised Places Rated analysis the first component explains about 37% of the variation, the first four explain 72%, and it takes five to reach 82%.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
-          "anchor": { "start": "The first principal component explains about", "end": "explain 82% of the variation." }
+          "anchor": {
+            "start": "The first principal component explains about",
+            "end": "explain 82% of the variation."
+          }
         }
       ]
     },
@@ -329,25 +441,37 @@
       "id": "scree_plot",
       "title": "The scree plot",
       "outcome": "Read a scree plot to see where the remaining components become small and alike.",
-      "aliases": ["elbow plot", "scree"],
+      "aliases": [
+        "elbow plot",
+        "scree"
+      ],
       "keyPoints": [
         {
           "text": "A scree plot shows the eigenvalues, ordered from largest to smallest, against their component number; the number of components is chosen at the point beyond which the remaining eigenvalues are all relatively small and of comparable size.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Data Analysis, Step 1)",
-          "anchor": { "start": "An Alternative Method to determine the", "end": "relatively small and of comparable size." }
+          "anchor": {
+            "start": "An Alternative Method to determine the",
+            "end": "relatively small and of comparable size."
+          }
         },
         {
           "text": "In the scree plot for the unstandardised Places Rated data one could have stopped at the second component; the third was kept, although its contribution is small compared with the second's.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Fig 11.1)",
-          "anchor": { "start": "As you see, we could have", "end": "compared to the second component." }
+          "anchor": {
+            "start": "As you see, we could have",
+            "end": "compared to the second component."
+          }
         },
         {
           "text": "A scree plot is a visual aid that shows the amount of variance explained by each consecutive eigenvalue.",
           "sourceId": "psu508-07",
           "locator": "7.4 Geometric Interpretation (Choice of How Many Components to Extract)",
-          "anchor": { "start": "This is a useful visual aid", "end": "explained by each consecutive eigenvalue." }
+          "anchor": {
+            "start": "This is a useful visual aid",
+            "end": "explained by each consecutive eigenvalue."
+          }
         }
       ]
     },
@@ -355,25 +479,37 @@
       "id": "projection_view",
       "title": "Projecting onto the directions of greatest variance",
       "outcome": "Picture PCA as projecting the data onto the few directions along which it varies most.",
-      "aliases": ["principal component directions", "projection"],
+      "aliases": [
+        "principal component directions",
+        "projection"
+      ],
       "keyPoints": [
         {
           "text": "PCA projects the data along the directions in which they vary most: the first direction goes with the largest eigenvalue, the second with the second largest, and the variance along each direction is tied to its eigenvalue's size.",
           "sourceId": "psu508-07",
           "locator": "7.4 Geometric Interpretation",
-          "anchor": { "start": "Principal components analysis (PCA) projects the", "end": "magnitude of the eigenvalues." }
+          "anchor": {
+            "start": "Principal components analysis (PCA) projects the",
+            "end": "magnitude of the eigenvalues."
+          }
         },
         {
           "text": "A two-dimensional projection is spanned by the combination of the variables with the largest sample variance and the combination with the largest variance that is uncorrelated with the first; the same process extends to k dimensions.",
           "sourceId": "psu508-07",
           "locator": "7.1 Singular Value Decomposition (The Two-Dimensional Projection)",
-          "anchor": { "start": "The two-dimensional plane can be shown", "end": "extended to the k-dimensional projection." }
+          "anchor": {
+            "start": "The two-dimensional plane can be shown",
+            "end": "extended to the k-dimensional projection."
+          }
         },
         {
           "text": "In the extreme case where all the data lie in one direction, two features can be reduced to one by a single linear combination of them, the one given by the first principal component.",
           "sourceId": "psu508-07",
           "locator": "7.2 Principal Components (Fig 7.1)",
-          "anchor": { "start": "Consider an extreme case,", "end": "by the first principal component)." }
+          "anchor": {
+            "start": "Consider an extreme case,",
+            "end": "by the first principal component)."
+          }
         }
       ]
     },
@@ -381,31 +517,46 @@
       "id": "component_scores",
       "title": "Component scores",
       "outcome": "Compute an observation's scores from the component coefficients, and plot scores to explore the data.",
-      "aliases": ["PC scores", "principal component scores"],
+      "aliases": [
+        "PC scores",
+        "principal component scores"
+      ],
       "keyPoints": [
         {
           "text": "An observation's score on a component is found by plugging its values into the component's coefficients; it is standard to use each variable's difference from its sample mean, which does not change the interpretation because the variances stay the same.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Step 2)",
-          "anchor": { "start": "In order to complete this formula", "end": "as those of the translated variables." }
+          "anchor": {
+            "start": "In order to complete this formula",
+            "end": "as those of the translated variables."
+          }
         },
         {
           "text": "In a scatter plot of component scores, each dot is one observation: a community far to the right has a very high first-component score and is expected to have high values for the variables that component reflects.",
           "sourceId": "psu505-11",
           "locator": "11.3 Interpretation of the Principal Components (Fig 11.2)",
-          "anchor": { "start": "Each dot in this plot represents", "end": "Housing, Transportation, and Recreation." }
+          "anchor": {
+            "start": "Each dot in this plot represents",
+            "end": "Housing, Transportation, and Recreation."
+          }
         },
         {
           "text": "Plots of component scores support further analyses, for example checking whether places with high scores on a component cluster in one region of the country and places with low scores in another.",
           "sourceId": "psu505-11",
           "locator": "11.3 Interpretation of the Principal Components (Further analyses)",
-          "anchor": { "start": "Scatter plots of principal component scores.", "end": "another region of the country." }
+          "anchor": {
+            "start": "Scatter plots of principal component scores.",
+            "end": "another region of the country."
+          }
         },
         {
           "text": "Projecting the data onto the principal component directions gives the principal components.",
           "sourceId": "psu508-07",
           "locator": "7.2 Principal Components",
-          "anchor": { "start": "If you project X onto the", "end": "you get the principal components." }
+          "anchor": {
+            "start": "If you project X onto the",
+            "end": "you get the principal components."
+          }
         }
       ]
     },
@@ -413,31 +564,46 @@
       "id": "interpreting_components",
       "title": "Interpreting components",
       "outcome": "Interpret a component from the variables that correlate most strongly with it, and recognise how subjective that is.",
-      "aliases": ["loadings", "reading components"],
+      "aliases": [
+        "loadings",
+        "reading components"
+      ],
       "keyPoints": [
         {
           "text": "A component is interpreted from the variables most strongly correlated with it, the correlations largest in magnitude in either direction; what counts as large is a subjective decision, such as treating correlations above 0.5 as important.",
           "sourceId": "psu505-11",
           "locator": "11.3 Interpretation of the Principal Components",
-          "anchor": { "start": "is based on finding which variables", "end": "above 0.5 is deemed important." }
+          "anchor": {
+            "start": "is based on finding which variables",
+            "end": "above 0.5 is deemed important."
+          }
         },
         {
           "text": "In the Places Rated example, the first component is strongly correlated with five of the variables and increases with Arts, Health, Transportation, Housing and Recreation, suggesting that these criteria vary together.",
           "sourceId": "psu505-11",
           "locator": "11.3 Interpretation of the Principal Components (First Principal Component Analysis - PCA1)",
-          "anchor": { "start": "first principal component is strongly correlated", "end": "tend to increase as well." }
+          "anchor": {
+            "start": "first principal component is strongly correlated",
+            "end": "tend to increase as well."
+          }
         },
         {
           "text": "Because the first Places Rated component correlates most strongly with the Arts, at 0.985, it can be read as primarily a measure of the Arts.",
           "sourceId": "psu505-11",
           "locator": "11.3 Interpretation of the Principal Components (First Principal Component Analysis - PCA1)",
-          "anchor": { "start": "Furthermore, we see that the first", "end": "primarily a measure of the Arts." }
+          "anchor": {
+            "start": "Furthermore, we see that the first",
+            "end": "primarily a measure of the Arts."
+          }
         },
         {
           "text": "Interpretation means deciding which coefficients are large within each component, a very arbitrary choice: in the standardised Places Rated analysis Health and Arts stand out in the first component, but other variables might also have been included.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Step 3)",
-          "anchor": { "start": "In other words, we need to", "end": "part of this first principal component." }
+          "anchor": {
+            "start": "In other words, we need to",
+            "end": "part of this first principal component."
+          }
         }
       ]
     },
@@ -450,25 +616,37 @@
           "text": "PCA is primarily descriptive, not hypothesis testing, so decisions such as how many components to use are largely made by what gives a good, concise description of the data.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "The primary purpose of this analysis", "end": "concise description of the data." }
+          "anchor": {
+            "start": "The primary purpose of this analysis",
+            "end": "concise description of the data."
+          }
         },
         {
           "text": "What counts as an important correlation differs between disciplines: in noisy fields such as sociology and ecology messier interpretations are expected, while precise fields such as engineering demand very high correlations.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "This decision may differ from", "end": "to have very high correlations." }
+          "anchor": {
+            "start": "This decision may differ from",
+            "end": "to have very high correlations."
+          }
         },
         {
           "text": "One way to decide how many components to include is to keep only those that give unambiguous results, where no variable is a significant contributor to two different components.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "One method of deciding how many", "end": "as a significant contribution." }
+          "anchor": {
+            "start": "One method of deciding how many",
+            "end": "as a significant contribution."
+          }
         },
         {
           "text": "PCA results are often not clean: in the Places Rated example the economy is significant in both the second and third components, which makes the interpretation ambiguous; factor analysis instead uses rotations to get a cleaner interpretation.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "One of the problems with this", "end": "cleaner interpretation of the data." }
+          "anchor": {
+            "start": "One of the problems with this",
+            "end": "cleaner interpretation of the data."
+          }
         }
       ],
       "misconceptions": [
@@ -477,7 +655,10 @@
           "correction": "The primary purpose of PCA is descriptive rather than hypothesis testing; choices such as how many components to keep rest on what gives a good, concise description of the data.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "The primary purpose of this analysis", "end": "concise description of the data." }
+          "anchor": {
+            "start": "The primary purpose of this analysis",
+            "end": "concise description of the data."
+          }
         }
       ]
     },
@@ -485,25 +666,37 @@
       "id": "information_loss",
       "title": "What reduction loses",
       "outcome": "Explain what is lost when only some components are kept, and why the reduced data cannot be turned back exactly.",
-      "aliases": ["reconstruction", "lossy compression"],
+      "aliases": [
+        "reconstruction",
+        "lossy compression"
+      ],
       "keyPoints": [
         {
           "text": "A reduced set of principal factors can represent or replace one or more of the original variables, but it is not a one-to-one transformation of them, so an inverse transformation back to the original data is not possible.",
           "sourceId": "nist-pca",
           "locator": "6.5.5 Principal Components (Inverse transformation not possible)",
-          "anchor": { "start": "While these principal factors represent", "end": "inverse transformations are not possible." }
+          "anchor": {
+            "start": "While these principal factors represent",
+            "end": "inverse transformations are not possible."
+          }
         },
         {
           "text": "Principal component analysis aims to reduce a large set of correlated variables to a small set that still contains most of the information in the large set.",
           "sourceId": "nist-pca",
           "locator": "6.5.5 Principal Components (Dimension reduction tool)",
-          "anchor": { "start": "A Multivariate Analysis problem could start", "end": "the information in the large set." }
+          "anchor": {
+            "start": "A Multivariate Analysis problem could start",
+            "end": "the information in the large set."
+          }
         },
         {
           "text": "In face recognition, adding principal components one at a time gives better resolution, yet 4 or 5 components already support a good judgment of a sad expression: a dramatic reduction from the number of pixels in a picture.",
           "sourceId": "psu508-07",
           "locator": "7.6 More Examples (Example: Face Recognition)",
-          "anchor": { "start": "The cumulative effect of nine principal", "end": "number of pixels for a figure." }
+          "anchor": {
+            "start": "The cumulative effect of nine principal",
+            "end": "number of pixels for a figure."
+          }
         }
       ],
       "misconceptions": [
@@ -512,7 +705,10 @@
           "correction": "A reduced set of principal factors is not just a one-to-one transformation of the original variables, so an inverse transformation that recovers the original data is not possible.",
           "sourceId": "nist-pca",
           "locator": "6.5.5 Principal Components (Inverse transformation not possible)",
-          "anchor": { "start": "While these principal factors represent", "end": "inverse transformations are not possible." }
+          "anchor": {
+            "start": "While these principal factors represent",
+            "end": "inverse transformations are not possible."
+          }
         }
       ]
     },
@@ -520,37 +716,55 @@
       "id": "scale_dependence",
       "title": "Why scale changes the answer",
       "outcome": "Explain why variables with larger variances, or larger units, dominate a PCA of unscaled data.",
-      "aliases": ["scale sensitivity", "units of measurement"],
+      "aliases": [
+        "scale sensitivity",
+        "units of measurement"
+      ],
       "keyPoints": [
         {
           "text": "On raw data, PCA gives more emphasis to the variables with higher variances, so its results depend on the units used to measure each variable.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables",
-          "anchor": { "start": "In our earlier discussion, we noted", "end": "used to measure each variable." }
+          "anchor": {
+            "start": "In our earlier discussion, we noted",
+            "end": "used to measure each variable."
+          }
         },
         {
           "text": "PCA on raw data is only appropriate when all the variables have the same units of measure, and even then only if the variables with higher variances should get more weight.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables",
-          "anchor": { "start": "That would imply that a principal", "end": "more weight in the analysis." }
+          "anchor": {
+            "start": "That would imply that a principal",
+            "end": "more weight in the analysis."
+          }
         },
         {
           "text": "PCA looks for the directions that maximise variance, so a feature that varies more than the others only because of its scale will dominate the direction of the principal components.",
           "sourceId": "sk-scaling-example",
           "locator": "Effect of rescaling on a PCA dimensional reduction",
-          "anchor": { "start": "Dimensional reduction using PCA consists of", "end": "direction of the principal components." }
+          "anchor": {
+            "start": "Dimensional reduction using PCA consists of",
+            "end": "direction of the principal components."
+          }
         },
         {
           "text": "In a scikit-learn example, without scaling the proline feature dominates the first principal component, about two orders of magnitude above the other features; with scaled data the weights are of roughly the same order of magnitude across all the features.",
           "sourceId": "sk-scaling-example",
           "locator": "Effect of rescaling on a PCA dimensional reduction",
-          "anchor": { "start": "Indeed we find that the", "end": "the same across all the features." }
+          "anchor": {
+            "start": "Indeed we find that the",
+            "end": "the same across all the features."
+          }
         },
         {
           "text": "The size of a component's coefficients also depends on the variances of the corresponding variables.",
           "sourceId": "psu505-11",
           "locator": "11.2 (Example 11.2 Places Rated: Step 2)",
-          "anchor": { "start": "However, the magnitude of the coefficients", "end": "variances of the corresponding variables." }
+          "anchor": {
+            "start": "However, the magnitude of the coefficients",
+            "end": "variances of the corresponding variables."
+          }
         }
       ],
       "misconceptions": [
@@ -559,7 +773,10 @@
           "correction": "The results of a principal component analysis depend on the measurement scales: the variables with the highest sample variances tend to be emphasised in the first few components.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Summary)",
-          "anchor": { "start": "The results of the principal component", "end": "in the first few principal components." }
+          "anchor": {
+            "start": "The results of the principal component",
+            "end": "in the first few principal components."
+          }
         }
       ]
     },
@@ -567,37 +784,56 @@
       "id": "standardising",
       "title": "Standardising before PCA",
       "outcome": "Decide when to standardise the variables before PCA, and what that does to the analysis.",
-      "aliases": ["standardisation", "correlation matrix PCA", "z-scores"],
+      "aliases": [
+        "standardisation",
+        "correlation matrix PCA",
+        "z-scores"
+      ],
       "keyPoints": [
         {
           "text": "If the variables have different units, such as pounds, feet and gallons, or each variable should get equal weight, standardise them before PCA by subtracting the mean and dividing by the standard deviation.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Summary)",
-          "anchor": { "start": "If the variables have different units", "end": "divide by the standard deviation" }
+          "anchor": {
+            "start": "If the variables have different units",
+            "end": "divide by the standard deviation"
+          }
         },
         {
           "text": "The variance-covariance matrix of standardised data equals the correlation matrix of the unstandardised data, so PCA on standardised data is equivalent to PCA on the correlation matrix.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Note)",
-          "anchor": { "start": "The variance-covariance matrix of the standardized", "end": "using the correlation matrix." }
+          "anchor": {
+            "start": "The variance-covariance matrix of the standardized",
+            "end": "using the correlation matrix."
+          }
         },
         {
           "text": "Compared with the unstandardised analysis, the standardised one needs more components to explain the same amount of variation, which is not unusual.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
-          "anchor": { "start": "Compare these proportions with those", "end": "This is not unusual." }
+          "anchor": {
+            "start": "Compare these proportions with those",
+            "end": "This is not unusual."
+          }
         },
         {
           "text": "scikit-learn's PCA centres the input data for each feature but does not scale it before applying the SVD.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.1 Exact PCA and probabilistic interpretation",
-          "anchor": { "start": "PCA centers but does not scale", "end": "before applying the SVD." }
+          "anchor": {
+            "start": "PCA centers but does not scale",
+            "end": "before applying the SVD."
+          }
         },
         {
           "text": "In a scikit-learn example, a model trained on PCA-reduced data predicted far more accurately when the data were scaled before PCA, vastly outperforming the unscaled version.",
           "sourceId": "sk-scaling-example",
           "locator": "Effect of rescaling on model performance",
-          "anchor": { "start": "A clear difference in prediction accuracies", "end": "vastly outperforms the unscaled version." }
+          "anchor": {
+            "start": "A clear difference in prediction accuracies",
+            "end": "vastly outperforms the unscaled version."
+          }
         }
       ]
     },
@@ -605,37 +841,55 @@
       "id": "components_as_inputs",
       "title": "Components as inputs to a model",
       "outcome": "Use principal components as inputs to a later model, and know what that buys and costs.",
-      "aliases": ["principal component regression", "PCA preprocessing"],
+      "aliases": [
+        "principal component regression",
+        "PCA preprocessing"
+      ],
       "keyPoints": [
         {
           "text": "With a very large number of potential explanatory variables and little idea which matter, a principal components analysis can be run first and a regression then fitted on the principal components.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "Sometimes in regression settings, you", "end": "from the principal components themselves." }
+          "anchor": {
+            "start": "Sometimes in regression settings, you",
+            "end": "from the principal components themselves."
+          }
         },
         {
           "text": "Because the components are independent of one another, the regression coefficients are independent too, so how much of the response's variation each component explains can be stated, which ordinary multiple regression cannot normally do.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
-          "anchor": { "start": "The nice thing about this analysis", "end": "normally do in multiple regression." }
+          "anchor": {
+            "start": "The nice thing about this analysis",
+            "end": "normally do in multiple regression."
+          }
         },
         {
           "text": "In scikit-learn, PCA is a transformer that learns its components in its fit method and can then be used on new data to project it onto those components.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.1 Exact PCA and probabilistic interpretation",
-          "anchor": { "start": "In scikit-learn, PCA is implemented", "end": "to project it on these components." }
+          "anchor": {
+            "start": "In scikit-learn, PCA is implemented",
+            "end": "to project it on these components."
+          }
         },
         {
           "text": "Whitening projects the data onto the components while scaling each component to unit variance, which helps downstream models that assume an isotropic signal, such as support vector machines with an RBF kernel and k-means clustering.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.1 Exact PCA and probabilistic interpretation",
-          "anchor": { "start": "The optional parameter whiten=True makes", "end": "the K-Means clustering algorithm." }
+          "anchor": {
+            "start": "The optional parameter whiten=True makes",
+            "end": "the K-Means clustering algorithm."
+          }
         },
         {
           "text": "Standard PCA only supports batch processing, so all the data must fit in memory; IncrementalPCA processes the data in minibatches and gives results that almost exactly match PCA.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.2 Incremental PCA",
-          "anchor": { "start": "The biggest limitation is that PCA", "end": "in a minibatch fashion." }
+          "anchor": {
+            "start": "The biggest limitation is that PCA",
+            "end": "in a minibatch fashion."
+          }
         }
       ]
     },
@@ -643,37 +897,55 @@
       "id": "fit_on_training_data",
       "title": "Fit PCA on training data only",
       "outcome": "Fit PCA, and any scaling before it, on the training data alone, and apply it unchanged to new data.",
-      "aliases": ["data leakage", "pipelines"],
+      "aliases": [
+        "data leakage",
+        "pipelines"
+      ],
       "keyPoints": [
         {
           "text": "Data leakage is using information that would not be available at prediction time to build the model; it makes performance estimates, such as cross-validation scores, overly optimistic, and the model then does worse on genuinely new data.",
           "sourceId": "sk-pitfalls",
           "locator": "Data leakage",
-          "anchor": { "start": "Data leakage occurs when information that", "end": "for example during production." }
+          "anchor": {
+            "start": "Data leakage occurs when information that",
+            "end": "for example during production."
+          }
         },
         {
           "text": "Training and test data should get the same preprocessing, but the transformation must be learnt from the training data only: a normalisation that divides by the average should use the training subset's average, not the average of all the data.",
           "sourceId": "sk-pitfalls",
           "locator": "Data leakage",
-          "anchor": { "start": "Although both train and test data", "end": "the average of all the data." }
+          "anchor": {
+            "start": "Although both train and test data",
+            "end": "the average of all the data."
+          }
         },
         {
           "text": "Split the data into training and test subsets first, before any preprocessing; fit transformations on the training subset only, and apply the same transform to both subsets.",
           "sourceId": "sk-pitfalls",
           "locator": "How to avoid data leakage",
-          "anchor": { "start": "Always split the data into train", "end": "transform on the test subset." }
+          "anchor": {
+            "start": "Always split the data into train",
+            "end": "transform on the test subset."
+          }
         },
         {
           "text": "This leakage risk applies to almost all of scikit-learn's transformations, including StandardScaler, SimpleImputer and PCA.",
           "sourceId": "sk-pitfalls",
           "locator": "Data leakage during pre-processing (Note)",
-          "anchor": { "start": "This risk of leakage is however", "end": "SimpleImputer, and PCA." }
+          "anchor": {
+            "start": "This risk of leakage is however",
+            "end": "SimpleImputer, and PCA."
+          }
         },
         {
           "text": "A scikit-learn pipeline helps prevent data leakage by making sure each step is applied to the correct data subset, which makes it well suited to cross-validation and hyperparameter tuning.",
           "sourceId": "sk-pitfalls",
           "locator": "How to avoid data leakage",
-          "anchor": { "start": "The scikit-learn pipeline is a great", "end": "hyper-parameter tuning functions." }
+          "anchor": {
+            "start": "The scikit-learn pipeline is a great",
+            "end": "hyper-parameter tuning functions."
+          }
         }
       ],
       "misconceptions": [
@@ -682,7 +954,10 @@
           "correction": "The risk of data leakage applies to almost all transformations in scikit-learn, including StandardScaler, SimpleImputer and PCA.",
           "sourceId": "sk-pitfalls",
           "locator": "Data leakage during pre-processing (Note)",
-          "anchor": { "start": "This risk of leakage is however", "end": "SimpleImputer, and PCA." }
+          "anchor": {
+            "start": "This risk of leakage is however",
+            "end": "SimpleImputer, and PCA."
+          }
         }
       ]
     },
@@ -690,25 +965,37 @@
       "id": "tsne",
       "title": "t-SNE for visualising structure",
       "outcome": "Say what t-SNE is for and how it differs from PCA.",
-      "aliases": ["t-SNE", "t-distributed stochastic neighbor embedding"],
+      "aliases": [
+        "t-SNE",
+        "t-distributed stochastic neighbor embedding"
+      ],
       "keyPoints": [
         {
           "text": "t-SNE converts the affinities between data points into probabilities and is particularly sensitive to local structure, which lets it reveal structure at many scales on one map and data that lie in several different manifolds or clusters.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-distributed Stochastic Neighbor Embedding (t-SNE)",
-          "anchor": { "start": "t-SNE (TSNE) converts affinities of", "end": "multiple, different, manifolds or clusters" }
+          "anchor": {
+            "start": "t-SNE (TSNE) converts affinities of",
+            "end": "multiple, different, manifolds or clusters"
+          }
         },
         {
           "text": "Unlike methods best suited to unfolding a single continuous manifold, t-SNE focuses on local structure and tends to extract clustered local groups of samples, which can help visually separate a dataset made of several manifolds, such as the digits dataset.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-distributed Stochastic Neighbor Embedding (t-SNE)",
-          "anchor": { "start": "While Isomap, LLE and variants are", "end": "the case in the digits dataset." }
+          "anchor": {
+            "start": "While Isomap, LLE and variants are",
+            "end": "the case in the digits dataset."
+          }
         },
         {
           "text": "The main purpose of t-SNE is visualising high-dimensional data, so it works best when the data are embedded in two or three dimensions.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (Optimizing t-SNE)",
-          "anchor": { "start": "The main purpose of t-SNE is", "end": "on two or three dimensions." }
+          "anchor": {
+            "start": "The main purpose of t-SNE is",
+            "end": "on two or three dimensions."
+          }
         }
       ]
     },
@@ -716,37 +1003,55 @@
       "id": "tsne_cautions",
       "title": "Reading a t-SNE map with care",
       "outcome": "Read a t-SNE map with care: it is slow, runs differ, global structure is not kept, and settings change the picture.",
-      "aliases": ["perplexity", "t-SNE pitfalls"],
+      "aliases": [
+        "perplexity",
+        "t-SNE pitfalls"
+      ],
       "keyPoints": [
         {
           "text": "t-SNE is computationally expensive and can take several hours on datasets of a million samples, where PCA finishes in seconds or minutes.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (disadvantages)",
-          "anchor": { "start": "t-SNE is computationally expensive, and", "end": "finish in seconds or minutes" }
+          "anchor": {
+            "start": "t-SNE is computationally expensive, and",
+            "end": "finish in seconds or minutes"
+          }
         },
         {
           "text": "t-SNE's objective, the KL divergence, is not convex, so restarts from different initialisations end in different local minima; it can help to try several seeds and keep the embedding with the lowest KL divergence.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-distributed Stochastic Neighbor Embedding (t-SNE)",
-          "anchor": { "start": "Note that the KL divergence is", "end": "with the lowest KL divergence." }
+          "anchor": {
+            "start": "Note that the KL divergence is",
+            "end": "with the lowest KL divergence."
+          }
         },
         {
           "text": "t-SNE does not explicitly preserve global structure, a problem that is mitigated by initialising the points with PCA.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (disadvantages)",
-          "anchor": { "start": "Global structure is not explicitly preserved.", "end": "mitigated by initializing points with PCA" }
+          "anchor": {
+            "start": "Global structure is not explicitly preserved.",
+            "end": "mitigated by initializing points with PCA"
+          }
         },
         {
           "text": "Larger perplexities use more nearest neighbours and are less sensitive to small structure, while lower perplexities favour the local neighbourhood over global information; larger or noisier datasets may need larger perplexities.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (Optimizing t-SNE)",
-          "anchor": { "start": "Larger perplexities lead to more nearest", "end": "beyond the background noise." }
+          "anchor": {
+            "start": "Larger perplexities lead to more nearest",
+            "end": "beyond the background noise."
+          }
         },
         {
           "text": "The learning rate is a critical setting for t-SNE: too low and gradient descent gets stuck in a bad local minimum, too high and the KL divergence increases during optimisation.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (Optimizing t-SNE)",
-          "anchor": { "start": "A critical parameter is the learning", "end": "will increase during optimization." }
+          "anchor": {
+            "start": "A critical parameter is the learning",
+            "end": "will increase during optimization."
+          }
         }
       ],
       "misconceptions": [
@@ -755,34 +1060,204 @@
           "correction": "t-SNE does not explicitly preserve global structure, a problem only mitigated by initialising the points with PCA.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (disadvantages)",
-          "anchor": { "start": "Global structure is not explicitly preserved.", "end": "mitigated by initializing points with PCA" }
+          "anchor": {
+            "start": "Global structure is not explicitly preserved.",
+            "end": "mitigated by initializing points with PCA"
+          }
         }
       ]
     }
   ],
   "prerequisites": [
-    { "before": "why_reduce_dimensions", "after": "redundancy_and_correlation", "reason": "Fewer dimensions help only once it is clear why many variables are hard to work with." },
-    { "before": "redundancy_and_correlation", "after": "first_component", "reason": "A component summarises variables that move together." },
-    { "before": "first_component", "after": "later_components", "reason": "Later components are defined against the first." },
-    { "before": "later_components", "after": "component_variance", "reason": "Eigenvalues are the variances of all the components, first and later." },
-    { "before": "component_variance", "after": "explained_variance", "reason": "Explained variance is each eigenvalue as a share of their sum." },
-    { "before": "explained_variance", "after": "choosing_components", "reason": "The number of components is chosen from how much variance they explain." },
-    { "before": "choosing_components", "after": "scree_plot", "reason": "The scree plot is one way of choosing how many components to keep." },
-    { "before": "explained_variance", "after": "information_loss", "reason": "What is lost is the variation the dropped components carried." },
-    { "before": "choosing_components", "after": "information_loss", "reason": "Information is lost by the choice to keep only some components." },
-    { "before": "first_component", "after": "projection_view", "reason": "The directions of greatest variance are the components' directions." },
-    { "before": "later_components", "after": "projection_view", "reason": "A projection uses the first and the later directions together." },
-    { "before": "projection_view", "after": "component_scores", "reason": "Scores are the data projected onto the component directions." },
-    { "before": "component_scores", "after": "interpreting_components", "reason": "Interpreting a component explains what high and low scores on it mean." },
-    { "before": "interpreting_components", "after": "descriptive_not_inferential", "reason": "Interpretation is the judgment that makes PCA descriptive rather than a test." },
-    { "before": "first_component", "after": "scale_dependence", "reason": "Scale matters because each component maximises variance." },
-    { "before": "interpreting_components", "after": "scale_dependence", "reason": "Scale distorts the coefficients that interpretation reads." },
-    { "before": "scale_dependence", "after": "standardising", "reason": "Standardising is the fix for scale dependence." },
-    { "before": "component_scores", "after": "components_as_inputs", "reason": "A later model takes the component scores as its inputs." },
-    { "before": "components_as_inputs", "after": "fit_on_training_data", "reason": "Leakage arises when PCA feeds a model that is then evaluated." },
-    { "before": "standardising", "after": "fit_on_training_data", "reason": "Scaling, like PCA, must be learnt from the training data only." },
-    { "before": "why_reduce_dimensions", "after": "tsne", "reason": "t-SNE is another answer to the same problem of too many dimensions." },
-    { "before": "projection_view", "after": "tsne", "reason": "t-SNE is understood by contrast with PCA's linear projection." },
-    { "before": "tsne", "after": "tsne_cautions", "reason": "The cautions apply to a method the learner already knows." }
+    {
+      "before": "why_reduce_dimensions",
+      "after": "redundancy_and_correlation",
+      "reason": "Fewer dimensions help only once it is clear why many variables are hard to work with."
+    },
+    {
+      "before": "redundancy_and_correlation",
+      "after": "first_component",
+      "reason": "A component summarises variables that move together."
+    },
+    {
+      "before": "first_component",
+      "after": "later_components",
+      "reason": "Later components are defined against the first."
+    },
+    {
+      "before": "later_components",
+      "after": "component_variance",
+      "reason": "Eigenvalues are the variances of all the components, first and later."
+    },
+    {
+      "before": "component_variance",
+      "after": "explained_variance",
+      "reason": "Explained variance is each eigenvalue as a share of their sum."
+    },
+    {
+      "before": "explained_variance",
+      "after": "choosing_components",
+      "reason": "The number of components is chosen from how much variance they explain."
+    },
+    {
+      "before": "choosing_components",
+      "after": "scree_plot",
+      "reason": "The scree plot is one way of choosing how many components to keep."
+    },
+    {
+      "before": "explained_variance",
+      "after": "information_loss",
+      "reason": "What is lost is the variation the dropped components carried."
+    },
+    {
+      "before": "choosing_components",
+      "after": "information_loss",
+      "reason": "Information is lost by the choice to keep only some components."
+    },
+    {
+      "before": "first_component",
+      "after": "projection_view",
+      "reason": "The directions of greatest variance are the components' directions."
+    },
+    {
+      "before": "later_components",
+      "after": "projection_view",
+      "reason": "A projection uses the first and the later directions together."
+    },
+    {
+      "before": "projection_view",
+      "after": "component_scores",
+      "reason": "Scores are the data projected onto the component directions."
+    },
+    {
+      "before": "component_scores",
+      "after": "interpreting_components",
+      "reason": "Interpreting a component explains what high and low scores on it mean."
+    },
+    {
+      "before": "interpreting_components",
+      "after": "descriptive_not_inferential",
+      "reason": "Interpretation is the judgment that makes PCA descriptive rather than a test."
+    },
+    {
+      "before": "first_component",
+      "after": "scale_dependence",
+      "reason": "Scale matters because each component maximises variance."
+    },
+    {
+      "before": "interpreting_components",
+      "after": "scale_dependence",
+      "reason": "Scale distorts the coefficients that interpretation reads."
+    },
+    {
+      "before": "scale_dependence",
+      "after": "standardising",
+      "reason": "Standardising is the fix for scale dependence."
+    },
+    {
+      "before": "component_scores",
+      "after": "components_as_inputs",
+      "reason": "A later model takes the component scores as its inputs."
+    },
+    {
+      "before": "components_as_inputs",
+      "after": "fit_on_training_data",
+      "reason": "Leakage arises when PCA feeds a model that is then evaluated."
+    },
+    {
+      "before": "standardising",
+      "after": "fit_on_training_data",
+      "reason": "Scaling, like PCA, must be learnt from the training data only."
+    },
+    {
+      "before": "why_reduce_dimensions",
+      "after": "tsne",
+      "reason": "t-SNE is another answer to the same problem of too many dimensions."
+    },
+    {
+      "before": "projection_view",
+      "after": "tsne",
+      "reason": "t-SNE is understood by contrast with PCA's linear projection."
+    },
+    {
+      "before": "tsne",
+      "after": "tsne_cautions",
+      "reason": "The cautions apply to a method the learner already knows."
+    }
+  ],
+  "cards": [
+    {
+      "id": "why-fewer-dimensions",
+      "title": "Why fewer dimensions",
+      "conceptIds": [
+        "why_reduce_dimensions",
+        "redundancy_and_correlation"
+      ]
+    },
+    {
+      "id": "principal-components",
+      "title": "What a principal component is",
+      "conceptIds": [
+        "first_component",
+        "later_components"
+      ]
+    },
+    {
+      "id": "variance-explained",
+      "title": "Eigenvalues and variance explained",
+      "conceptIds": [
+        "component_variance",
+        "explained_variance"
+      ]
+    },
+    {
+      "id": "how-many-to-keep",
+      "title": "How many components to keep",
+      "conceptIds": [
+        "choosing_components",
+        "scree_plot",
+        "information_loss"
+      ]
+    },
+    {
+      "id": "projections-and-scores",
+      "title": "Projections and component scores",
+      "conceptIds": [
+        "projection_view",
+        "component_scores"
+      ]
+    },
+    {
+      "id": "reading-components",
+      "title": "Reading what a component means",
+      "conceptIds": [
+        "interpreting_components",
+        "descriptive_not_inferential"
+      ]
+    },
+    {
+      "id": "scaling",
+      "title": "Scaling and standardising",
+      "conceptIds": [
+        "scale_dependence",
+        "standardising"
+      ]
+    },
+    {
+      "id": "pca-in-a-pipeline",
+      "title": "PCA inside a modelling pipeline",
+      "conceptIds": [
+        "components_as_inputs",
+        "fit_on_training_data"
+      ]
+    },
+    {
+      "id": "t-sne",
+      "title": "t-SNE, and reading its maps",
+      "conceptIds": [
+        "tsne",
+        "tsne_cautions"
+      ]
+    }
   ]
 }
