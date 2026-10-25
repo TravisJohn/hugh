@@ -8,21 +8,26 @@ import HeaderUsage from "@/components/usage/HeaderUsage";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
 import { type LearningGoal } from "@/types";
 import { checkSessionQuota, FREE_SESSION_LIMIT } from "@/lib/quota";
-import { documentUploadEnabled } from "@/lib/learn/documentPath";
 import { canUsePackLearn } from "@/lib/packs/access";
-import { catalogListing } from "@/lib/packs/catalog";
+import { groupedCatalog } from "@/lib/packs/catalog";
+import { resolveSelection } from "@/lib/packs/selection";
 
-// "What do you want to learn?" — the learning dashboard. Reached by picking
-// "Learn" on the top-level activity picker (/home). Opening a goal here jumps
-// straight to that goal's Track board.
-export default async function LearnDashboardPage() {
+// "Choose a course" — the learning dashboard. Reached by picking "Learn" on the
+// top-level activity picker (/home). Opening a goal here jumps straight to that
+// goal's Track board. ?group= and ?course= reopen a group or a course; they are
+// untrusted and kept only if the catalog has them (lib/packs/selection.ts).
+export default async function LearnDashboardPage({ searchParams }: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const supabase = await createClient();
   const { user, profile } = await verifyUserAccess(supabase);
 
   // Narrow Learn, phase 1: courses are an administrator preview. Decided here,
   // on the server, from the protected profile row; a learner gets an empty
   // list and an unchanged screen.
-  const courses = canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile) ? catalogListing() : [];
+  const groups = canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile) ? groupedCatalog() : [];
+  const params = await searchParams;
+  const initialSelection = resolveSelection(groups, params.group, params.course);
 
 
   const [{ data: goals, error: goalsError }, quota] = await Promise.all([
@@ -168,8 +173,8 @@ export default async function LearnDashboardPage() {
           ) : (
             <DashboardPanel
               initialGoals={(goals ?? []) as LearningGoal[]}
-              documentUpload={documentUploadEnabled()}
-              courses={courses}
+              groups={groups}
+              initialSelection={initialSelection}
             />
           )}
         </div>
