@@ -156,7 +156,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 30,
+    tests: 31,
   },
   {
     id:    "ask",
@@ -534,6 +534,8 @@ export const ALLOWED_LIB_EDGES: readonly ImportEdge[] = [
     reason: "Track generation runs the topic-domain gate before it spends." },
   { from: "tracker", to: "packs",
     reason: "A course track is laid out from its reference pack's cards (narrow Learn)." },
+  { from: "packs", to: "learn",
+    reason: "A course group is filed under a learner-map region, which lib/learn/regions.ts defines." },
   { from: "code", to: "case-lab",
     reason: "The Case Lab notebook reuses the Pyodide session client." },
 ] as const;
