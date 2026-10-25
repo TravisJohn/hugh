@@ -1,7 +1,7 @@
 {
   "id": "dimensionality-reduction",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Dimensionality reduction: why many features cause trouble, principal component analysis (what a component is, explained variance, choosing how many to keep, scaling, reading loadings), using PCA honestly inside a modelling pipeline, and how t-SNE differs",
   "outOfScope": [
     "The linear algebra behind PCA, such as computing eigenvectors or the singular value decomposition by hand",
@@ -1259,5 +1259,15 @@
         "tsne_cautions"
       ]
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-25",
+    "itemsJudged": 84,
+    "itemsSupported": 84,
+    "errorsPlanted": 12,
+    "errorsCaught": 12,
+    "fingerprint": "sha256:d25a5d2fb914e2c5362146643ac8f538"
+  }
 }

@@ -29,6 +29,7 @@ import bayesianInference from "@/content/packs/bayesian-inference.json";
 import outlierDetection from "@/content/packs/outlier-detection.json";
 import neuralNetworks from "@/content/packs/neural-networks.json";
 import classificationMetrics from "@/content/packs/classification-metrics.json";
+import dimensionalityReduction from "@/content/packs/dimensionality-reduction.json";
 
 export interface CatalogEntry {
   id:    string;
@@ -57,6 +58,7 @@ const CATALOG: readonly CatalogEntry[] = [
   { id: "decision-trees",            group: "machine-learning",  raw: decisionTrees },
   { id: "neural-networks",           group: "machine-learning",  raw: neuralNetworks },
   { id: "clustering",                group: "machine-learning",  raw: clustering },
+  { id: "dimensionality-reduction",  group: "machine-learning",  raw: dimensionalityReduction },
 ];
 
 /** The statuses Hugh may teach from. */

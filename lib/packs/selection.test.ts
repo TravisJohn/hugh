@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { catalogListing, groupedCatalog, PACK_REFUSAL_MESSAGE } from "./catalog";
+import { catalogIds, catalogListing, groupedCatalog, PACK_REFUSAL_MESSAGE } from "./catalog";
 import { NO_SELECTION, resolveSelection, selectionQuery, startableCourseIds } from "./selection";
 import linearRegression from "@/content/packs/linear-regression.json";
 import type { ReferencePack } from "@/types/pack";
@@ -57,6 +57,6 @@ describe("selectionQuery", () => {
 
 describe("startableCourseIds", () => {
   it("lists every course in the catalog that can be started", () => {
-    expect(startableCourseIds(groups)).toHaveLength(16);
+    expect([...startableCourseIds(groups)].sort()).toEqual(catalogIds().sort());
   });
 });

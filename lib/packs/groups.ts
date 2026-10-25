@@ -45,7 +45,7 @@ const GROUPS = [
   {
     id:     "machine-learning",
     label:  "Machine learning",
-    blurb:  "Predict, judge and group with models.",
+    blurb:  "Predict, judge and group with models, and reduce many features to a few.",
     path:   false,
     region: "ml",
   },
