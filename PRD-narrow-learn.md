@@ -273,13 +273,34 @@ row 1 planned for.
 - `CourseCatalog` is the whole picker. `DashboardPanel` stops mounting the
   topic input, `RefinementFlow`, `DocumentUploadFlow` and `TopicGateNotice`;
   their files stay until phase 3.
-- 16 courses must fit the viewport with no scroll (Rule 4), on desktop and on
-  the phone layout. Group them by region, with the Statistics foundations
-  shown as a path, and page within a region the way the goal library already
-  pages. This is the riskiest piece of UI in phase 2.
+- **Courses are organised by natural grouping, not crammed onto one screen**
+  (Travis, 2026-10-25). The picker shows one group at a time, so Rule 4 holds
+  without an exception:
+  - Level 1 is the list of groups. Each shows its name, one line on what it
+    covers, and how many courses it has.
+  - Level 2 is the chosen group's courses as compact rows: the subject, the
+    number of cards, and the sources by publisher. The Statistics
+    foundations are numbered 1 to 7 as a path.
+  - The duration chips and Start button appear only on the selected course,
+    not on every card. Repeating them on every card is what makes today's
+    flat list too tall.
+  - On a phone the two levels are full-width screens with a back button.
+  - The chosen group lives in the URL (`?group=`), so a link or a carousel
+    slide can open a group with its course already selected.
+  - If a group outgrows the screen, it pages, the way the goal library
+    already pages.
+- **The groups are data, in one place.** A pure module,
+  `lib/packs/groups.ts`, lists the groups in display order. Each group has an
+  id, a label, a one-line blurb, whether it is a path, and its learner-map
+  region. Each catalog entry names its `group` instead of a `region`, and its
+  region is read from that group, so the two can't disagree.
+- Tests check that every entry names a known group, no listed group is
+  empty, and a path's order is catalog order. Groups with no courses yet
+  (Analytics, Data Engineering) are not shown. The starting groups are
+  decision 5.
 - The carousel shows only slides whose course is in the catalog: 7 of 9 today
-  (Gradient descent and Reinforcement learning drop out). A slide picks its
-  course instead of filling a topic box. Each slide names a `packId`, and a
+  (Gradient descent and Reinforcement learning drop out). A slide opens its
+  course's group with that course selected, instead of filling a topic box. Each slide names a `packId`, and a
   test holds every slide to a catalog id.
 - The request box (row 6) sits under the catalog: up to 120 characters,
   saved, with no model call and no build. A pure module
@@ -368,10 +389,13 @@ the code deploys)
 | 2 | How read-only is a legacy goal | Ask, quiz, mastery, diary check and rebuild are off (as row 5). Moving cards and adding diary entries are off too. Deleting stays on. | "Read-only" then means what it says. Progress on an unchecked syllabus is what the narrowing exists to stop. |
 | 3 | "Start the source-checked version" | One "Choose a course" link on every legacy goal, rather than matching each topic to a pack. | A matcher, whether a model or fuzzy text, is not worth it for about 9 goals. A link can't pick the wrong course. This narrows row 5. |
 | 4 | Outlier detection's region | Keep it under Statistics. | Learners see regions from PR C onward, so this should be settled before then. The pack is mostly statistical tests. |
+| 5 | The starting groups | **Statistics foundations** (a path, in order): Descriptive statistics, Probability distributions, Sampling and survey design, Sampling distributions, Hypothesis testing, Comparing groups, Categorical data. **Statistical modelling:** Linear regression, Bayesian inference, Time series forecasting. **Statistics in practice:** A/B testing, Outlier detection. **Machine learning:** Classification metrics, Decision trees, Neural networks, Clustering. | Groups follow what a learner is trying to do: build the basics in order, model a response, run an experiment or catch bad data, then predict or group with a model. The first three sit in the Statistics region and the fourth in Machine Learning, so the learner map is unchanged. No pack cites another pack's concepts, so the grouping comes from purpose, not a dependency graph. |
 
 ### Risks
-- **No-scroll picker:** 16 courses, and growing, on one screen at phone width.
-  Expect layout iteration; Travis checks it in the browser.
+- **The largest group at phone height:** the 7-course foundations path is
+  the tallest level-2 view. Seven compact rows should fit at 812px, but
+  Travis checks it in the browser. Growth past that is handled by paging
+  inside the group, not by scroll.
 - **Registry guards:** the CI guards may object to routes that stop spending,
   or to components that stop being mounted. Each is fixed in the guard, not
   by keeping dead code reachable.
