@@ -11,7 +11,7 @@ import { generateTrack } from "@/lib/tracker/generate";
 import { buildState, retryVerdict, MAX_BUILDS_PER_GOAL } from "@/lib/tracker/buildState";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
-import { canUsePackLearn } from "@/lib/packs/access";
+import { canUsePackLearn, PACK_ACCESS_REFUSED } from "@/lib/packs/access";
 import { loadPack, PACK_REFUSAL_MESSAGE, refusalStatus } from "@/lib/packs/catalog";
 import { type LearningGoal } from "@/types";
 
@@ -146,21 +146,21 @@ export async function POST(
 
   // A course is checked against the catalog instead of the topic gate. The
   // goal row is learner-writable, so neither `source_kind` nor `pack_id` is
-  // trusted here: the admin preview is enforced again, and the id must name a
+  // trusted here: course access is checked again, and the id must name a
   // teachable pack. Then it rebuilds from the pack, exactly as it was built.
   let coursePackId: string | null = null;
   if (isCourse) {
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("is_admin, is_blocked")
+      .select("is_blocked")
       .eq("user_id", userId)
       .single();
     if (profileError) {
       logSafeError("goals/retry course access", profileError);
       return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
     }
-    if (!canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile)) {
-      return NextResponse.json({ error: "Courses aren't open yet." }, { status: 403 });
+    if (!canUsePackLearn(profile)) {
+      return NextResponse.json({ error: PACK_ACCESS_REFUSED }, { status: 403 });
     }
     const loaded = loadPack(g.pack_id ?? "");
     if (!loaded.ok) {

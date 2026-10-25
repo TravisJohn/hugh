@@ -22,10 +22,9 @@ export default async function LearnDashboardPage({ searchParams }: {
   const supabase = await createClient();
   const { user, profile } = await verifyUserAccess(supabase);
 
-  // Narrow Learn, phase 1: courses are an administrator preview. Decided here,
-  // on the server, from the protected profile row; a learner gets an empty
-  // list and an unchanged screen.
-  const groups = canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile) ? groupedCatalog() : [];
+  // Narrow Learn, phase 2: the catalog is open to every unblocked learner.
+  // Decided here, on the server, from the protected profile row.
+  const groups = canUsePackLearn(profile) ? groupedCatalog() : [];
   const params = await searchParams;
   const initialSelection = resolveSelection(groups, params.group, params.course);
 
