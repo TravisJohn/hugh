@@ -167,7 +167,7 @@
           }
         },
         {
-          "text": "Data can have far fewer intrinsic dimensions than features: 64x64-pixel face images have 4096 dimensions, but because faces look somewhat alike they lie on a manifold of much lower dimension, around 200 for instance.",
+          "text": "Face images of 64x64 pixels have 4096 dimensions, but their intrinsic dimensionality is much lower because faces look somewhat alike: they lie on a manifold of much lower dimension, around 200 for instance.",
           "sourceId": "sk-decomposition",
           "locator": "2.5.1.3 PCA using randomized SVD",
           "anchor": {
@@ -320,7 +320,7 @@
           }
         },
         {
-          "text": "Finding the largest eigenvalue and its vector, and then the rest, is a large numerical task that can realistically only be done by a computer, using software with complex algorithms.",
+          "text": "Solving for the largest eigenvalue and its vector is a large numerical task that can realistically only be done by a computer, using software with complex algorithms.",
           "sourceId": "nist-pca-properties",
           "locator": "6.5.5.1 Properties of Principal Components (Largest eigenvalue)",
           "anchor": {
@@ -406,7 +406,7 @@
           }
         },
         {
-          "text": "A sharp drop is not enough on its own: with the standardised Places Rated data the only clear drop comes after the first component, but one component is probably too few because it explains only 37% of the variation.",
+          "text": "With the standardised Places Rated data the only sharp drop comes after the first component, but one component is probably too few, because it explains only 37% of the variation.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
           "anchor": {
@@ -427,7 +427,7 @@
       "misconceptions": [
         {
           "claim": "The first two principal components always hold most of the information in the data.",
-          "correction": "How much the first components explain depends on the data: in the standardised Places Rated analysis the first component explains about 37% of the variation, the first four explain 72%, and it takes five to reach 82%.",
+          "correction": "In the standardised Places Rated analysis the first component explains about 37% of the variation, the first four explain 72%, and it takes five to reach 82%.",
           "sourceId": "psu505-11",
           "locator": "11.4 Alternative: Standardize the Variables (Analysis, Step 1)",
           "anchor": {
@@ -613,7 +613,7 @@
       "outcome": "Treat PCA as a descriptive summary whose interpretation is a judgment, not a hypothesis test.",
       "keyPoints": [
         {
-          "text": "PCA is primarily descriptive, not hypothesis testing, so decisions such as how many components to use are largely made by what gives a good, concise description of the data.",
+          "text": "PCA is primarily descriptive, not hypothesis testing, so decisions in the analysis rest largely on what gives a good, concise description of the data.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
           "anchor": {
@@ -640,7 +640,7 @@
           }
         },
         {
-          "text": "PCA results are often not clean: in the Places Rated example the economy is significant in both the second and third components, which makes the interpretation ambiguous; factor analysis instead uses rotations to get a cleaner interpretation.",
+          "text": "The Places Rated analysis is not as clean as one would like: the economy is significant in both the second and third components, which makes the interpretation ambiguous; factor analysis instead uses rotations to get a cleaner interpretation.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
           "anchor": {
@@ -652,7 +652,7 @@
       "misconceptions": [
         {
           "claim": "PCA is a statistical test that shows which variables are significant.",
-          "correction": "The primary purpose of PCA is descriptive rather than hypothesis testing; choices such as how many components to keep rest on what gives a good, concise description of the data.",
+          "correction": "The primary purpose of PCA is descriptive rather than hypothesis testing; decisions in the analysis rest largely on what gives a good, concise description of the data.",
           "sourceId": "psu505-11",
           "locator": "11.5 Once the Components Are Calculated",
           "anchor": {
@@ -827,7 +827,7 @@
           }
         },
         {
-          "text": "In a scikit-learn example, a model trained on PCA-reduced data predicted far more accurately when the data were scaled before PCA, vastly outperforming the unscaled version.",
+          "text": "In a scikit-learn example, prediction accuracy was clearly better when the data were scaled before PCA, vastly outperforming the unscaled version.",
           "sourceId": "sk-scaling-example",
           "locator": "Effect of rescaling on model performance",
           "anchor": {
@@ -1057,7 +1057,7 @@
       "misconceptions": [
         {
           "claim": "How far apart two clusters sit on a t-SNE map shows how different those groups really are.",
-          "correction": "t-SNE does not explicitly preserve global structure, a problem only mitigated by initialising the points with PCA.",
+          "correction": "t-SNE does not explicitly preserve global structure; initialising the points with PCA mitigates this problem.",
           "sourceId": "sk-manifold",
           "locator": "2.2.9 t-SNE (disadvantages)",
           "anchor": {
