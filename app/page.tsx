@@ -55,19 +55,20 @@ export default async function LandingPage() {
           {/* Headline */}
           <div className="space-y-2">
             <h1 className="font-serif text-5xl leading-tight tracking-tight text-slate-100 md:text-6xl">
-              You can learn anything,
+              Learn data and analytics
             </h1>
             <h1 className="font-serif text-5xl leading-tight tracking-tight md:text-6xl">
               <span className="bg-gradient-to-r from-sky-400 to-violet-400 bg-clip-text text-transparent">
-                and it all starts with You.
+                by talking it through.
               </span>
             </h1>
           </div>
 
-          {/* Subtext */}
+          {/* Subtext — Travis's approved sentence (PRD-narrow-learn.md, row 9) */}
           <p className="max-w-xl text-lg leading-relaxed text-slate-400">
-            Hugh is your personal practice partner. Speak about what you want to learn,
-            get honest feedback, and grow your confidence — one session at a time.
+            Hugh teaches through conversation like a chatbot, keeps you to a
+            source-checked syllabus the way a course does, and counts something as
+            learned only once you&apos;ve proven it in your own words.
           </p>
 
           {/* Buttons */}
@@ -123,11 +124,11 @@ export default async function LandingPage() {
                 01
               </p>
               <p className="mt-3 text-sm font-semibold text-slate-200">
-                Pick a topic you want to learn
+                Choose a course
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                Choose a subject, paste a job description, or start with a preset
-                domain. Hugh gets ready around you.
+                Pick from Hugh&apos;s source-checked courses in statistics and machine
+                learning. Each one is laid out as a track of cards.
               </p>
             </div>
 
