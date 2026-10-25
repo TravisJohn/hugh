@@ -9312,3 +9312,50 @@ The five decisions:
    - Statistics in practice: A/B testing, Outlier detection
    - Machine learning: Classification metrics, Decision trees, Neural
      networks, Clustering
+
+## 2026-10-25 - Narrow Learn phase 2, PR C: the catalog for everyone (built, not pushed)
+
+PR C is built on `feat/pack-learn-phase2`, one piece at a time:
+- **Course groups as data.** `lib/packs/groups.ts` holds the four approved
+  groups. Each catalog entry names its group and takes its learner-map region
+  from it.
+- **Migration 061, `topic_requests`.** The table has an SQL test, which CI
+  runs beside 060's.
+- **The request box.** It has its own route (`dashboard/topic-requests`)
+  and a list at `/admin/requests`, counted on the admin landing page.
+- **The grouped picker.** `/home/learn` is now "Choose a course": first the
+  groups, then one group's courses as compact rows. The foundations are
+  numbered as a path. `?group=` and `?course=` reopen a selection.
+- **The carousel.** It shows only the 7 slides that have a course, and
+  each one opens its course.
+- **The copy.** The page title, the link previews, the landing hero (with
+  the approved sentence) and How It Works step 01 all describe the catalog.
+  A guard test keeps the retired promises out.
+- **The catalog opens to every unblocked learner.** `PACK_LEARN_ENABLED` is
+  removed from the code, `.env.example` and CLAUDE.md.
+
+Two things differ from the plan:
+- **061 is stricter than "learners may INSERT their own rows".** Learners
+  hold no privilege on `topic_requests` at all, and the route writes with the
+  service role. A learner INSERT grant would let a direct REST call skip the
+  5-a-day limit. This matches 059's review tables.
+- **Pieces 4 and 5 landed as one commit.** The carousel's only action was
+  filling the topic box that piece 4 removed.
+
+`/home/learn` no longer mounts the topic input, the gate notice, refinement,
+document upload or the thought trail. Their files, and the routes behind
+them, stay until PR D (410s) and phase 3 (deletion). Until PR D ships, those
+routes still answer direct calls, but nothing in the app reaches them.
+
+The gate passed locally: 2,081 tests, type check, lint and the production
+build. Not yet verified:
+- The 061 SQL test. Docker was not running here, so it first runs in CI.
+- Everything in a browser. Travis drives that check.
+
+Deploy order: Travis applies 061 before this deploys. `PACK_LEARN_ENABLED`
+can then be deleted from Vercel; a stale value is ignored, and a test holds
+that.
+
+Noticed and left alone: How It Works step 02 still says "Your AI
+interviewer", left over from the deleted interview loop. It is outside row
+9's copy change.
