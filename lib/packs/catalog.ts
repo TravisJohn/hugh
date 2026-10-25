@@ -30,6 +30,7 @@ import outlierDetection from "@/content/packs/outlier-detection.json";
 import neuralNetworks from "@/content/packs/neural-networks.json";
 import classificationMetrics from "@/content/packs/classification-metrics.json";
 import dimensionalityReduction from "@/content/packs/dimensionality-reduction.json";
+import causalInference from "@/content/packs/causal-inference.json";
 
 export interface CatalogEntry {
   id:    string;
@@ -54,6 +55,7 @@ const CATALOG: readonly CatalogEntry[] = [
   { id: "time-series-forecasting",   group: "stats-modelling",   raw: timeSeriesForecasting },
   { id: "ab-testing",                group: "stats-in-practice", raw: abTesting },
   { id: "outlier-detection",         group: "stats-in-practice", raw: outlierDetection },
+  { id: "causal-inference",          group: "stats-in-practice", raw: causalInference },
   { id: "classification-metrics",    group: "machine-learning",  raw: classificationMetrics },
   { id: "decision-trees",            group: "machine-learning",  raw: decisionTrees },
   { id: "neural-networks",           group: "machine-learning",  raw: neuralNetworks },

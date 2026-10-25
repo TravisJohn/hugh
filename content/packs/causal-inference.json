@@ -1,7 +1,7 @@
 {
   "id": "causal-inference",
   "version": "1.0.0",
-  "status": "provisional",
+  "status": "machine-checked",
   "subject": "Causal inference from data you did not randomise: potential outcomes and the bias in a naive comparison, confounding, causal diagrams, back doors and colliders, choosing what to control for, matching and propensity scores, difference-in-differences, and the limits of each",
   "outOfScope": [
     "Running and analysing a randomised experiment (see the A/B testing pack)",
@@ -184,7 +184,7 @@
       ],
       "keyPoints": [
         {
-          "text": "The fundamental problem of causal inference is that the same unit can never be observed both with and without the treatment, like knowing only what lies down the road you take.",
+          "text": "The fundamental problem of causal inference is that the same unit can never be observed both with and without the treatment.",
           "sourceId": "bt-01",
           "locator": "01 Introduction to Causality",
           "anchor": {
@@ -1199,5 +1199,15 @@
         "diff_in_diff"
       ]
     }
-  ]
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-25",
+    "itemsJudged": 78,
+    "itemsSupported": 78,
+    "errorsPlanted": 12,
+    "errorsCaught": 12,
+    "fingerprint": "sha256:ef00fa49709cc55977ff8c357e9d133d"
+  }
 }
