@@ -1,0 +1,31 @@
+{
+  "packId": "dimensionality-reduction",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "later_components:1",
+      "type": "negation",
+      "sentence": "The second principal component is the linear combination that accounts for as much of the remaining variation as possible, under the constraint that it is strongly correlated with the first component."
+    },
+    {
+      "ref": "choosing_components:2",
+      "type": "overstatement",
+      "sentence": "A cut-off fixed in advance, such as keeping components until 70% of the variation is explained, is always the correct way to choose the number of components, whatever the problem."
+    },
+    {
+      "ref": "explained_variance:3",
+      "type": "wrong_number_or_direction",
+      "sentence": "In the Places Rated example, about 28% of the variation is explained by the first component, and adding the next proportion gives a cumulative 52% for the first two."
+    },
+    {
+      "ref": "fit_on_training_data:5",
+      "type": "unsupported_addition",
+      "sentence": "A scikit-learn pipeline prevents data leakage by applying each step to the correct data subset, and it also removes the need to keep a separate test set, because cross-validation inside a pipeline is unbiased."
+    },
+    {
+      "ref": "interpreting_components:2",
+      "type": "causal_from_association",
+      "sentence": "In the Places Rated example, the first component increases with Arts, Health, Transportation, Housing and Recreation, which shows that better arts provision causes better health care, transport, housing and recreation."
+    }
+  ]
+}
