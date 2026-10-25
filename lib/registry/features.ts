@@ -134,6 +134,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "dashboard/goals/document/approve",
       "dashboard/goals/document/extract",
       "dashboard/refine",
+      "dashboard/topic-requests",
       "tracker/tracks/[trackId]",
       "tracker/tracks/[trackId]/reorder",
       "tracker/milestones/[id]",
@@ -144,7 +145,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     componentDirs: ["dashboard", "tracker"],
     tables: [
       "learning_goals", "tracks", "milestones", "goal_answers",
-      "track_generations", "pending_document_extractions",
+      "track_generations", "pending_document_extractions", "topic_requests",
     ],
     usageFeatures: [
       "dashboard/refine-topic", "dashboard/refine", "dashboard/document-extract",
@@ -156,7 +157,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget",
     ],
     spendsTokens: true,
-    tests: 31,
+    tests: 32,
   },
   {
     id:    "ask",
@@ -179,7 +180,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     activityFeatures: ["ask"],
     operations: ["ask.chat", "ask.summarize", "ask.verify", "ask.coverage"],
     spendsTokens: true,
-    tests: 15,
+    tests: 16,
   },
   {
     id:    "review",
@@ -399,7 +400,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     label: "Admin console",
     kind:  "internal",
     blurb: "What needs attention, spend by feature, accounts and approvals.",
-    routes: ["/admin", "/admin/features", "/admin/users"],
+    routes: ["/admin", "/admin/features", "/admin/users", "/admin/requests"],
     apiRoutes: ["admin/users/[userId]"],
     libDirs:       [],
     componentDirs: [],

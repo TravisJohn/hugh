@@ -1,7 +1,7 @@
 import Link from "next/link";
 import {
   ArrowLeft, ArrowRight, Layers, Users, Activity, Boxes,
-  CheckCircle2, AlertTriangle, ExternalLink,
+  CheckCircle2, AlertTriangle, ExternalLink, MessageSquarePlus,
 } from "lucide-react";
 import { requireAdminPage } from "@/lib/auth/requireAdmin";
 import { createServiceClient } from "@/lib/supabase/service";
@@ -76,7 +76,7 @@ export default async function AdminPage() {
   // eslint-disable-next-line react-hooks/purity
   const windowStart = new Date(Date.now() - ATTENTION_WINDOW_DAYS * 86_400_000).toISOString();
 
-  const [usageRes, opsRes, profilesRes, elevenLabs] = await Promise.all([
+  const [usageRes, opsRes, profilesRes, requestsRes, elevenLabs] = await Promise.all([
     service.from("usage_logs")
       .select("feature, tokens_in, tokens_out, tts_chars, model")
       .gte("created_at", monthStart)
@@ -86,6 +86,7 @@ export default async function AdminPage() {
       .gte("created_at", windowStart)
       .limit(ROW_CAP),
     service.from("profiles").select("user_id, approved, is_blocked, is_admin"),
+    service.from("topic_requests").select("id", { count: "exact", head: true }),
     fetchElevenLabsStatus(),
   ]);
 
@@ -378,7 +379,7 @@ export default async function AdminPage() {
         </section>
 
         {/* ── Where to go next ──────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <NavCard
             href="/admin/features"
             icon={<Layers size={18} className="text-sky-400" />}
@@ -402,6 +403,14 @@ export default async function AdminPage() {
             icon={<Boxes size={18} className="text-amber-400" />}
             title="Architecture"
             note="Repo map and the admin assistant"
+          />
+          <NavCard
+            href="/admin/requests"
+            icon={<MessageSquarePlus size={18} className="text-emerald-400" />}
+            title="Requests"
+            note={requestsRes.error || requestsRes.count === null
+              ? "Couldn't count requests"
+              : `${requestsRes.count} ${requestsRes.count === 1 ? "subject" : "subjects"} asked for`}
           />
         </section>
 

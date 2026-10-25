@@ -14,6 +14,7 @@ import ThoughtTrail, { type Thought } from "./ThoughtTrail";
 import { type RefinementPhase } from "@/lib/learn/network";
 import DocumentUploadFlow, { ACCEPT as DOCUMENT_ACCEPT } from "./DocumentUploadFlow";
 import CourseCatalog from "./CourseCatalog";
+import TopicRequestBox from "./TopicRequestBox";
 import type { CourseListing } from "@/lib/packs/catalog";
 import { addDays } from "@/utils/dates";
 
@@ -324,7 +325,10 @@ export default function DashboardPanel({
 
       {/* ── Courses (admin preview) ──────────────────────────────────── */}
       {courses.length > 0 && !refining && !uploadingDoc && (
-        <CourseCatalog courses={courses} onGoalCreated={handleGoalCreated} />
+        <>
+          <CourseCatalog courses={courses} onGoalCreated={handleGoalCreated} />
+          <TopicRequestBox />
+        </>
       )}
 
       {/* ── Add goal ───────────────────────────────────────────────── */}
