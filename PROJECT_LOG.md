@@ -9359,3 +9359,56 @@ that.
 Noticed and left alone: How It Works step 02 still says "Your AI
 interviewer", left over from the deleted interview loop. It is outside row
 9's copy change.
+
+## 2026-10-25 - Two more courses: Dimensionality reduction and Causal inference (18 courses)
+
+Travis asked for more courses to be authored while he rested, with no
+check-ins. The earlier autonomous-run rules applied:
+- one pack at a time;
+- each pack verified independently;
+- card orders approved by Claude on his behalf, recorded as pending his
+  review;
+- finished packs collected on a draft PR, never merged without him.
+
+The branch, `feat/more-courses-3`, is stacked on PR C (#37), because catalog
+entries now name a picker group.
+
+**Dimensionality reduction** 1.0.0 goes under Machine learning, after
+Clustering.
+- It covers why many features cause trouble, principal components,
+  eigenvalues and explained variance, choosing how many components to
+  keep, scores and interpretation, why scale matters, fitting PCA inside a
+  pipeline without leakage, and t-SNE with its cautions.
+- It has 19 concepts, 77 key points, 7 misconceptions and 9 cards, from 9
+  HTML sources: Penn State STAT 505 and 508, NIST/SEMATECH, scikit-learn
+  and Google.
+- Clustering already teaches PCA only as a step before clustering, so the
+  two do not overlap.
+- Judge runs 1 to 3 each supported 83/84 items and caught 12/12 planted
+  errors. Each run flagged a different borderline generalisation, so after
+  run 3 every key point was re-read and seven claims were tightened. Run 4
+  supported 84/84 and caught 12/12.
+
+**Causal inference** 1.0.0 goes under Statistics in practice, after Outlier
+detection.
+- It covers potential outcomes, the bias in a naive comparison,
+  randomisation, confounding, causal diagrams, chains, forks and colliders,
+  back doors, choosing controls (including bad controls), matching,
+  propensity scores, overlap, difference-in-differences, and the limits of
+  adjustment.
+- It has 18 concepts, 71 key points, 7 misconceptions and 9 cards, from 10
+  HTML sources: Causal Inference for the Brave and True, The Effect, and
+  OpenIntro.
+- Before judging, nine key points that leaned on context outside their
+  passage were tightened, applying what the first pack's runs had taught.
+  Run 1 supported 77/78 and caught 12/12; it flagged one added analogy,
+  which was cut. Run 2 supported 78/78 and caught 12/12.
+
+Model validation was considered first and set aside: Linear regression,
+Decision trees and Neural networks already teach most of it. The untaught
+remainder (data leakage, grouped and time-ordered splits, nested
+cross-validation) is a candidate for a later pack.
+
+Both packs have id locks. Two group blurbs grew to cover them. A selection
+test now counts the catalog instead of a fixed 16. The full gate passed
+locally with 2,093 tests.
