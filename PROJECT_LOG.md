@@ -9254,3 +9254,20 @@ The seven sit first in the catalog, in path order, because catalog order is
 picker order: describe, then probability, then sampling, then inference,
 then comparing groups and categories, then the existing statistics courses
 (Linear Regression onwards). The catalog now holds 16 courses.
+
+## 2026-10-24 - PR #36 merged: 16 courses on main
+
+Travis marked draft PR #36 ready and merged it on 2026-10-24 (merge commit
+4e66f97). Main's catalog now holds 16 courses: 12 under Statistics (the
+seven foundations first, in path order, then Linear Regression, A/B testing,
+Time series forecasting, Bayesian inference and Outlier detection) and 4
+under Machine Learning (Clustering, Decision trees, Neural networks,
+Classification metrics). Every pack is machine-checked and has an id lock.
+
+The production deployment of 4e66f97 succeeded. Learners see no change yet:
+courses are still offered only to an admin, behind `PACK_LEARN_ENABLED`.
+Analytics, Data Engineering, Cloud and Automation still have no courses.
+
+This entry is recorded here, as the first commit of the phase 2 branch,
+rather than on main: main only ever receives commits through PR merges, and
+Travis chose not to open a PR for a log-only change.
