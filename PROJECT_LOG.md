@@ -9412,3 +9412,44 @@ cross-validation) is a candidate for a later pack.
 Both packs have id locks. Two group blurbs grew to cover them. A selection
 test now counts the catalog instead of a fixed 16. The full gate passed
 locally with 2,093 tests.
+
+## 2026-10-26 - A launch dashboard: Hugh to Nov 15
+
+Travis asked for a high-level overview of every section of Hugh, refreshed
+daily, so he can see where things stand without asking, with Nov 15 as the
+target. He chose "every section launch-ready" as the finish line, with
+Claude drafting each section's finish line for him to correct. No launch
+date was written down before this; the only one on record was "January",
+from the feature-registry work in September.
+
+It is a private claude.ai dashboard, not an app page:
+https://claude.ai/artifact/6fAzrmFPh633WpXXSSyQmk. `/admin/features`
+already shows each section's runtime health (spend, use, failures). This page
+shows the other half: what is done, what is left, and who holds the next
+move.
+- 20 sections: the 17 registry surfaces, plus Course catalog, Security and
+  spend, and Launch (landing page, promo films).
+- 42 items on the Nov 15 list. On day one, 15 are done, 27 are open, 11 are
+  waiting on Travis, and 9 of 20 sections are launch-ready. Nine known items
+  are listed under "After Nov 15" and are not counted.
+- Every item carries a check that a script can run: a PR merged, a table
+  present in production, a file or a line gone from main, or the backups
+  green. Items checked `manual` move only when Travis says so in a chat.
+- The data is five JSON files attached to the dashboard, not to this repo,
+  so the daily updates add no commits to any branch.
+
+The refresh is a scheduled task in the desktop app,
+`hugh-nov15-dashboard`, every morning at 7:00. It reads git, GitHub,
+Supabase's table list and the backup runs. It never checks out, commits or
+runs SQL, and it changes only item states, the PR list, the burn-down and the
+change log. It runs only while the app is open; a missed run happens on the
+next launch.
+
+Found while drafting:
+- Migration 061 is not applied in production: there is no
+  `topic_requests` table.
+- The landing page on main still says "Your AI interviewer guides the
+  discussion" and "Skill Prep App". PR C replaces "You can learn anything"
+  but not these two lines.
+- Supabase's migration history is empty, because migrations are applied
+  through the SQL editor. A migration is proven by the table it creates.
