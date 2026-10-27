@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildState,
   canRetry,
+  canRebuild,
   cardBuildState,
   isRetryable,
   trackViewState,
@@ -219,5 +220,23 @@ describe("cardBuildState - what a library card shows while it watches", () => {
     expect(cardBuildState("ready", false, false)).toBe("ready");
     expect(cardBuildState("failed", false, false)).toBe("failed");
     expect(cardBuildState("awaiting_approval", false, false)).toBe("awaiting_approval");
+  });
+});
+
+describe("canRebuild - only a course can be rebuilt since narrow Learn PR D", () => {
+  it("offers a rebuild on a broken course, exactly where canRetry would", () => {
+    expect(canRebuild("failed", true)).toBe(true);
+    expect(canRebuild("stalled", true)).toBe(true);
+  });
+
+  it("never offers a rebuild on an earlier topic, because the route refuses one", () => {
+    expect(canRebuild("failed", false)).toBe(false);
+    expect(canRebuild("stalled", false)).toBe(false);
+  });
+
+  it("still refuses a course that is building, fine or waiting, whatever its kind", () => {
+    for (const state of ["building", "ready", "awaiting_approval"] as const) {
+      expect(canRebuild(state, true)).toBe(false);
+    }
   });
 });

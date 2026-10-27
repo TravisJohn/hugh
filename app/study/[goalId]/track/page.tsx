@@ -9,6 +9,7 @@ import HeaderUsage from "@/components/usage/HeaderUsage";
 import KanbanBoard from "@/components/tracker/KanbanBoard";
 import TrackBuildPanel from "@/components/tracker/TrackBuildPanel";
 import { buildState, trackViewState } from "@/lib/tracker/buildState";
+import { isCourseGoal } from "@/lib/learn/earlierTopic";
 import { type LearningGoal, type Track, type Milestone } from "@/types";
 import RecordActivity from "@/components/monitor/RecordActivity";
 
@@ -142,6 +143,7 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
             goalId={goalId}
             initialState={view === "building" ? "building" : panelState}
             emptyBoard={Boolean(t) && milestones.length === 0}
+            isCourse={isCourseGoal(g)}
           />
         )}
 

@@ -14,11 +14,11 @@ import { POST as refine } from "@/app/api/dashboard/refine/route";
 import { POST as extract } from "@/app/api/dashboard/goals/document/extract/route";
 import { POST as approve } from "@/app/api/dashboard/goals/document/approve/route";
 import {
-  CHOOSE_COURSE_HREF,
   RETIRED_ROUTE_MESSAGE,
   RETIRED_ROUTES,
   type RetiredRoute,
 } from "./retiredRoute";
+import { CHOOSE_COURSE_HREF } from "./earlierTopic";
 
 const handlers = {
   "dashboard/classify-topic":         classifyTopic,

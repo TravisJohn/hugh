@@ -157,7 +157,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "track.summary", "topic.gate", "answers.forget", "learn.retired",
     ],
     spendsTokens: true,
-    tests: 36,
+    tests: 37,
   },
   {
     id:    "ask",

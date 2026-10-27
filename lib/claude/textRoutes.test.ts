@@ -17,7 +17,6 @@ import { POST as learn } from "@/app/api/learn/chat/route";
 import { POST as code } from "@/app/api/code/chat/route";
 import { POST as cloud } from "@/app/api/cloud/chat/route";
 import { POST as summary } from "@/app/api/learn/summarize/route";
-import { POST as goals } from "@/app/api/dashboard/goals/route";
 import { POST as session } from "@/app/api/tracker/mastery/session/route";
 
 const messages = [{ role: "user", content: "Explain SQL joins" }];
@@ -26,7 +25,6 @@ const cases = [
   { name: "code", post: code, body: { messages, context: "A Python drill" } },
   { name: "cloud", post: cloud, body: { provider: "gcp", serviceId: "bigtable", messages } },
   { name: "summary", post: summary, body: { topic: "SQL joins", messages } },
-  { name: "goals", post: goals, body: { topic: "SQL joins", end_date: "2026-12-01", answers: [{ question: "Why?", answer: "Reporting" }] } },
   { name: "session", post: session, body: { milestoneId: "00000000-0000-0000-0000-000000000001", scenario: "interview", phase: "open", messages: [] } },
 ];
 function request(body: unknown, raw = false): NextRequest {
@@ -116,28 +114,3 @@ it("bounds server-side mastery notes, retaining all notes in an accepted prompt"
   expect(mocks.ai).not.toHaveBeenCalled();
 });
 
-it("goal classification reserves both attempts and cannot fail open on a quota refusal", async () => {
-  const body = { topic: "SQL joins", end_date: "2026-12-01", answers: [] };
-  mocks.gate.mockResolvedValue(NextResponse.json({ error: "limit" }, { status: 429 }));
-  expect((await goals(request(body))).status).toBe(429);
-  expect(mocks.ai).not.toHaveBeenCalled();
-  expect(mocks.after).not.toHaveBeenCalled();
-  mocks.gate.mockResolvedValue(null);
-  expect((await goals(request(body))).status).toBe(200);
-  expect(mocks.gate.mock.calls.at(-1)?.[2]).toBe(textReservation(mocks.ai.mock.calls[0][0] as TextCall, 2));
-  expect(mocks.after).toHaveBeenCalledOnce();
-  await mocks.after.mock.calls[0][0]();
-  expect(mocks.generate.mock.calls[0][5]).toMatchObject({ beforeGeneration: expect.any(Function), beforePriority: expect.any(Function) });
-  expect(updates).toContainEqual({ track_status: "ready" });
-});
-
-it("a background budget refusal leaves the goal failed rather than pending", async () => {
-  mocks.generate.mockImplementation(async (_db, _uid, _topic, _id, _doc, options) => {
-    await options.beforeGeneration({ model: "claude-sonnet-4-6", max_tokens: 2048, messages: [{ role: "user", content: "Generate milestones" }] }, 2);
-  });
-  await goals(request({ topic: "SQL joins", end_date: "2026-12-01" }));
-  mocks.gate.mockResolvedValue(NextResponse.json({ error: "limit" }, { status: 429 }));
-  await mocks.after.mock.calls[0][0]();
-  expect(updates).toContainEqual({ track_status: "failed" });
-  expect(mocks.ai).toHaveBeenCalledOnce(); // classifier only
-});
