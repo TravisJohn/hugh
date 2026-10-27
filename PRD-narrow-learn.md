@@ -380,7 +380,45 @@ the code deploys)
   each show the read-only copy, and the board still opens.
 - Phase 3 (deleting about 2,650 lines and tagging
   `parked/course-from-document`) starts after a week of PR D in production
-  with no `learn.retired_route` events from real use.
+  with no `learn.retired` events from real use.
+
+### PR D as built (2026-10-27)
+
+Built as planned, in four pieces, with these differences. Each was either
+Travis's decision during the build or forced by something the plan did not
+know.
+
+**Departures from the plan**
+- **`goals/[id]/answers` stays live** (Travis, 2026-10-27). It only reads and
+  deletes answers a learner already gave, and `/privacy` promises both "from
+  the track's card". Nothing new can reach it once refinement is retired, so
+  four routes return 410, not five. Phase 3 decides its fate together with
+  the `/privacy` wording.
+- **The operation is `learn.retired`, not `learn.retired_route`.** Stored
+  operation ids take no underscore; the registry's guard caught it.
+
+**Additions the plan did not foresee**
+- A typed topic posted to `dashboard/goals`, and an Ask session saved with no
+  card, are both refused and recorded as `learn.retired` (under
+  `dashboard/goals:topic` and `learn/save-summary:no-card`). They are the
+  most likely calls from a tab opened before PR D, and phase 3's trigger
+  should see them. The card-less save used to add an ungrounded card to the
+  board.
+- Read-only covers every route that changes or spends on a card, not only
+  the five teaching surfaces: moves, reorder, diary add, edit and re-tag
+  (archive stays open), checklist progress, the mastery summary, the
+  mastery recap, and saving an Ask session to its card.
+- The earlier-topic refusal is a 409 with a `chooseCourse` link; a course
+  card whose pack can't load stays a 503. Ask and the card drawer show the
+  409's own sentence.
+- Ask always has a card: with none picked, it opens on the first card not
+  yet mastered (`lib/learn/askFocus.ts`), and with no cards it links back to
+  the board.
+- The Realtime route used to check grounding only for a card with no saved
+  summary. It now checks every card.
+- `track.refine` and `track.extract` are marked `retiredOn` in the
+  operations registry, so their history still renders and the guard stops
+  expecting a live call site.
 
 ### Decisions for Travis
 | # | Decision | Recommended answer | Why |
