@@ -17,7 +17,6 @@ import { POST as learn } from "@/app/api/learn/chat/route";
 import { POST as code } from "@/app/api/code/chat/route";
 import { POST as cloud } from "@/app/api/cloud/chat/route";
 import { POST as summary } from "@/app/api/learn/summarize/route";
-import { POST as refine } from "@/app/api/dashboard/refine/route";
 import { POST as goals } from "@/app/api/dashboard/goals/route";
 import { POST as session } from "@/app/api/tracker/mastery/session/route";
 
@@ -27,7 +26,6 @@ const cases = [
   { name: "code", post: code, body: { messages, context: "A Python drill" } },
   { name: "cloud", post: cloud, body: { provider: "gcp", serviceId: "bigtable", messages } },
   { name: "summary", post: summary, body: { topic: "SQL joins", messages } },
-  { name: "refine", post: refine, body: { topic: "SQL joins", answers: [{ question: "Why?", answer: "Reporting" }] } },
   { name: "goals", post: goals, body: { topic: "SQL joins", end_date: "2026-12-01", answers: [{ question: "Why?", answer: "Reporting" }] } },
   { name: "session", post: session, body: { milestoneId: "00000000-0000-0000-0000-000000000001", scenario: "interview", phase: "open", messages: [] } },
 ];
@@ -105,21 +103,6 @@ it("includes the Learn system prompt and code-mode reminder in its reservation",
 it("summaries keep an assistant-first transcript rather than guessing it is a greeting", async () => {
   await summary(request({ topic: "SQL", messages: [{ role: "assistant", content: "A left join preserves every row from the left table." }, ...messages] }));
   expect((mocks.ai.mock.calls[0][0] as TextCall).messages[0].content).toContain("A left join preserves every row from the left table.");
-});
-
-it("reserves again before a refine parse retry, logging the failed attempt", async () => {
-  mocks.ai.mockResolvedValueOnce(completion("not JSON"));
-  expect((await refine(request({ topic: "SQL", answers: [] }))).status).toBe(200);
-  expect(mocks.gate).toHaveBeenCalledTimes(2);
-  expect(mocks.ai).toHaveBeenCalledTimes(2);
-  expect(mocks.usage).toHaveBeenCalledTimes(2);
-});
-
-it("a retry refused by the quota makes no second provider call", async () => {
-  mocks.ai.mockResolvedValueOnce(completion("not JSON"));
-  mocks.gate.mockResolvedValueOnce(null).mockResolvedValueOnce(NextResponse.json({ error: "limit" }, { status: 429 }));
-  expect((await refine(request({ topic: "SQL", answers: [] }))).status).toBe(429);
-  expect(mocks.ai).toHaveBeenCalledOnce();
 });
 
 it("bounds server-side mastery notes, retaining all notes in an accepted prompt", async () => {

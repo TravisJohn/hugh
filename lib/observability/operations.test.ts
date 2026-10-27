@@ -50,6 +50,7 @@ const EVERY_OPERATION: Record<OperationId, true> = {
   "notes.summarize":  true,
   "voice.speak":      true,
   "answers.forget":   true,
+  "learn.retired":    true,
 };
 
 const EVERY_OUTCOME: Record<OperationOutcome, true> = {
@@ -237,10 +238,25 @@ function instrumentedOperations(dirs: readonly string[]): Set<string> {
 
 describe("registry ↔ code", () => {
   const instrumented = instrumentedOperations(["app", "lib"]);
+  // A retired operation keeps its entry so its history still renders; only a
+  // live one promises a call site.
+  const live    = OPERATIONS.filter(o => !o.retiredOn).map(o => o.id);
+  const retired = OPERATIONS.filter(o => o.retiredOn).map(o => o.id);
 
-  it("instruments every operation the registry promises", () => {
-    const missing = OPERATION_IDS.filter(id => !instrumented.has(id));
+  it("instruments every live operation the registry promises", () => {
+    const missing = live.filter(id => !instrumented.has(id));
     expect(missing, `registered but never recorded: ${missing.join(", ")}`).toEqual([]);
+  });
+
+  it("records no operation the registry calls retired, so a retirement cannot be quietly undone", () => {
+    const revived = retired.filter(id => instrumented.has(id));
+    expect(revived, `retired but still recorded: ${revived.join(", ")}`).toEqual([]);
+  });
+
+  it("dates every retirement, so the console can say when an operation stopped", () => {
+    for (const op of OPERATIONS.filter(o => o.retiredOn)) {
+      expect(op.retiredOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
   });
 
   it("registers every operation the code records", () => {
@@ -251,6 +267,6 @@ describe("registry ↔ code", () => {
   it("actually found call sites, so a broken scan cannot pass by finding nothing", () => {
     // Without this, deleting every recordOperation call in the app would make
     // the two tests above pass perfectly against an empty set.
-    expect(instrumented.size).toBe(OPERATION_IDS.length);
+    expect(instrumented.size).toBe(live.length);
   });
 });
