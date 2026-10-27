@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -6,6 +5,7 @@ import { verifyUserAccess } from "@/lib/supabase/verify-access";
 import SignOutButton from "@/components/landing/SignOutButton";
 import HeaderUsage from "@/components/usage/HeaderUsage";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
+import HughOrb from "@/components/brand/HughOrb";
 import { type LearningGoal } from "@/types";
 import { checkSessionQuota, FREE_SESSION_LIMIT } from "@/lib/quota";
 import { canUsePackLearn } from "@/lib/packs/access";
@@ -58,15 +58,12 @@ export default async function LearnDashboardPage({ searchParams }: {
       <aside className="hidden md:flex w-72 shrink-0 flex-col items-center justify-center border-r border-slate-800 bg-slate-900/60">
         <div className="relative">
           <div className="absolute inset-0 rounded-full bg-sky-400/15 blur-2xl scale-150" />
-          <Image
-            src="/hugh-logo.png.png"
-            alt="Hugh — Skill Prep App"
-            width={240}
-            height={240}
-            className="relative object-contain drop-shadow-2xl"
-            priority
-          />
+          <HughOrb size={240} className="relative drop-shadow-2xl" />
         </div>
+        {/* The old logo image carried the name; the Orb doesn't, so say it. */}
+        <span className="mt-4 font-serif text-4xl font-semibold tracking-tight text-white">
+          Hugh.
+        </span>
       </aside>
 
       {/* ── Right: Dashboard ─────────────────────────────────────────── */}

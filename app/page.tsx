@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import FeatureCards from "@/components/landing/FeatureCards";
+import HughOrb from "@/components/brand/HughOrb";
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -42,14 +42,7 @@ export default async function LandingPage() {
           {/* Logo */}
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-sky-400/10 blur-2xl scale-150" />
-            <Image
-              src="/hugh-logo.png.png"
-              alt="Hugh"
-              width={240}
-              height={240}
-              className="relative object-contain drop-shadow-2xl"
-              priority
-            />
+            <HughOrb size={240} label="Hugh" className="relative drop-shadow-2xl" />
           </div>
 
           {/* Headline */}
