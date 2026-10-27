@@ -15,17 +15,17 @@ const lora = Lora({
 });
 
 export const metadata: Metadata = {
-  title: "Hugh — You can learn anything",
-  description: "Hugh is your AI learning companion. Build a structured learning plan, track your progress, and prove your knowledge through voice conversations.",
+  title: "Hugh: learn data and analytics by conversation",
+  description: "Hugh teaches through conversation like a chatbot, keeps you to a source-checked syllabus the way a course does, and counts something as learned only once you've proven it in your own words.",
   openGraph: {
-    title:       "Hugh — You can learn anything",
-    description: "Your AI learning companion. Build a plan, track progress, and prove mastery through voice.",
+    title:       "Hugh: learn data and analytics by conversation",
+    description: "Learn data and analytics by talking it through, on a source-checked syllabus, and prove it in your own words.",
     siteName:    "Hugh",
   },
   twitter: {
     card:        "summary",
-    title:       "Hugh — You can learn anything",
-    description: "Your AI learning companion. Build a plan, track progress, and prove mastery through voice.",
+    title:       "Hugh: learn data and analytics by conversation",
+    description: "Learn data and analytics by talking it through, on a source-checked syllabus, and prove it in your own words.",
   },
 };
 

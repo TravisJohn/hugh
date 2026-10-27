@@ -25,7 +25,7 @@ BY its goal. Do not reintroduce a chat surface outside `/study/[goalId]/ask`.
 | Route | What it is |
 |---|---|
 | `/home` | Activity grid — the logged-in landing page |
-| `/home/learn` → `/study/[goalId]` | Pick a topic, then the goal's Kanban track |
+| `/home/learn` → `/study/[goalId]` | Choose a course (one group at a time), then the goal's Kanban track |
 | `/study/[goalId]/ask` | Ask Hugh — tutor chat, diary, focus timer |
 | `/review/[milestoneId]` | Diary-grounded review quiz |
 | `/mastery/[milestoneId]` | Prove mastery out loud (scripted, or Realtime voice behind a flag) |
@@ -139,7 +139,6 @@ OPENAI_API_KEY                  # optional — gates Notes Coach, Realtime maste
 OPENAI_MODEL                    # optional — admin architecture assistant
 HUGH_ADMIN_URL                  # optional — admin architecture assistant
 MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery
-PACK_LEARN_ENABLED              # optional flag — narrow-Learn courses, admin preview
 SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
 ```
 

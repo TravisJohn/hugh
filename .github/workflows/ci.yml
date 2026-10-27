@@ -77,6 +77,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_060_pack_tracks_test
       - name: Test that pack tracks record their concepts where learners cannot write
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_060_pack_tracks_test -f /tmp/hugh-s1/tests/060_pack_tracks.sql
+      - name: Create disposable topic-requests database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_061_topic_requests_test
+      - name: Test that topic requests are server-written and leave with the account
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_061_topic_requests_test -f /tmp/hugh-s1/tests/061_topic_requests.sql
 
   verify:
     name: lint · typecheck · test · audit · build

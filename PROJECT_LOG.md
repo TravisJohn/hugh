@@ -9254,3 +9254,138 @@ The seven sit first in the catalog, in path order, because catalog order is
 picker order: describe, then probability, then sampling, then inference,
 then comparing groups and categories, then the existing statistics courses
 (Linear Regression onwards). The catalog now holds 16 courses.
+
+## 2026-10-24 - PR #36 merged: 16 courses on main
+
+Travis marked draft PR #36 ready and merged it on 2026-10-24 (merge commit
+4e66f97). Main's catalog now holds 16 courses: 12 under Statistics (the
+seven foundations first, in path order, then Linear Regression, A/B testing,
+Time series forecasting, Bayesian inference and Outlier detection) and 4
+under Machine Learning (Clustering, Decision trees, Neural networks,
+Classification metrics). Every pack is machine-checked and has an id lock.
+
+The production deployment of 4e66f97 succeeded. Learners see no change yet:
+courses are still offered only to an admin, behind `PACK_LEARN_ENABLED`.
+Analytics, Data Engineering, Cloud and Automation still have no courses.
+
+This entry is recorded here, as the first commit of the phase 2 branch,
+rather than on main: main only ever receives commits through PR merges, and
+Travis chose not to open a PR for a log-only change.
+
+## 2026-10-25 - Narrow Learn phase 2: architecture approved
+
+Phase 2 is the launch: every learner gets the course catalog, and the open
+topic path closes. Its architecture is a new section of
+`PRD-narrow-learn.md`. Travis approved it on 2026-10-25, with all five
+decisions as recommended. Nothing is deleted in phase 2; that is phase 3.
+
+It ships as two PRs:
+- **PR C, the catalog for everyone:** courses for every unblocked learner;
+  `/home/learn` becomes "Choose a course"; a request-a-topic box backed by
+  migration 061 (`topic_requests`); the carousel limited to topics that have
+  a course; and the new copy in place of "You can learn anything".
+- **PR D, the open path closes:** goal creation takes only a course; the five
+  open-input routes return 410, and each hit is recorded as a
+  `learn.retired_route` operation; legacy goals become read-only.
+
+The recorded hits are what makes phase 3 measurable. It starts after a week
+of PR D in production with no hits from real use.
+
+The five decisions:
+1. `PACK_LEARN_ENABLED` is deleted. Once the topic input is gone, turning the
+   flag off would leave learners nothing to start, so the undo is Vercel's
+   instant rollback; 061 is additive.
+2. A legacy goal is fully read-only: Ask, quiz, mastery, the diary check,
+   rebuild, card moves and new diary entries are all off, and deleting stays
+   on. It is enforced at one point: `cardGrounding` already returns `none`
+   for a card with no concept ids, and phase 2 makes `none` mean read-only.
+3. Each legacy goal gets one "Choose a course" link, rather than a matcher
+   from its topic to a pack. This narrows row 5 of the PRD.
+4. Outlier detection stays under Statistics.
+5. The picker groups courses instead of fitting all 16 on one screen. This
+   was Travis's direction: one group per view, so Rule 4 holds without an
+   exception. The groups are data in `lib/packs/groups.ts`, and each catalog
+   entry names its group and reads its region from it. They start as four:
+   - Statistics foundations: a 7-course path
+   - Statistical modelling: Linear regression, Bayesian inference, Time
+     series forecasting
+   - Statistics in practice: A/B testing, Outlier detection
+   - Machine learning: Classification metrics, Decision trees, Neural
+     networks, Clustering
+
+## 2026-10-25 - Narrow Learn phase 2, PR C: the catalog for everyone (built, not pushed)
+
+PR C is built on `feat/pack-learn-phase2`, one piece at a time:
+- **Course groups as data.** `lib/packs/groups.ts` holds the four approved
+  groups. Each catalog entry names its group and takes its learner-map region
+  from it.
+- **Migration 061, `topic_requests`.** The table has an SQL test, which CI
+  runs beside 060's.
+- **The request box.** It has its own route (`dashboard/topic-requests`)
+  and a list at `/admin/requests`, counted on the admin landing page.
+- **The grouped picker.** `/home/learn` is now "Choose a course": first the
+  groups, then one group's courses as compact rows. The foundations are
+  numbered as a path. `?group=` and `?course=` reopen a selection.
+- **The carousel.** It shows only the 7 slides that have a course, and
+  each one opens its course.
+- **The copy.** The page title, the link previews, the landing hero (with
+  the approved sentence) and How It Works step 01 all describe the catalog.
+  A guard test keeps the retired promises out.
+- **The catalog opens to every unblocked learner.** `PACK_LEARN_ENABLED` is
+  removed from the code, `.env.example` and CLAUDE.md.
+
+Two things differ from the plan:
+- **061 is stricter than "learners may INSERT their own rows".** Learners
+  hold no privilege on `topic_requests` at all, and the route writes with the
+  service role. A learner INSERT grant would let a direct REST call skip the
+  5-a-day limit. This matches 059's review tables.
+- **Pieces 4 and 5 landed as one commit.** The carousel's only action was
+  filling the topic box that piece 4 removed.
+
+`/home/learn` no longer mounts the topic input, the gate notice, refinement,
+document upload or the thought trail. Their files, and the routes behind
+them, stay until PR D (410s) and phase 3 (deletion). Until PR D ships, those
+routes still answer direct calls, but nothing in the app reaches them.
+
+The gate passed locally: 2,081 tests, type check, lint and the production
+build. Not yet verified:
+- The 061 SQL test. Docker was not running here, so it first runs in CI.
+- Everything in a browser. Travis drives that check.
+
+Deploy order: Travis applies 061 before this deploys. `PACK_LEARN_ENABLED`
+can then be deleted from Vercel; a stale value is ignored, and a test holds
+that.
+
+Noticed and left alone: How It Works step 02 still says "Your AI
+interviewer", left over from the deleted interview loop. It is outside row
+9's copy change.
+
+## 2026-10-27 - A started course no longer spins until reload
+
+Travis's browser check of PR C found it at step 3. Starting a course built
+the board in 0.1 to 0.3 seconds with no model call, but the library card
+kept saying "Building your track…" until the page was reloaded.
+
+The cause: the open-topic flows waited for the build themselves and handed
+the goal to the library only once it was ready. The course picker hands it
+over while it is still 'pending', and nothing watched it from there. GoalCard
+followed a build only after a Rebuild click, and even then its "ready" did a
+router refresh, which cannot change the library: the goal list is client
+state, read once from the server. So a successful rebuild had the same
+endless spinner, unnoticed until now.
+
+The fix:
+- GoalCard follows any build it shows as running, with the shared watcher,
+  and reports the outcome to the library's goal list instead of refreshing.
+- What a card shows is now `cardBuildState` in `lib/tracker/buildState.ts`,
+  pure and tested. A stored outcome beats a stall timer that fired earlier.
+- `useTrackStatusWatch` now says why a watch ended: 'failed' (the build's own
+  verdict) or 'timeout' (the watcher gave up while the build may still run).
+  A card treats a timeout as no verdict, because the retry route refuses a
+  rebuild until the stall window has passed.
+
+The same check found that deleting a course removes only the goal. Its
+track, cards and diary stay behind with no goal. That predates PR C and is
+logged on the launch dashboard, not fixed here.
+
+Gate: 2,086 tests pass (5 new), the type check and lint are clean.

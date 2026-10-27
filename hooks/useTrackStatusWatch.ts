@@ -4,11 +4,19 @@ import { useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { type TrackStatus } from "@/types";
 
+/**
+ * Why the watch ended without a board. 'failed' is the build's own stored
+ * verdict. 'timeout' is only the watcher giving up: the build may still be
+ * running, and the retry route refuses a rebuild until the stall window has
+ * passed, so a caller that offers Rebuild must not treat the two alike.
+ */
+export type WatchFailure = "failed" | "timeout";
+
 interface Options {
   goalId:     string | null;
   active:     boolean;
   onReady:    () => void;
-  onFailed:   () => void;
+  onFailed:   (reason: WatchFailure) => void;
   timeoutMs?: number;
 }
 
@@ -18,8 +26,9 @@ interface Options {
 // only mechanism — a 3s poll guarantees the transition, and a hard timeout
 // guarantees the caller never hangs forever (e.g. if a background build is
 // killed before it writes a final status). Shared by RefinementFlow (Q&A
-// path) and DocumentUploadFlow (document path) — both watch the exact same
-// state machine once generateTrack fires (PRD-course-from-document.md §7.1).
+// path), DocumentUploadFlow (document path) and GoalCard (a course started
+// from the catalog, or a rebuild) — all watch the exact same state machine
+// once generateTrack fires (PRD-course-from-document.md §7.1).
 export function useTrackStatusWatch({ goalId, active, onReady, onFailed, timeoutMs = 180_000 }: Options) {
   // Guards a single terminal transition — Realtime + the poll can both fire,
   // but the caller must only be notified once.
@@ -57,7 +66,7 @@ export function useTrackStatusWatch({ goalId, active, onReady, onFailed, timeout
       } else if (status === "failed") {
         settledRef.current = true;
         cleanup();
-        onFailed();
+        onFailed("failed");
       }
     }
 
@@ -106,7 +115,7 @@ export function useTrackStatusWatch({ goalId, active, onReady, onFailed, timeout
           // unhandled rejection on top of the failure the learner already has.
         });
 
-        onFailed();
+        onFailed("timeout");
       }
     }, timeoutMs);
 

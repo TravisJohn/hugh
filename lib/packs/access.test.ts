@@ -1,29 +1,26 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { canUsePackLearn } from "./access";
 
-describe("canUsePackLearn: courses are an administrator preview in phase 1", () => {
-  it("lets an unblocked admin in when the flag is on", () => {
-    expect(canUsePackLearn("true", { is_admin: true, is_blocked: false })).toBe(true);
+describe("canUsePackLearn: the catalog is open to every learner (phase 2)", () => {
+  afterEach(() => { delete process.env.PACK_LEARN_ENABLED; });
+
+  it("lets any unblocked learner in, admin or not", () => {
+    expect(canUsePackLearn({ is_blocked: false })).toBe(true);
   });
 
-  it("keeps every learner out, even with the flag on, so learners see nothing new", () => {
-    expect(canUsePackLearn("true", { is_admin: false, is_blocked: false })).toBe(false);
-    expect(canUsePackLearn("true", { is_admin: null, is_blocked: false })).toBe(false);
-  });
-
-  it("keeps a blocked admin out, and an admin whose blocked flag is unknown", () => {
-    expect(canUsePackLearn("true", { is_admin: true, is_blocked: true })).toBe(false);
-    expect(canUsePackLearn("true", { is_admin: true, is_blocked: null })).toBe(false);
-  });
-
-  it("is off unless the flag is exactly 'true', so a typo fails closed", () => {
-    for (const flag of [undefined, "", "1", "TRUE", "yes"]) {
-      expect(canUsePackLearn(flag, { is_admin: true, is_blocked: false })).toBe(false);
-    }
+  it("keeps a blocked account out, and one whose blocked flag is unknown, so a missing value fails closed", () => {
+    expect(canUsePackLearn({ is_blocked: true })).toBe(false);
+    expect(canUsePackLearn({ is_blocked: null })).toBe(false);
+    expect(canUsePackLearn({})).toBe(false);
   });
 
   it("is off with no profile at all", () => {
-    expect(canUsePackLearn("true", null)).toBe(false);
-    expect(canUsePackLearn("true", undefined)).toBe(false);
+    expect(canUsePackLearn(null)).toBe(false);
+    expect(canUsePackLearn(undefined)).toBe(false);
+  });
+
+  it("ignores the retired PACK_LEARN_ENABLED flag, so a stale Vercel value can't switch courses off", () => {
+    process.env.PACK_LEARN_ENABLED = "false";
+    expect(canUsePackLearn({ is_blocked: false })).toBe(true);
   });
 });

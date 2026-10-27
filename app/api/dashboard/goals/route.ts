@@ -14,7 +14,7 @@ import { mayProceed } from "@/lib/learn/topic-domain";
 import { generateTrack } from "@/lib/tracker/generate";
 import { recordOperation } from "@/lib/observability/record";
 import { isPackGoalBody, type PackGoalBody } from "@/lib/claude/textInput";
-import { canUsePackLearn } from "@/lib/packs/access";
+import { canUsePackLearn, PACK_ACCESS_REFUSED } from "@/lib/packs/access";
 import { loadPack, PACK_REFUSAL_MESSAGE, refusalStatus } from "@/lib/packs/catalog";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -223,19 +223,19 @@ export async function POST(request: NextRequest) {
 async function startCourse(userId: string, body: PackGoalBody): Promise<NextResponse> {
   const supabase = await createClient();
 
-  // Phase 1 is an administrator preview. Read from the protected profiles
-  // row, never from the request or JWT metadata.
+  // Courses are open to every unblocked learner (phase 2). Read from the
+  // protected profiles row, never from the request or JWT metadata.
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("is_admin, is_blocked")
+    .select("is_blocked")
     .eq("user_id", userId)
     .single();
   if (profileError) {
     logSafeError("dashboard/goals course access", profileError);
     return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
   }
-  if (!canUsePackLearn(process.env.PACK_LEARN_ENABLED, profile)) {
-    return NextResponse.json({ error: "Courses aren't open yet." }, { status: 403 });
+  if (!canUsePackLearn(profile)) {
+    return NextResponse.json({ error: PACK_ACCESS_REFUSED }, { status: 403 });
   }
 
   const loaded = loadPack(body.packId);

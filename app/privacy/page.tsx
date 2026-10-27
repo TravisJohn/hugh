@@ -60,7 +60,8 @@ export default function PrivacyPage() {
             authentication provider and are never visible to us.</p>
           <p><strong className="text-slate-300">What you write.</strong> The topics you choose,
             your answers to the questions Hugh asks before building a track, your learning
-            diary, your notes, and your messages to the tutor.</p>
+            diary, your notes, your messages to the tutor, and any subject you ask Hugh to
+            add to its courses.</p>
           <p><strong className="text-slate-300">What you upload.</strong> If those features are
             switched on for your account: screenshots you add to Notes, and documents such as
             CVs or job descriptions. They are off by default and are not available to most
@@ -142,7 +143,7 @@ export default function PrivacyPage() {
               your account settings
             </Link>. It removes your tracks, milestones and diary, your notes and any
             uploaded screenshots, anything tracked in Monitor including uploaded documents,
-            and your usage history. Files you uploaded are removed from storage, not merely
+            your subject requests, and your usage history. Files you uploaded are removed from storage, not merely
             unlinked. It cannot be undone.
           </p>
           <p>

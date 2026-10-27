@@ -4,66 +4,13 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import styles from "./LearningCuriosityCarousel.module.css";
 
-interface Props {
-  onChooseTopic: (topic: string) => void;
-}
+import { visibleSlides, type SlideGraphic } from "@/lib/packs/curiositySlides";
 
-const SLIDES = [
-  {
-    topic: "Clustering",
-    category: "Machine learning",
-    title: "Why do some points belong together?",
-    description: "Watch a loose field of observations find its own groups. What counts as similar changes the picture.",
-  },
-  {
-    topic: "Reinforcement learning",
-    category: "Machine learning",
-    title: "Can a robot learn from a wrong turn?",
-    description: "A missed reward sends it back through the maze. Each attempt changes the route it takes next.",
-  },
-  {
-    topic: "Outlier detection",
-    category: "Statistics · machine learning",
-    title: "Which observation doesn’t fit?",
-    description: "Most points share a pattern. One sits apart, waiting for someone to ask why.",
-  },
-  {
-    topic: "Gradient descent",
-    category: "Machine learning · optimization",
-    title: "How does a model find a better answer?",
-    description: "Follow each careful step downhill as the model reduces its error.",
-  },
-  {
-    topic: "Time series forecasting",
-    category: "Data science · forecasting",
-    title: "How far can a trend see?",
-    description: "Past observations point forward, while the range of possible futures widens.",
-  },
-  {
-    topic: "A/B testing",
-    category: "Statistics · experiments",
-    title: "Is B really better, or just lucky?",
-    description: "Watch the evidence accumulate before deciding whether a difference is real.",
-  },
-  {
-    topic: "Neural networks",
-    category: "Machine learning · neural networks",
-    title: "How can layers recognize a pattern?",
-    description: "Signals combine through a network until a useful pattern reaches the output.",
-  },
-  {
-    topic: "Bayesian inference",
-    category: "Statistics · probability",
-    title: "How should evidence change a belief?",
-    description: "A starting belief shifts as new evidence arrives, while uncertainty remains visible.",
-  },
-  {
-    topic: "Decision trees",
-    category: "Machine learning · decisions",
-    title: "Which question should a model ask first?",
-    description: "Each answer splits the possibilities, guiding the model toward a decision.",
-  },
-] as const;
+interface Props {
+  /** The courses that can be started. A slide shows only while its course is one of them. */
+  courseIds:      readonly string[];
+  onChooseCourse: (packId: string) => void;
+}
 
 const CLUSTER_CENTRES = [
   { x: 170, y: 178, color: "#5eead4" },
@@ -423,14 +370,20 @@ function TreeGraphic() {
   );
 }
 
-const GRAPHICS = [ClusteringGraphic, MazeGraphic, OutlierGraphic, DescentGraphic, ForecastGraphic, ExperimentGraphic, NetworkGraphic, BayesianGraphic, TreeGraphic] as const;
+// Keyed, not ordered: the carousel shows only slides with a course, so pairing
+// slides with artwork by position would put the wrong picture on a slide.
+const GRAPHICS: Record<SlideGraphic, () => React.JSX.Element> = {
+  clustering: ClusteringGraphic, maze: MazeGraphic, outlier: OutlierGraphic,
+  descent: DescentGraphic, forecast: ForecastGraphic, experiment: ExperimentGraphic,
+  network: NetworkGraphic, bayesian: BayesianGraphic, tree: TreeGraphic,
+};
 
-export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
+export default function LearningCuriosityCarousel({ courseIds, onChooseCourse }: Props) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const slide = SLIDES[slideIndex]!;
-  const Graphic = GRAPHICS[slideIndex]!;
+  const slides = visibleSlides(courseIds);
+  const slide = slides[slideIndex % Math.max(1, slides.length)];
   const autoPlaying = !paused && !reducedMotion;
 
   useEffect(() => {
@@ -440,6 +393,10 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
     preference.addEventListener("change", syncPreference);
     return () => preference.removeEventListener("change", syncPreference);
   }, []);
+
+  // No course to point at, no carousel: an empty frame would promise ideas Hugh can't teach.
+  if (!slide) return null;
+  const Graphic = GRAPHICS[slide.graphic];
 
   return (
     <div
@@ -456,13 +413,13 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
         Start with a little curiosity.
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-slate-400">
-        Watch an idea unfold, then make it your next topic.
+        Watch an idea unfold, then open its course.
       </p>
 
       <div className="mt-5" aria-live={autoPlaying ? "off" : "polite"} aria-atomic="true">
         <button
           type="button"
-          onClick={() => onChooseTopic(slide.topic)}
+          onClick={() => onChooseCourse(slide.packId)}
           className="group block w-full overflow-hidden rounded-2xl border border-slate-600/65 bg-[#122037] text-left shadow-[0_24px_60px_rgba(0,0,0,0.14)] transition-colors hover:border-slate-400/65 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400"
           aria-label={`Explore ${slide.topic}: ${slide.title}`}
         >
@@ -472,7 +429,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
               {slide.category}
             </span>
             <span className="absolute bottom-4 right-5 font-mono text-[10px] tracking-widest text-slate-400">
-              {String(slideIndex + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+              {String(slideIndex + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
             </span>
           </div>
           <div className="flex min-h-[7.25rem] items-center justify-between gap-5 px-6 py-4">
@@ -496,7 +453,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
 
       <div className="mt-5 flex items-center justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-1 sm:gap-2" aria-label="Choose an idea">
-          {SLIDES.map((item, index) => (
+          {slides.map((item, index) => (
             <button
               key={item.topic}
               type="button"
@@ -509,7 +466,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
                 <span
                   className={`absolute inset-0 origin-left bg-amber-300 ${styles.slideProgress} ${autoPlaying ? "" : styles.progressPaused}`}
                   onAnimationEnd={() => {
-                    if (autoPlaying) setSlideIndex(current => (current + 1) % SLIDES.length);
+                    if (autoPlaying) setSlideIndex(current => (current + 1) % slides.length);
                   }}
                 />
               )}
@@ -529,7 +486,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => setSlideIndex(index => (index + SLIDES.length - 1) % SLIDES.length)}
+            onClick={() => setSlideIndex(index => (index + slides.length - 1) % slides.length)}
             aria-label="Previous idea"
             className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-9 sm:w-9"
           >
@@ -537,7 +494,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => setSlideIndex(index => (index + 1) % SLIDES.length)}
+            onClick={() => setSlideIndex(index => (index + 1) % slides.length)}
             aria-label="Next idea"
             className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 text-slate-400 transition-colors hover:border-slate-400 hover:text-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400 sm:h-9 sm:w-9"
           >
@@ -547,7 +504,7 @@ export default function LearningCuriosityCarousel({ onChooseTopic }: Props) {
       </div>
 
       <p className="mt-4 text-xs leading-relaxed text-slate-500">
-        {SLIDES.length} starting points to explore. You can also write any data or analytics topic of your own.
+        {slides.length} of Hugh&apos;s courses, one idea each. Every course is in the list.
       </p>
     </div>
   );
