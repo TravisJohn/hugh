@@ -19,7 +19,8 @@
     "cloud": "tsx scripts/cloud-meta.ts",
     "cloud:check": "tsx scripts/cloud-meta.ts --check",
     "packs:check": "tsx scripts/validate-pack.ts",
-    "replay": "tsx scripts/replay-generations.ts"
+    "replay": "tsx scripts/replay-generations.ts",
+    "brand:icon": "tsx scripts/render-orb-icon.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.1",
