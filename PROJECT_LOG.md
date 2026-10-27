@@ -9389,3 +9389,33 @@ track, cards and diary stay behind with no goal. That predates PR C and is
 logged on the launch dashboard, not fixed here.
 
 Gate: 2,086 tests pass (5 new), the type check and lint are clean.
+
+## 2026-10-27 - PR #37 merged: the course catalog for every learner
+
+Travis ran PR C's browser checklist as the seeded test learner, on its
+Vercel preview, and all five steps passed:
+- the grouped picker, with Statistics foundations numbered 1 to 7;
+- the foundations group at phone width;
+- starting a course: a ready board in under a second, and no `tracker/*`
+  usage rows (five builds, zero tokens);
+- the carousel and the `?course=` link;
+- the request box: exactly five requests stored, the sixth refused by the
+  server, all five listed at `/admin/requests`; and the new landing copy.
+
+Step 3 first failed, and the fix (the started-course spinner, logged above)
+went into the PR before the re-check. Migration 061 was applied first and
+verified in production: the table exists, RLS is on, there are no policies,
+and learners and anonymous callers hold no privilege on it.
+
+#37 merged on 2026-10-27 as 22d6001, a merge commit pinned to the tested
+head (411600c). Production served the new landing copy about 50 seconds
+later, from syd1. PR #38 (two more courses) was brought up to date with
+the fix and retargeted to main; it shows only its own 11 files.
+
+Found during the check, and logged on the launch dashboard rather than
+fixed here:
+- Library cards squeeze the course title on a phone (already on main
+  before PR C).
+- The logo image still carries a "Skill Prep App" ribbon.
+- Deleting a course removes only the goal. Its track, cards and diary stay
+  behind with no goal.
