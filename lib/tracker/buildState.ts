@@ -49,6 +49,27 @@ export function canRetry(state: BuildState): boolean {
 }
 
 /**
+ * What a library card shows, from the stored status plus two things only the
+ * card knows: whether it has just asked for a rebuild, and whether its stall
+ * timer has fired. The card watches the build for exactly as long as this
+ * says "building", so it must never read a settled status as running.
+ *
+ * The stored status is checked before the stall flag. The flag is set by a
+ * timer while the status was 'pending', and the list can learn 'ready'
+ * afterwards; a card that held on to "stalled" then would offer a rebuild the
+ * server refuses.
+ */
+export function cardBuildState(
+  trackStatus: TrackStatus,
+  rebuilding:  boolean,
+  stalled:     boolean,
+): BuildState {
+  if (rebuilding) return "building";
+  if (trackStatus !== "pending") return trackStatus;
+  return stalled ? "stalled" : "building";
+}
+
+/**
  * Server-side guard for the retry route. Takes the raw row values so the
  * route does not have to duplicate the fallback rule above.
  */

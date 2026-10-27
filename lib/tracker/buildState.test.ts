@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildState,
   canRetry,
+  cardBuildState,
   isRetryable,
   trackViewState,
   retryVerdict,
@@ -188,5 +189,35 @@ describe("retryVerdict - the rebuild ceiling", () => {
     // loop forever.
     expect(retryVerdict("ready", false, MAX_BUILDS_PER_GOAL)).toBe("rebuild-limit");
     expect(retryVerdict("ready", false, 0)).toBe("allow");
+  });
+});
+
+describe("cardBuildState - what a library card shows while it watches", () => {
+  it("shows a course just started from the catalog as building, so the card watches it", () => {
+    expect(cardBuildState("pending", false, false)).toBe("building");
+  });
+
+  it("shows a rebuild in flight as building whatever the list last stored", () => {
+    // The list still holds the old outcome until the watcher reports back.
+    expect(cardBuildState("failed", true, false)).toBe("building");
+    expect(cardBuildState("pending", true, true)).toBe("building");
+  });
+
+  it("lets a stored outcome win over a stall timer that fired earlier", () => {
+    // The timer is set while the status was pending; once the list learns
+    // the outcome, holding on to "stalled" would offer a rebuild the server
+    // refuses.
+    expect(cardBuildState("ready", false, true)).toBe("ready");
+    expect(cardBuildState("failed", false, true)).toBe("failed");
+  });
+
+  it("calls a pending build stalled once its timer fires", () => {
+    expect(cardBuildState("pending", false, true)).toBe("stalled");
+  });
+
+  it("passes every settled status straight through", () => {
+    expect(cardBuildState("ready", false, false)).toBe("ready");
+    expect(cardBuildState("failed", false, false)).toBe("failed");
+    expect(cardBuildState("awaiting_approval", false, false)).toBe("awaiting_approval");
   });
 });

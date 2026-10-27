@@ -105,6 +105,13 @@ export default function DashboardPanel({ initialGoals, groups, initialSelection 
     setGoals(prev => prev.filter(g => g.id !== id));
   }
 
+  // A card reports how the build it was watching ended. A started course
+  // joins this list while still 'pending', so without this it would read as
+  // building until the page reloaded.
+  function handleGoalSettled(id: string, status: "ready" | "failed") {
+    setGoals(prev => prev.map(g => (g.id === id ? { ...g, track_status: status } : g)));
+  }
+
   return (
     <div className="flex w-full flex-col gap-4 px-4 py-5 sm:gap-10 sm:px-10 sm:py-9 2xl:flex-row">
 
@@ -164,7 +171,7 @@ export default function DashboardPanel({ initialGoals, groups, initialSelection 
             style={{ transitionDuration: `${PAGE_FADE_MS}ms` }}
           >
             {pageGoals.map(g => (
-              <GoalCard key={g.id} goal={g} onDelete={handleGoalDeleted} />
+              <GoalCard key={g.id} goal={g} onDelete={handleGoalDeleted} onSettled={handleGoalSettled} />
             ))}
           </div>
         </section>

@@ -9453,3 +9453,33 @@ Found while drafting:
   but not these two lines.
 - Supabase's migration history is empty, because migrations are applied
   through the SQL editor. A migration is proven by the table it creates.
+
+## 2026-10-27 - A started course no longer spins until reload
+
+Travis's browser check of PR C found it at step 3. Starting a course built
+the board in 0.1 to 0.3 seconds with no model call, but the library card
+kept saying "Building your track…" until the page was reloaded.
+
+The cause: the open-topic flows waited for the build themselves and handed
+the goal to the library only once it was ready. The course picker hands it
+over while it is still 'pending', and nothing watched it from there. GoalCard
+followed a build only after a Rebuild click, and even then its "ready" did a
+router refresh, which cannot change the library: the goal list is client
+state, read once from the server. So a successful rebuild had the same
+endless spinner, unnoticed until now.
+
+The fix:
+- GoalCard follows any build it shows as running, with the shared watcher,
+  and reports the outcome to the library's goal list instead of refreshing.
+- What a card shows is now `cardBuildState` in `lib/tracker/buildState.ts`,
+  pure and tested. A stored outcome beats a stall timer that fired earlier.
+- `useTrackStatusWatch` now says why a watch ended: 'failed' (the build's own
+  verdict) or 'timeout' (the watcher gave up while the build may still run).
+  A card treats a timeout as no verdict, because the retry route refuses a
+  rebuild until the stall window has passed.
+
+The same check found that deleting a course removes only the goal. Its
+track, cards and diary stay behind with no goal. That predates PR C and is
+logged on the launch dashboard, not fixed here.
+
+Gate: 2,086 tests pass (5 new), the type check and lint are clean.
