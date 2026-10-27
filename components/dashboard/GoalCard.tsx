@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTrackStatusWatch } from "@/hooks/useTrackStatusWatch";
 import { Sparkles, Trash2, Loader2, AlertTriangle, Pencil, RotateCcw } from "lucide-react";
 import { type LearningGoal } from "@/types";
-import { canRetry, STALL_MS, type BuildState } from "@/lib/tracker/buildState";
+import { canRetry, cardBuildState, STALL_MS, type BuildState } from "@/lib/tracker/buildState";
 import GoalAnswers from "./GoalAnswers";
 
 // The stall rule and the pending/stalled split now live in
@@ -21,12 +20,13 @@ function fmt(dateStr: string) {
 }
 
 interface Props {
-  goal:     LearningGoal;
+  goal:      LearningGoal;
   onDelete?: (id: string) => void;
+  /** How a watched build ended. The library's goal list is the one record of it. */
+  onSettled: (id: string, status: "ready" | "failed") => void;
 }
 
-export default function GoalCard({ goal, onDelete }: Props) {
-  const router = useRouter();
+export default function GoalCard({ goal, onDelete, onSettled }: Props) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting]     = useState(false);
   const [retrying, setRetrying]     = useState(false);
@@ -53,14 +53,29 @@ export default function GoalCard({ goal, onDelete }: Props) {
     return () => clearTimeout(t);
   }, [goal.track_status, startedAt]);
 
-  // Once a rebuild is in flight the card follows it with the same watcher the
-  // first build uses — realtime, a poll, and a hard timeout — rather than
-  // sitting on an optimistic spinner until the learner reloads.
+  // Deliberately free of Date.now(): the stall crossing arrives via the effect
+  // above, so the first client render matches the server's exactly.
+  const status: BuildState = cardBuildState(goal.track_status, rebuilt, stalled);
+
+  // Any build this card shows as running, it follows with the shared watcher
+  // (realtime, a poll and a hard timeout): a course just started from the
+  // catalog, which joins the library while still 'pending', or a rebuild.
+  // The outcome goes up to the library's goal list rather than into a
+  // refresh, because the list is client state that a refresh would not reset.
   useTrackStatusWatch({
     goalId:   goal.id,
-    active:   rebuilt,
-    onReady:  () => router.refresh(),
-    onFailed: () => setRebuilt(false),
+    active:   status === "building",
+    onReady:  () => {
+      setRebuilt(false);
+      onSettled(goal.id, "ready");
+    },
+    onFailed: reason => {
+      setRebuilt(false);
+      // A timeout is no verdict: the build may still finish, so the card falls
+      // back to the stored status and the stall rule decides when to offer
+      // a rebuild.
+      if (reason === "failed") onSettled(goal.id, "failed");
+    },
   });
 
   async function handleRetry() {
@@ -91,16 +106,6 @@ export default function GoalCard({ goal, onDelete }: Props) {
     await fetch(`/api/dashboard/goals/${goal.id}`, { method: "DELETE" });
     onDelete?.(goal.id);
   }
-
-  // Deliberately free of Date.now(): the stall crossing arrives via the effect
-  // above, so the first client render matches the server's exactly.
-  const status: BuildState = rebuilt
-    ? "building"
-    : stalled
-    ? "stalled"
-    : goal.track_status === "pending"
-    ? "building"
-    : goal.track_status;
 
   return (
     // flex-wrap, so GoalAnswers can drop its `w-full` panel onto a second line
