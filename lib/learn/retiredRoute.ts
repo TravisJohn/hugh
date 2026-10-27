@@ -34,6 +34,17 @@ export type RetiredRoute = (typeof RETIRED_ROUTES)[number];
  */
 export const TOPIC_GOAL_ROUTE = "dashboard/goals:topic";
 
+/**
+ * Saving an Ask session that names no card used to add a new, ungrounded card
+ * to the goal's track. Ask always names a card since PR D, so that branch is
+ * the closed path too, counted under this name.
+ */
+export const CARDLESS_SAVE_ROUTE = "learn/save-summary:no-card";
+
+/** What save-summary says to a session that names no card. */
+export const CARDLESS_SAVE_MESSAGE =
+  "Hugh saves each conversation to the card it was about. Open a card on your board and ask from there.";
+
 export const RETIRED_ROUTE_MESSAGE =
   "Hugh no longer builds a track from a typed topic or a document. " +
   "Choose one of the source-checked courses instead.";
@@ -50,7 +61,7 @@ export const TOPIC_GOAL_MESSAGE =
  */
 export async function recordRetiredCall(
   userId: string,
-  route:  RetiredRoute | typeof TOPIC_GOAL_ROUTE,
+  route:  RetiredRoute | typeof TOPIC_GOAL_ROUTE | typeof CARDLESS_SAVE_ROUTE,
 ): Promise<void> {
   await recordOperation({
     userId,

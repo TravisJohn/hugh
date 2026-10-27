@@ -14,6 +14,16 @@ import { type SourceKind } from "@/types";
 export const CHOOSE_COURSE_HREF = "/home/learn";
 export const CHOOSE_COURSE_LABEL = "Choose a course";
 
+/** How the goal library and the board header name an earlier topic. */
+export const EARLIER_TOPIC_LABEL = "Earlier topic (not source-checked)";
+
+/**
+ * What every card surface says when it refuses an earlier topic: Ask, the
+ * review quiz, mastery, the diary check, and any change to the board.
+ */
+export const EARLIER_TOPIC_READ_ONLY =
+  "This is an earlier topic, kept for you to read. It wasn't built from a source-checked course.";
+
 /** Why Rebuild is not offered on an earlier topic. */
 export const EARLIER_TOPIC_NO_REBUILD =
   "Earlier topics can't be rebuilt. Choose a source-checked course to start again.";

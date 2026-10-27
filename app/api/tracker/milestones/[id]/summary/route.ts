@@ -8,6 +8,7 @@ import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 import { writeOutcome } from "@/lib/supabase/writeResult";
 import { normalizeCoverage } from "@/utils/coverage";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 import { type LearningPoint } from "@/types";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -22,6 +23,7 @@ interface MilestoneRow {
   summary:           string;
   kanban_column:     string;
   learning_points:   LearningPoint[] | null;
+  concept_ids:       string[] | null;
   coverage:          unknown; // legacy or current shape — normalized on read
   mastery_score:     number | null;
   mastery_feedback:  string | null;
@@ -38,21 +40,12 @@ export async function POST(
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "tracker/summary");
-  if (usageGate) {
-    void recordOperation({
-      userId, operation: "track.summary", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
   const { id } = await params;
   const supabase = await createClient();
 
   const { data } = await supabase
     .from("milestones")
-    .select("id, title, summary, kanban_column, learning_points, coverage, mastery_score, mastery_feedback, tracks!track_id!inner(user_id, topic_description)")
+    .select("id, title, summary, kanban_column, learning_points, concept_ids, coverage, mastery_score, mastery_feedback, tracks!track_id!inner(user_id, topic_description)")
     .eq("id", id)
     .single();
 
@@ -60,8 +53,22 @@ export async function POST(
   if (!ms || ms.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  // An earlier topic is read-only (narrow Learn PR D), so no new summary.
+  const readOnly = readOnlyRefusal(ms.concept_ids);
+  if (readOnly) return readOnly;
   if (ms.kanban_column !== "done") {
     return NextResponse.json({ error: "Milestone is not mastered" }, { status: 409 });
+  }
+
+  // Reserved only once the card qualifies: a refusal above would otherwise
+  // leave a reservation behind until it expired.
+  const usageGate = await enforceUsageGate(userId, "tracker/summary");
+  if (usageGate) {
+    void recordOperation({
+      userId, operation: "track.summary", outcome: "refused",
+      detail: { reason: "usage-gate" },
+    });
+    return usageGate;
   }
 
   // Gather the learner's diary entries (with any noted gaps) for this milestone.
@@ -189,14 +196,17 @@ export async function PUT(
   // Ownership check via the parent track.
   const { data: ms } = await supabase
     .from("milestones")
-    .select("id, tracks!track_id!inner(user_id)")
+    .select("id, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", id)
     .single();
 
-  const owner = (ms as unknown as { tracks?: { user_id: string } } | null)?.tracks?.user_id;
+  const card  = ms as unknown as { concept_ids?: string[] | null; tracks?: { user_id: string } } | null;
+  const owner = card?.tracks?.user_id;
   if (!ms || owner !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+  const readOnly = readOnlyRefusal(card?.concept_ids);
+  if (readOnly) return readOnly;
 
   const generatedAt = new Date().toISOString();
   // Checked the same way as the POST above. This path already read its error,

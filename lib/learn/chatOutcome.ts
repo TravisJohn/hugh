@@ -61,13 +61,15 @@ export type ChatOutcome =
 /**
  * The statuses whose body is written for a learner rather than for a log.
  *
- * The usage gate and text-size boundary return learner-facing copy. The
- * route's other refusals are
- * developer shorthand — "Unauthorized", "topic and messages are required",
- * "Failed to generate response" — and must not reach a learner, so they are not
- * listed. A 4xx is not in general a promise that its body is fit to read.
+ * The usage gate and text-size boundary return learner-facing copy, and so
+ * does a card Hugh won't teach: a 409 is only ever sent for an earlier topic,
+ * which is read-only since narrow Learn PR D. The route's other refusals are
+ * developer shorthand — "Unauthorized", "milestoneId and messages are
+ * required", "Failed to generate response" — and must not reach a learner, so
+ * they are not listed. A 4xx is not in general a promise that its body is fit
+ * to read.
  */
-const HUMAN_REFUSAL_STATUSES: readonly number[] = [403, 413, 429, 503];
+const HUMAN_REFUSAL_STATUSES: readonly number[] = [403, 409, 413, 429, 503];
 
 const FALLBACK: Record<ChatFailureReason, { message: string; canRetry: boolean }> = {
   "signed-out": {

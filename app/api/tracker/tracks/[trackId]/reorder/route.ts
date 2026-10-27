@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 
 /**
@@ -40,12 +41,18 @@ export async function PATCH(
   // Fetch the affected milestones (scoped to this track) and their positions
   const { data: rows, error: fetchErr } = await supabase
     .from("milestones")
-    .select("id, position")
+    .select("id, position, concept_ids")
     .eq("track_id", trackId)
     .in("id", orderedIds);
 
   if (fetchErr || !rows || rows.length !== orderedIds.length) {
     return NextResponse.json({ error: "Milestones not found" }, { status: 404 });
+  }
+
+  // An earlier topic's board is read-only (narrow Learn PR D, decision 2).
+  for (const row of rows) {
+    const readOnly = readOnlyRefusal(row.concept_ids as string[] | null);
+    if (readOnly) return readOnly;
   }
 
   const sortedPositions = rows

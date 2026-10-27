@@ -3,10 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { buildMilestonePatch } from "@/lib/tracker/milestonePatch";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 
 interface OwnedMilestone {
-  id:     string;
-  tracks: { user_id: string } | null;
+  id:          string;
+  concept_ids: string[] | null;
+  tracks:      { user_id: string } | null;
 }
 
 export async function PATCH(
@@ -37,7 +39,7 @@ export async function PATCH(
   const supabase = await createClient();
   const { data, error: fetchError } = await supabase
     .from("milestones")
-    .select("id, tracks!track_id!inner(user_id)")
+    .select("id, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", id)
     .maybeSingle();
 
@@ -52,6 +54,11 @@ export async function PATCH(
   if (!row || row.tracks?.user_id !== userId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  // An earlier topic is read-only (narrow Learn PR D, decision 2): no moves
+  // and no edits. So is a course card whose pack can't be loaded.
+  const readOnly = readOnlyRefusal(row.concept_ids);
+  if (readOnly) return readOnly;
 
   // Since migration 058 a learner's session cannot write review or mastery
   // results, and a move can reset them, so the write uses the service role.

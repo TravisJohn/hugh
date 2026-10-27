@@ -21,7 +21,7 @@ import { POST as session } from "@/app/api/tracker/mastery/session/route";
 
 const messages = [{ role: "user", content: "Explain SQL joins" }];
 const cases = [
-  { name: "learn", post: learn, body: { topic: "SQL joins", messages } },
+  { name: "learn", post: learn, body: { topic: "SQL joins", messages, milestoneId: "milestone" } },
   { name: "code", post: code, body: { messages, context: "A Python drill" } },
   { name: "cloud", post: cloud, body: { provider: "gcp", serviceId: "bigtable", messages } },
   { name: "summary", post: summary, body: { topic: "SQL joins", messages } },
@@ -45,7 +45,7 @@ beforeEach(() => {
   mocks.from.mockImplementation((table: string) => {
     // The mastery session route checks the card's owner itself (it records
     // results with the service role), so the fake card says who owns it.
-    const data = table === "milestones" ? { id: "milestone", title: "SQL joins", mastery_validated: false, tracks: { user_id: "alice" } }
+    const data = table === "milestones" ? { id: "milestone", concept_ids: ["linear-regression:collinearity"], title: "SQL joins", mastery_validated: false, tracks: { user_id: "alice" } }
       : table === "milestone_entries" ? [{ title: "Joins", body: noteBody }]
       : { id: "goal", topic: "SQL joins", track_status: "pending" };
     const result = { data, error: null };
@@ -91,7 +91,7 @@ it.each(cases.filter(c => c.name !== "goals"))("$name reserves the complete prom
 });
 
 it("includes the Learn system prompt and code-mode reminder in its reservation", async () => {
-  await learn(request({ topic: "SQL", messages, codeModeRequested: true }));
+  await learn(request({ topic: "SQL", messages, codeModeRequested: true, milestoneId: "milestone" }));
   const call = mocks.ai.mock.calls[0][0] as TextCall;
   expect(call.system?.length).toBeGreaterThan(100);
   expect(call.messages.at(-1)?.content).toContain("explicitly requested code mode");

@@ -1,4 +1,4 @@
-import { cardGrounding, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE } from "@/lib/packs/grounding";
+import { cardGrounding, criteriaSyllabus } from "@/lib/packs/grounding";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
 import Anthropic from "@anthropic-ai/sdk";
@@ -14,6 +14,7 @@ import {
 import { buildEvaluationPrompt } from "@/lib/mastery/masteryInstructions";
 import { parseMasteryResult } from "@/lib/mastery/result";
 import { MAX_DIARY_CHARS } from "@/lib/mastery/realtimeConfig";
+import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -101,7 +102,7 @@ export async function POST(request: NextRequest) {
   // learning points (PRD-narrow-learn.md, row 4).
   const grounding = cardGrounding((milestone as { concept_ids?: string[] | null }).concept_ids);
   if (grounding.kind === "refused") {
-    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+    return groundingRefusalResponse(grounding.reason);
   }
   const criteria = buildCriteria({
     title:          (milestone as { title: string }).title,

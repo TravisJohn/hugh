@@ -9,12 +9,13 @@ import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { stripEmphasis } from "@/lib/claude/prompts";
 import {
-  cardGrounding, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback, misconceptionsByRef, renderCardSyllabus,
+  cardGrounding, misconceptionFeedback, misconceptionsByRef, renderCardSyllabus,
 } from "@/lib/packs/grounding";
 import {
   masteryOutcome, parseEvaluation,
   type MasteryEvaluation, type MasteryRecord, type MasteryWrite,
 } from "@/lib/mastery/outcome";
+import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
   // cannot be taught is refused in its own words, never scored ungrounded.
   const grounding = cardGrounding(milestone.concept_ids);
   if (grounding.kind === "refused") {
-    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+    return groundingRefusalResponse(grounding.reason);
   }
   const course       = grounding.kind === "ok" ? grounding.ground : null;
   const syllabusNote = course

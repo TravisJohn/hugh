@@ -1,8 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
   boardSources, cardGrounding, cardKeyPointRefs, cardSourceList, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback,
-  groundFromPack, misconceptionsByRef, renderCardSyllabus, type CardGround,
+  groundFromPack, groundingRefusal, misconceptionsByRef, renderCardSyllabus, type CardGround,
 } from "./grounding";
+import { CHOOSE_COURSE_HREF, EARLIER_TOPIC_READ_ONLY } from "@/lib/learn/earlierTopic";
 import { packTrack } from "./track";
 import linearRegression from "@/content/packs/linear-regression.json";
 import type { ReferencePack } from "@/types/pack";
@@ -18,10 +19,13 @@ function grounded(ids: readonly string[]): CardGround {
 }
 
 describe("cardGrounding: which cards are course cards", () => {
-  it("leaves a card with no concept ids alone, so every open-topic card behaves as before", () => {
-    expect(cardGrounding([])).toEqual({ kind: "none" });
-    expect(cardGrounding(null)).toEqual({ kind: "none" });
-    expect(cardGrounding(undefined)).toEqual({ kind: "none" });
+  it("refuses a card with no concept ids as an earlier topic, so every surface treats it as read-only", () => {
+    // narrow Learn PR D: this used to leave the card on its old behaviour. One
+    // switch here is what makes Ask, the quiz, mastery and the diary check all
+    // refuse it, with no check copied into each route.
+    for (const ids of [[], null, undefined]) {
+      expect(cardGrounding(ids)).toEqual({ kind: "refused", reason: "earlier-topic" });
+    }
   });
 
   it("grounds every card the Linear Regression build writes", () => {
@@ -142,15 +146,34 @@ describe("misconceptionFeedback", () => {
 });
 
 describe("boardSources", () => {
-  it("gives each course card its sources, a broken one its problem, and leaves other cards out", () => {
+  it("gives each course card its sources, a broken one its problem, and an earlier topic the read-only sentence", () => {
     const view = boardSources([
       { id: "course", concept_ids: collinearityCard.concept_ids },
       { id: "broken", concept_ids: ["linear-regression:gone"] },
       { id: "open-topic", concept_ids: [] },
       { id: "older-row" },
     ]);
-    expect(Object.keys(view).sort()).toEqual(["broken", "course"]);
+    expect(Object.keys(view).sort()).toEqual(["broken", "course", "older-row", "open-topic"]);
     expect(view.course!.kind).toBe("sources");
     expect(view.broken).toEqual({ kind: "problem", message: GROUNDING_REFUSAL_MESSAGE["unknown-concept"] });
+    // The card's own Sources section says what every other surface says.
+    expect(view["open-topic"]).toEqual({ kind: "problem", message: EARLIER_TOPIC_READ_ONLY });
+    expect(view["older-row"]).toEqual({ kind: "problem", message: EARLIER_TOPIC_READ_ONLY });
+  });
+});
+
+describe("groundingRefusal: one response for every refused card", () => {
+  it("refuses an earlier topic for good, with the way out to the catalog (Rule 5)", () => {
+    expect(groundingRefusal("earlier-topic")).toEqual({
+      status: 409,
+      body:   { error: EARLIER_TOPIC_READ_ONLY, chooseCourse: CHOOSE_COURSE_HREF },
+    });
+  });
+
+  it("keeps a course card whose pack can't be taught as the server's problem, a 503", () => {
+    expect(groundingRefusal("unknown-concept")).toEqual({
+      status: 503,
+      body:   { error: GROUNDING_REFUSAL_MESSAGE["unknown-concept"] },
+    });
   });
 });

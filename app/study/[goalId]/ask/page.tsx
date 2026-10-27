@@ -8,6 +8,7 @@ import HeaderUsage from "@/components/usage/HeaderUsage";
 import AskWorkspace from "@/components/learn/AskWorkspace";
 import { type LearningGoal } from "@/types";
 import RecordActivity from "@/components/monitor/RecordActivity";
+import { defaultAskCard, type AskCard } from "@/lib/learn/askFocus";
 
 interface Props {
   params:       Promise<{ goalId: string }>;
@@ -41,7 +42,7 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
   if (!focusId) {
     const { data: track } = await supabase
       .from("tracks")
-      .select("focus_milestone_id")
+      .select("id, focus_milestone_id")
       .eq("goal_id", goalId)
       .eq("user_id", user.id)
       .maybeSingle();
@@ -55,6 +56,20 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
       if (ms) {
         focusId    = ms.id as string;
         focusTitle = ms.title as string;
+      }
+    }
+
+    // Ask always names a card since narrow Learn PR D: it teaches one card
+    // from its syllabus. With no focus yet, start where the learner is.
+    if (!focusId && track) {
+      const { data: cards } = await supabase
+        .from("milestones")
+        .select("id, title, kanban_column, position")
+        .eq("track_id", track.id as string);
+      const first = defaultAskCard((cards ?? []) as AskCard[]);
+      if (first) {
+        focusId    = first.id;
+        focusTitle = first.title;
       }
     }
   }
@@ -118,13 +133,30 @@ export default async function StudyAskPage({ params, searchParams }: Props) {
           </div>
         )}
 
-        {/* Chat + checklist side-rail */}
-        <AskWorkspace
-          topic={chatTopic}
-          goalId={goalId}
-          milestoneId={focusId ?? undefined}
-          milestoneTitle={focusTitle ?? undefined}
-        />
+        {/* Chat + checklist side-rail, or, with no card to talk about, a way
+            back to the board rather than a chat that could only be refused. */}
+        {focusId ? (
+          <AskWorkspace
+            topic={chatTopic}
+            goalId={goalId}
+            milestoneId={focusId}
+            milestoneTitle={focusTitle ?? undefined}
+          />
+        ) : (
+          <div className="relative flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+            <p className="text-base font-semibold text-slate-300">There&apos;s no card to ask about yet</p>
+            <p className="max-w-sm text-sm leading-relaxed text-slate-500">
+              Hugh answers questions one card at a time. Once your board has cards, open one and ask from there.
+            </p>
+            <Link
+              href={`/study/${goalId}/track`}
+              className="flex items-center gap-1.5 rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-400 transition-colors hover:border-slate-500 hover:text-slate-200"
+            >
+              <ArrowLeft size={14} />
+              Back to your board
+            </Link>
+          </div>
+        )}
 
       </div>
     </>

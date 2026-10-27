@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { isValidPointTag } from "@/lib/tracker/points";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 
 export async function GET(
   request: NextRequest,
@@ -53,6 +54,21 @@ export async function POST(
   }
 
   const supabase = await createClient();
+
+  // RLS shows a learner only their own cards. An earlier topic's diary is
+  // kept to read, not added to (narrow Learn PR D, decision 2).
+  const { data: card, error: cardError } = await supabase
+    .from("milestones")
+    .select("concept_ids")
+    .eq("id", id)
+    .maybeSingle();
+  if (cardError) {
+    console.error("[tracker/entries POST] card lookup error:", cardError.message);
+    return NextResponse.json({ error: "Failed to save entry" }, { status: 500 });
+  }
+  if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const readOnly = readOnlyRefusal(card.concept_ids as string[] | null);
+  if (readOnly) return readOnly;
 
   // A tag pointing at a non-existent learning point is dropped, not rejected.
   const tag = (await isValidPointTag(supabase, id, body.pointId)) ? body.pointId ?? null : null;

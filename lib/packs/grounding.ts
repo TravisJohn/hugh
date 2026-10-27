@@ -14,6 +14,7 @@ import type { PackAnchor, PackSource, ReferencePack } from "@/types/pack";
 import { loadPack, PACK_REFUSAL_MESSAGE, type PackRefusal } from "./catalog";
 import { parseQualifiedConceptId } from "./track";
 import { textFragmentUrl } from "./anchor";
+import { CHOOSE_COURSE_HREF, EARLIER_TOPIC_READ_ONLY } from "@/lib/learn/earlierTopic";
 
 /** Where a statement comes from, ready to show: a link that opens the passage when the page allows it. */
 export interface CardSource {
@@ -60,20 +61,41 @@ export interface CardGround {
   otherCards: Array<{ title: string; concepts: string[] }>;
 }
 
-export type GroundingRefusal = PackRefusal | "mixed-packs" | "unknown-concept";
+/**
+ * Why a card can't be taught from a syllabus. `earlier-topic` is a card with
+ * no concept ids: one built from a typed topic or a document before the
+ * catalog. Since narrow Learn PR D it is read-only, which is this one switch
+ * rather than a check copied into each route (PRD phase 2, module 6).
+ */
+export type GroundingRefusal = PackRefusal | "mixed-packs" | "unknown-concept" | "earlier-topic";
 
 export type CardGrounding =
-  /** Not a course card: no concept ids. Every surface keeps its old behaviour. */
-  | { kind: "none" }
   | { kind: "ok"; ground: CardGround }
-  /** A course card whose pack cannot be taught from. Each surface says so in its own words. */
+  /** An earlier topic, or a course card whose pack cannot be taught from. */
   | { kind: "refused"; reason: GroundingRefusal };
 
 export const GROUNDING_REFUSAL_MESSAGE: Record<GroundingRefusal, string> = {
   ...PACK_REFUSAL_MESSAGE,
   "mixed-packs":     "This card names concepts from more than one course, so Hugh can't tell which syllabus to teach from.",
   "unknown-concept": "This card names a concept its course no longer has, so Hugh can't teach it from the syllabus.",
+  "earlier-topic":   EARLIER_TOPIC_READ_ONLY,
 };
+
+/**
+ * The status and body every route sends for a refused card. An earlier topic
+ * is refused on purpose and for good, so it is a 409 with the way out to the
+ * catalog (Rule 5). A course card whose pack can't be loaded is the server's
+ * problem, so it stays a 503.
+ */
+export function groundingRefusal(reason: GroundingRefusal): {
+  status: number;
+  body:   { error: string; chooseCourse?: string };
+} {
+  const error = GROUNDING_REFUSAL_MESSAGE[reason];
+  return reason === "earlier-topic"
+    ? { status: 409, body: { error, chooseCourse: CHOOSE_COURSE_HREF } }
+    : { status: 503, body: { error } };
+}
 
 function isPdfUrl(url: string): boolean {
   return /\.pdf$/i.test(url.split(/[?#]/)[0] ?? "");
@@ -95,7 +117,7 @@ function cardSource(source: PackSource | undefined, locator: string, anchor: Pac
 
 /** Ground one card from its stored concept ids. */
 export function cardGrounding(conceptIds: readonly string[] | null | undefined): CardGrounding {
-  if (!conceptIds || conceptIds.length === 0) return { kind: "none" };
+  if (!conceptIds || conceptIds.length === 0) return { kind: "refused", reason: "earlier-topic" };
 
   const parsed = conceptIds.map(parseQualifiedConceptId);
   if (parsed.some(p => p === null)) return { kind: "refused", reason: "unknown-concept" };
@@ -224,10 +246,11 @@ export type CardSourcesView =
   | { kind: "problem"; message: string };
 
 /**
- * The Sources section for every course card on a board, keyed by milestone
- * id. Built on the server from each card's concept_ids and passed down as
- * plain data, so the browser never loads a pack or builds a link itself.
- * Cards that are not course cards are left out: they have no Sources section.
+ * The Sources section for every card on a board, keyed by milestone id.
+ * Built on the server from each card's concept_ids and passed down as plain
+ * data, so the browser never loads a pack or builds a link itself. A card
+ * that can't be taught from a syllabus says why in that section, which for an
+ * earlier topic is the read-only sentence the card's other surfaces also use.
  */
 export function boardSources(
   cards: ReadonlyArray<{ id: string; concept_ids?: string[] | null }>,
