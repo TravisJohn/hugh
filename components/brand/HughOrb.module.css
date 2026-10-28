@@ -1,0 +1,100 @@
+/* Motion for HughOrb. Shapes, colours and every distance that decides whether
+   a part stays inside its frame come from lib/brand/orb.ts, which the tests
+   check. Only timings and two small movements live here: the breath (1.03×)
+   and the roomy-only hop (9 units, against ~20 units of headroom). */
+
+/* Scale and rotate around the orb's centre, in viewBox units, whatever the
+   framing. HughOrb sets --orb-centre from ORB_CENTRE. */
+.body,
+.gaze,
+.blink,
+.pupil,
+.ripple {
+  transform-box: view-box;
+  transform-origin: var(--orb-centre) var(--orb-centre);
+}
+
+/* A change of mood moves the eye rather than jumping it. */
+.gaze,
+.pupil {
+  transition: transform 0.5s ease;
+}
+
+.eye {
+  transition: opacity 0.3s ease;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.breathe { animation: orb-breathe 4s ease-in-out infinite; }
+.hop     { animation: orb-hop 0.6s ease-out; }
+.sweep   { animation: orb-sweep 3s ease-in-out infinite; }
+.blink   { animation: orb-blink 4s infinite; }
+.ripple  { animation: orb-ripple 3s ease-out infinite; }
+.pulse   { animation: orb-pulse 2s ease-in-out infinite; }
+
+.dots circle { animation: orb-dot 1.2s ease-in-out infinite; }
+.dots circle:nth-child(2) { animation-delay: 0.2s; }
+.dots circle:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.03); }
+}
+
+@keyframes orb-hop {
+  0%   { transform: translateY(0); }
+  30%  { transform: translateY(-9px) scale(1.05); }
+  100% { transform: translateY(0); }
+}
+
+/* --orb-sweep is the half-width from ORB_POSES, set by HughOrb. */
+@keyframes orb-sweep {
+  0%, 100% { transform: translateX(calc(var(--orb-sweep) * -1)); }
+  50%      { transform: translateX(var(--orb-sweep)); }
+}
+
+@keyframes orb-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.1); }
+}
+
+@keyframes orb-ripple {
+  0%   { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(1.12); opacity: 0; }
+}
+
+@keyframes orb-pulse {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 0.9; }
+}
+
+@keyframes orb-dot {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathe,
+  .hop,
+  .sweep,
+  .blink,
+  .dots circle {
+    animation: none;
+  }
+
+  .gaze,
+  .pupil,
+  .eye {
+    transition: none;
+  }
+
+  /* The ring still has to say "watching". It just stops moving. */
+  .ripple,
+  .pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+}
