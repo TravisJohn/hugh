@@ -145,7 +145,7 @@ SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
 ## Folder Structure
 ```
 app/                        # Pages and API routes only — no business logic here
-  api/                      # admin · architecture · auth · cases · cloud · code
+  api/                      # admin · architecture · cases · cloud · code
                             # dashboard · learn · notes · tracker · tts
   (auth)/                   # login, signup
   home/                     # activity grid + /home/learn topic picker

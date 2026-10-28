@@ -9389,3 +9389,33 @@ track, cards and diary stay behind with no goal. That predates PR C and is
 logged on the launch dashboard, not fixed here.
 
 Gate: 2,086 tests pass (5 new), the type check and lint are clean.
+
+## 2026-10-28 - The self-approve route is removed (S1.3)
+
+`/api/auth/self-approve` let any signed-in user mark their own account
+approved. It was the interim fix from 2026-07-04, when Supabase "Confirm
+email" was off and new sign-ups would otherwise wait on `/pending`, and it
+was to go once email confirmation was switched on. Travis confirmed on
+2026-10-28 that "Confirm email" is on in hugh-sydney, with custom SMTP, so
+approval flows through `/auth/confirm` and the route was unused.
+
+The launch dashboard called it unused without that check. The Sydney
+project has had no sign-ups since it was created on 2026-09-16 and has
+never sent a confirmation email, so nothing in the data could show the
+setting either way.
+
+- The route is deleted, and `app/api/auth/` with it.
+- Sign-up no longer tries an immediate sign-in. When sign-up returns no
+  session it shows "check your inbox", as before. If a session ever comes
+  back (confirmation switched off), the learner goes to `/home` and waits on
+  `/pending` for an admin: never self-approved.
+- `lib/auth/approval.test.ts` holds that only `/auth/confirm` and the admin
+  console set `approved` to true. It failed on the old route before the
+  removal.
+- The feature registry and CLAUDE.md no longer list the route.
+
+Not yet checked: a real sign-up. Email confirmation has never run on
+hugh-sydney, so the confirmation email, the SMTP sender and `/auth/confirm`
+have not been seen working together there (checklist in the PR).
+
+Gate: 2,088 tests pass (2 new), the type check and lint are clean.
