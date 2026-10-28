@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { GraduationCap, Code2, Trophy, Cloud, NotebookPen, Activity, Headphones, Newspaper, PieChart, Briefcase } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
@@ -7,6 +6,7 @@ import { readProvisioning } from "@/lib/auth/requireProvisioned";
 import { isProvisioned } from "@/lib/auth/provisioning";
 import SignOutButton from "@/components/landing/SignOutButton";
 import HeaderUsage from "@/components/usage/HeaderUsage";
+import HughOrb from "@/components/brand/HughOrb";
 
 // Top-level activity picker — the post-login landing for every user. Picking
 // "Learn" leads to the "What do you want to learn?" dashboard (/home/learn);
@@ -88,13 +88,11 @@ export default async function HomePage() {
         {/* Logo */}
         <div className="relative hidden shrink-0 sm:block">
           <div className="absolute inset-0 rounded-full bg-sky-400/15 blur-2xl scale-150" />
-          <Image
-            src="/hugh-logo.png.png"
-            alt="Hugh"
-            width={88}
-            height={88}
-            className="relative h-[clamp(36px,9vh,88px)] w-[clamp(36px,9vh,88px)] object-contain drop-shadow-2xl"
-            priority
+          <HughOrb
+            size={88}
+            framing="tight"
+            label="Hugh"
+            className="relative h-[clamp(36px,9vh,88px)] w-[clamp(36px,9vh,88px)] drop-shadow-2xl"
           />
         </div>
 

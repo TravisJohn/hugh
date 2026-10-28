@@ -156,7 +156,8 @@ app/                        # Pages and API routes only — no business logic he
   review/ · mastery/        # milestone review quiz, prove-mastery
   code/ · cases/ · cloud/ · notes/ · admin/
   monitor/                  # Monitor — Skills · Applications · Usage (tabs, ?view=)
-components/                 # one folder per surface, plus ui/ primitives
+components/                 # one folder per surface, plus ui/ primitives and
+                            # brand/ (HughOrb, the mascot)
 lib/
   supabase/                 # client.ts (browser), server.ts (routes), service.ts
   claude/                   # prompts and parsers
@@ -164,6 +165,7 @@ lib/
   pricing.ts                # per-model rates (pure, tested)
   usage.ts                  # logging, quota gates (server-only)
   margin/                   # the margin: pure rules (tested) + server read
+  brand/                    # the Orb: geometry and moods (pure, tested)
   tracker/ · learn/ · code/ · cases/ · case-lab/ · cloud/ · notes/ ·
   mastery/ · documents/ · askcode/ · pomodoro/ · architecture/ · monitor/
 hooks/                      # useInterview, useNotes, usePomodoro, …

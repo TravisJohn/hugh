@@ -9468,3 +9468,61 @@ on the launch dashboard as S1.9).
 
 Gate: 2,125 tests pass, plus the type check and lint. Not yet checked in a
 browser; the checklist is in the PR.
+
+## 2026-10-27 - The Orb replaces the illustrated mascot
+
+Travis is planning an AI that observes how a learner learns, and the
+illustrated mascot (white hair, glasses, a bow tie, a "Skill Prep App"
+ribbon) was a flat PNG that could not move. Four simple, animatable
+directions were sketched; Travis chose B, the Orb: a sky-blue orb with one
+eye, grown from the dot on the old "H" icon.
+
+Built on `feat/orb-mascot` from main (22d6001):
+- `lib/brand/orb.ts` decides everything the Orb can look like, as plain
+  data: five moods (idle, watching, thinking, noticed, pleased), two
+  framings (roomy, and tight for small avatars) and the geometry.
+  `parseOrbMood` turns anything unknown into idle, so a bad mood from the
+  future observer shows a calm Orb rather than a broken one.
+- `components/brand/HughOrb.tsx` draws it. Motion is CSS only, so it needs
+  no client JavaScript, and it stops moving for anyone who has turned
+  motion off in their system settings.
+- It replaces the old images on the landing page, `/home`, `/home/learn`
+  and the three Code chat avatars. `/home/learn` gains a "Hugh." wordmark
+  under the Orb, because the old image carried the name and the Orb does
+  not. Both old images are deleted, and the "Skill Prep App" ribbon goes
+  with them.
+- The tab icon (`app/icon1.svg`, with a 512px `app/icon2.png` fallback) is
+  generated from the same geometry by `npm run brand:icon`. A test fails
+  while the committed SVG is out of date.
+- `brand` is registered as infrastructure in the feature registry, in both
+  `lib/` and `components/`, beside `ui`.
+
+Decided during the build:
+- **The ring is the watching signal.** It shows in the watching mood and in
+  no other, at both framings; at avatar size it pulses in place, because a
+  ripple has no room there. The tests hold this, so a learner can always
+  tell when Hugh is observing. Raised because a single watching eye can
+  read as surveillance.
+- Every placement shows idle. Wiring moods to anything waits for the
+  observer, which needs its own PRD first: what it watches, whether it
+  spends tokens, and how long it keeps what it sees.
+
+Checked in the local preview: the landing page renders the Orb, breathing,
+with both tab icons linked and no console errors.
+
+Checked on the PR's Vercel preview on 2026-10-28, signed in as Travis:
+- `/home`: the Orb sits above the greeting at 9% of the window height, and
+  the page does not scroll. Below about 600px tall it is clipped under the
+  header. The old logo was clipped the same way, in the same box: the page
+  centres content taller than the space it has.
+- `/home/learn`: the Orb with "Hugh." under it fills the left panel, which
+  stays hidden at phone width.
+- `/code/start`: the bubble and both chat avatars show the Orb, at 40px and
+  22px.
+- Both tab icons are served, and the deployed CSS carries the reduced-motion
+  rule: nothing moves, and the ring holds still at half opacity.
+
+Still not seen: the four other moods on a real page, since nothing uses
+them yet.
+
+Gate: 2,120 tests pass (34 new), the type check and lint are clean.
