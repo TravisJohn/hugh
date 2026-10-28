@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { factCheckEntryPrompt, parseClaudeJson } from "@/lib/claude/prompts";
@@ -131,6 +132,8 @@ export async function POST(
     });
     return NextResponse.json({ entry: written.data });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[tracker/verify] error:", err);
     void recordOperation({
       userId, operation: "ask.verify", outcome: "failed",

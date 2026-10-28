@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { masterySummaryPrompt } from "@/lib/claude/prompts";
@@ -152,6 +153,8 @@ export async function POST(
     });
     return NextResponse.json({ summaryDoc: doc, generatedAt, saved: true });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[tracker/summary] error:", err);
     void recordOperation({
       userId, operation: "track.summary", outcome: "failed",

@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { runClaudeCli, type RunnerConfig } from "./runClaudeCli";
 import { SubscriptionCallError } from "./errors";
+import { PlanLimitLatch } from "./limitLatch";
 import type { TextCall } from "../textInput";
 
 /**
@@ -17,6 +18,7 @@ const config: RunnerConfig = {
   configDir: "C:\\hugh-test-config",
   timeoutMs: 5_000,
   maxConcurrent: 2,
+  limitLatch: new PlanLimitLatch(),
 };
 
 const call = (mode: string, content = "Ping."): TextCall => ({
@@ -93,5 +95,16 @@ describe("runClaudeCli", () => {
   it("reports a missing binary as a failure rather than hanging", async () => {
     const error = await failure(runClaudeCli(call("echo"), 0, { ...config, command: "hugh-no-such-binary", commandArgs: [] }));
     expect(error.reason).toBe("failed");
+  });
+
+  it("after the plan reports its limit, refuses later calls without starting Claude Code", async () => {
+    const limited = { ...config, limitLatch: new PlanLimitLatch() };
+    const first = await failure(runClaudeCli(call("overage"), 0, limited));
+    expect(first.reason).toBe("limit_reached");
+
+    // A program that cannot start: had the runner tried, the reason would be "failed".
+    const second = await failure(runClaudeCli(call("echo"), 0, { ...limited, command: "hugh-no-such-binary", commandArgs: [] }));
+    expect(second.reason).toBe("limit_reached");
+    expect(second.resetsAt).toEqual(first.resetsAt);
   });
 });

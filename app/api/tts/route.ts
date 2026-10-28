@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { paidServiceOffResponse } from "@/lib/claude/subscription/planResponses";
 import { ElevenLabsClient } from "elevenlabs";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { getPersonaById } from "@/lib/personas";
@@ -17,6 +18,9 @@ function ttsClient(): ElevenLabsClient | null {
 }
 
 export async function POST(request: NextRequest) {
+  const off = paidServiceOffResponse("Hugh's spoken voice");
+  if (off) return off;
+
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

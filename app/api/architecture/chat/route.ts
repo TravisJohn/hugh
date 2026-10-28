@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { paidServiceOffResponse } from "@/lib/claude/subscription/planResponses";
 import OpenAI from "openai";
 import { requireAdminApi } from "@/lib/auth/requireAdmin";
 import rawData from "@/lib/architecture/data.generated.json";
@@ -57,6 +58,9 @@ function buildSystemPrompt(): string {
 }
 
 export async function POST(request: NextRequest) {
+  const off = paidServiceOffResponse("The architecture assistant");
+  if (off) return off;
+
   const gate = await requireAdminApi();
   if (gate instanceof NextResponse) return gate;
 

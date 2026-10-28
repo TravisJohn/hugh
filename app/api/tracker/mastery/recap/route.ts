@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate, logUsage } from "@/lib/usage";
@@ -106,6 +107,8 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json({ recap });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[mastery/recap] Anthropic error:", err);
     void recordOperation({
       userId, operation: "mastery.recap", outcome: "failed",

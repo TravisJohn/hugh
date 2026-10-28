@@ -2,6 +2,7 @@ import "server-only";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
@@ -228,6 +229,8 @@ Return ONLY a valid JSON array — no markdown, no commentary:
     });
     return NextResponse.json({ quizId: stored.id, questions: toPublicQuestions(kept) });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[review/quiz] Generation failed:", err);
     void recordOperation({
       userId, operation: "quiz.generate", outcome: "failed",

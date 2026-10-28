@@ -3,7 +3,7 @@ import { NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { deferOrRun } from "@/lib/afterResponse";
 import { isKnownModel } from "@/lib/pricing";
-import { resolveClaudeBilling, servableByPlan, usageModelFor } from "@/lib/claude/billingMode";
+import { mayUseClaude, resolveClaudeBilling, servableByPlan, usageModelFor } from "@/lib/claude/billingMode";
 import {
   type QuotaProfile,
   type QuotaDecision,
@@ -214,6 +214,13 @@ export async function checkUsageAllowed(
   estimate?: number,
 ): Promise<QuotaDecision> {
   if (estimate !== undefined && (!Number.isSafeInteger(estimate) || estimate < 0)) throw new Error("Invalid usage reservation");
+
+  // The owner lock. On the owner's own Claude plan, nobody else may spend at
+  // all — and this is the one function every spending route calls (`proxy.ts`
+  // skips /api, so it cannot hold the lock). A misconfigured flag throws here,
+  // like everywhere else that reads it: refused, never quietly billed.
+  if (!mayUseClaude(resolveClaudeBilling(process.env), userId)) return { allowed: false, reason: "owner_only" };
+
   const profile = await readProfile(userId);
 
   // The account check comes first and never touches the counter: a blocked or

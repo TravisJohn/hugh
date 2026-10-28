@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { documentUploadEnabled, DOCUMENT_UPLOAD_LOCKED_MESSAGE } from "@/lib/learn/documentPath";
 import { createClient } from "@/lib/supabase/server";
@@ -132,6 +133,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (!extraction.ok) {
+    const planFailure = planFailureResponse(extraction.error);
+    if (planFailure) return planFailure;
     logSafeError("goals/document/extract topic", extraction.error, [extracted.text.slice(0, 200), file?.name ?? ""]);
     void recordOperation({
       userId, operation: "track.extract", outcome: "failed",

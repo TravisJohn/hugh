@@ -2,6 +2,7 @@ import { cardGrounding, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE } from "@/li
 import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate, logUsage } from "@/lib/usage";
@@ -132,6 +133,8 @@ export async function POST(request: NextRequest) {
       tokensOut: completion.usage.output_tokens,
     });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[mastery/evaluate] Anthropic error:", err);
     void recordOperation({
       userId, operation: "mastery.evaluate", outcome: "failed",

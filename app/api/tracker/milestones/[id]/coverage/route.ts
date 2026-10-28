@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { learningPointsPrompt, parseLearningPoints } from "@/lib/claude/prompts";
@@ -131,7 +132,16 @@ export async function GET(
 
   const { allowed } = await checkUsageAllowed(userId, "tracker/points");
   // If usage is blocked, still return whatever points already exist (no new call).
-  const points = allowed ? await ensureLearningPoints(supabase, ms, userId) : (ms.learning_points ?? []);
+  let points: LearningPoint[] | null;
+  try {
+    points = allowed ? await ensureLearningPoints(supabase, ms, userId) : (ms.learning_points ?? []);
+  } catch (err) {
+    // Only the Claude plan's own failures are answered here; anything else
+    // escapes exactly as it did before subscription mode existed.
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
+    throw err;
+  }
 
   // A null here is a failure, not an empty checklist, and it gets its own
   // status so the rail can say so instead of rendering as "nothing to learn".

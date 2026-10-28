@@ -46,6 +46,14 @@ describe("claudeClient", () => {
     }));
   });
 
+  it("gives every client the same limit latch, so a limit one route hit holds for all routes", async () => {
+    await claudeClient(local).messages.create(call);
+    await claudeClient(local).messages.create(call);
+    const [first, second] = mocks.run.mock.calls.map(c => (c[2] as { limitLatch: unknown }).limitLatch);
+    expect(first).toBeDefined();
+    expect(second).toBe(first);
+  });
+
   it("leaves the retry count to the runner's SDK-matching default when the caller sets none", async () => {
     await claudeClient(local).messages.create(call);
     expect(mocks.run).toHaveBeenCalledWith(call, undefined, expect.anything());

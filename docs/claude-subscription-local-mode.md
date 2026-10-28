@@ -153,6 +153,8 @@ plan. Start with `npm run dev` to use it (paid)." The routes affected are Notes
 Coach, Notes summarise, Realtime mastery voice, `/api/tts` and the admin
 architecture assistant. That is what "no tokens burning" means. The
 alternative, leaving them on the paid keys, is one flag away if you want it.
+Consequence, found in stage 4: scripted mastery can't start without its voice
+(§11).
 
 ### 4.3 `logUsage` and the usage gate
 - **Zero cost without a migration.** Add `claude-haiku-4-5@subscription` and
@@ -347,6 +349,58 @@ that answered the final turn in 1.5 s, served by the plan.
   priced without its plan twin.
 - **Caching hint.** learn/chat's `cache_control` has no effect on the plan
   path; the server says so once per run instead of on every turn.
-- **Not yet in place (stage 4):** the owner lock, the paid-provider switch-off,
-  and the learner-facing messages for limit reached and signed out. Until then
-  plan mode must not be started.
+- **Stage 4 added** the owner lock, the paid-feature switch-off and the
+  learner-facing failure messages (§11).
+
+## 11. Stage 4 guards (2026-10-29)
+
+- **Owner lock.** `checkUsageAllowed()` refuses every account but the owner
+  before it reads a profile or reserves anything. The refusal has its own
+  reason (`owner_only`, 403) and its own sentence; it never tells the person
+  to contact support. A misconfigured flag throws there too, so the request
+  is refused, never served.
+- **Paid features off.** The Coach, Notes summarising, Realtime voice, Hugh's
+  spoken voice (`/api/tts`) and the architecture assistant each answer 503:
+  "… is off while Hugh runs on your Claude plan, which covers Claude only.
+  Start Hugh with `npm run dev` to use it (paid)." The check runs before the
+  usage gate, so a refused request reserves nothing. A test reads every API
+  route and fails if one that reads `OPENAI_API_KEY` or `ELEVENLABS_API_KEY`
+  lacks the switch or checks the gate first. (It can't see a route that paid
+  through a `lib` module without naming the key; none does today.)
+- **Scripted mastery doesn't start on the plan.** Its persona voice is
+  ElevenLabs, and the mastery page treats a refused voice as a failed session,
+  so it returns to the setup screen after Hugh's first line. Decided
+  2026-10-29: the owner will handle voice separately; this mode doesn't change
+  the mastery page. Claude's own voice mode isn't available through Claude
+  Code or the API, so the plan can't supply a voice either.
+- **What a learner sees when a plan call fails:**
+
+  | Reason | Status | Message, in short |
+  |---|---|---|
+  | Limit reached | 429 + `Retry-After` | The limit is reached, when it resets (e.g. "Thursday 3:45 pm"), and that Hugh did not switch to paid usage |
+  | Signed out | 503 | The plan login is missing or expired, the folder Hugh looked in, and `npm run subscription:login` |
+  | Billed to a key | 503 | Claude Code tried an API key, Hugh stopped it before the request, sign in again |
+  | Model unavailable | 503 | The plan won't serve this feature's model; Hugh doesn't swap models; `npm run dev` (paid) |
+  | Timeout | 504 | Claude didn't answer in time; try again |
+  | Anything else | 502 | Claude Code couldn't answer; try again; the server log says why |
+
+  The server log keeps Claude Code's own wording for each one.
+- **Where those messages appear.** Every Claude route but one: eight through
+  the existing `textBudgetResponse`, the rest by calling `planFailureResponse`
+  directly. A second guard test fails if a Claude route handles neither. The
+  exception is the drill generator, which by design hands the learner a sample
+  drill whenever generation fails. **Not covered:** a background track build
+  that fails on the plan shows the board's usual "build failed" with Rebuild
+  (the reason is in the server log; `learning_goals` has no column for it, and
+  a local-only mode doesn't earn a migration), and the topic gate says it
+  couldn't check the topic right now.
+- **Limit latch.** Once the plan reports a limit with a reset time, Hugh
+  starts no new Claude Code process until then; calls already queued are
+  refused too. Mostly this saves a wasted process per call (the track builder
+  and the topic gate retry once). It also caps a cost: Claude Code reports
+  paid extra usage only alongside a reply that was already served, so with
+  extra usage switched on, each call past the limit would be billed before
+  Hugh could refuse it. The latch keeps that to one. Extra usage is switched
+  off on the owner's account (`overageDisabledReason: "org_level_disabled"`
+  in every recorded run). A limit without a reset time isn't remembered.
+  Restarting the dev server clears the latch.

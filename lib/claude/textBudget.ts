@@ -3,6 +3,7 @@ import type { ClaudeClient } from "./client";
 import { NextResponse } from "next/server";
 import { enforceUsageGate } from "@/lib/usage";
 import { TextInputError, textReservation, type TextCall, type TextCallGuard } from "./textInput";
+import { planFailureResponse } from "./subscription/planResponses";
 
 class TextBudgetDenied extends Error {
   constructor(public readonly response: NextResponse) {
@@ -11,10 +12,16 @@ class TextBudgetDenied extends Error {
   }
 }
 
+/**
+ * The reply for a Claude call that was refused or failed in a way the learner
+ * should be told about, or null for the route's own generic failure: the
+ * budget gate's refusal, an over-long input, or — in local subscription mode
+ * — the plan's own reason (limit reached, signed out, …).
+ */
 export function textBudgetResponse(error: unknown): NextResponse | null {
   if (error instanceof TextBudgetDenied) return error.response;
   if (error instanceof TextInputError) return NextResponse.json({ error: error.message }, { status: error.status });
-  return null;
+  return planFailureResponse(error);
 }
 
 export function textBudgetGuard(userId: string, feature: string): TextCallGuard {

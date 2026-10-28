@@ -22,6 +22,7 @@ import { join } from "node:path";
 import { resolveClaudeBilling } from "./billingMode";
 import type { TextCall } from "./textInput";
 import { runClaudeCli } from "./subscription/runClaudeCli";
+import { PlanLimitLatch } from "./subscription/limitLatch";
 
 export interface ClaudeClient {
   messages: {
@@ -36,6 +37,11 @@ export interface ClaudeClient {
  */
 export const SUBSCRIPTION_CONFIG_DIRNAME = ".claude-hugh";
 
+/** Where that login lives. The sign-in message names it, so it must be this one path. */
+export function subscriptionConfigDir(): string {
+  return join(homedir(), SUBSCRIPTION_CONFIG_DIRNAME);
+}
+
 /**
  * A hang guard, not a budget: the longest call (the review quiz, 3,072 output
  * tokens on Sonnet) takes about a minute, and the track-build routes allow
@@ -46,6 +52,12 @@ const PLAN_CALL_TIMEOUT_MS = 120_000;
 /** A track build and an Ask turn may overlap; a burst would only spend the plan's limits faster. */
 const PLAN_MAX_CONCURRENT = 2;
 
+/**
+ * One for the whole server, not one per client: every route builds its own
+ * client, and a limit the plan reported to one of them holds for all.
+ */
+const planLimit = new PlanLimitLatch();
+
 /** Throws if the subscription flag is set wrongly or anywhere it must not be — see `billingMode`. */
 export function claudeClient(env: Readonly<Record<string, string | undefined>> = process.env): ClaudeClient {
   if (resolveClaudeBilling(env).kind === "api") {
@@ -54,9 +66,10 @@ export function claudeClient(env: Readonly<Record<string, string | undefined>> =
   const config = {
     command: "claude",
     commandArgs: [],
-    configDir: join(homedir(), SUBSCRIPTION_CONFIG_DIRNAME),
+    configDir: subscriptionConfigDir(),
     timeoutMs: PLAN_CALL_TIMEOUT_MS,
     maxConcurrent: PLAN_MAX_CONCURRENT,
+    limitLatch: planLimit,
   };
   return {
     messages: {

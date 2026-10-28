@@ -24,6 +24,7 @@ import type { TextCall } from "../textInput";
 import { buildInvocation, childEnv, type CliInvocation } from "./cliArgs";
 import { parseEventLine, initApiKeySource, isContinuation, PLAN_KEY_SOURCE, toMessage, type CliEvent } from "./parseResult";
 import { SubscriptionCallError } from "./errors";
+import type { PlanLimitLatch } from "./limitLatch";
 
 export interface RunnerConfig {
   /** The program to start, normally "claude". */
@@ -35,6 +36,8 @@ export interface RunnerConfig {
   timeoutMs: number;
   /** Concurrent processes allowed; further calls queue. */
   maxConcurrent: number;
+  /** Shared by every call the client makes, so one reported limit holds for all of them. */
+  limitLatch: PlanLimitLatch;
 }
 
 // A plain counting semaphore. A track build and an Ask turn can overlap; a
@@ -75,6 +78,11 @@ export async function runClaudeCli(
   await acquire(config.maxConcurrent);
   let dir: string | null = null;
   try {
+    // Checked after the queue, not before it: calls already waiting behind
+    // the one that hit the limit are refused too.
+    const held = config.limitLatch.refusal(new Date());
+    if (held) throw held;
+
     dir = await mkdtemp(join(tmpdir(), "hugh-claude-"));
     const systemFile = join(dir, "system.txt");
     const invocation = buildInvocation(call, systemFile, maxRetries);
@@ -82,6 +90,9 @@ export async function runClaudeCli(
     await writeFile(systemFile, invocation.systemPrompt, "utf8");
     const run = await runProcess(config, dir, invocation);
     return toMessage(run.events, { maxTokens: call.max_tokens, stoppedAtContinuation: run.stoppedAtContinuation });
+  } catch (error) {
+    config.limitLatch.record(error, new Date());
+    throw error;
   } finally {
     if (dir) {
       // A leftover temp folder holds one system prompt and is not worth failing
