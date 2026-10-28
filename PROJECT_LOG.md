@@ -9447,3 +9447,29 @@ Still not seen: the four other moods on a real page, since nothing uses
 them yet.
 
 Gate: 2,120 tests pass (34 new), the type check and lint are clean.
+
+## 2026-10-28 - Sign-up is called Sign up, and the landing page offers it
+
+Travis went to make a test account on PR #41's preview and could not find
+where to sign up. The landing header offered only "Sign in". The login page
+called the way in "Create one free", the landing cards called it "Create
+account", and the hero's main button, "Start practicing free", went to
+/login, not /signup.
+
+The fix:
+- The landing header has a "Sign up" button beside "Sign in".
+- The hero's main button goes to /signup and is called "Sign up free".
+  "Start practicing" was interview-trainer copy.
+- The login page and the landing cards call the link "Sign up".
+- The sign-up form's button reads "Create account", in sentence case like
+  the rest of the page.
+
+`lib/auth/signUpLinks.test.ts` scans app/ and components/ for links to
+/signup. Each must be called Sign up, and the landing and login pages must
+each have one. Run against main's pages, it fails on exactly the two old
+names and the missing landing link.
+
+Checked in the local preview: the header, the hero, a landing card and the
+login page, plus the header at phone width (375px, no sideways scroll).
+
+Gate: 2,089 tests pass (3 new), the type check and lint are clean.
