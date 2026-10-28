@@ -9428,10 +9428,22 @@ Decided during the build:
   observer, which needs its own PRD first: what it watches, whether it
   spends tokens, and how long it keeps what it sees.
 
-Checked in the preview: the landing page renders the Orb, breathing, with
-both tab icons linked and no console errors. Not yet checked: `/home`,
-`/home/learn` and the Code chat behind sign-in (checklist in the PR); the
-four other moods on a real page, since nothing uses them yet; and reduced
-motion in a browser.
+Checked in the local preview: the landing page renders the Orb, breathing,
+with both tab icons linked and no console errors.
+
+Checked on the PR's Vercel preview on 2026-10-28, signed in as Travis:
+- `/home`: the Orb sits above the greeting at 9% of the window height, and
+  the page does not scroll. Below about 600px tall it is clipped under the
+  header. The old logo was clipped the same way, in the same box: the page
+  centres content taller than the space it has.
+- `/home/learn`: the Orb with "Hugh." under it fills the left panel, which
+  stays hidden at phone width.
+- `/code/start`: the bubble and both chat avatars show the Orb, at 40px and
+  22px.
+- Both tab icons are served, and the deployed CSS carries the reduced-motion
+  rule: nothing moves, and the ring holds still at half opacity.
+
+Still not seen: the four other moods on a real page, since nothing uses
+them yet.
 
 Gate: 2,120 tests pass (34 new), the type check and lint are clean.
