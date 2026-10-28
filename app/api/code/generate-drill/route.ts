@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { createServiceClient } from "@/lib/supabase/service";
 import { checkUsageAllowed, logUsage } from "@/lib/usage";
@@ -16,7 +16,7 @@ import { buildDrillPrompt, parseDrill, drillCacheKey, DRILL_SYSTEM, type DrillRe
 // call. Every cache op is best-effort: if the table is missing or a query fails,
 // we just generate live. On any generation failure we return the sample drill
 // with generated:false so the drill screen always has something to render.
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.

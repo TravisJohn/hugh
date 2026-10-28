@@ -1,9 +1,9 @@
 import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { type SupabaseClient } from "@supabase/supabase-js";
 import { backlogPriorityPrompt, parseClaudeJson } from "@/lib/claude/prompts";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this call — see CLAUDE.md "Model Selection". Returned to the
 // caller alongside the token counts so it can log what was actually billed.

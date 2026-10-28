@@ -128,7 +128,8 @@ route ──► claudeClient() ──► [api mode]          Anthropic SDK ─�
 All 19 Claude call sites, by changing `new Anthropic({ apiKey })` to
 `claudeClient()`. Routes keep their `MODEL` constant, their prompts and their
 parsers. The same model id (`claude-haiku-4-5`, `claude-sonnet-4-6`) is passed
-with `--model`.
+with `--model`. The two offline operator scripts (`scripts/author-cases.mjs`,
+`scripts/backfill-priority.mjs`) stay on the API key: they run outside the app.
 
 How each call keeps behaving like the API version:
 - **Settings and context.** `--system-prompt-file` replaces Claude Code's own
@@ -158,7 +159,8 @@ alternative, leaving them on the paid keys, is one flag away if you want it.
   `claude-sonnet-4-6@subscription` to `MODEL_RATES` at $0. `logUsage` adds the
   suffix in one place, from `billingMode`. This follows the existing precedent
   of `gpt-realtime-mini-text`, a rate class that only ever appears in
-  `usage_logs.model`.
+  `usage_logs.model`. Only Claude rows are relabelled: an OpenAI or voice row
+  keeps its own id whatever the mode, because the plan never pays for it.
 - **The project rules still hold.** Each route still names `MODEL` once. Every
   row is still priced at its own rate. Token counts stay honest, so the Usage
   view still shows what you used. No schema change, and nothing changes for
@@ -328,3 +330,23 @@ that answered the final turn in 1.5 s, served by the plan.
   carry the dated model id (`claude-haiku-4-5-20251001`); usage rows keep
   using each route's own `MODEL`, so nothing changes there. The concurrency cap
   of 2 queues extra calls rather than refusing them.
+
+## 10. Stage 3 wiring notes (2026-10-28)
+
+- **One factory, 19 sites.** Eighteen sites changed one import and one line;
+  `generateMilestones` keeps its build-on-first-use client, now built by
+  `claudeClient()`. The only `new Anthropic(...)` left in the app is inside the
+  factory, and on the API it builds the same client as before.
+- **The compiler checks the plan path's limits.** `claudeClient()` returns a
+  client whose `create` takes only a `TextCall` (text in, text out). The real
+  SDK client fits that type unchanged, and every current call site compiles
+  against it. A future call that adds tools, images or streaming fails the type
+  check instead of misbehaving on the plan.
+- **Usage rows.** `logUsage` adds `@subscription` to Claude rows in plan mode,
+  priced at $0 in `lib/pricing.ts`. A test fails if a Claude model is ever
+  priced without its plan twin.
+- **Caching hint.** learn/chat's `cache_control` has no effect on the plan
+  path; the server says so once per run instead of on every turn.
+- **Not yet in place (stage 4):** the owner lock, the paid-provider switch-off,
+  and the learner-facing messages for limit reached and signed out. Until then
+  plan mode must not be started.

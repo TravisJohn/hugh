@@ -1,8 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { sessionAssessmentPrompt, parseClaudeJson } from "./prompts";
 import type { Room } from "@/types";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 export interface QAPair {
   question:       string;

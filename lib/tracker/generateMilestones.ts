@@ -19,7 +19,7 @@ import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
  * must not gain one. Usage logging and error scrubbing stay in `generate.ts`,
  * which is the server-side caller and the right place for both.
  */
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient, type ClaudeClient } from "@/lib/claude/client";
 import {
   milestoneGenerationPrompt,
   parseMilestoneGeneration,
@@ -40,12 +40,13 @@ import { milestonePromptId, type PromptId } from "@/lib/claude/promptIdentity";
  * imported, so the app never saw this; a `tsx` script does not, so it did.
  *
  * Reading the key at call time removes the ordering hazard for every caller
- * instead of asking each new one to remember it.
+ * instead of asking each new one to remember it. The same holds for the
+ * subscription flag `claudeClient()` reads to decide who pays.
  */
-let client: Anthropic | null = null;
+let client: ClaudeClient | null = null;
 
-function anthropicClient(): Anthropic {
-  if (!client) client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+function anthropicClient(): ClaudeClient {
+  if (!client) client = claudeClient();
   return client;
 }
 

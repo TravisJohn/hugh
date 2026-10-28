@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { learningPointsPrompt, parseLearningPoints } from "@/lib/claude/prompts";
@@ -10,7 +10,7 @@ import { normalizeCoverage } from "@/utils/coverage";
 import { writeOutcome } from "@/lib/supabase/writeResult";
 import { type LearningPoint, type PointStatus } from "@/types";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.

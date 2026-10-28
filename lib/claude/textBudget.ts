@@ -1,5 +1,5 @@
 import "server-only";
-import type Anthropic from "@anthropic-ai/sdk";
+import type { ClaudeClient } from "./client";
 import { NextResponse } from "next/server";
 import { enforceUsageGate } from "@/lib/usage";
 import { TextInputError, textReservation, type TextCall, type TextCallGuard } from "./textInput";
@@ -24,7 +24,7 @@ export function textBudgetGuard(userId: string, feature: string): TextCallGuard 
   };
 }
 
-export async function createTextMessage(client: Anthropic, userId: string, feature: string, call: TextCall) {
+export async function createTextMessage(client: ClaudeClient, userId: string, feature: string, call: TextCall) {
   await textBudgetGuard(userId, feature)(call);
   // Every further attempt needs its own reservation. Do not let SDK retries
   // silently multiply the call after this gate has admitted one attempt.

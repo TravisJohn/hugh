@@ -57,6 +57,16 @@ function release(): void {
   else running--;
 }
 
+// Said once per process: learn/chat sends a cache hint on every turn, and the
+// fact doesn't change between them.
+let reportedCacheHint = false;
+
+function reportDroppedCacheHint(invocation: CliInvocation): void {
+  if (!invocation.droppedCacheHint || reportedCacheHint) return;
+  reportedCacheHint = true;
+  console.info("[subscription] cache_control is not applied on the plan path; Claude Code manages its own prompt cache.");
+}
+
 export async function runClaudeCli(
   call: TextCall,
   maxRetries: number | undefined,
@@ -68,6 +78,7 @@ export async function runClaudeCli(
     dir = await mkdtemp(join(tmpdir(), "hugh-claude-"));
     const systemFile = join(dir, "system.txt");
     const invocation = buildInvocation(call, systemFile, maxRetries);
+    reportDroppedCacheHint(invocation);
     await writeFile(systemFile, invocation.systemPrompt, "utf8");
     const run = await runProcess(config, dir, invocation);
     return toMessage(run.events, { maxTokens: call.max_tokens, stoppedAtContinuation: run.stoppedAtContinuation });

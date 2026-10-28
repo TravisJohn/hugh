@@ -101,10 +101,18 @@ export function mayUseClaude(billing: ClaudeBilling, userId: string): boolean {
 }
 
 /**
+ * Whether the plan could have served a call to `model`. A Claude plan covers
+ * Claude only: an OpenAI or ElevenLabs row is paid for whatever the mode.
+ */
+export function servableByPlan(model: string): boolean {
+  return model.startsWith("claude-");
+}
+
+/**
  * The `usage_logs.model` value for a call to `model`. The route still names its
  * model once; the suffix is added here so every row is priced at what it
  * actually cost.
  */
 export function usageModelFor(billing: ClaudeBilling, model: string): string {
-  return billing.kind === "subscription" ? `${model}${SUBSCRIPTION_RATE_SUFFIX}` : model;
+  return billing.kind === "subscription" && servableByPlan(model) ? `${model}${SUBSCRIPTION_RATE_SUFFIX}` : model;
 }

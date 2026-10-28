@@ -3,10 +3,13 @@ import {
   resolveClaudeBilling,
   mayUseClaude,
   usageModelFor,
+  servableByPlan,
   SubscriptionModeError,
   SUBSCRIPTION_FLAG,
   SUBSCRIPTION_OWNER_VAR,
+  SUBSCRIPTION_RATE_SUFFIX,
 } from "./billingMode";
+import { MODEL_RATES } from "@/lib/pricing";
 
 /**
  * Subscription mode serves Claude calls from the owner's own plan. Anthropic
@@ -78,5 +81,15 @@ describe("usageModelFor", () => {
 
   it("labels plan-served calls as a rate class, so they are priced at $0 rather than API rates", () => {
     expect(usageModelFor(resolveClaudeBilling(local), "claude-sonnet-4-6")).toBe("claude-sonnet-4-6@subscription");
+  });
+
+  it("never relabels another provider's row, because a Claude plan does not pay for OpenAI", () => {
+    expect(usageModelFor(resolveClaudeBilling(local), "gpt-4o")).toBe("gpt-4o");
+  });
+
+  it("has a $0 rate class for every Claude model Hugh prices, so a new model can't be logged at the fallback rate", () => {
+    for (const model of Object.keys(MODEL_RATES).filter(id => servableByPlan(id) && !id.endsWith(SUBSCRIPTION_RATE_SUFFIX))) {
+      expect(MODEL_RATES[usageModelFor(resolveClaudeBilling(local), model)], model).toEqual({ input: 0, output: 0 });
+    }
   });
 });

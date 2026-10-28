@@ -1,6 +1,6 @@
 import type { TextCall, TextCallGuard } from "@/lib/claude/textInput";
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { topicDomainJudgePrompt, parseClaudeJson } from "@/lib/claude/prompts";
 import {
   type TopicDomainVerdict,
@@ -12,7 +12,7 @@ import { recordOperation } from "@/lib/observability/record";
 import { messageOf } from "@/lib/observability/sanitize";
 import { logSafeError } from "@/lib/observability/log";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for the domain gate — see CLAUDE.md "Model Selection". Declared once
 // so the API call and the usage log cannot disagree about what was billed.
