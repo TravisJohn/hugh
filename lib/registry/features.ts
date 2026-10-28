@@ -486,11 +486,13 @@ export const INFRA_LIB_DIRS: readonly string[] = [
   "observability", // the outcomes store (the console is a feature; the store is not)
   "pomodoro",      // focus timer, shared by Ask Hugh, Notes and the code drills
   "registry",      // this module
+  "brand",         // the Orb's geometry and moods; every surface can show Hugh's face
 ] as const;
 
 /** Same idea for `components/`. */
 export const INFRA_COMPONENT_DIRS: readonly string[] = [
   "ui",
+  "brand", // HughOrb, the mascot
 ] as const;
 
 /**

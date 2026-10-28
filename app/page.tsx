@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import FeatureCards from "@/components/landing/FeatureCards";
+import HughOrb from "@/components/brand/HughOrb";
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -27,12 +27,20 @@ export default async function LandingPage() {
           <span className="font-serif text-xl font-semibold tracking-tight text-white">
             Hugh.
           </span>
-          <Link
-            href="/login"
-            className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 transition-all hover:border-slate-500 hover:bg-slate-800/60 hover:text-white"
-          >
-            Sign in
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-300 transition-all hover:border-slate-500 hover:bg-slate-800/60 hover:text-white"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-lg bg-sky-500 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-sky-400"
+            >
+              Sign up
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -42,14 +50,7 @@ export default async function LandingPage() {
           {/* Logo */}
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-sky-400/10 blur-2xl scale-150" />
-            <Image
-              src="/hugh-logo.png.png"
-              alt="Hugh"
-              width={240}
-              height={240}
-              className="relative object-contain drop-shadow-2xl"
-              priority
-            />
+            <HughOrb size={240} label="Hugh" className="relative drop-shadow-2xl" />
           </div>
 
           {/* Headline */}
@@ -74,10 +75,10 @@ export default async function LandingPage() {
           {/* Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
-              href="/login"
+              href="/signup"
               className="rounded-xl bg-sky-500 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 hover:shadow-sky-400/30"
             >
-              Start practicing free
+              Sign up free
             </Link>
             <Link
               href="/login"

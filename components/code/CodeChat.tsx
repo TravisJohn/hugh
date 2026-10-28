@@ -4,9 +4,9 @@ import { recentTextMessages } from "@/lib/claude/textInput";
 
 import { useEffect, useRef, useState } from "react";
 import type { DrillLang } from "@/types/code";
-import Image from "next/image";
 import { X, Send, Loader2, Code2, Type, Pin, Check } from "lucide-react";
 import CmEditor from "./CmEditor";
+import HughOrb from "@/components/brand/HughOrb";
 
 /** The drill card the chat is grounded on — used for context + as the pin target. */
 export interface ChatCard { id: string; task: string; solution: string }
@@ -141,7 +141,7 @@ export default function CodeChat({
         <div className="fixed bottom-24 right-5 z-[60] flex h-[520px] w-[92vw] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-700 bg-[#0d1424] shadow-2xl">
           <div className="flex shrink-0 items-center justify-between border-b border-slate-800 px-4 py-2.5">
             <div className="flex items-center gap-2">
-              <Image src="/hugh-icon.png" alt="Hugh" width={22} height={22} className="rounded-full" />
+              <HughOrb size={22} framing="tight" />
               <span className="text-sm font-semibold text-slate-100">Hugh</span>
               <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] text-slate-500">coding helper</span>
             </div>
@@ -155,7 +155,7 @@ export default function CodeChat({
               <div key={i} className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}>
                 <div className={`flex w-full ${m.role === "user" ? "justify-end" : "justify-start gap-2"}`}>
                   {m.role === "assistant" && (
-                    <Image src="/hugh-icon.png" alt="" width={22} height={22} className="mt-0.5 h-[22px] w-[22px] shrink-0 rounded-full" />
+                    <HughOrb size={22} framing="tight" className="mt-0.5 shrink-0" />
                   )}
                   <div className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                     m.role === "user"
@@ -256,7 +256,7 @@ export default function CodeChat({
         {isOpen ? (
           <X size={22} className="text-slate-300" />
         ) : (
-          <Image src="/hugh-icon.png" alt="Hugh" width={40} height={40} className="rounded-full" />
+          <HughOrb size={40} framing="tight" />
         )}
       </button>
     </>

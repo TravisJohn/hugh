@@ -134,7 +134,7 @@ function LoginForm() {
               href="/signup"
               className="font-medium text-sky-400 transition-colors hover:text-sky-300"
             >
-              Create one free
+              Sign up
             </Link>
           </p>
         </div>
