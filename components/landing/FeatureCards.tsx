@@ -112,7 +112,7 @@ export default function FeatureCards() {
         className="flex items-center justify-center gap-2 rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-slate-400 hover:text-white"
       >
         <UserPlus size={13} />
-        Create account
+        Sign up
       </Link>
     </div>
   );
