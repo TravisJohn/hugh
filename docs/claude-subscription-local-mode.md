@@ -173,10 +173,10 @@ alternative, leaving them on the paid keys, is one flag away if you want it.
 Nothing in Hugh streams today; every route waits for the full reply. The
 adapter therefore collects the CLI's event stream and returns one message. It
 uses the event stream rather than plain JSON only because the stream carries
-`apiKeySource`, the proof of which credential was used. **Each call will be
-slower**, because a process starts every time. The probe in stage 1 measures
-how much slower, and the number gets reported rather than guessed. Track builds
-run in `after()` and aren't affected by the wait.
+`apiKeySource`, the proof of which credential was used. **Each call is about
+0.7 s slower**, because a process starts every time (measured in stage 1; a
+short Haiku reply takes about 1.5 s end to end). Track builds run in `after()`
+and aren't affected by the wait.
 
 ### 4.5 Plan limits
 Hugh shares your plan's 5-hour and weekly limits with your Claude Code coding
@@ -276,8 +276,55 @@ One call each, on the Hugh-only login (`authMethod: claude.ai`, Pro plan):
   `overageStatus` / `isUsingOverage`. The adapter will treat
   `isUsingOverage: true` as limit-reached, so Hugh never runs up paid extra
   usage on the plan.
-- **Open for stage 2:** about 350 input tokens per call are Claude Code's
-  context, not Hugh's. `--exclude-dynamic-system-prompt-sections` doesn't
-  apply when `--system-prompt-file` is set.
+- **About 350 input tokens per call are Claude Code's context, not Hugh's.**
+  `--exclude-dynamic-system-prompt-sections` doesn't apply when
+  `--system-prompt-file` is set. Settled in §9.
 - **Open for stage 6:** Haiku wrapped its JSON in a ```` ```json ```` fence;
   Sonnet didn't.
+
+## 9. Stage 2 adapter findings (2026-10-28, Claude Code 2.1.283)
+
+The adapter is three modules plus a typed error, with 38 tests. Two of the
+modules (`cliArgs`, `parseResult`) are pure and tested against real recorded
+CLI runs. The third, `runClaudeCli`, is tested against a stand-in process that
+replays those recordings, plus one real Haiku call: a three-turn conversation
+that answered the final turn in 1.5 s, served by the plan.
+
+- **The extra ~350 tokens can't be removed, and they're accepted.** Claude Code
+  adds five short notes to every prompt: the machine's environment, which
+  model is answering, its output budget, the signed-in account's email, and
+  today's date. The only switch that drops them (`--bare`) also drops the plan
+  sign-in. On the plan they cost limit headroom, not money; the real call
+  measured 432 input tokens for a request of about 60. The email goes only to
+  Anthropic, which already holds it. Whether the notes change Hugh's answers
+  is measured in the stage 6 contract check.
+- **The CLI doesn't stop at the output cap; the adapter does.** When a reply
+  reaches `max_tokens`, Claude Code silently asks the model to carry on, about
+  four times, and then reports an error. Each carry-on re-sends the whole
+  prompt against your limits. The runner stops the process at the first
+  carry-on and returns the cut-off first reply with `stop_reason:
+  "max_tokens"`, which is what the API returns.
+- **Retries match the API path.** Claude Code retries a failed request 10
+  times by default. The adapter passes the caller's count instead: 0 from the
+  usage gate (so one admitted call is one request), otherwise the SDK's 2. The
+  setting is pinned by a test; it hasn't been seen against a real failing
+  request, because there's no safe way to cause one.
+- **A failure is never read as an answer.** Claude Code labels a failed run
+  `subtype: "success"` with `is_error: true`. The adapter goes by `is_error`
+  and the error category, and each failure has its own reason: billed to a
+  key, signed out, limit reached (with the reset time when given), model
+  unavailable, timed out, or failed. Stage 4 turns each into its own message.
+- **The key tripwire acts before any request is sent.** The start-up event
+  names the credential before the request goes out, and the runner kills the
+  process there. In the test the process was stopped in under 3 s.
+- **A wrong login folder looks exactly like "signed out".** During testing a
+  mistyped path to `~/.claude-hugh` produced "Not logged in". Stage 3 builds
+  the path from the home folder rather than typing it, and stage 4's sign-in
+  message names the folder it looked in.
+- **Windows.** The native installer's `claude.exe` is found without a shell.
+  An npm-installed `claude.cmd` would not be; stage 5's login script checks
+  which one is on the path.
+- **Smaller notes.** `NODE_ENV` is deliberately not passed to the CLI. Replies
+  carry the dated model id (`claude-haiku-4-5-20251001`); usage rows keep
+  using each route's own `MODEL`, so nothing changes there. The concurrency cap
+  of 2 queues extra calls rather than refusing them.
