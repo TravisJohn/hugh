@@ -8,6 +8,9 @@
   "scripts": {
     "predev": "node tools/architecture-dashboard/scripts/build-hosted.js",
     "dev": "next dev",
+    "predev:subscription": "node tools/architecture-dashboard/scripts/build-hosted.js",
+    "dev:subscription": "tsx scripts/dev-subscription.ts",
+    "subscription:login": "tsx scripts/subscription-login.ts",
     "prebuild": "node tools/architecture-dashboard/scripts/build-hosted.js",
     "build": "next build",
     "start": "next start",

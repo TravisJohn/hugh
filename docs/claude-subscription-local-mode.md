@@ -205,7 +205,7 @@ Six independent stops on production:
 3. The owner lock refuses every other user.
 4. The dev server listens on localhost only.
 5. No new npm dependency, and there's no `claude` binary on Vercel.
-6. A CI test pins stops 2 and 3.
+6. Tests in CI pin stops 1 to 4 (§12).
 
 ### 4.7 Checking the JSON contract
 learn/chat's conversation is written into one prompt with clear turn markers,
@@ -404,3 +404,43 @@ that answered the final turn in 1.5 s, served by the plan.
   off on the owner's account (`overageDisabledReason: "org_level_disabled"`
   in every recorded run). A limit without a reset time isn't remembered.
   Restarting the dev server clears the latch.
+
+## 12. Stage 5 scripts (2026-10-29)
+
+- **`npm run subscription:login`** runs Claude Code's own sign-in
+  (`claude auth login --claudeai`, the plan sign-in rather than the
+  pay-per-use Console one) against `~/.claude-hugh`, with the same cleaned
+  environment Hugh's calls get, then checks the result. It hasn't been run
+  during the build: it starts a real sign-in, which is the owner's to do, and
+  the login from stage 1 is still valid.
+- **`npm run dev:subscription`** checks before it starts anything, and stops
+  with one sentence if any check fails:
+  - the flag isn't already set in `.env.local` or the shell (if it were,
+    plain `npm run dev` would start on the plan too);
+  - `HUGH_SUBSCRIPTION_OWNER_ID` names a user, and nothing marks production;
+  - `claude` starts without a shell (the native `claude.exe`, not an
+    npm-installed `claude.cmd`);
+  - Hugh's login is in the expected folder, signed in, and on the plan.
+
+  Then it starts `next dev -H 127.0.0.1` with the flag set, and refuses any
+  other host. `npm run dev:subscription -- --check` runs the checks and stops.
+  Every refusal and the passing case were run for real.
+- **`.env.example`** documents `HUGH_SUBSCRIPTION_OWNER_ID`. The flag is not
+  in it, and a test keeps it out.
+- **A production build with the flag set fails. Verified:** `next build`
+  compiles, then stops at "Collecting page data" with
+  `SubscriptionModeError: HUGH_CLAUDE_SUBSCRIPTION is set where
+  NODE_ENV=production is set`.
+- **What CI pins** (`productionStops.test.ts`, beside the earlier tests):
+  - in code, the flag is named only where it is defined and in the launcher;
+  - it is set only through the launcher, never by writing to `process.env`;
+  - only `dev:subscription` starts the launcher, and no npm script names the
+    flag;
+  - `.env.example` never sets it;
+  - plan mode listens on `127.0.0.1`.
+
+  The production refusal is pinned in `billingMode.test.ts` and
+  `client.test.ts`, the owner lock in `usage.test.ts`.
+- **Before the first run:** this branch's worktree has no `.env.local` (it is
+  gitignored, so only the main checkout has one). It needs a copy, plus
+  `HUGH_SUBSCRIPTION_OWNER_ID` set to the test learner's user id.
