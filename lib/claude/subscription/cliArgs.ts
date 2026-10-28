@@ -77,9 +77,15 @@ const TRANSCRIPT_PREAMBLE =
   "reply to the final user turn, following your instructions exactly. Output only that reply.";
 
 /**
- * The CLI takes one prompt, not a message list, so a multi-turn conversation is
- * written out as a marked transcript. A single user message is passed as-is,
- * which is every call except Ask Hugh and the mastery session.
+ * The CLI takes one prompt, not a message list, so the conversation is written
+ * out as a marked transcript.
+ *
+ * A single message gets the same shape, deliberately. Passed bare, 8 of 17
+ * single-message Ask Hugh samples came back as something other than clean
+ * JSON; with every call in this shape, strict JSON rose from 12 to 16 of 20
+ * (stage 6 contract check, docs §13). Claude Code adds its own notes after
+ * Hugh's instructions, and the preamble's "following your instructions
+ * exactly" points the model back at them.
  *
  * A closing tag inside a turn is escaped so text that happens to contain
  * `</user>` cannot end its own turn early and impersonate the next one.
@@ -88,7 +94,6 @@ export function renderPrompt(messages: readonly TextMessage[]): string {
   const last = messages[messages.length - 1];
   if (!last) throw new Error("A Claude call needs at least one message.");
   if (last.role !== "user") throw new Error("A Claude call must end with a user turn.");
-  if (messages.length === 1) return last.content;
 
   const turns = messages.map(m =>
     `<${m.role}>\n${m.content.replace(/<\/(user|assistant)>/gi, "<\\/$1>")}\n</${m.role}>`,

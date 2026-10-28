@@ -54,8 +54,10 @@ describe("buildInvocation", () => {
 });
 
 describe("renderPrompt", () => {
-  it("sends a single question exactly as written", () => {
-    expect(renderPrompt(call.messages)).toBe("What is a p-value?");
+  it("gives a single question the transcript shape too, so the format reminder reaches it", () => {
+    const prompt = renderPrompt(call.messages);
+    expect(prompt).toMatch(/^Below is the conversation so far.*following your instructions exactly/);
+    expect(prompt).toMatch(/<user>\nWhat is a p-value\?\n<\/user>$/);
   });
 
   it("writes a conversation out oldest-first, ending on the learner's latest turn", () => {

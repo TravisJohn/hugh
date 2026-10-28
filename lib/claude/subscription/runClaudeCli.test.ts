@@ -59,7 +59,7 @@ describe("runClaudeCli", () => {
 
   it("delivers the prompt through stdin intact, including non-ASCII text", async () => {
     const prompt = "Explain the p-value — “null” hypothesis, 95 % level, ñ";
-    expect(replyText(await runClaudeCli(call("echo", prompt), 0, config))).toBe(prompt);
+    expect(replyText(await runClaudeCli(call("echo", prompt), 0, config))).toContain(`<user>\n${prompt}\n</user>`);
   });
 
   it("returns a recorded plan-served answer as an SDK Message", async () => {

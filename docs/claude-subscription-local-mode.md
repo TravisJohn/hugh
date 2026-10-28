@@ -261,7 +261,8 @@ uses your plan allowance, not dollars.
 - **Approach:** CLI adapter with `claudeClient()`; the parked seam is not restored.
 - **OpenAI and ElevenLabs:** off in subscription mode.
 - **Owner:** your test learner account.
-- **Contract bar:** 19 of 20 strict and 20 of 20 usable.
+- **Contract bar:** 19 of 20 strict and 20 of 20 usable. Not met (16 and 19);
+  accepted as measured on 2026-10-29 (§13).
 
 ## 8. Stage 1 probe findings (2026-10-28, Claude Code 2.1.283)
 
@@ -444,3 +445,57 @@ that answered the final turn in 1.5 s, served by the plan.
 - **Before the first run:** this branch's worktree has no `.env.local` (it is
   gitignored, so only the main checkout has one). It needs a copy, plus
   `HUGH_SUBSCRIPTION_OWNER_ID` set to the test learner's user id.
+
+## 13. Stage 6 contract check (2026-10-29)
+
+A one-off script (not committed) sent real calls through `claudeClient()`
+with plan mode on, on the owner's plan:
+
+- **20 Ask Hugh chats on Haiku.** 12 on open topics and 8 on course cards
+  (linear regression, hypothesis testing, descriptive statistics, A/B
+  testing). They include three multi-turn conversations, two off-topic
+  questions, two code requests and one request for a long answer.
+- **One mastery evaluate, one review quiz and one track build, on Sonnet.**
+  The quiz prompt was copied from its route, which builds it inline, so a
+  later change there isn't covered.
+
+| Chats | Run 1 | Run 2 (fix) | Bar |
+|---|---|---|---|
+| Strict JSON | 12/20 | 16/20 | 19/20 |
+| Hugh gets the off-topic, covered and code fields | 18/20 | 19/20 | — |
+| Learner sees a clean reply | 19/20 | 19/20 | 20/20 |
+
+- **Everything else passed in both runs.** Evaluate returned strict JSON with
+  a score. The quiz kept 3 of 3 questions, none malformed or ungrounded. The
+  track built on the first attempt (12 to 13 cards, about 26 s). Off-topic
+  flags were right on all 20 chats, and both code requests got code. Chat
+  replies took 2.5 to 9 s (median 4.4 s).
+- **The fix.** Run 1 sent a single message bare, and 8 of 17 single-message
+  chats missed; the three multi-turn chats, which already had the transcript
+  shape, were all strict. Run 2 gives every call that shape, opening with
+  "following your instructions exactly" (`renderPrompt`).
+- **What the run 2 misses are:**
+  - **t03: an unescaped quote inside the JSON.** Hugh's chat parser rescues
+    every field; it was written for this failure on the API path.
+  - **t09 and c20: the answer written twice.** A prose draft, then the JSON.
+    The parser uses the JSON, so the reply is clean, but it costs about twice
+    the output tokens and a few seconds.
+  - **t12: prose only.** The parser would show the intro as a code snippet
+    and the paste-able prompt as the reply. This is the one garbled reply.
+- **The weak spot is answers that contain a code block.** t09, t12 and c20
+  are the three whose answer includes a regex or a paste-able prompt. They
+  misbehaved in both runs, each starting with a bare ```` ``` ```` line. The
+  other misses moved between runs; one run per sample can't tell a
+  difference of two from noise.
+- **Not measured: the paid API on the same samples.** Whether those three
+  misbehave on the API too, and whether Claude Code's ~350 tokens of notes
+  (§9) cause any of this, is open. Measuring it would cost about 8 cents of
+  API usage; the owner chose not to.
+- **Accepted below the bar on 2026-10-29.** The parser rescues 19 of 20, and
+  this mode is local and serves only its owner.
+- **§8's open point is closed.** Haiku's ```` ```json ```` fence is harmless:
+  14 of the 16 strict replies had one, and the parser strips it.
+- **Plan rows' input counts can read low.** Claude Code caches on its own,
+  and the count leaves cached input out (evaluate's row said 3 input
+  tokens). Plan rows are priced at $0 whatever the count, but they don't
+  show a prompt's real size.
