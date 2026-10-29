@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useTrackStatusWatch } from "@/hooks/useTrackStatusWatch";
 import { Sparkles, Trash2, Loader2, AlertTriangle, Pencil, RotateCcw } from "lucide-react";
 import { type LearningGoal } from "@/types";
-import { canRetry, cardBuildState, STALL_MS, type BuildState } from "@/lib/tracker/buildState";
+import { canRebuild, cardBuildState, STALL_MS, type BuildState } from "@/lib/tracker/buildState";
+import {
+  CHOOSE_COURSE_HREF, CHOOSE_COURSE_LABEL, EARLIER_TOPIC_LABEL, EARLIER_TOPIC_NO_REBUILD, isCourseGoal,
+} from "@/lib/learn/earlierTopic";
 import GoalAnswers from "./GoalAnswers";
 
 // The stall rule and the pending/stalled split now live in
@@ -56,6 +59,9 @@ export default function GoalCard({ goal, onDelete, onSettled }: Props) {
   // Deliberately free of Date.now(): the stall crossing arrives via the effect
   // above, so the first client render matches the server's exactly.
   const status: BuildState = cardBuildState(goal.track_status, rebuilt, stalled);
+  // An earlier topic cannot be rebuilt (narrow Learn PR D), so a broken one
+  // points at the catalog instead of offering what the server refuses.
+  const isCourse = isCourseGoal(goal);
 
   // Any build this card shows as running, it follows with the shared watcher
   // (realtime, a poll and a hard timeout): a course just started from the
@@ -129,7 +135,13 @@ export default function GoalCard({ goal, onDelete, onSettled }: Props) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-slate-100 leading-snug">{goal.topic}</p>
-        {status === "building" ? (
+        {!isCourse ? (
+          // An earlier topic is kept to read (narrow Learn PR D). Nothing can
+          // build or approve it any more, so a broken one says so plainly.
+          <p className={`mt-0.5 text-xs ${status === "ready" ? "text-slate-400" : "text-red-400/90"}`}>
+            {status === "ready" ? EARLIER_TOPIC_LABEL : EARLIER_TOPIC_NO_REBUILD}
+          </p>
+        ) : status === "building" ? (
           <p className="mt-0.5 text-xs text-amber-400/80">Building your track…</p>
         ) : status === "stalled" ? (
           // The server's refusal wins over the generic advice: at the rebuild
@@ -187,7 +199,16 @@ export default function GoalCard({ goal, onDelete, onSettled }: Props) {
           </button>
         )}
 
-        {canRetry(status) && (
+        {!isCourse && (
+          <Link
+            href={CHOOSE_COURSE_HREF}
+            className="rounded-xl border border-slate-600 px-3 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-emerald-500 hover:text-emerald-300"
+          >
+            {CHOOSE_COURSE_LABEL}
+          </Link>
+        )}
+
+        {canRebuild(status, isCourse) && (
           <button
             onClick={handleRetry}
             disabled={retrying}
@@ -206,9 +227,10 @@ export default function GoalCard({ goal, onDelete, onSettled }: Props) {
             href={`/study/${goal.id}/track`}
             className="glow-amber rounded-xl bg-amber-500 px-4 py-2 text-sm font-bold text-slate-900 hover:bg-amber-400 transition-colors"
           >
-            Start →
+            {/* An earlier topic's board opens to be read, not worked. */}
+            {isCourse ? "Start →" : "Open →"}
           </Link>
-        ) : (
+        ) : isCourse ? (
           <span
             className="cursor-not-allowed rounded-xl bg-slate-700 px-4 py-2 text-sm font-bold text-slate-500"
             title={
@@ -223,7 +245,7 @@ export default function GoalCard({ goal, onDelete, onSettled }: Props) {
           >
             Start →
           </span>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { checkUsageAllowed, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { normalizeCoverage } from "@/utils/coverage";
 import { writeOutcome } from "@/lib/supabase/writeResult";
+import { isTeachable, readOnlyRefusal } from "@/lib/packs/cardAccess";
 import { type LearningPoint, type PointStatus } from "@/types";
 
 const anthropic = claudeClient();
@@ -22,6 +23,7 @@ interface MilestoneRow {
   title:           string;
   summary:         string;
   learning_points: LearningPoint[] | null;
+  concept_ids:     string[] | null;
   coverage:        unknown; // legacy or current shape — normalized on read
   tracks:          { user_id: string; topic_description: string } | null;
 }
@@ -33,7 +35,7 @@ async function loadOwnedMilestone(
 ): Promise<MilestoneRow | null> {
   const { data } = await supabase
     .from("milestones")
-    .select("id, title, summary, learning_points, coverage, tracks!track_id!inner(user_id, topic_description)")
+    .select("id, title, summary, learning_points, concept_ids, coverage, tracks!track_id!inner(user_id, topic_description)")
     .eq("id", id)
     .single();
   const row = data as unknown as MilestoneRow | null;
@@ -131,10 +133,15 @@ export async function GET(
   if (!ms) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const { allowed } = await checkUsageAllowed(userId, "tracker/points");
-  // If usage is blocked, still return whatever points already exist (no new call).
+  // If usage is blocked, still return whatever points already exist (no new
+  // call). The same holds for a card that can't be taught from a syllabus: an
+  // earlier topic is kept to read (narrow Learn PR D), so nothing is
+  // generated for it.
   let points: LearningPoint[] | null;
   try {
-    points = allowed ? await ensureLearningPoints(supabase, ms, userId) : (ms.learning_points ?? []);
+    points = allowed && isTeachable(ms.concept_ids)
+      ? await ensureLearningPoints(supabase, ms, userId)
+      : (ms.learning_points ?? []);
   } catch (err) {
     // Only the Claude plan's own failures are answered here; anything else
     // escapes exactly as it did before subscription mode existed.
@@ -182,6 +189,9 @@ export async function POST(
 
   const ms = await loadOwnedMilestone(supabase, id, userId);
   if (!ms) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const readOnly = readOnlyRefusal(ms.concept_ids);
+  if (readOnly) return readOnly;
 
   // Only accept ids that belong to this milestone's checklist and valid statuses.
   const validIds = new Set((ms.learning_points ?? []).map(p => p.id));

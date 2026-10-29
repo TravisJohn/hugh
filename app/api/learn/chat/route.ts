@@ -3,13 +3,13 @@ import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
 import { claudeClient } from "@/lib/claude/client";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { focusedLearningSystemPrompt } from "@/lib/claude/prompts";
 import { parseChatResponse } from "@/lib/askcode/parse";
 import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 import { createClient } from "@/lib/supabase/server";
-import { cardGrounding, GROUNDING_REFUSAL_MESSAGE } from "@/lib/packs/grounding";
+import { cardGrounding } from "@/lib/packs/grounding";
+import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 import { courseAskSystemPrompt } from "@/lib/packs/askPrompt";
 
 const anthropic = claudeClient();
@@ -32,15 +32,15 @@ export async function POST(request: NextRequest) {
   if (input.response) return input.response;
   const body = input.body;
 
-  const { topic, messages, focusMode, codeModeRequested, milestoneId } = body;
+  // The browser's `topic` is ignored (narrow Learn PR D): Ask teaches one card
+  // from its syllabus, and the server decides what that is.
+  const { messages, focusMode, codeModeRequested, milestoneId } = body;
 
-  if (!topic?.trim() || !Array.isArray(messages) || messages.length === 0) {
-    return NextResponse.json({ error: "topic and messages are required" }, { status: 400 });
+  if (!milestoneId || !Array.isArray(messages) || messages.length === 0) {
+    return NextResponse.json({ error: "milestoneId and messages are required" }, { status: 400 });
   }
 
-  // A course card's prompt is built here from its syllabus; any other card
-  // keeps the browser's topic, as before.
-  const system = await systemPromptFor(milestoneId, topic.trim(), userId);
+  const system = await systemPromptFor(milestoneId, userId);
   if (system instanceof NextResponse) return system;
 
   // Validated, bounded transcript; copy before adding the server reminder.
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     const refusal = textBudgetResponse(err);
     if (refusal) return refusal;
-    logSafeError("learn/chat", err, [topic]);
+    logSafeError("learn/chat", err);
     void recordOperation({
       userId, operation: "ask.chat", outcome: "failed",
       durationMs: Date.now() - startedAt, error: err,
@@ -130,19 +130,15 @@ export async function POST(request: NextRequest) {
  * instead.
  *
  * A card whose `concept_ids` name a course (migration 060, which learners
- * cannot write) is taught from its syllabus, and the browser's topic is not
- * used: the server decides what the tutor teaches. A card with no concepts,
- * or no card at all, keeps today's prompt. A course card whose pack can't be
- * taught gets that refusal's own message, never a silent fallback to the
- * ungrounded tutor.
+ * cannot write) is taught from its syllabus: the server decides what the
+ * tutor teaches. Every other card is refused with the shared response, so an
+ * earlier topic gets the read-only sentence and a course card whose pack
+ * can't be taught gets that pack's refusal, never the ungrounded tutor.
  */
 async function systemPromptFor(
-  milestoneId: string | undefined,
-  topic:       string,
+  milestoneId: string,
   userId:      string,
 ): Promise<string | NextResponse> {
-  if (!milestoneId) return focusedLearningSystemPrompt(topic);
-
   const { data: card, error } = await (await createClient())
     .from("milestones")
     .select("id, title, concept_ids, tracks!track_id!inner(user_id)")
@@ -158,9 +154,6 @@ async function systemPromptFor(
   }
 
   const grounding = cardGrounding(card.concept_ids);
-  if (grounding.kind === "none") return focusedLearningSystemPrompt(topic);
-  if (grounding.kind === "refused") {
-    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
-  }
+  if (grounding.kind === "refused") return groundingRefusalResponse(grounding.reason);
   return courseAskSystemPrompt(grounding.ground, card.title);
 }

@@ -9390,6 +9390,85 @@ logged on the launch dashboard, not fixed here.
 
 Gate: 2,086 tests pass (5 new), the type check and lint are clean.
 
+## 2026-10-27 - PR #37 merged: the course catalog for every learner
+
+Travis ran PR C's browser checklist as the seeded test learner, on its
+Vercel preview, and all five steps passed:
+- the grouped picker, with Statistics foundations numbered 1 to 7;
+- the foundations group at phone width;
+- starting a course: a ready board in under a second, and no `tracker/*`
+  usage rows (five builds, zero tokens);
+- the carousel and the `?course=` link;
+- the request box: exactly five requests stored, the sixth refused by the
+  server, all five listed at `/admin/requests`; and the new landing copy.
+
+Step 3 first failed, and the fix (the started-course spinner, logged above)
+went into the PR before the re-check. Migration 061 was applied first and
+verified in production: the table exists, RLS is on, there are no policies,
+and learners and anonymous callers hold no privilege on it.
+
+#37 merged on 2026-10-27 as 22d6001, a merge commit pinned to the tested
+head (411600c). Production served the new landing copy about 50 seconds
+later, from syd1. PR #38 (two more courses) was brought up to date with
+the fix and retargeted to main; it shows only its own 11 files.
+
+Found during the check, and logged on the launch dashboard rather than
+fixed here:
+- Library cards squeeze the course title on a phone (already on main
+  before PR C).
+- The logo image still carries a "Skill Prep App" ribbon.
+- Deleting a course removes only the goal. Its track, cards and diary stay
+  behind with no goal.
+
+## 2026-10-27 - Narrow Learn phase 2, PR D: the open path closes
+
+Built on `feat/pack-learn-d` from main (22d6001), in four pieces, with
+Travis approving each before the next.
+
+1. **Four open-topic routes answer 410:** `classify-topic`, `refine`,
+   `goals/document/extract` and `goals/document/approve` (546 lines down to
+   40). One helper, `lib/learn/retiredRoute.ts`, sends the 410 and, for a
+   signed-in caller, awaits a refused `learn.retired` record: phase 3
+   deletes the files after a week with none from real use. Anonymous
+   callers are not recorded, so a scanner never counts as use.
+2. **Goals take only a course, and only a course is rebuilt.** A typed topic
+   gets a 400 pointing at the catalog. Retry refuses an earlier topic before
+   it counts or builds anything, with a "Choose a course" link.
+   `canRebuild` in `lib/tracker/buildState.ts` is the one rule the card,
+   the track page and the route share.
+3. **Earlier topics are read-only.** `cardGrounding` now returns
+   `refused: "earlier-topic"` for a card with no concept ids, so Ask, both
+   kinds of mastery, the diary check and the quiz refuse it with no new
+   check in each. Every route that changes or spends on a card calls
+   `readOnlyRefusal`. Reading, archiving a diary entry and deleting stay
+   open. The library and the board header carry "Earlier topic (not
+   source-checked)" and "Choose a course"; the board takes no drags. Ask
+   always names a card and opens on the first unmastered one.
+4. **Docs:** CLAUDE.md (Rule 3 now has two drivers, both courses only; the
+   read-only rule; the topic-scope rows), and a "PR D as built" section in
+   PRD-narrow-learn.md.
+
+Decided during the build:
+- **`goals/[id]/answers` stays live** (Travis). It only reads and deletes
+  stored answers, and `/privacy` promises both from the card.
+- The operation is `learn.retired`; stored ids take no underscore.
+
+Found and fixed along the way:
+- The Realtime route only checked grounding for a card with no summary.
+- The summary and recap routes reserved budget before checking the card, so
+  a refusal left a reservation hanging until it expired.
+- Saving an Ask session with no card added an ungrounded card to the board.
+  It is now refused and recorded.
+- Ask and the card drawer showed a generic line for a 409. They now show
+  the read-only sentence.
+
+Measured in production before building: 8 earlier-topic goals across 5
+learners, 4 course goals, and 32 tracks orphaned by deleted goals (logged
+on the launch dashboard as S1.9).
+
+Gate: 2,125 tests pass, plus the type check and lint. Not yet checked in a
+browser; the checklist is in the PR.
+
 ## 2026-10-27 - The Orb replaces the illustrated mascot
 
 Travis is planning an AI that observes how a learner learns, and the

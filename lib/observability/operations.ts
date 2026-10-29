@@ -58,7 +58,8 @@ export type OperationId =
   | "notes.coach"
   | "notes.summarize"
   | "voice.speak"
-  | "answers.forget";
+  | "answers.forget"
+  | "learn.retired";
 
 /**
  * The prefix half of an id. Kept as its own type so a later surface joins as
@@ -66,7 +67,7 @@ export type OperationId =
  */
 export type OperationDomain =
   | "track" | "topic" | "quiz" | "mastery" | "ask" | "answers"
-  | "code" | "cloud" | "notes" | "voice";
+  | "code" | "cloud" | "notes" | "voice" | "learn";
 
 export interface OperationDefinition {
   /** Stored in `operation_events.operation`. Stable — changing one orphans history. */
@@ -99,6 +100,14 @@ export interface OperationDefinition {
 
   /** Why this operation is worth a row. Read by whoever adds the next one. */
   description: string;
+
+  /**
+   * The date the code that recorded this operation was retired, if it was.
+   * The entry stays, because `operation_events` still holds its rows and the
+   * console must keep naming them. The registry-to-code guard then stops
+   * expecting a live call site, and fails if one comes back.
+   */
+  retiredOn?: string;
 }
 
 /**
@@ -207,6 +216,7 @@ export const OPERATIONS: readonly OperationDefinition[] = [
       "Generating the next 5-whys question while a learner shapes a topic. " +
       "Retries internally and each attempt bills, so a 'failed' row here can " +
       "represent several charges.",
+    retiredOn: "2026-10-27",
   },
   {
     id:               "track.extract",
@@ -218,6 +228,7 @@ export const OPERATIONS: readonly OperationDefinition[] = [
       "Reading an uploaded PDF, DOCX or HTML and proposing a topic from it. " +
       "The entry point that carries learner-supplied files, so its failures " +
       "are also the ones most worth watching for prompt injection.",
+    retiredOn: "2026-10-27",
   },
   {
     id:               "track.summary",
@@ -357,6 +368,21 @@ export const OPERATIONS: readonly OperationDefinition[] = [
       "Turning text into speech through ElevenLabs. Billed in characters " +
       "rather than tokens, and called by whichever surface is speaking — " +
       "which is why its spend cannot be credited to one of them.",
+  },
+
+  // ── Narrow Learn phase 2, PR D ───────────────────────────────────────────
+  {
+    id:               "learn.retired",
+    domain:           "learn",
+    label:            "Retired Learn route called",
+    clientReportable: false,
+    failureIsSilent:  false,
+    description:
+      "A signed-in caller reached one of the open-topic routes that narrow " +
+      "Learn retired, and got a 410. Always 'refused'. Phase 3 deletes those " +
+      "routes after a week in production with none of these from real use, " +
+      "so this row is the evidence that decides it; anonymous callers are " +
+      "turned away unrecorded, because a scanner is not use.",
   },
 ] as const;
 

@@ -2,9 +2,10 @@
 
 ## What is Hugh?
 Hugh is an AI-powered **learning platform** for data and analytics. A learner
-picks a topic, Hugh generates a track of milestone cards, and the learner works
-through them — asking questions, keeping a learning diary, proving mastery out
-loud, drilling code, and working business cases. Named after the first person who
+picks a course from a catalog of source-checked reference packs, Hugh lays out
+its track of milestone cards, and the learner works through them — asking
+questions, keeping a learning diary, proving mastery out loud, drilling code,
+and working business cases. Named after the first person who
 interviewed the founder.
 
 It began as a mock-interview trainer. That loop was deleted on 2026-08-24
@@ -62,13 +63,15 @@ Pick the model per route by the job, not a blanket default — input tokens are 
 bulk of Claude spend, so cheap routes should use the cheap model:
 
 - **`claude-sonnet-4-6`** ($3/$15 per MTok) — reasoning-heavy generation where
-  quality matters: track generation, backlog priority, quiz generation, diary
-  fact-check, learn/summarize, mastery **evaluate** (scoring), document topic
-  extraction.
+  quality matters: quiz generation, diary fact-check, learn/summarize, mastery
+  **evaluate** (scoring), the mastery summary. (Open-topic track generation,
+  backlog priority and document topic extraction were Sonnet too; course
+  tracks need no model, and that code goes in phase 3.)
 - **`claude-haiku-4-5`** ($1/$5 per MTok — 5× cheaper input) — classification and
   short, low-stakes generation: similarity checks, hints, 5-whys refinement
   questions, mastery **open**/**respond** (in-character conversational lines),
-  learn/chat, cloud/chat, code/chat, the topic-domain gate.
+  learn/chat, cloud/chat, code/chat. (The topic-domain gate was one too; it
+  is retired with the open-topic path and goes in phase 3.)
 - **OpenAI** — `gpt-4o` where vision is needed (Notes Coach reads screenshots);
   `gpt-4o-mini` where it isn't (Notes summarise).
 
@@ -206,20 +209,25 @@ A track is built in exactly one shape, whatever started it:
 ```
 pending → after() runs generateTrack → ready | failed
 ```
-Watched by `useTrackStatusWatch` (Realtime + 3s poll + hard timeout). Three
-routes drive it — `dashboard/goals`, `goals/document/approve`, and
-`goals/[id]/retry` — and each must set `maxDuration`, gate the spend it
-causes, and settle the status in both the success and failure branch. Do not
-add a fourth path that generates a track synchronously; that was
+Watched by `useTrackStatusWatch` (Realtime + 3s poll + hard timeout), which
+the goal card uses for a new course and for a rebuild alike. Two routes drive
+it — `dashboard/goals` and `goals/[id]/retry` — and each must set
+`maxDuration` and settle the status in both the success and failure branch.
+Do not add a third path that generates a track synchronously; that was
 `/api/tracker/generate`, and it was deleted for having no `maxDuration`, no
 usage gate and no domain gate.
 
-`generateTrack` takes either a topic (the model builds the milestones) or a
-`{ kind: "pack", packId }` source (narrow Learn: the milestones are a reference
-pack's authored cards, `lib/packs/track.ts`). A pack build makes no model call,
-so `dashboard/goals` and `retry` skip the usage gate and the topic gate for it;
-the catalog (`lib/packs/catalog.ts`) is its gate, and the rebuild ceiling still
-holds. Both kinds share one board writer and one provenance row.
+Since narrow Learn PR D both routes build **courses only**: `{ kind: "pack",
+packId }` (`lib/packs/track.ts` lays out the reference pack's authored cards).
+A pack build makes no model call, so neither route has a usage gate or a topic
+gate; the catalog (`lib/packs/catalog.ts`) is the gate, and the rebuild
+ceiling still holds. A typed topic gets a 400 from `dashboard/goals`, and an
+earlier topic is refused by `retry` before anything else. `generateTrack`
+still accepts a topic until phase 3 deletes that branch, but nothing reaches
+it. `goals/document/approve`, `goals/document/extract`, `refine` and
+`classify-topic` answer 410 and record `learn.retired`
+(`lib/learn/retiredRoute.ts`); phase 3 deletes them after a week in
+production with none from real use.
 
 Whether a build is *still running* or *dead* is decided in one place:
 `lib/tracker/buildState.ts` (pure, unit-tested). The card, the track page and
@@ -303,9 +311,17 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   a course card, mastery criteria come from the pack's key points, never
   `learning_points`. A listed wrong belief left uncorrected fails the card
   whatever the score, and the feedback quotes the pack's correction and
-  source. A card with no `concept_ids` keeps every old behaviour. A course
-  card whose pack can't be loaded is refused with its own message, never
-  taught ungrounded.
+  source. A course card whose pack can't be loaded is refused with its own
+  message (503), never taught ungrounded.
+- **An earlier topic is read-only.** Since narrow Learn PR D, a card with no
+  `concept_ids` is `refused: "earlier-topic"` by `cardGrounding`, so every
+  surface above refuses it through `groundingRefusal` (409, the read-only
+  sentence, a `chooseCourse` link). Routes that change or spend on a card
+  without teaching it (moves, reorder, diary add and edit, checklist,
+  summary, recap, saving an Ask session) call `readOnlyRefusal` in
+  `lib/packs/cardAccess.ts`. Reading, archiving a diary entry and deleting a
+  goal stay open. Never add a card route that writes or spends without one
+  of the two. The copy lives in `lib/learn/earlierTopic.ts`.
 - **The review answer key never reaches the browser.** Since migration 059 the
   quiz route stores each quiz with its key in `review_quizzes` and sends the
   questions only. `tracker/review/answer` locks one answer per question (the
@@ -328,8 +344,8 @@ picked at random per mastery session.
 ## Key Design Decisions
 | Decision | Choice | Reason |
 |---|---|---|
-| Topic scope | Data/analytics only, LLM-judged gate at every entry point | Keeps tracks coherent; broader scope is a separate product |
-| What Learn teaches | Concepts, not product surface. A topic naming a tool is accepted, and Hugh says up front it will teach the thinking behind it | Hugh teaches by conversation and cannot give hands-on practice. A track on which button to press dates on the next release and disappoints someone who came to learn the tool |
+| Topic scope | Data/analytics only, as a fixed catalog of source-checked courses (narrow Learn). The LLM topic gate is retired with the open-topic path | A syllabus checked against sources can be taught and judged; a model judging a model cannot. Broader scope is a separate product |
+| What Learn teaches | Concepts from a course's reference pack, not product surface. Learners who want a missing subject use the request box, which builds nothing | Hugh teaches by conversation and cannot give hands-on practice, and only a source-checked syllabus lets mastery mean something |
 | Similarity check | LLM-judged (Claude), not string match | Handles paraphrasing correctly |
 | Similarity threshold | >90% alignment = "used best answer" | Generous but meaningful |
 | Review quizzes | Must quote verified diary lines | A quiz on untaught material is noise |

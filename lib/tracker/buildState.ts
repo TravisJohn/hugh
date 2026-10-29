@@ -49,6 +49,16 @@ export function canRetry(state: BuildState): boolean {
 }
 
 /**
+ * Whether to offer Rebuild at all. Since narrow Learn PR D only a course can
+ * be rebuilt: an earlier topic would need the retired open-topic build, so the
+ * retry route refuses one before it checks anything else. The goal card and
+ * the track page both ask this, so neither offers what the server refuses.
+ */
+export function canRebuild(state: BuildState, isCourse: boolean): boolean {
+  return isCourse && canRetry(state);
+}
+
+/**
  * What a library card shows, from the stored status plus two things only the
  * card knows: whether it has just asked for a rebuild, and whether its stall
  * timer has fired. The card watches the build for exactly as long as this

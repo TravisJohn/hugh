@@ -2,30 +2,31 @@ import { type NextRequest, NextResponse, after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
-import { enforceUsageGate } from "@/lib/usage";
-import { textBudgetGuard, textBudgetResponse } from "@/lib/claude/textBudget";
-import { checkTopic } from "@/lib/learn/topicInput";
-import { judgeTopicDomain } from "@/lib/learn/topic-domain-server";
-import { mayProceed } from "@/lib/learn/topic-domain";
 import { generateTrack } from "@/lib/tracker/generate";
 import { buildState, retryVerdict, MAX_BUILDS_PER_GOAL } from "@/lib/tracker/buildState";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 import { canUsePackLearn, PACK_ACCESS_REFUSED } from "@/lib/packs/access";
 import { loadPack, PACK_REFUSAL_MESSAGE, refusalStatus } from "@/lib/packs/catalog";
+import { CHOOSE_COURSE_HREF, EARLIER_TOPIC_NO_REBUILD, isCourseGoal } from "@/lib/learn/earlierTopic";
 import { type LearningGoal } from "@/types";
 
-// Rebuild the track for a goal whose build failed or died mid-flight.
+// Rebuild the track for a course whose build failed or died mid-flight.
 //
-// Before this existed the only remedy was "remove and re-add", which threw
-// away the goal and made the learner re-run the whole Q&A refinement — a
-// second Sonnet call for information they had already given. This reuses the
-// exact machine the first build used: flip to 'pending', generate in after(),
-// settle to 'ready' or 'failed'. The client watches it with the same
-// useTrackStatusWatch hook, so there is one state machine, not two.
+// It reuses the exact machine the first build used: flip to 'pending',
+// generate in after(), settle to 'ready' or 'failed'. The client watches it
+// with the same useTrackStatusWatch hook, so there is one state machine, not
+// two.
 //
-// Mirrors goals/route.ts and document/approve's maxDuration for the same
-// reason: the after() work must outlive the response.
+// Since narrow Learn PR D only a course can be rebuilt. An earlier topic
+// would need the retired open-topic build, so it is refused before anything
+// else, with a way out to the catalog rather than a dead end (Rule 5). A
+// course rebuild lays out the pack's cards and spends nothing, so there is no
+// usage gate (phase 1 architecture, decision 2); the rebuild ceiling below
+// still holds.
+//
+// Mirrors goals/route.ts's maxDuration: the after() work must outlive the
+// response.
 export const maxDuration = 120;
 
 export async function POST(
@@ -50,23 +51,16 @@ export async function POST(
   }
 
   const g = goal as LearningGoal;
-  const isCourse = g.source_kind === "pack";
 
-  // A topic retry spends a full track-generation call, so it is gated like any
-  // other spend; without this, a failing build would be an unmetered loop. A
-  // course rebuild lays out the pack's cards and spends nothing, so it is not
-  // (phase 1 architecture, decision 2). The rebuild ceiling below still holds
-  // for both. Loading the goal first costs one query on a refusal, which is
-  // what knowing the kind of goal takes.
-  if (!isCourse) {
-    const usageGate = await enforceUsageGate(userId, "tracker/generate");
-    if (usageGate) {
-      void recordOperation({
-        userId, operation: "track.retry", outcome: "refused",
-        detail: { reason: "usage-gate", source: g.source_kind },
-      });
-      return usageGate;
-    }
+  if (!isCourseGoal(g)) {
+    void recordOperation({
+      userId, operation: "track.retry", outcome: "refused",
+      detail: { reason: "earlier-topic", source: g.source_kind },
+    });
+    return NextResponse.json(
+      { error: EARLIER_TOPIC_NO_REBUILD, chooseCourse: CHOOSE_COURSE_HREF, verdict: "earlier-topic" },
+      { status: 409 },
+    );
   }
 
   // "Does a usable board already exist?" is part of the decision: a goal can
@@ -116,9 +110,8 @@ export async function POST(
   // That makes each refusal below load-bearing. 'nothing-wrong' is the branch
   // standing between a stale tab and the diary of a track that was never
   // broken; 'still-building' stops a rebuild racing a live one, which would
-  // delete the track the running after() is mid-write into. The second Sonnet
-  // call these also avoid is the cheap half of what they are doing. Do not
-  // relax this guard as a cost optimisation.
+  // delete the track the running after() is mid-write into. Do not relax this
+  // guard as a cost optimisation.
   const state   = buildState(g.track_status, g.track_started_at ?? g.created_at, Date.now());
   // A failed count reads as 0, which allows the rebuild. That is deliberate:
   // the ceiling exists to stop a runaway loop, and refusing a legitimate
@@ -144,33 +137,26 @@ export async function POST(
     return NextResponse.json({ error: reason, verdict }, { status: 409 });
   }
 
-  // A course is checked against the catalog instead of the topic gate. The
-  // goal row is learner-writable, so neither `source_kind` nor `pack_id` is
-  // trusted here: course access is checked again, and the id must name a
+  // The goal row is learner-writable, so neither `source_kind` nor `pack_id`
+  // is trusted here: course access is checked again, and the id must name a
   // teachable pack. Then it rebuilds from the pack, exactly as it was built.
-  let coursePackId: string | null = null;
-  if (isCourse) {
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("is_blocked")
-      .eq("user_id", userId)
-      .single();
-    if (profileError) {
-      logSafeError("goals/retry course access", profileError);
-      return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
-    }
-    if (!canUsePackLearn(profile)) {
-      return NextResponse.json({ error: PACK_ACCESS_REFUSED }, { status: 403 });
-    }
-    const loaded = loadPack(g.pack_id ?? "");
-    if (!loaded.ok) {
-      return NextResponse.json({ error: PACK_REFUSAL_MESSAGE[loaded.reason] }, { status: refusalStatus(loaded.reason) });
-    }
-    coursePackId = loaded.pack.id;
-  } else {
-    const refused = await recheckTopic(g, userId);
-    if (refused) return refused;
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("is_blocked")
+    .eq("user_id", userId)
+    .single();
+  if (profileError) {
+    logSafeError("goals/retry course access", profileError);
+    return NextResponse.json({ error: "Hugh couldn't check course access right now. Please try again." }, { status: 503 });
   }
+  if (!canUsePackLearn(profile)) {
+    return NextResponse.json({ error: PACK_ACCESS_REFUSED }, { status: 403 });
+  }
+  const loaded = loadPack(g.pack_id ?? "");
+  if (!loaded.ok) {
+    return NextResponse.json({ error: PACK_REFUSAL_MESSAGE[loaded.reason] }, { status: refusalStatus(loaded.reason) });
+  }
+  const packId = loaded.pack.id;
 
   const startedAt = new Date().toISOString();
 
@@ -203,18 +189,13 @@ export async function POST(
         throw new Error(`could not clear the previous track: ${clearError.message}`);
       }
 
-      if (coursePackId) await generateTrack(service, userId, { kind: "pack", packId: coursePackId }, goalId);
-      else              await generateTrack(service, userId, g.topic, goalId);
+      await generateTrack(service, userId, { kind: "pack", packId }, goalId);
       await service.from("learning_goals").update({ track_status: "ready" }).eq("id", goalId);
       await recordOperation({
         userId, operation: "track.retry", outcome: "ok",
         durationMs: Date.now() - rebuiltAt,
-        // `source` matches what goals/route.ts and document/approve record, so
-        // "which entry path produces the most rebuilds?" is answerable from
-        // one column instead of a join nobody will write. A rebuild of a
-        // document-sourced goal is also a materially different operation: the
-        // extracted text was deleted after the first read, so it regenerates
-        // from the topic alone.
+        // `source` matches what goals/route.ts records, so "which entry path
+        // produces the most rebuilds?" stays answerable from one column.
         detail: { previousState: state, source: g.source_kind },
       });
     } catch (err) {
@@ -231,47 +212,4 @@ export async function POST(
   return NextResponse.json({
     goal: { ...g, track_status: "pending", track_started_at: startedAt },
   });
-}
-
-/**
- * A stored goal is not proof that its topic passed the gate. RLS lets an
- * authenticated learner create their own goal row directly, and retry used
- * to send that row straight to generation. Recheck before changing state or
- * deleting any partial track. The ordinary create path makes the same call.
- * Returns the refusal to send, or null to proceed.
- */
-async function recheckTopic(g: LearningGoal, userId: string): Promise<NextResponse | null> {
-  const checkedTopic = checkTopic(g.topic);
-  if (!checkedTopic.ok) {
-    return NextResponse.json({
-      error: "This goal's topic cannot be checked. Start a new learning track with a shorter, clear topic.",
-    }, { status: 422 });
-  }
-  if (checkedTopic.topic !== g.topic) {
-    return NextResponse.json({
-      error: "This stored topic contains unsupported formatting. Start a new learning track with a clear, single-line topic.",
-    }, { status: 422 });
-  }
-
-  let topicVerdict;
-  try {
-    topicVerdict = await judgeTopicDomain(
-      checkedTopic.topic, userId, [], textBudgetGuard(userId, "learn/topic-domain"),
-    );
-  } catch (err) {
-    const refusal = textBudgetResponse(err);
-    if (refusal) return refusal;
-    return NextResponse.json({
-      error: "Hugh couldn't check this topic right now. Please try rebuilding later.",
-    }, { status: 503 });
-  }
-  if (!mayProceed(topicVerdict)) {
-    return NextResponse.json({
-      error: topicVerdict.verdict === "needs_angle"
-        ? "This topic needs a clearer data angle. Start a new learning track so Hugh can ask what you mean."
-        : topicVerdict.message || "This topic sits outside Hugh's data and analytics focus.",
-    }, { status: 422 });
-  }
-
-  return null;
 }

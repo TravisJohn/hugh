@@ -46,7 +46,9 @@ const PLAN_FAILURE_EXEMPT: Record<string, string> = {
 describe("subscription mode — route guards", () => {
   it("finds the routes it guards, so an empty scan cannot pass for a clean one", () => {
     expect(routes.filter(r => PAID_KEYS.test(r.src)).length).toBeGreaterThanOrEqual(5);
-    expect(routes.filter(r => r.src.includes("claudeClient()")).length).toBeGreaterThanOrEqual(15);
+    // Twelve since narrow Learn PR D took three routes off Claude: refine and
+    // document extract are retired, and goal creation only builds courses.
+    expect(routes.filter(r => r.src.includes("claudeClient()")).length).toBeGreaterThanOrEqual(12);
   });
 
   it("switches off every route that pays OpenAI or ElevenLabs, before it reserves anything", () => {

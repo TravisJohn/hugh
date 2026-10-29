@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { isValidPointTag } from "@/lib/tracker/points";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 
 /**
  * Edit a diary entry, accept Hugh's suggested correction, or re-tag it to a
@@ -42,6 +43,24 @@ export async function PATCH(
     .single();
 
   if (!existing) return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+
+  // An earlier topic's diary is kept to read (narrow Learn PR D, decision 2):
+  // nothing that changes what an entry says. Archive and restore are how the
+  // diary deletes and undeletes, and deleting stays allowed.
+  if (body.action !== "archive" && body.action !== "restore") {
+    const { data: card, error: cardError } = await supabase
+      .from("milestones")
+      .select("concept_ids")
+      .eq("id", existing.milestone_id)
+      .maybeSingle();
+    if (cardError) {
+      console.error("[tracker/entries PATCH] card lookup error:", cardError.message);
+      return NextResponse.json({ error: "Failed to update entry" }, { status: 500 });
+    }
+    if (!card) return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+    const readOnly = readOnlyRefusal(card.concept_ids as string[] | null);
+    if (readOnly) return readOnly;
+  }
 
   // Resolve an optional re-tag once (a tag pointing at a missing point is dropped).
   const hasPointKey = Object.prototype.hasOwnProperty.call(body, "pointId");

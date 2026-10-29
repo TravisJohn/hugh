@@ -7,6 +7,7 @@ import { enforceUsageGate, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import type { MasteryTranscriptTurn } from "@/types";
 import { masteryRecapPrompt } from "@/lib/claude/prompts";
+import { readOnlyRefusal } from "@/lib/packs/cardAccess";
 
 export const dynamic = "force-dynamic";
 
@@ -40,15 +41,6 @@ export async function POST(request: NextRequest) {
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const usageGate = await enforceUsageGate(userId, "mastery/recap");
-  if (usageGate) {
-    void recordOperation({
-      userId, operation: "mastery.recap", outcome: "refused",
-      detail: { reason: "usage-gate" },
-    });
-    return usageGate;
-  }
-
   const body = (await request.json()) as { milestoneId?: string; transcript?: unknown };
   const { milestoneId } = body;
   if (!milestoneId) {
@@ -62,13 +54,28 @@ export async function POST(request: NextRequest) {
   // Ownership + title for the recap prompt.
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("id, title, tracks!track_id!inner(user_id)")
+    .select("id, title, concept_ids, tracks!track_id!inner(user_id)")
     .eq("id", milestoneId)
     .single();
 
-  const owner = (milestone as unknown as { tracks?: { user_id: string } } | null)?.tracks?.user_id;
+  const card  = milestone as unknown as { concept_ids?: string[] | null; tracks?: { user_id: string } } | null;
+  const owner = card?.tracks?.user_id;
   if (!milestone || owner !== userId) {
     return NextResponse.json({ error: "Milestone not found" }, { status: 404 });
+  }
+  // An earlier topic is read-only (narrow Learn PR D), so no recap is drawn up.
+  const readOnly = readOnlyRefusal(card?.concept_ids);
+  if (readOnly) return readOnly;
+
+  // Reserved only once the card qualifies: a refusal above would otherwise
+  // leave a reservation behind until it expired.
+  const usageGate = await enforceUsageGate(userId, "mastery/recap");
+  if (usageGate) {
+    void recordOperation({
+      userId, operation: "mastery.recap", outcome: "refused",
+      detail: { reason: "usage-gate" },
+    });
+    return usageGate;
   }
 
   const prompt = masteryRecapPrompt({

@@ -68,8 +68,8 @@ function fakeClient(replies: () => Result[], update: ReturnType<typeof vi.fn>, i
 }
 
 const owned = (over: Record<string, unknown> = {}) =>
-  reply({ id: "card", title: "Collinearity", mastery_validated: false, tracks: { user_id: "alice" }, ...over });
-const notMine = reply({ id: "card", title: "Collinearity", mastery_validated: false, tracks: { user_id: "bob" } });
+  reply({ id: "card", concept_ids: ["linear-regression:collinearity"], title: "Collinearity", mastery_validated: false, tracks: { user_id: "alice" }, ...over });
+const notMine = reply({ id: "card", concept_ids: ["linear-regression:collinearity"], title: "Collinearity", mastery_validated: false, tracks: { user_id: "bob" } });
 
 function patch(body: unknown) {
   return PATCH(
@@ -91,10 +91,13 @@ function evaluate() {
   }));
 }
 
-/** The evaluator's reply, as Sonnet would send it. */
+/**
+ * The evaluator's reply, as Sonnet would send it for a course card: it also
+ * lists the syllabus misconceptions the learner held, here none.
+ */
 function scored(json: object) {
   mocks.ai.mockResolvedValue({
-    content: [{ type: "text", text: JSON.stringify(json) }],
+    content: [{ type: "text", text: JSON.stringify({ misconceptionsHeld: [], ...json }) }],
     usage: { input_tokens: 10, output_tokens: 5 },
   });
 }
@@ -151,10 +154,13 @@ const CARD = "11111111-1111-4111-8111-111111111111";
 const NOTE = "Variance inflation factor measures how much collinearity inflates a coefficient's variance. " +
              "A VIF above ten is usually read as a warning sign worth investigating.";
 const STORED = [
+  // The card is a course card (narrow Learn PR D refuses any other), so each
+  // question names the key point it tests: `concept:n` on linear-regression's
+  // collinearity concept. The route discards a question that names none.
   { question: "What does VIF measure?", options: ["Bias", "Variance inflation", "Fit", "Skew"], correctIndex: 1,
-    explanation: "It measures inflation.", source: "measures how much collinearity inflates" },
+    explanation: "It measures inflation.", source: "measures how much collinearity inflates", keyPoint: "collinearity:1" },
   { question: "Which VIF is a warning?", options: ["1", "2", "5", "Above ten"], correctIndex: 3,
-    explanation: "Above ten is the warning.", source: "A VIF above ten is usually read as a warning" },
+    explanation: "Above ten is the warning.", source: "A VIF above ten is usually read as a warning", keyPoint: "collinearity:2" },
 ];
 const quizRow = (over: Record<string, unknown> = {}) =>
   reply({ id: QZ, user_id: "alice", milestone_id: CARD, questions: STORED, ...over });

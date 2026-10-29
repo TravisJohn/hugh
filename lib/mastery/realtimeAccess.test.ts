@@ -44,7 +44,7 @@ beforeEach(() => {
   mocks.from.mockImplementation((table: string) => {
     const result = table === "profiles" ? { data: profile, error: profileError }
       : table === "milestone_entries" ? { data: [], count: 1, error: null }
-      : { data: milestoneFound ? { id: "milestone", title: "SQL", summary_doc: "A short summary", kanban_column: "done", tracks: { user_id: "alice", goal_id: "goal" } } : null, error: null };
+      : { data: milestoneFound ? { id: "milestone", concept_ids: ["linear-regression:collinearity"], title: "SQL", summary_doc: "A short summary", kanban_column: "done", tracks: { user_id: "alice", goal_id: "goal" } } : null, error: null };
     const chain = { select: vi.fn(), eq: vi.fn(), single: vi.fn(), then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
     chain.select.mockReturnValue(chain);
     chain.single.mockReturnValue(chain);

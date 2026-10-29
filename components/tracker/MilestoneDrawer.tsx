@@ -56,6 +56,14 @@ interface Props {
  */
 const SUMMARY_HUMAN_REFUSALS = [409, 413, 422] as const;
 
+/**
+ * The diary routes' one refusal written to be read: a 409 is only ever an
+ * earlier topic, which keeps its diary to read and not to change (narrow
+ * Learn PR D). Showing its sentence says why, where "Hugh wouldn't accept
+ * that change" would not.
+ */
+const DIARY_REFUSALS_WRITTEN_FOR_A_LEARNER = [409] as const;
+
 const COLUMN_COLOURS: Record<string, string> = {
   backlog: "text-slate-400 bg-slate-800",
   learn:   "text-sky-400 bg-sky-900/40",
@@ -387,6 +395,7 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
           headers: { "Content-Type": "application/json" },
           body:    JSON.stringify({ body: draft.trim(), title: draftTitle.trim() || undefined, pointId: draftPointId }),
         }),
+        DIARY_REFUSALS_WRITTEN_FOR_A_LEARNER,
       );
       // On a refusal the banner explains it and the draft below is left alone,
       // so the learner's typing is still there to send again.
@@ -412,6 +421,7 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ action: "accept" }),
       }),
+      DIARY_REFUSALS_WRITTEN_FOR_A_LEARNER,
     );
     if (d?.entry) replaceEntry(d.entry);
   }
@@ -431,6 +441,7 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ body: editBody.trim(), title: editTitle.trim() || undefined }),
       }),
+      DIARY_REFUSALS_WRITTEN_FOR_A_LEARNER,
     );
     // The editor stays open on a refusal — closing it would strand the rewrite
     // the learner just typed behind an entry still showing the old text.
@@ -450,6 +461,7 @@ export default function MilestoneDrawer({ milestone, goalId, onClose, onCoverage
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ pointId }),
       }),
+      DIARY_REFUSALS_WRITTEN_FOR_A_LEARNER,
     );
     if (d?.entry) replaceEntry(d.entry);
   }

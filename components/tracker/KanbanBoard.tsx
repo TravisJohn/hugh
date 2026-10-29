@@ -37,13 +37,15 @@ interface Props {
   masteredId?:       string;
   isPremium?:        boolean;
   isAdmin?:          boolean;
+  /** An earlier topic's board: open to read, with no moves (narrow Learn PR D). */
+  readOnly?:         boolean;
 }
 
 export default function KanbanBoard({
   initialMilestones, cardSources, goalId, trackId, focusMilestoneId,
   backlogPriorityMode = "auto",
   pulseId: initialPulseId, validatedId, masteredId,
-  isPremium = false, isAdmin = false,
+  isPremium = false, isAdmin = false, readOnly = false,
 }: Props) {
   const router   = useRouter();
   const pathname = usePathname();
@@ -118,9 +120,10 @@ export default function KanbanBoard({
     return () => clearTimeout(t);
   }, [pulseId]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
+  // A read-only board has no sensor, so no card can be picked up at all,
+  // rather than one that drops and then snaps back when the server refuses.
+  const pointer = useSensor(PointerSensor, { activationConstraint: { distance: 5 } });
+  const sensors = useSensors(readOnly ? null : pointer);
 
   function handleDragStart({ active }: DragStartEvent) {
     const ms = milestones.find(m => m.id === active.id);
@@ -158,6 +161,7 @@ export default function KanbanBoard({
   }
 
   function moveMilestoneToColumn(milestoneId: string, newColumn: KanbanColumn) {
+    if (readOnly) return;   // the server refuses it too; the page header says why
     const current     = milestones.find(m => m.id === milestoneId);
     if (!current || current.kanban_column === newColumn) return;
 
@@ -236,6 +240,7 @@ export default function KanbanBoard({
 
   // Manual reorder: swap a backlog card with its neighbour and persist.
   function moveCard(milestoneId: string, dir: "up" | "down") {
+    if (readOnly) return;
     const backlog = milestones
       .filter(m => m.kanban_column === "backlog")
       .sort((a, b) => a.position - b.position);
@@ -357,7 +362,8 @@ export default function KanbanBoard({
                 pulseId={pulseId}
                 focusId={focusId}
                 isDragging={!!draggingMilestone}
-                priorityMode={priorityMode}
+                // "auto" on a read-only board, so no reorder arrows are drawn
+                priorityMode={readOnly ? "auto" : priorityMode}
                 mobileActive={mobileColumn === col}
                 onToggleMode={toggleMode}
                 onMoveCard={moveCard}

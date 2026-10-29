@@ -12,8 +12,9 @@ import {
   buildEntriesText, sourceCharCount, questionTarget, keepGroundedQuestions, keepSyllabusQuestions,
   MIN_QUESTIONS, type DiaryEntry,
 } from "@/lib/tracker/quizSource";
-import { cardGrounding, cardKeyPointRefs, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
+import { cardGrounding, cardKeyPointRefs, renderCardSyllabus } from "@/lib/packs/grounding";
 import { toPublicQuestions } from "@/lib/tracker/reviewGrading";
+import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 
 const anthropic = claudeClient();
 
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
   // words, never quizzed ungrounded.
   const grounding = cardGrounding(milestone.concept_ids);
   if (grounding.kind === "refused") {
-    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+    return groundingRefusalResponse(grounding.reason);
   }
   const course = grounding.kind === "ok" ? grounding.ground : null;
 

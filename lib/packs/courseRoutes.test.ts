@@ -27,7 +27,7 @@ import { POST as chat } from "@/app/api/learn/chat/route";
 import { POST as session } from "@/app/api/tracker/mastery/session/route";
 import { POST as verify } from "@/app/api/tracker/entries/[entryId]/verify/route";
 import { POST as quiz } from "@/app/api/tracker/review/quiz/route";
-import { focusedLearningSystemPrompt } from "@/lib/claude/prompts";
+import { CHOOSE_COURSE_HREF, EARLIER_TOPIC_READ_ONLY } from "@/lib/learn/earlierTopic";
 import { cardGrounding, GROUNDING_REFUSAL_MESSAGE, misconceptionsByRef, renderCardSyllabus, type CardGround } from "./grounding";
 
 const COURSE_CARD = ["linear-regression:collinearity"];
@@ -104,17 +104,21 @@ describe("Ask on a course card", () => {
     expect(mocks.ai).not.toHaveBeenCalled();
   });
 
-  it("leaves an open-topic card on today's prompt, with the browser's topic", async () => {
+  it("refuses an earlier topic with the read-only sentence and the catalog link, and spends nothing", async () => {
+    // narrow Learn PR D: this card used to be taught from the browser's topic.
     userReplies = [card([])];
-    mocks.ai.mockResolvedValue(text('{"reply":"Hi","isOffTopic":false,"codeExample":null,"covered":false}'));
-    await ask({ milestoneId: "card" });
-    expect(mocks.ai.mock.calls[0]![3].system).toBe(focusedLearningSystemPrompt("Whatever the browser says"));
+    const res = await ask({ milestoneId: "card" });
+    expect(res.status).toBe(409);
+    expect(await res.json()).toEqual({ error: EARLIER_TOPIC_READ_ONLY, chooseCourse: CHOOSE_COURSE_HREF });
+    expect(mocks.ai).not.toHaveBeenCalled();
   });
 
-  it("asks nothing of the database when no card is named, exactly as before", async () => {
-    mocks.ai.mockResolvedValue(text('{"reply":"Hi","isOffTopic":false,"codeExample":null,"covered":false}'));
-    await ask({});
+  it("refuses a request that names no card, before the database or the model", async () => {
+    // Ask teaches one card since PR D; there is no open-topic tutor to fall back to.
+    const res = await ask({});
+    expect(res.status).toBe(400);
     expect(mocks.userDb.from).not.toHaveBeenCalled();
+    expect(mocks.ai).not.toHaveBeenCalled();
   });
 });
 
@@ -154,14 +158,14 @@ describe("scripted mastery on a course card (PRD row 4)", () => {
     expect(mocks.serviceDb.from).not.toHaveBeenCalled();
   });
 
-  it("leaves an open-topic card's prompt exactly as it was", async () => {
+  it("refuses an earlier topic's session with the read-only sentence, scoring and recording nothing", async () => {
+    // narrow Learn PR D: this card used to be judged against its own notes.
     userReplies = [card([]), notes];
-    mocks.ai.mockResolvedValue(text(JSON.stringify({ score: 6, feedback: "Partly.", passed: false })));
-    await evaluate();
-    const prompt = mocks.ai.mock.calls[0]![3].messages[0].content as string;
-    expect(prompt).not.toContain("<course_syllabus>");
-    expect(prompt).not.toContain("misconceptionsHeld");
-    expect(prompt).toMatch(/factually correct relative to their own notes/);
+    const res = await evaluate();
+    expect(res.status).toBe(409);
+    expect(await res.json()).toEqual({ error: EARLIER_TOPIC_READ_ONLY, chooseCourse: CHOOSE_COURSE_HREF });
+    expect(mocks.ai).not.toHaveBeenCalled();
+    expect(mocks.serviceDb.from).not.toHaveBeenCalled();
   });
 });
 
@@ -190,6 +194,17 @@ describe("the diary check on a course card", () => {
     ];
     const res = await check();
     expect(res.status).toBe(503);
+    expect(mocks.claude).not.toHaveBeenCalled();
+  });
+
+  it("refuses to check an earlier topic's note, with the read-only sentence", async () => {
+    userReplies = [
+      reply({ id: "e1", body: "A note.", milestone_id: "card", gap_note: null }),
+      reply({ title: "SQL joins", concept_ids: null, tracks: { topic_description: "t" } }),
+    ];
+    const res = await check();
+    expect(res.status).toBe(409);
+    expect((await res.json()).error).toBe(EARLIER_TOPIC_READ_ONLY);
     expect(mocks.claude).not.toHaveBeenCalled();
   });
 });
@@ -223,13 +238,13 @@ describe("the review quiz on a course card", () => {
     expect(mocks.serviceDb.from).not.toHaveBeenCalled();
   });
 
-  it("keeps an open-topic card's quiz exactly as it was", async () => {
+  it("refuses an earlier topic's quiz with the read-only sentence, generating and storing nothing", async () => {
+    // narrow Learn PR D: this card used to get a quiz drawn from its notes alone.
     userReplies = [card([]), notes];
-    serviceReplies = [reply({ id: "quiz-1" })];
-    mocks.claude.mockResolvedValue(text(JSON.stringify([question(), question()])));
-    expect((await generate()).status).toBe(200);
-    const prompt = mocks.claude.mock.calls[0]![0].messages[0].content as string;
-    expect(prompt).not.toContain("<course_syllabus>");
-    expect(prompt).not.toContain("keyPoint");
+    const res = await generate();
+    expect(res.status).toBe(409);
+    expect((await res.json()).error).toBe(EARLIER_TOPIC_READ_ONLY);
+    expect(mocks.claude).not.toHaveBeenCalled();
+    expect(mocks.serviceDb.from).not.toHaveBeenCalled();
   });
 });

@@ -37,6 +37,18 @@ describe("chatOutcome - the server's own words, where it wrote them for a learne
     const out = chatOutcome(403, { error: "   " });
     if (!out.ok) expect(out.message.trim().length).toBeGreaterThan(0);
   });
+
+  it("shows why an earlier topic is read-only, and offers no retry that could not work", () => {
+    // narrow Learn PR D: the card is refused for good, so the learner needs the
+    // reason, not "Hugh couldn't take that question" and a Send-again button.
+    const READ_ONLY = "This is an earlier topic, kept for you to read. It wasn't built from a source-checked course.";
+    const out = chatOutcome(409, { error: READ_ONLY });
+    expect(out.ok).toBe(false);
+    if (!out.ok) {
+      expect(out.message).toBe(READ_ONLY);
+      expect(out.canRetry).toBe(false);
+    }
+  });
 });
 
 describe("chatOutcome - nothing to append to the conversation", () => {

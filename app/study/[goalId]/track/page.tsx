@@ -9,6 +9,9 @@ import HeaderUsage from "@/components/usage/HeaderUsage";
 import KanbanBoard from "@/components/tracker/KanbanBoard";
 import TrackBuildPanel from "@/components/tracker/TrackBuildPanel";
 import { buildState, trackViewState } from "@/lib/tracker/buildState";
+import {
+  CHOOSE_COURSE_HREF, CHOOSE_COURSE_LABEL, EARLIER_TOPIC_LABEL, isCourseGoal,
+} from "@/lib/learn/earlierTopic";
 import { type LearningGoal, type Track, type Milestone } from "@/types";
 import RecordActivity from "@/components/monitor/RecordActivity";
 
@@ -75,6 +78,8 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
   // A 'ready' goal reaching the panel means the board is missing or empty,
   // which is a failure however the row is labelled.
   const panelState = build === "ready" ? "failed" : build;
+  // An earlier topic opens to be read, not worked (narrow Learn PR D).
+  const isCourse   = isCourseGoal(g);
 
   // Days-remaining reminder — nudges amber ≤7 days out, rose once due/overdue.
   const days      = daysUntil(g.end_date);
@@ -126,6 +131,20 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
           <h1 className="min-w-0 truncate text-sm font-semibold text-slate-200" title={g.topic}>
             {g.topic}
           </h1>
+          {!isCourse && (
+            <>
+              <span className="shrink-0 rounded-lg border border-slate-700 px-2 py-0.5 text-xs text-slate-400">
+                <span className="sm:hidden">Earlier topic</span>
+                <span className="hidden sm:inline">{EARLIER_TOPIC_LABEL}</span>
+              </span>
+              <Link
+                href={CHOOSE_COURSE_HREF}
+                className="shrink-0 text-xs font-semibold text-emerald-300 transition-colors hover:text-emerald-200"
+              >
+                {CHOOSE_COURSE_LABEL}
+              </Link>
+            </>
+          )}
           <span className={`ml-auto flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold ${daysTone}`}>
             <CalendarClock size={12} />
             {daysLabel}
@@ -135,13 +154,14 @@ export default async function StudyTrackPage({ params, searchParams }: Props) {
         {view === "board" && t ? (
           /* Kanban board */
           <div className="min-h-0 flex-1 overflow-hidden px-3 py-3 sm:px-6 sm:py-5">
-            <KanbanBoard initialMilestones={milestones} cardSources={boardSources(milestones)} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} />
+            <KanbanBoard initialMilestones={milestones} cardSources={boardSources(milestones)} goalId={goalId} trackId={t.id} focusMilestoneId={t.focus_milestone_id} backlogPriorityMode={t.backlog_priority_mode} pulseId={pulseId} validatedId={validatedId} masteredId={masteredId} isPremium={isPremium} isAdmin={isAdmin} readOnly={!isCourse} />
           </div>
         ) : (
           <TrackBuildPanel
             goalId={goalId}
             initialState={view === "building" ? "building" : panelState}
             emptyBoard={Boolean(t) && milestones.length === 0}
+            isCourse={isCourse}
           />
         )}
 

@@ -8,7 +8,8 @@ import { checkUsageAllowed, logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
 import { logSafeError } from "@/lib/observability/log";
 import { writeOutcome } from "@/lib/supabase/writeResult";
-import { cardGrounding, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
+import { cardGrounding, renderCardSyllabus } from "@/lib/packs/grounding";
+import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 
 const anthropic = claudeClient();
 
@@ -65,7 +66,7 @@ export async function POST(
   // can't be taught is refused in its own words, not checked ungrounded.
   const grounding = cardGrounding((milestone?.concept_ids as string[] | null | undefined) ?? null);
   if (grounding.kind === "refused") {
-    return NextResponse.json({ error: GROUNDING_REFUSAL_MESSAGE[grounding.reason] }, { status: 503 });
+    return groundingRefusalResponse(grounding.reason);
   }
   const course = grounding.kind === "ok" ? grounding.ground : null;
 
