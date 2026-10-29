@@ -9526,3 +9526,75 @@ Still not seen: the four other moods on a real page, since nothing uses
 them yet.
 
 Gate: 2,120 tests pass (34 new), the type check and lint are clean.
+
+## 2026-10-28 - Sign-up is called Sign up, and the landing page offers it
+
+Travis went to make a test account on PR #41's preview and could not find
+where to sign up. The landing header offered only "Sign in". The login page
+called the way in "Create one free", the landing cards called it "Create
+account", and the hero's main button, "Start practicing free", went to
+/login, not /signup.
+
+The fix:
+- The landing header has a "Sign up" button beside "Sign in".
+- The hero's main button goes to /signup and is called "Sign up free".
+  "Start practicing" was interview-trainer copy.
+- The login page and the landing cards call the link "Sign up".
+- The sign-up form's button reads "Create account", in sentence case like
+  the rest of the page.
+
+`lib/auth/signUpLinks.test.ts` scans app/ and components/ for links to
+/signup. Each must be called Sign up, and the landing and login pages must
+each have one. Run against main's pages, it fails on exactly the two old
+names and the missing landing link.
+
+Checked in the local preview: the header, the hero, a landing card and the
+login page, plus the header at phone width (375px, no sideways scroll).
+
+Gate: 2,089 tests pass (3 new), the type check and lint are clean.
+
+## 2026-10-29 - Hugh can run locally on the Claude plan (built, not merged)
+
+Travis wanted to explore Hugh locally on his Claude Pro plan instead of the
+paid API key, without watching tokens burn. Built on
+`feat/claude-subscription-local` in six stages, each approved before the
+next; `main` was not touched. The design and every finding are in
+`docs/claude-subscription-local-mode.md`.
+
+How it works:
+- `npm run dev:subscription` starts `next dev` on 127.0.0.1 with plan mode on.
+  Every Claude call goes through `claudeClient()`, which in plan mode runs
+  headless `claude -p` on a Hugh-only login in `~/.claude-hugh`
+  (`npm run subscription:login`). Hugh never reads or stores the plan's token.
+- The child process gets an allow-listed environment, so it can't see Hugh's
+  API key, and a call that starts on a key is killed before it sends anything.
+- Usage rows still log, with `@subscription` on the model, priced at $0.
+
+Guards:
+- Owner only. Every account but `HUGH_SUBSCRIPTION_OWNER_ID` is refused
+  before anything is reserved.
+- OpenAI and ElevenLabs features say they're off: the plan covers Claude
+  only. Scripted mastery doesn't start, because its voice is ElevenLabs.
+- Plan failures get their own messages (limit reached with its reset time,
+  signed out, timeout). After a limit no new call starts until the reset,
+  and paid extra usage counts as a limit.
+- Never in production. Plan mode throws under `NODE_ENV=production` or on
+  Vercel, and a production build with the flag set fails. CI tests pin where
+  the flag can be set and that the server listens only on 127.0.0.1.
+
+Contract check on the plan: evaluate, the review quiz and a track build all
+passed. Ask Hugh chats came in under the agreed bar: 16/20 strict JSON (bar
+19) and 19/20 clean replies (bar 20), after a prompt-shape fix raised strict
+from 12. The weak spot is answers that contain a code block. Accepted as
+measured; the paid API wasn't run for comparison.
+
+Browser test, same day: as the test learner, 10 Ask Hugh chats, a session
+summary and a review quiz all ran on the plan at $0 and rendered cleanly, and
+the owner lock refused Travis's own account. It also surfaced a bug on
+`main`: the budget gate keeps each chat's large reservation for 150 s after
+the call is logged, so the seventh chat in five minutes was refused as
+"monthly limit reached" at 27% of the month's tokens. Proposed as its own
+fix; details in the doc's §14.
+
+Gate: 2,234 tests pass (about 110 new on this branch), the type check and
+lint are clean, and the build passes.

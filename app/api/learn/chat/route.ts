@@ -1,7 +1,7 @@
 import { readTextRequest } from "@/lib/claude/textRequest";
 import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { parseChatResponse } from "@/lib/askcode/parse";
 import { logUsage } from "@/lib/usage";
@@ -12,7 +12,7 @@ import { cardGrounding } from "@/lib/packs/grounding";
 import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 import { courseAskSystemPrompt } from "@/lib/packs/askPrompt";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.

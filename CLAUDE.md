@@ -98,6 +98,22 @@ budget and then spends against it invisibly.
   and `logUsage` warns in dev.
 - Retry loops accumulate tokens across attempts — a discarded attempt still costs
   money and must still be logged.
+- Adding a Claude model also means adding its `@subscription` twin at $0 (a test
+  fails otherwise) — see local plan mode below.
+
+### Local plan mode (`npm run dev:subscription`)
+The owner can run Hugh locally on their own Claude plan instead of the API key
+(docs/claude-subscription-local-mode.md). Local only, owner only; a production
+build with the flag set fails. What it asks of new code:
+- In app code, get a Claude client from `claudeClient()` (`lib/claude/client.ts`),
+  never `new Anthropic(...)`. Its `create` takes text in and text out only. (The
+  two offline operator scripts stay on the API key.)
+- A route that calls Claude shows plan failures through `textBudgetResponse`
+  or `planFailureResponse`.
+- A route that pays OpenAI or ElevenLabs calls `paidServiceOffResponse` before
+  its usage gate: the plan covers Claude only.
+
+Guard tests read the routes and fail when any of these is missing.
 
 **`learner_notes` is not the `/notes` workspace.** The margin (`lib/margin/`,
 `components/margin/`, migration 045) is a plain textarea that saves — one note
@@ -143,6 +159,7 @@ OPENAI_MODEL                    # optional — admin architecture assistant
 HUGH_ADMIN_URL                  # optional — admin architecture assistant
 MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery
 SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
+HUGH_SUBSCRIPTION_OWNER_ID      # optional — local plan mode only: the one user it serves
 ```
 
 ## Folder Structure

@@ -1,7 +1,7 @@
 import { readTextRequest } from "@/lib/claude/textRequest";
 import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { logUsage } from "@/lib/usage";
 import { recordOperation } from "@/lib/observability/record";
@@ -13,7 +13,7 @@ import { GROUP_LABELS } from "@/types/cloud";
 // in CLAUDE.md). Server-side only; the browser never sees the API key. The
 // service's own facts are loaded here and injected into the system prompt so
 // answers stay grounded and on-domain rather than free-associating.
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.

@@ -3,6 +3,7 @@ import { NextResponse, after } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { deferOrRun } from "@/lib/afterResponse";
 import { isKnownModel } from "@/lib/pricing";
+import { mayUseClaude, resolveClaudeBilling, servableByPlan, usageModelFor } from "@/lib/claude/billingMode";
 import {
   type QuotaProfile,
   type QuotaDecision,
@@ -84,12 +85,17 @@ export async function logUsage({
 }): Promise<void> {
   if (!tokensIn && !tokensOut && !ttsChars) return;
 
+  // A Claude call the owner's plan served is logged under its $0 rate class
+  // (lib/claude/billingMode.ts). Billing is resolved for Claude rows only, so a
+  // misconfigured flag can never cost an OpenAI or TTS row its record.
+  const rowModel = model && servableByPlan(model) ? usageModelFor(resolveClaudeBilling(process.env), model) : model;
+
   // A token-spending row with no known model would be priced at the fallback
   // rate, silently mis-stating spend. Surface it in dev rather than swallow it.
-  if (process.env.NODE_ENV !== "production" && (tokensIn || tokensOut) && !isKnownModel(model)) {
+  if (process.env.NODE_ENV !== "production" && (tokensIn || tokensOut) && !isKnownModel(rowModel)) {
     console.warn(
       `[usage] "${feature}" logged ${tokensIn + tokensOut} tokens with ` +
-      `${model ? `unrecognised model "${model}"` : "no model"} — cost will fall back to Sonnet rates. ` +
+      `${rowModel ? `unrecognised model "${rowModel}"` : "no model"} — cost will fall back to Sonnet rates. ` +
       `Add it to MODEL_RATES in lib/pricing.ts.`
     );
   }
@@ -101,7 +107,7 @@ export async function logUsage({
 
   await deferOrRun(
     after,
-    () => writeUsage({ userId, feature, model, tokensIn, tokensOut, ttsChars }),
+    () => writeUsage({ userId, feature, model: rowModel, tokensIn, tokensOut, ttsChars }),
     (stage, err) => {
       // Neither branch may throw — see the timing contract above. `schedule`
       // means the deferral itself is broken, which is worth distinguishing:
@@ -208,6 +214,13 @@ export async function checkUsageAllowed(
   estimate?: number,
 ): Promise<QuotaDecision> {
   if (estimate !== undefined && (!Number.isSafeInteger(estimate) || estimate < 0)) throw new Error("Invalid usage reservation");
+
+  // The owner lock. On the owner's own Claude plan, nobody else may spend at
+  // all — and this is the one function every spending route calls (`proxy.ts`
+  // skips /api, so it cannot hold the lock). A misconfigured flag throws here,
+  // like everywhere else that reads it: refused, never quietly billed.
+  if (!mayUseClaude(resolveClaudeBilling(process.env), userId)) return { allowed: false, reason: "owner_only" };
+
   const profile = await readProfile(userId);
 
   // The account check comes first and never touches the counter: a blocked or

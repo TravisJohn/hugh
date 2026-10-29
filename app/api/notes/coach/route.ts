@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { paidServiceOffResponse } from "@/lib/claude/subscription/planResponses";
 import OpenAI from "openai";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { requireProvisionedApi } from "@/lib/auth/requireProvisioned";
@@ -36,6 +37,9 @@ const unauth = () => NextResponse.json({ error: "Not signed in." }, { status: 40
 
 // POST /api/notes/coach { image_id } → { message: NoteMessage } (assistant reply)
 export async function POST(request: NextRequest) {
+  const off = paidServiceOffResponse("The Coach");
+  if (off) return off;
+
   const userId = await getAuthenticatedUserId(request);
   if (!userId) return unauth();
 

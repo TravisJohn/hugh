@@ -20,6 +20,12 @@ export const MODEL_RATES: Record<string, ModelRate> = {
   // Anthropic — see CLAUDE.md "Model Selection"
   "claude-sonnet-4-6":      { input: 3,    output: 15   },
   "claude-haiku-4-5":       { input: 1,    output: 5    },
+  // The same models served by the owner's own Claude plan in local
+  // subscription mode (lib/claude/billingMode.ts). Rate classes like
+  // `gpt-realtime-mini-text` below: they appear only in `usage_logs.model`,
+  // never in a request. Token counts stay real; the money is $0.
+  "claude-sonnet-4-6@subscription": { input: 0, output: 0 },
+  "claude-haiku-4-5@subscription":  { input: 0, output: 0 },
   // OpenAI — Notes Coach (vision), Notes summariser, architecture assistant
   "gpt-4o":                 { input: 2.5,  output: 10   },
   "gpt-4o-mini":            { input: 0.15, output: 0.6  },

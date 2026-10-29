@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { paidServiceOffResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { enforceUsageGate } from "@/lib/usage";
@@ -39,6 +40,9 @@ function realtimeEnabled(): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  const off = paidServiceOffResponse("Realtime voice");
+  if (off) return off;
+
   if (!realtimeEnabled()) {
     return NextResponse.json({ error: "Realtime mastery is not enabled." }, { status: 404 });
   }

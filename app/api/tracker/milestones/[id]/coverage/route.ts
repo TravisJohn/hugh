@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { learningPointsPrompt, parseLearningPoints } from "@/lib/claude/prompts";
@@ -11,7 +12,7 @@ import { writeOutcome } from "@/lib/supabase/writeResult";
 import { isTeachable, readOnlyRefusal } from "@/lib/packs/cardAccess";
 import { type LearningPoint, type PointStatus } from "@/types";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.
@@ -136,9 +137,18 @@ export async function GET(
   // call). The same holds for a card that can't be taught from a syllabus: an
   // earlier topic is kept to read (narrow Learn PR D), so nothing is
   // generated for it.
-  const points = allowed && isTeachable(ms.concept_ids)
-    ? await ensureLearningPoints(supabase, ms, userId)
-    : (ms.learning_points ?? []);
+  let points: LearningPoint[] | null;
+  try {
+    points = allowed && isTeachable(ms.concept_ids)
+      ? await ensureLearningPoints(supabase, ms, userId)
+      : (ms.learning_points ?? []);
+  } catch (err) {
+    // Only the Claude plan's own failures are answered here; anything else
+    // escapes exactly as it did before subscription mode existed.
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
+    throw err;
+  }
 
   // A null here is a failure, not an empty checklist, and it gets its own
   // status so the rail can say so instead of rendering as "nothing to learn".

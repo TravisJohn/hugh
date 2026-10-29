@@ -1,7 +1,7 @@
 import { readTextRequest } from "@/lib/claude/textRequest";
 import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
@@ -17,7 +17,7 @@ import {
 } from "@/lib/mastery/outcome";
 import { groundingRefusalResponse } from "@/lib/packs/cardAccess";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 interface SessionMilestone {
   id:                string;

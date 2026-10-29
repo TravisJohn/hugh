@@ -230,7 +230,7 @@ export default function SignupPage() {
               disabled={loading}
               className="mt-1 w-full rounded-xl bg-sky-500 py-3 text-sm font-semibold text-white shadow-lg shadow-sky-500/20 transition-all hover:bg-sky-400 hover:shadow-sky-400/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {loading ? "Creating account…" : "Create Account"}
+              {loading ? "Creating account…" : "Create account"}
             </button>
 
             {/* Shown before the account exists, not after. A privacy notice a
