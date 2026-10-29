@@ -9509,7 +9509,13 @@ passed. Ask Hugh chats came in under the agreed bar: 16/20 strict JSON (bar
 from 12. The weak spot is answers that contain a code block. Accepted as
 measured; the paid API wasn't run for comparison.
 
-Not yet tried in the browser; Travis's checklist is next.
+Browser test, same day: as the test learner, 10 Ask Hugh chats, a session
+summary and a review quiz all ran on the plan at $0 and rendered cleanly, and
+the owner lock refused Travis's own account. It also surfaced a bug on
+`main`: the budget gate keeps each chat's large reservation for 150 s after
+the call is logged, so the seventh chat in five minutes was refused as
+"monthly limit reached" at 27% of the month's tokens. Proposed as its own
+fix; details in the doc's §14.
 
 Gate: 2,234 tests pass (about 110 new on this branch), the type check and
 lint are clean, and the build passes.

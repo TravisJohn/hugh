@@ -499,3 +499,55 @@ with plan mode on, on the owner's plan:
   and the count leaves cached input out (evaluate's row said 3 input
   tokens). Plan rows are priced at $0 whatever the count, but they don't
   show a prompt's real size.
+
+## 14. Browser test (2026-10-29)
+
+The owner ran `npm run dev:subscription` and used Hugh in the browser on a
+course track (descriptive statistics), first as himself, then as the test
+learner the owner lock names.
+
+- **The owner lock held.** Signed in as himself, Ask Hugh was refused at once
+  with the owner-only message (403), and no Claude process started.
+- **Every Claude call was served by the plan.** As the test learner: 10 Ask
+  Hugh chats on Haiku (3.7 to 6.7 s each), Summarise session on Sonnet
+  (18.6 s) and a review quiz on Sonnet (20.8 s). Every row logged
+  `@subscription` at $0, and the plan-path line printed once for the run.
+- **All 10 chat replies rendered cleanly.** Course grounding held: asked for
+  interquartile-range code on the descriptive-statistics card, Hugh pointed
+  to the IQR card instead of writing code. So the code-block weak spot (§13)
+  wasn't exercised in the browser.
+- **The review quiz worked end to end.** Moving the card to Review, writing
+  the quiz, three answers, submit and validation. It aimed for 5 questions
+  and kept 3; the quiz's own check dropped 2 whose quote wasn't verbatim in
+  the one short diary entry. No API run to compare.
+- **Not run:** mastery (§11: it returns to setup on the plan), and the
+  off-topic and code-on-the-right-card chats, which the owner skipped.
+
+What it found:
+
+- **The budget gate refused a chat as "Monthly usage limit reached" at 27% of
+  the month.** The seventh chat in about five minutes got a 429 in 0.2 s,
+  before the plan was asked. Real October use was 27,409 of 100,000 tokens.
+  Each course-card chat reserves 17 to 19k (one token per byte of a
+  syllabus-grounded prompt, `textReservation`), and a reservation is held
+  for 150 s even after the call's real usage is logged, so for that time
+  each call counts twice. Three held reservations (54,298), plus what was
+  spent, plus the next estimate crossed 100k. This is `main`'s gate,
+  unchanged on this branch, so production behaves the same. Proposed as its
+  own fix. For the test, the owner switched the test learner to Pro, then
+  back to Free.
+- **The live site prices plan rows at its unknown-model fallback.** `main`'s
+  `MODEL_RATES` doesn't know the `@subscription` models, so the live
+  `/admin/users` priced the test learner's October (26.0k in, 1.4k out) at
+  Sonnet rates: $0.099. Nothing was charged; it overstates rather than hides,
+  as designed. Until this branch merges, plan testing shows on the live admin
+  page as paid spend, about a cent a chat. §4's "nothing changes for
+  production rows" holds for the rows production writes, not for these.
+- **Sonnet plan rows count only their output toward Hugh's allowance.** Both
+  Sonnet rows logged 3 input tokens (§13's caching note), so the allowance
+  bar and the gate see a Sonnet call at about a tenth of its size. The Haiku
+  chat rows logged 3.4 to 4.3k input, which looks complete. Plan rows are $0
+  either way.
+- **Saving a track's focused card returns 500** (`PATCH
+  /api/tracker/tracks/[trackId]`) for every account, plan mode or not. The
+  route is unchanged from `main`. Proposed as its own fix.
