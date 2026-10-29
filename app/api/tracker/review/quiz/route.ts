@@ -1,7 +1,8 @@
 import "server-only";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordOperation } from "@/lib/observability/record";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
@@ -14,7 +15,7 @@ import {
 import { cardGrounding, cardKeyPointRefs, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
 import { toPublicQuestions } from "@/lib/tracker/reviewGrading";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.
@@ -228,6 +229,8 @@ Return ONLY a valid JSON array — no markdown, no commentary:
     });
     return NextResponse.json({ quizId: stored.id, questions: toPublicQuestions(kept) });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[review/quiz] Generation failed:", err);
     void recordOperation({
       userId, operation: "quiz.generate", outcome: "failed",

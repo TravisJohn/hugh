@@ -1,7 +1,7 @@
 import { readTextRequest } from "@/lib/claude/textRequest";
 import { createTextMessage, textBudgetResponse } from "@/lib/claude/textBudget";
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { logUsage } from "@/lib/usage";
 import { refinementQuestionPrompt, parseClaudeJson } from "@/lib/claude/prompts";
@@ -9,7 +9,7 @@ import { checkTopic, TOPIC_REJECTION_MESSAGE } from "@/lib/learn/topicInput";
 import { logSafeError } from "@/lib/observability/log";
 import { recordOperation } from "@/lib/observability/record";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // 5-whys refinement question (short conversational gen) — Haiku is sufficient.
 // See CLAUDE.md "Model Selection". Kept in one place so the API call and the

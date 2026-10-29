@@ -195,7 +195,12 @@ export function recordedTokens(tokensIn: number, tokensOut: number): number {
   return Math.max(0, tokensIn) + Math.max(0, tokensOut);
 }
 
-export type QuotaDenial = "blocked" | "limit_reached" | "rate_limited" | "unavailable";
+/**
+ * `owner_only` is local subscription mode's owner lock
+ * (docs/claude-subscription-local-mode.md): the server is running on someone's
+ * own Claude plan, which may serve only them.
+ */
+export type QuotaDenial = "blocked" | "limit_reached" | "rate_limited" | "unavailable" | "owner_only";
 
 export interface QuotaDecision {
   allowed:     boolean;
@@ -233,6 +238,8 @@ export function messageForDenial(reason: QuotaDenial | undefined): string {
       return "Monthly usage limit reached. Please contact Travis to reset or upgrade.";
     case "rate_limited":
       return "Too many requests in a short time. Please wait a moment and try again.";
+    case "owner_only":
+      return "This copy of Hugh is running on its owner's Claude plan, which can only be used by their account.";
     default:
       return "Your access has been restricted. Please contact support.";
   }

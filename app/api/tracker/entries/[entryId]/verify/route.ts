@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { claudeClient } from "@/lib/claude/client";
+import { planFailureResponse } from "@/lib/claude/subscription/planResponses";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthenticatedUserId } from "@/lib/supabase/auth-helper";
 import { factCheckEntryPrompt, parseClaudeJson } from "@/lib/claude/prompts";
@@ -9,7 +10,7 @@ import { logSafeError } from "@/lib/observability/log";
 import { writeOutcome } from "@/lib/supabase/writeResult";
 import { cardGrounding, GROUNDING_REFUSAL_MESSAGE, renderCardSyllabus } from "@/lib/packs/grounding";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = claudeClient();
 
 // Model for this route — see CLAUDE.md "Model Selection". Kept in one place so
 // the API call and the usage log can never disagree about what was billed.
@@ -131,6 +132,8 @@ export async function POST(
     });
     return NextResponse.json({ entry: written.data });
   } catch (err) {
+    const planFailure = planFailureResponse(err);
+    if (planFailure) return planFailure;
     console.error("[tracker/verify] error:", err);
     void recordOperation({
       userId, operation: "ask.verify", outcome: "failed",

@@ -190,6 +190,7 @@ describe("denial responses", () => {
     expect(statusForDenial("limit_reached")).toBe(429);
     expect(statusForDenial("rate_limited")).toBe(429);
     expect(statusForDenial("blocked")).toBe(403);
+    expect(statusForDenial("owner_only")).toBe(403);
     expect(statusForDenial(undefined)).toBe(403);
   });
 
@@ -200,8 +201,15 @@ describe("denial responses", () => {
       messageForDenial("limit_reached"),
       messageForDenial("rate_limited"),
       messageForDenial("blocked"),
+      messageForDenial("owner_only"),
     ];
-    expect(new Set(messages).size).toBe(3);
+    expect(new Set(messages).size).toBe(4);
+  });
+
+  it("tells someone else on a local plan-mode server why, not to contact support", () => {
+    // They are not restricted; the server is someone's own Claude plan.
+    expect(messageForDenial("owner_only")).toMatch(/Claude plan/);
+    expect(messageForDenial("owner_only")).not.toMatch(/support/i);
   });
 
   it("tells a rate-limited learner to wait, not to contact support", () => {
