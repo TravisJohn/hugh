@@ -457,7 +457,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "/", "/home", "/(auth)/login", "/(auth)/signup",
       "/pending", "/blocked", "/privacy", "/upgrade",
     ],
-    apiRoutes: ["auth/self-approve"],
+    apiRoutes: [],
     libDirs:       [],
     componentDirs: ["landing"],
     tables: ["profiles"],

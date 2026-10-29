@@ -36,7 +36,7 @@ export default function SignupPage() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -50,24 +50,17 @@ export default function SignupPage() {
       return;
     }
 
-    // Try immediate sign-in — succeeds when email confirmation is disabled in Supabase
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      // Email confirmation is required — show inline success screen instead of redirecting
+    // With Supabase "Confirm email" on (as in production), sign-up returns no
+    // session: the account is approved when its owner clicks the emailed link,
+    // in /auth/confirm.
+    if (!data.session) {
       setSent(true);
       return;
     }
 
-    // Immediate login only succeeds when "Confirm email" is OFF. In that mode
-    // there's no verification step to auto-approve the account, so approve it
-    // here — otherwise the user lands on /pending. No-op once email
-    // confirmation is enabled (this branch won't run).
-    await fetch("/api/auth/self-approve", { method: "POST" });
-
+    // A session here means email confirmation has been switched off. Nothing
+    // approves the account on this path, so /home sends it to /pending until
+    // an admin approves it — waiting, never self-approved.
     router.push("/home");
     router.refresh();
   }
