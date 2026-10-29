@@ -1,0 +1,1213 @@
+{
+  "id": "causal-inference",
+  "version": "1.0.0",
+  "status": "machine-checked",
+  "subject": "Causal inference from data you did not randomise: potential outcomes and the bias in a naive comparison, confounding, causal diagrams, back doors and colliders, choosing what to control for, matching and propensity scores, difference-in-differences, and the limits of each",
+  "outOfScope": [
+    "Running and analysing a randomised experiment (see the A/B testing pack)",
+    "Sampling designs and the difference between observational studies and experiments in surveys (see the Sampling and surveys pack)",
+    "Instrumental variables, regression discontinuity and synthetic control beyond a mention",
+    "Causal discovery algorithms that learn a diagram from data",
+    "The formal do-calculus and identification proofs"
+  ],
+  "sources": [
+    {
+      "id": "ims-design",
+      "title": "Introduction to Modern Statistics, 2nd ed., Chapter 2: Study design",
+      "publisher": "OpenIntro (Mine Çetinkaya-Rundel and Johanna Hardin)",
+      "url": "https://openintro-ims.netlify.app/data-design.html",
+      "license": "CC BY-SA 3.0",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-01",
+      "title": "Causal Inference for the Brave and True, 01: Introduction to Causality",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/01-Introduction-To-Causality.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-02",
+      "title": "Causal Inference for the Brave and True, 02: Randomised Experiments",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/02-Randomised-Experiments.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-04",
+      "title": "Causal Inference for the Brave and True, 04: Graphical Causal Models",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/04-Graphical-Causal-Models.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-07",
+      "title": "Causal Inference for the Brave and True, 07: Beyond Confounders",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/07-Beyond-Confounders.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-10",
+      "title": "Causal Inference for the Brave and True, 10: Matching",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/10-Matching.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-11",
+      "title": "Causal Inference for the Brave and True, 11: Propensity Score",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/11-Propensity-Score.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "bt-13",
+      "title": "Causal Inference for the Brave and True, 13: Difference-in-Differences",
+      "publisher": "Matheus Facure",
+      "url": "https://matheusfacure.github.io/python-causality-handbook/13-Difference-in-Differences.html",
+      "license": "MIT License",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "effect-08",
+      "title": "The Effect, Chapter 8: Causal Paths and Closing Back Doors",
+      "publisher": "Nick Huntington-Klein",
+      "url": "https://theeffectbook.net/ch-CausalPaths.html",
+      "accessedAt": "2026-10-25"
+    },
+    {
+      "id": "effect-06",
+      "title": "The Effect, Chapter 6: Causal Diagrams",
+      "publisher": "Nick Huntington-Klein",
+      "url": "https://theeffectbook.net/ch-CausalDiagrams.html",
+      "accessedAt": "2026-10-25"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "association_not_causation",
+      "title": "Association is not causation",
+      "outcome": "Explain why a relationship in observed data does not show that one thing causes another.",
+      "aliases": [
+        "correlation is not causation"
+      ],
+      "keyPoints": [
+        {
+          "text": "Schools that give students tablets may do better simply because they are wealthier and would do better anyway, so the comparison shows only that tablets are associated with high performance, not that they cause it.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "If someone tells you that schools",
+            "end": "associated with high academic performance,"
+          }
+        },
+        {
+          "text": "In hotels, prices are low outside the tourist season and high when demand peaks, so a naive prediction from that data might suggest that raising prices would sell more rooms.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "in many industries, low prices are",
+            "end": "would lead to more rooms sold."
+          }
+        },
+        {
+          "text": "Machine learning is notoriously bad at inverse-causality problems, which need answers to 'what if' questions, called counterfactuals by economists, such as what would happen at a different price.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "ML is notoriously bad at this",
+            "end": "asking for my merchandise?"
+          }
+        },
+        {
+          "text": "Causal conclusions from experiments are often reasonable because the treatment is randomly assigned, but drawing them from observational data is treacherous; observational studies are generally only enough to show associations or form hypotheses for experiments to check.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies and 2.4 Experiments",
+          "anchor": {
+            "start": "Making causal conclusions based on experiments",
+            "end": "later checked with experiments."
+          }
+        }
+      ]
+    },
+    {
+      "id": "potential_outcomes",
+      "title": "Potential outcomes",
+      "outcome": "Describe a causal question as a comparison of what would happen to the same unit with and without the treatment.",
+      "aliases": [
+        "counterfactuals",
+        "treatment and outcome"
+      ],
+      "keyPoints": [
+        {
+          "text": "The treatment need not be medical: it is any intervention whose effect we want to know, such as giving students tablets, and the outcome is the variable of interest, such as academic performance.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "The treatment here doesn't need to",
+            "end": "it would be the academic performance."
+          }
+        },
+        {
+          "text": "Potential outcomes are potential because they did not actually happen: they denote what would have happened under some treatment, and the one that happened is called factual, the one that did not, counterfactual.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "To wrap our heads around this,",
+            "end": "didn't happen, counterfactual."
+          }
+        },
+        {
+          "text": "A student's potential outcome with tablets is defined whether or not the student gets them; if the student does not, it still exists but cannot be seen, and it is a counterfactual.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "or not this is the case,",
+            "end": "it is a counterfactual potential outcome."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fundamental_problem",
+      "title": "The fundamental problem of causal inference",
+      "outcome": "Explain why an individual's treatment effect can never be observed directly.",
+      "aliases": [
+        "individual treatment effect"
+      ],
+      "keyPoints": [
+        {
+          "text": "The fundamental problem of causal inference is that the same unit can never be observed both with and without the treatment.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "problem of causal inference is that",
+            "end": "with and without treatment."
+          }
+        },
+        {
+          "text": "Because only one potential outcome is observed, the individual treatment effect can never be known, so attention turns to the average treatment effect instead.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "due to the fundamental problem of",
+            "end": "focus on the average treatment effect,"
+          }
+        },
+        {
+          "text": "The individual treatment effect is the difference between a unit's outcome and the outcome it would have had under the alternative treatment, which could only be seen with godlike powers to observe the other potential outcome.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "individual treatment effect is the difference",
+            "end": "powers to observe the potential outcome,"
+          }
+        }
+      ]
+    },
+    {
+      "id": "average_effects",
+      "title": "Average treatment effects",
+      "outcome": "Distinguish the average effect across everyone from the average effect on those treated.",
+      "aliases": [
+        "ATE",
+        "ATT",
+        "average treatment effect on the treated"
+      ],
+      "keyPoints": [
+        {
+          "text": "In an illustration where both potential outcomes could be seen, tablets reduced academic performance by 50 points on average across schools, and by 75 points on average for the schools that were treated.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "This would mean that tablets reduced",
+            "end": "on average, by 75 points."
+          }
+        },
+        {
+          "text": "Simply comparing the mean of the treated schools with the mean of the untreated ones gives 125 points, a very different answer, because it mistakes association for causation.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "This is surely not ideal, you",
+            "end": "mistaking association for causation."
+          }
+        }
+      ]
+    },
+    {
+      "id": "naive_comparison_bias",
+      "title": "Why the naive comparison is biased",
+      "outcome": "Split a naive treated-versus-untreated difference into the effect and a bias term, and say when the bias vanishes.",
+      "aliases": [
+        "selection bias",
+        "bias term"
+      ],
+      "keyPoints": [
+        {
+          "text": "Schools that give tablets would probably score higher even without them, because they likely have more money for better teachers and classrooms; so treated and untreated schools are not comparable.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "When confronted with the claim that",
+            "end": "not comparable with untreated schools."
+          }
+        },
+        {
+          "text": "The observed difference between the treated and untreated averages equals the treatment effect on the treated plus a bias term: how the two groups would differ before treatment, had neither been treated.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "First, this equation tells why the",
+            "end": "of them has received the treatment."
+          }
+        },
+        {
+          "text": "Bias arises because many things that cannot be controlled change together with the treatment, so schools with and without tablets also differ in tuition cost, location and teachers.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "Why does this happen? We will",
+            "end": "the tuition cost, location, teachers"
+          }
+        },
+        {
+          "text": "If the treatment and control groups are comparable before treatment, meaning the treated, had they not been treated, would have the same outcome as the untreated, then the bias term vanishes.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "is to say that treatment and",
+            "end": "the bias term would vanish:"
+          }
+        },
+        {
+          "text": "Causal inference is about finding clever ways to remove bias and make the treated and untreated comparable, so that the only difference left is the average treatment effect.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "This is the herculean task causal",
+            "end": "only the average treatment effect."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If treated customers spend more than untreated ones, the treatment caused the extra spending.",
+          "correction": "The difference between treated and untreated averages is the effect on the treated plus a bias term, which reflects how the groups would differ before the treatment if neither had received it.",
+          "sourceId": "bt-01",
+          "locator": "01 Introduction to Causality",
+          "anchor": {
+            "start": "First, this equation tells why the",
+            "end": "of them has received the treatment."
+          }
+        }
+      ]
+    },
+    {
+      "id": "randomisation",
+      "title": "What randomisation fixes",
+      "outcome": "Explain how random assignment makes the treated and untreated comparable, so a difference in means is the effect.",
+      "aliases": [
+        "randomised experiment",
+        "RCT"
+      ],
+      "keyPoints": [
+        {
+          "text": "Randomised experiments assign individuals at random to treatment or control, and the share treated need not be 50%; randomisation removes bias by making the potential outcomes independent of the treatment.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "Randomised experiments randomly assign individuals in",
+            "end": "independent of the treatment."
+          }
+        },
+        {
+          "text": "In randomised trials the outcome should not be independent of the treatment, which is thought to cause it; the potential outcomes should be, which means the treatment and control groups are comparable.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "In randomized trials, we don't want",
+            "end": "treatment and control groups are comparable."
+          }
+        },
+        {
+          "text": "With random assignment, a simple difference in means between the treatment and control groups can be called the treatment effect.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "So, randomization gives us a way",
+            "end": "call that the treatment effect."
+          }
+        },
+        {
+          "text": "In a randomised study of class formats, online classes caused students to score about 5 points lower on average, with no need to worry that the groups differed in any other way, because the design wipes out those differences.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "This means that online classes cause",
+            "end": "made to wipe out those differences."
+          }
+        },
+        {
+          "text": "When researchers assign treatments it is an experiment, and when the assignment is random it is a randomised experiment, which is fundamentally important for showing a causal connection between two variables.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies and 2.4 Experiments",
+          "anchor": {
+            "start": "Studies where the researchers assign treatments",
+            "end": "a causal connection between two variables."
+          }
+        }
+      ]
+    },
+    {
+      "id": "confounding",
+      "title": "Confounding",
+      "outcome": "Recognise a confounder as a common cause of the treatment and the outcome, and explain the bias it creates.",
+      "aliases": [
+        "confounder",
+        "common cause",
+        "lurking variable"
+      ],
+      "keyPoints": [
+        {
+          "text": "A confounding variable is associated with both the explanatory and response variables, which prevents concluding that one caused the other: outside temperature is associated with both ice-cream sales and boating accidents.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies and 2.4 Experiments",
+          "anchor": {
+            "start": "A confounding variable is one that",
+            "end": "a cause of more boating accidents."
+          }
+        },
+        {
+          "text": "Confounding happens when the treatment and the outcome share a common cause: education and income may both be caused by intelligence, so more educated people might earn more simply because they are more intelligent.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "The first significant cause of bias",
+            "end": "not because they have more education."
+          }
+        },
+        {
+          "text": "Confounding variables may or may not be measured, and the ever-present possibility of confounding makes cause-and-effect conclusions difficult in observational studies.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies and 2.4 Experiments",
+          "anchor": {
+            "start": "Confounding variables may or may not",
+            "end": "possibility of confounding variables."
+          }
+        },
+        {
+          "text": "If only very sick patients get a drug, the drug might even look harmful, because the effect of the illness's severity is mixed up with the drug's effect.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "The classic example of this is",
+            "end": "mixed up with the drug's effect."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "When two variables are strongly correlated, one of them must be causing the other.",
+          "correction": "A confounding variable, associated with both, prevents concluding that one caused the other: outside temperature is associated with ice-cream sales and boating accidents, so high ice-cream sales cannot be concluded to cause more boating accidents.",
+          "sourceId": "ims-design",
+          "locator": "2.3 Observational studies and 2.4 Experiments",
+          "anchor": {
+            "start": "A confounding variable is one that",
+            "end": "a cause of more boating accidents."
+          }
+        }
+      ]
+    },
+    {
+      "id": "causal_diagrams",
+      "title": "Causal diagrams",
+      "outcome": "Draw and read a causal diagram as a statement of beliefs about what causes what.",
+      "aliases": [
+        "DAG",
+        "causal graph",
+        "graphical causal model"
+      ],
+      "keyPoints": [
+        {
+          "text": "A causal diagram represents a data generating process: the variables in it and the causal relationships between them.",
+          "sourceId": "effect-06",
+          "locator": "6 Causal Diagrams",
+          "anchor": {
+            "start": "Causal diagram. A representation of a",
+            "end": "causal relationships between them."
+          }
+        },
+        {
+          "text": "In a causal graphical model each node is a random variable and each arrow shows that one variable causes another: severity causes both getting a medicine and survival, and the medicine also causes survival.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "Each node is a random variable.",
+            "end": "medicine also causes survival."
+          }
+        },
+        {
+          "text": "Causal graphical models make thinking about causality clearer, because they make explicit what we believe about how the world works.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "As we will see, these causal",
+            "end": "how the world works."
+          }
+        },
+        {
+          "text": "Causal diagrams make clear the different reasons why two variables might be related, and what needs to be done to identify the answer to a research question.",
+          "sourceId": "effect-08",
+          "locator": "8 Causal Paths and Closing Back Doors",
+          "anchor": {
+            "start": "The reason these diagrams can be",
+            "end": "the answer to our research question."
+          }
+        }
+      ]
+    },
+    {
+      "id": "chains_forks_colliders",
+      "title": "Chains, forks and colliders",
+      "outcome": "Say how dependence flows through a chain, a fork and a collider, and what conditioning does to each.",
+      "aliases": [
+        "collider",
+        "fork",
+        "explaining away"
+      ],
+      "keyPoints": [
+        {
+          "text": "Along a direct path from A to C through B, the flow of dependence is blocked when the intermediate variable B is conditioned on.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "As a general rule, the dependence",
+            "end": "an intermediary variable B."
+          }
+        },
+        {
+          "text": "In a fork, one variable causes two others and dependence flows backwards through the arrows, creating a back-door path that conditioning on the common cause closes.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "Now, let's consider a fork structure.",
+            "end": "conditioning on the common cause."
+          }
+        },
+        {
+          "text": "Two variables that share a common cause are dependent, but they become independent when the common cause is conditioned on.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "two variables that share a common",
+            "end": "we condition on the common cause."
+          }
+        },
+        {
+          "text": "Conditioning on a collider opens the dependence path, while leaving it unconditioned keeps the path closed.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "conditioning on a collider opens the",
+            "end": "leaves it closed."
+          }
+        },
+        {
+          "text": "Once someone is known to have got the promotion, their statistics level says something about their flattering: bad at statistics but promoted suggests good at flattering, which is called explaining away.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "did get a job promotion, suddenly,",
+            "end": "making the other cause less likely."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Some variables are colliders and others are not, whatever path you look at.",
+          "correction": "Being a collider is a property of a variable on a particular pathway, not of the variable itself: the same variable can be a collider on one pathway and not on another.",
+          "sourceId": "effect-08",
+          "locator": "8.4 Open and Closed Paths",
+          "anchor": {
+            "start": "A common mistake is to think",
+            "end": "not a collider on another pathway."
+          }
+        }
+      ]
+    },
+    {
+      "id": "back_doors",
+      "title": "Front doors and back doors",
+      "outcome": "Sort the paths from treatment to outcome into front doors and back doors, and say which must be closed.",
+      "aliases": [
+        "back-door path",
+        "front-door path",
+        "identification"
+      ],
+      "keyPoints": [
+        {
+          "text": "A front-door path is a causal path on which every arrow points away from the treatment; a back-door path has at least one arrow pointing back towards the treatment.",
+          "sourceId": "effect-08",
+          "locator": "8.3 Good Paths and Bad Paths, Front Doors and Back Doors",
+          "anchor": {
+            "start": "Front door path. A causal path",
+            "end": "back left towards the treatment variable."
+          }
+        },
+        {
+          "text": "Usually, every front-door path, whose arrows all face away from the treatment, is a good path, and every back-door path is a bad one.",
+          "sourceId": "effect-08",
+          "locator": "8.3 Good Paths and Bad Paths, Front Doors and Back Doors",
+          "anchor": {
+            "start": "Usually, this is as simple as",
+            "end": "front door paths are good,"
+          }
+        },
+        {
+          "text": "The key to identifying the answer to a research question is to dig just the good paths out of the data without getting distracted by the bad ones.",
+          "sourceId": "effect-08",
+          "locator": "8.3 Good Paths and Bad Paths, Front Doors and Back Doors",
+          "anchor": {
+            "start": "The key to identifying the answer",
+            "end": "distracted by the Bad ones."
+          }
+        },
+        {
+          "text": "A path is open if every variable along it varies in the data, and closed if at least one variable on it has no variation.",
+          "sourceId": "effect-08",
+          "locator": "8.4 Open and Closed Paths",
+          "anchor": {
+            "start": "Open path. A causal path is",
+            "end": "has no variation in the data."
+          }
+        },
+        {
+          "text": "A research question can be identified by controlling for at least one variable on every bad path, without controlling for anything on a good path.",
+          "sourceId": "effect-08",
+          "locator": "8.4 Open and Closed Paths",
+          "anchor": {
+            "start": "We can identify the answer to",
+            "end": "anything on a Good Path."
+          }
+        }
+      ]
+    },
+    {
+      "id": "controlling_for_confounders",
+      "title": "Closing back doors by controlling",
+      "outcome": "Close back-door paths by controlling for confounders, and know when proxies only reduce the bias.",
+      "aliases": [
+        "adjustment",
+        "conditioning",
+        "controlling for"
+      ],
+      "keyPoints": [
+        {
+          "text": "Controlling for a variable means breaking the population down by it: among equally severe patients, getting the drug is down to chance, so treatment becomes conditionally independent of the potential outcomes.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "This breaking down the population by",
+            "end": "conditionally independent of the potential outcomes."
+          }
+        },
+        {
+          "text": "To identify the causal effect, all back-door paths between treatment and outcome must be closed: comparing people with the same intelligence but different education leaves only the difference due to schooling.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "We need to close all backdoor",
+            "end": "will be the same for everyone."
+          }
+        },
+        {
+          "text": "If intelligence cannot be measured but affects schooling only through SAT scores, controlling for SAT still closes that back-door path.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "Now, assume for a moment that",
+            "end": "close that backdoor path."
+          }
+        },
+        {
+          "text": "Measured variables that act as a proxy for a confounder are not on the back-door path, but controlling for them helps lower the bias, though it will not eliminate it.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "However, we have other measured variables",
+            "end": "it won't eliminate it)."
+          }
+        },
+        {
+          "text": "If a control is a confounder, adding it is a requirement, not just nice to have; but adding every measurable variable is not only unnecessary but can harm causal identification.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "If the control is a confounder,",
+            "end": "detrimental to causal identification."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Controlling for every variable you can measure is the safest way to remove bias.",
+          "correction": "Adding a confounder is a requirement, but throwing every measurable variable into the model is not only unnecessary and can be detrimental to causal identification.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "If the control is a confounder,",
+            "end": "detrimental to causal identification."
+          }
+        }
+      ]
+    },
+    {
+      "id": "bad_controls",
+      "title": "Bad controls: mediators and colliders",
+      "outcome": "Avoid controlling for mediators and common effects, which bias an estimate even in a randomised study.",
+      "aliases": [
+        "selection bias",
+        "mediator",
+        "post-treatment variable"
+      ],
+      "keyPoints": [
+        {
+          "text": "Confounding is the bias from failing to control for a common cause, while selection bias comes from controlling for a common effect or a variable between cause and effect; exclude mediators and common effects.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "While confounding is the bias from",
+            "end": "effect of the treatment and outcome."
+          }
+        },
+        {
+          "text": "Investment is a consequence of both education and wages, so conditioning on it, a collider, opens a second path between treatment and outcome and makes the direct effect harder to measure.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "But investment is not a common",
+            "end": "harder to measure the direct effect."
+          }
+        },
+        {
+          "text": "Controlling for getting a white-collar job, one way more education leads to higher pay, closes a channel through which the treatment operates and leaves open only the direct effect of education on wages.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "This time, not because it opens",
+            "end": "direct effect of education on wages."
+          }
+        },
+        {
+          "text": "Selection bias is so pervasive that not even randomisation can fix it, and it is often introduced by ill-advised choices, even in random data.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "Selection bias is so pervasive that",
+            "end": "even in random data!"
+          }
+        },
+        {
+          "text": "The same problems arise when conditioning on any descendant of a common effect.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "As a side note, all of",
+            "end": "descendent of a common effect."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "If the treatment was randomised, adding extra controls can never bias the estimate.",
+          "correction": "Selection bias is so pervasive that not even randomisation can fix it, and it is often introduced by ill-advised choices even in random data.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "Selection bias is so pervasive that",
+            "end": "even in random data!"
+          }
+        }
+      ]
+    },
+    {
+      "id": "precision_controls",
+      "title": "Controls that help or hurt precision",
+      "outcome": "Add controls that predict the outcome, and avoid ones that only predict the treatment.",
+      "aliases": [
+        "variance reduction"
+      ],
+      "keyPoints": [
+        {
+          "text": "A control that predicts the outcome well is worth adding even if it is not a confounder, because it lowers the variance of the treatment-effect estimates.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "To wrap it up, anytime we",
+            "end": "variance of our treatment effect estimates."
+          }
+        },
+        {
+          "text": "Add confounders, which relate to both treatment and outcome; also add good predictors of the outcome, which lower the variance of the estimates; but not controls that only predict the treatment, which increase it.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "So the bottom line is that",
+            "end": "increase the variance of our estimates."
+          }
+        },
+        {
+          "text": "A test of a drug on 10,000 people with only one treated would make the effect very hard to find: the treatment needs plenty of variability for its impact to be estimated.",
+          "sourceId": "bt-07",
+          "locator": "07 Beyond Confounders",
+          "anchor": {
+            "start": "Take it to the extreme and",
+            "end": "easier to find its impact."
+          }
+        }
+      ]
+    },
+    {
+      "id": "matching",
+      "title": "Matching",
+      "outcome": "Estimate an effect by pairing each treated unit with a similar untreated one, and know where matching breaks down.",
+      "aliases": [
+        "nearest-neighbour matching",
+        "subclassification"
+      ],
+      "keyPoints": [
+        {
+          "text": "When a confounder makes treated and untreated incomparable, matching pairs each treated unit with a similar untreated one, like finding an untreated twin, so the groups become comparable again.",
+          "sourceId": "bt-10",
+          "locator": "10 Matching",
+          "anchor": {
+            "start": "Since some sort of confounder X",
+            "end": "treated and untreated become again comparable."
+          }
+        },
+        {
+          "text": "Matching needs a measure of how close units are, such as the Euclidean norm, which is not invariant to the features' scales, so the features must first be scaled to roughly the same scale.",
+          "sourceId": "bt-10",
+          "locator": "10 Matching",
+          "anchor": {
+            "start": "we have to define some measurement",
+            "end": "on roughly the same scale."
+          }
+        },
+        {
+          "text": "By the curse of dimensionality, many features leave some cells with very little data, or only treated or only control units, and make matches sparse and far apart, which causes bias.",
+          "sourceId": "bt-10",
+          "locator": "10 Matching",
+          "anchor": {
+            "start": "curse of dimensionality means that it",
+            "end": "cause bias problems."
+          }
+        }
+      ]
+    },
+    {
+      "id": "propensity_scores",
+      "title": "Propensity scores",
+      "outcome": "Use the probability of treatment as a single balancing score, and build it for balance rather than prediction.",
+      "aliases": [
+        "propensity score weighting",
+        "IPTW",
+        "inverse probability weighting"
+      ],
+      "keyPoints": [
+        {
+          "text": "Conditional independence can be reached without controlling for every confounder directly: it is enough to control for a balancing score, often the conditional probability of treatment, called the propensity score.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "Propensity score comes from the realisation",
+            "end": "also called the propensity score"
+          }
+        },
+        {
+          "text": "Weighting units by the inverse of their probability of treatment reconstructs a population in which everyone is treated, and weighting by the inverse of the probability of no treatment one in which no one is.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "First, we can make sure that",
+            "end": "where everyone is untreated."
+          }
+        },
+        {
+          "text": "A propensity score does not need to predict the treatment well; it needs to include all the confounders, and adding variables that predict treatment but not the outcome increases the estimator's variance.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "Propensity score doesn't need to predict",
+            "end": "variance of the propensity score estimator."
+          }
+        },
+        {
+          "text": "A propensity score's predictive quality does not translate into its balancing properties, and maximising its predictive power can even hurt the goal of causal inference.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "The first thing is that the",
+            "end": "even hurt the causal inference goal."
+          }
+        }
+      ]
+    },
+    {
+      "id": "overlap",
+      "title": "Overlap (positivity)",
+      "outcome": "Check that treated and untreated overlap before trusting an adjusted comparison.",
+      "aliases": [
+        "positivity",
+        "common support"
+      ],
+      "keyPoints": [
+        {
+          "text": "Everyone needs at least some chance of receiving the treatment and of not receiving it: the treated and untreated distributions need to overlap, which is the positivity assumption of causal inference.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "Notice that this estimator requires that",
+            "end": "positivity assumption of causal inference."
+          }
+        },
+        {
+          "text": "Without overlap the groups are very different, and extrapolating the effect from one to the other, though not impossible, is very dangerous, like testing a drug only on men and assuming women respond equally.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "If treated and untreated don't overlap,",
+            "end": "will respond to it equally well."
+          }
+        },
+        {
+          "text": "Overlap can be checked by comparing the distributions of propensity scores among the treated and untreated, looking for scores of zero and for both groups in low-score regions.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "We also have to check that",
+            "end": "both treated and untreated individuals."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "A regression can safely estimate the effect even where treated and untreated units never overlap.",
+          "correction": "If treated and untreated do not overlap, extrapolating the effect from one group to the other is not impossible, as regression does it, but it is very dangerous.",
+          "sourceId": "bt-11",
+          "locator": "11 Propensity Score",
+          "anchor": {
+            "start": "If treated and untreated don't overlap,",
+            "end": "will respond to it equally well."
+          }
+        }
+      ]
+    },
+    {
+      "id": "diff_in_diff",
+      "title": "Difference-in-differences",
+      "outcome": "Estimate an intervention's effect by comparing the change in a treated group with the change in a control group.",
+      "aliases": [
+        "diff-in-diff",
+        "DiD",
+        "parallel trends"
+      ],
+      "keyPoints": [
+        {
+          "text": "Difference-in-differences is commonly used to assess macro interventions, such as a change in gun laws or a marketing campaign, where the impact must be untangled from a general trend between before and after.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "Diff-in-diff is commonly used to assess",
+            "end": "intervention from a general trend."
+          }
+        },
+        {
+          "text": "Assuming that without the intervention the outcome in the later period would equal the outcome in the starting period is false if the outcome follows any kind of trend.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "in the case of no intervention,",
+            "end": "follows any kind of trend."
+          }
+        },
+        {
+          "text": "Using a control group's outcome after the intervention as the treated group's missing counterfactual is only valid if both groups have a very similar baseline level.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "estimate the counterfactual for the treated",
+            "end": "very similar baseline level."
+          }
+        },
+        {
+          "text": "Difference-in-differences says the treated unit, had it not been treated, would look like itself before the treatment plus a growth equal to the control group's growth.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "In words, it is saying that",
+            "end": "as the growth of the control."
+          }
+        },
+        {
+          "text": "Its assumption is that the treatment and control groups share the same growth pattern; unlike the other two comparisons, it requires neither the same base level nor a zero trend.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "Notice that the assumption that diff-in-diff",
+            "end": "require the trend to be zero."
+          }
+        }
+      ],
+      "misconceptions": [
+        {
+          "claim": "Comparing sales before and after a billboard goes up measures the billboard's effect.",
+          "correction": "Assuming that without the intervention the later outcome would equal the starting outcome is false whenever the outcome follows any kind of trend.",
+          "sourceId": "bt-13",
+          "locator": "13 Difference-in-Differences",
+          "anchor": {
+            "start": "in the case of no intervention,",
+            "end": "follows any kind of trend."
+          }
+        }
+      ]
+    },
+    {
+      "id": "unmeasured_confounding",
+      "title": "What adjustment cannot fix",
+      "outcome": "Recognise when unmeasured causes leave an observational estimate open to bias.",
+      "aliases": [
+        "unobserved confounding",
+        "omitted variable bias"
+      ],
+      "keyPoints": [
+        {
+          "text": "It is not always possible to control for all common causes: some are unknown, and some are known but cannot be measured well, such as intelligence.",
+          "sourceId": "bt-04",
+          "locator": "04 Graphical Causal Models",
+          "anchor": {
+            "start": "Unfortunately, it is not always possible",
+            "end": "how to measure intelligence well."
+          }
+        },
+        {
+          "text": "Comparing online and in-person schools could be biased, because online schools might attract well-disciplined students who would do better anyway, making the treated academically better than the untreated.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "It could be that online schools",
+            "end": "academically better than the untreated:"
+          }
+        },
+        {
+          "text": "Such simple comparisons are not compelling, because one could never be sure there was no bias lurking around and masking the causal effect.",
+          "sourceId": "bt-02",
+          "locator": "02 Randomised Experiments",
+          "anchor": {
+            "start": "So, although we could make simple",
+            "end": "masking our causal effect."
+          }
+        }
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "before": "association_not_causation",
+      "after": "potential_outcomes",
+      "reason": "Potential outcomes say precisely what association misses."
+    },
+    {
+      "before": "potential_outcomes",
+      "after": "fundamental_problem",
+      "reason": "The problem is that only one potential outcome is ever seen."
+    },
+    {
+      "before": "fundamental_problem",
+      "after": "average_effects",
+      "reason": "Averages are what can be estimated when individual effects cannot."
+    },
+    {
+      "before": "average_effects",
+      "after": "naive_comparison_bias",
+      "reason": "The bias is the gap between a naive comparison and the average effect."
+    },
+    {
+      "before": "naive_comparison_bias",
+      "after": "randomisation",
+      "reason": "Randomisation is the first tool that removes the bias."
+    },
+    {
+      "before": "naive_comparison_bias",
+      "after": "confounding",
+      "reason": "Confounding is the main source of the bias."
+    },
+    {
+      "before": "confounding",
+      "after": "causal_diagrams",
+      "reason": "Diagrams are the language for showing what confounds what."
+    },
+    {
+      "before": "causal_diagrams",
+      "after": "chains_forks_colliders",
+      "reason": "Chains, forks and colliders are the building blocks of a diagram."
+    },
+    {
+      "before": "chains_forks_colliders",
+      "after": "back_doors",
+      "reason": "A back door is a path that a fork leaves open."
+    },
+    {
+      "before": "back_doors",
+      "after": "controlling_for_confounders",
+      "reason": "Controlling is how a back door is closed."
+    },
+    {
+      "before": "confounding",
+      "after": "controlling_for_confounders",
+      "reason": "Only confounders must be controlled for."
+    },
+    {
+      "before": "controlling_for_confounders",
+      "after": "unmeasured_confounding",
+      "reason": "The limits apply to the controlling the learner now knows."
+    },
+    {
+      "before": "randomisation",
+      "after": "unmeasured_confounding",
+      "reason": "Without randomisation an unmeasured cause can always remain."
+    },
+    {
+      "before": "controlling_for_confounders",
+      "after": "bad_controls",
+      "reason": "Bad controls are the controls that should not be added."
+    },
+    {
+      "before": "chains_forks_colliders",
+      "after": "bad_controls",
+      "reason": "Conditioning on a collider is what makes some controls bad."
+    },
+    {
+      "before": "controlling_for_confounders",
+      "after": "precision_controls",
+      "reason": "Precision is a second reason to add or drop a control."
+    },
+    {
+      "before": "controlling_for_confounders",
+      "after": "matching",
+      "reason": "Matching is another way of controlling for confounders."
+    },
+    {
+      "before": "matching",
+      "after": "propensity_scores",
+      "reason": "A propensity score replaces matching on many features with one score."
+    },
+    {
+      "before": "propensity_scores",
+      "after": "overlap",
+      "reason": "Overlap is checked on the propensity scores."
+    },
+    {
+      "before": "naive_comparison_bias",
+      "after": "diff_in_diff",
+      "reason": "Difference-in-differences is a design for removing the bias over time."
+    },
+    {
+      "before": "potential_outcomes",
+      "after": "diff_in_diff",
+      "reason": "The method estimates the treated group's missing counterfactual."
+    }
+  ],
+  "cards": [
+    {
+      "id": "association-and-causation",
+      "title": "Association and causation",
+      "conceptIds": [
+        "association_not_causation",
+        "potential_outcomes"
+      ]
+    },
+    {
+      "id": "the-missing-counterfactual",
+      "title": "The missing counterfactual",
+      "conceptIds": [
+        "fundamental_problem",
+        "average_effects"
+      ]
+    },
+    {
+      "id": "why-comparisons-mislead",
+      "title": "Why comparisons mislead, and what randomisation fixes",
+      "conceptIds": [
+        "naive_comparison_bias",
+        "randomisation"
+      ]
+    },
+    {
+      "id": "confounding",
+      "title": "Confounding and causal diagrams",
+      "conceptIds": [
+        "confounding",
+        "causal_diagrams"
+      ]
+    },
+    {
+      "id": "how-dependence-flows",
+      "title": "How dependence flows: paths and back doors",
+      "conceptIds": [
+        "chains_forks_colliders",
+        "back_doors"
+      ]
+    },
+    {
+      "id": "closing-back-doors",
+      "title": "Closing back doors, and what adjustment cannot fix",
+      "conceptIds": [
+        "controlling_for_confounders",
+        "unmeasured_confounding"
+      ]
+    },
+    {
+      "id": "choosing-controls",
+      "title": "Choosing what to control for",
+      "conceptIds": [
+        "bad_controls",
+        "precision_controls"
+      ]
+    },
+    {
+      "id": "matching-and-propensity",
+      "title": "Matching, propensity scores and overlap",
+      "conceptIds": [
+        "matching",
+        "propensity_scores",
+        "overlap"
+      ]
+    },
+    {
+      "id": "difference-in-differences",
+      "title": "Difference-in-differences",
+      "conceptIds": [
+        "diff_in_diff"
+      ]
+    }
+  ],
+  "machineCheck": {
+    "judgeModel": "claude-opus-5-5",
+    "instructionsVersion": "1",
+    "checkedAt": "2026-10-25",
+    "itemsJudged": 78,
+    "itemsSupported": 78,
+    "errorsPlanted": 12,
+    "errorsCaught": 12,
+    "fingerprint": "sha256:ef00fa49709cc55977ff8c357e9d133d"
+  }
+}

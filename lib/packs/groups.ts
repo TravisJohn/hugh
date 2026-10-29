@@ -38,14 +38,14 @@ const GROUPS = [
   {
     id:     "stats-in-practice",
     label:  "Statistics in practice",
-    blurb:  "Run a fair experiment, and find the observations that don't fit.",
+    blurb:  "Run a fair experiment, find what doesn't fit, and judge cause from data you didn't randomise.",
     path:   false,
     region: "stats",
   },
   {
     id:     "machine-learning",
     label:  "Machine learning",
-    blurb:  "Predict, judge and group with models.",
+    blurb:  "Predict, judge and group with models, and reduce many features to a few.",
     path:   false,
     region: "ml",
   },

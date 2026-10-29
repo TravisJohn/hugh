@@ -1,0 +1,31 @@
+{
+  "packId": "causal-inference",
+  "note": "Deliberately WRONG sentences, planted blind among the real ones to prove the machine-check judge is reading. Never use these as content.",
+  "plants": [
+    {
+      "ref": "randomisation:1",
+      "type": "negation",
+      "sentence": "Randomised experiments assign individuals to treatment or control by choice rather than at random, and they remove bias by making the potential outcomes depend on the treatment."
+    },
+    {
+      "ref": "matching:1",
+      "type": "overstatement",
+      "sentence": "Matching each treated unit with a similar untreated twin always removes all bias, whatever confounders are left unmeasured, so a matched comparison is as good as a randomised experiment."
+    },
+    {
+      "ref": "average_effects:2",
+      "type": "wrong_number_or_direction",
+      "sentence": "Simply comparing the mean of the treated schools with the mean of the untreated ones gives 50 points, the same answer as the true average effect, so here association equals causation."
+    },
+    {
+      "ref": "diff_in_diff:5",
+      "type": "unsupported_addition",
+      "sentence": "Its assumption is that the treatment and control groups share the same growth pattern; it requires neither the same base level nor a zero trend, and it also corrects for any confounder that changes over time in only one group."
+    },
+    {
+      "ref": "confounding:1",
+      "type": "causal_from_association",
+      "sentence": "Because outside temperature is associated with both ice-cream sales and boating accidents, high ice-cream sales cause more boating accidents on hot days."
+    }
+  ]
+}

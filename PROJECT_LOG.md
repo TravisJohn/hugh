@@ -9360,6 +9360,100 @@ Noticed and left alone: How It Works step 02 still says "Your AI
 interviewer", left over from the deleted interview loop. It is outside row
 9's copy change.
 
+## 2026-10-25 - Two more courses: Dimensionality reduction and Causal inference (18 courses)
+
+Travis asked for more courses to be authored while he rested, with no
+check-ins. The earlier autonomous-run rules applied:
+- one pack at a time;
+- each pack verified independently;
+- card orders approved by Claude on his behalf, recorded as pending his
+  review;
+- finished packs collected on a draft PR, never merged without him.
+
+The branch, `feat/more-courses-3`, is stacked on PR C (#37), because catalog
+entries now name a picker group.
+
+**Dimensionality reduction** 1.0.0 goes under Machine learning, after
+Clustering.
+- It covers why many features cause trouble, principal components,
+  eigenvalues and explained variance, choosing how many components to
+  keep, scores and interpretation, why scale matters, fitting PCA inside a
+  pipeline without leakage, and t-SNE with its cautions.
+- It has 19 concepts, 77 key points, 7 misconceptions and 9 cards, from 9
+  HTML sources: Penn State STAT 505 and 508, NIST/SEMATECH, scikit-learn
+  and Google.
+- Clustering already teaches PCA only as a step before clustering, so the
+  two do not overlap.
+- Judge runs 1 to 3 each supported 83/84 items and caught 12/12 planted
+  errors. Each run flagged a different borderline generalisation, so after
+  run 3 every key point was re-read and seven claims were tightened. Run 4
+  supported 84/84 and caught 12/12.
+
+**Causal inference** 1.0.0 goes under Statistics in practice, after Outlier
+detection.
+- It covers potential outcomes, the bias in a naive comparison,
+  randomisation, confounding, causal diagrams, chains, forks and colliders,
+  back doors, choosing controls (including bad controls), matching,
+  propensity scores, overlap, difference-in-differences, and the limits of
+  adjustment.
+- It has 18 concepts, 71 key points, 7 misconceptions and 9 cards, from 10
+  HTML sources: Causal Inference for the Brave and True, The Effect, and
+  OpenIntro.
+- Before judging, nine key points that leaned on context outside their
+  passage were tightened, applying what the first pack's runs had taught.
+  Run 1 supported 77/78 and caught 12/12; it flagged one added analogy,
+  which was cut. Run 2 supported 78/78 and caught 12/12.
+
+Model validation was considered first and set aside: Linear regression,
+Decision trees and Neural networks already teach most of it. The untaught
+remainder (data leakage, grouped and time-ordered splits, nested
+cross-validation) is a candidate for a later pack.
+
+Both packs have id locks. Two group blurbs grew to cover them. A selection
+test now counts the catalog instead of a fixed 16. The full gate passed
+locally with 2,093 tests.
+
+## 2026-10-26 - A launch dashboard: Hugh to Nov 15
+
+Travis asked for a high-level overview of every section of Hugh, refreshed
+daily, so he can see where things stand without asking, with Nov 15 as the
+target. He chose "every section launch-ready" as the finish line, with
+Claude drafting each section's finish line for him to correct. No launch
+date was written down before this; the only one on record was "January",
+from the feature-registry work in September.
+
+It is a private claude.ai dashboard, not an app page:
+https://claude.ai/artifact/6fAzrmFPh633WpXXSSyQmk. `/admin/features`
+already shows each section's runtime health (spend, use, failures). This page
+shows the other half: what is done, what is left, and who holds the next
+move.
+- 20 sections: the 17 registry surfaces, plus Course catalog, Security and
+  spend, and Launch (landing page, promo films).
+- 42 items on the Nov 15 list. On day one, 15 are done, 27 are open, 11 are
+  waiting on Travis, and 9 of 20 sections are launch-ready. Nine known items
+  are listed under "After Nov 15" and are not counted.
+- Every item carries a check that a script can run: a PR merged, a table
+  present in production, a file or a line gone from main, or the backups
+  green. Items checked `manual` move only when Travis says so in a chat.
+- The data is five JSON files attached to the dashboard, not to this repo,
+  so the daily updates add no commits to any branch.
+
+The refresh is a scheduled task in the desktop app,
+`hugh-nov15-dashboard`, every morning at 7:00. It reads git, GitHub,
+Supabase's table list and the backup runs. It never checks out, commits or
+runs SQL, and it changes only item states, the PR list, the burn-down and the
+change log. It runs only while the app is open; a missed run happens on the
+next launch.
+
+Found while drafting:
+- Migration 061 is not applied in production: there is no
+  `topic_requests` table.
+- The landing page on main still says "Your AI interviewer guides the
+  discussion" and "Skill Prep App". PR C replaces "You can learn anything"
+  but not these two lines.
+- Supabase's migration history is empty, because migrations are applied
+  through the SQL editor. A migration is proven by the table it creates.
+
 ## 2026-10-27 - A started course no longer spins until reload
 
 Travis's browser check of PR C found it at step 3. Starting a course built

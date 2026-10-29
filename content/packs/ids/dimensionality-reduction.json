@@ -1,0 +1,36 @@
+{
+  "packId": "dimensionality-reduction",
+  "note": "Every concept and card id this pack has ever published to learners. Ids are permanent: a learner board stores them. Retire a concept instead of deleting it; never remove an id from this file.",
+  "concepts": [
+    "why_reduce_dimensions",
+    "redundancy_and_correlation",
+    "first_component",
+    "later_components",
+    "component_variance",
+    "explained_variance",
+    "choosing_components",
+    "scree_plot",
+    "projection_view",
+    "component_scores",
+    "interpreting_components",
+    "descriptive_not_inferential",
+    "information_loss",
+    "scale_dependence",
+    "standardising",
+    "components_as_inputs",
+    "fit_on_training_data",
+    "tsne",
+    "tsne_cautions"
+  ],
+  "cards": [
+    "why-fewer-dimensions",
+    "principal-components",
+    "variance-explained",
+    "how-many-to-keep",
+    "projections-and-scores",
+    "reading-components",
+    "scaling",
+    "pca-in-a-pipeline",
+    "t-sne"
+  ]
+}
