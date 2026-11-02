@@ -169,7 +169,7 @@ async function main() {
   const recorded = await counterRow(userId, FUTURE);
   check("tokens_spent increased by the real amount",
     Number(recorded.tokens_spent) === 1234, { got: recorded.tokens_spent });
-  check("reserved_tokens was left alone (it expires, it is not cancelled)",
+  check("reserved_tokens was left alone (a log naming no feature releases nothing)",
     Number(recorded.reserved_tokens) === 500, { got: recorded.reserved_tokens });
 
   // record_usage must never be able to hand budget back.

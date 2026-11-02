@@ -14,6 +14,7 @@ import {
   periodStart,
   reserveEstimateFor,
   recordedTokens,
+  reservationReleasedBy,
   accountAllowed,
   statusForDenial,
   messageForDenial,
@@ -149,11 +150,25 @@ describe("recordedTokens", () => {
   });
 
   it("does not subtract what was reserved", () => {
-    // Deliberate. One gated request can log several times (the goals route
-    // bills three features off one gate), so reconciling per log row would
-    // under-count by the estimates of the calls that reserved nothing.
-    // Reservations expire on their own window instead.
+    // Deliberate. The real spend is always added in full. Giving the claim back
+    // is a separate step in record_usage (migration 062), so no estimate can
+    // shrink what the running total says was spent.
     expect(recordedTokens(1_000, 0)).toBe(1_000);
+  });
+});
+
+describe("reservationReleasedBy", () => {
+  it("lets a call the server watched give back its own claim", () => {
+    expect(reservationReleasedBy("learn/chat")).toBe("learn/chat");
+    expect(reservationReleasedBy("tracker/generate")).toBe("tracker/generate");
+  });
+
+  it("never lets a figure from the browser give budget back", () => {
+    // A Realtime call runs browser-to-OpenAI, and the browser reports what it
+    // spent. If that report released the claim, a learner at the cap could mint
+    // a session, report one token, and mint again: live credentials that spend
+    // real money, with nothing held against any of them.
+    expect(reservationReleasedBy("mastery/realtime")).toBeNull();
   });
 });
 

@@ -81,6 +81,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_061_topic_requests_test
       - name: Test that topic requests are server-written and leave with the account
         run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_061_topic_requests_test -f /tmp/hugh-s1/tests/061_topic_requests.sql
+      - name: Create disposable usage-release database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_062_usage_release_test
+      - name: Test that a logged call gives back its own reservation, under a real race
+        run: docker exec -e PGUSER=postgres -e PGDATABASE=hugh_062_usage_release_test "${{ job.services.postgres.id }}" sh /tmp/hugh-s1/tests/062_usage_release_on_log.sh
 
   verify:
     name: lint · typecheck · test · audit · build

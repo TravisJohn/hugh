@@ -53,11 +53,12 @@ export const RATE_LIMIT_WINDOW_SECONDS = 60;
 /**
  * How long an unlogged reservation keeps counting against the cap.
  *
- * Reservations are never released, only expired — which is what makes a crashed
- * or platform-killed request self-healing, with nothing needing to run in its
- * failure path. The trade-off is that the TTL must outlast the slowest gated
- * request, or a long track build's own reservation would expire while it is
- * still running and stop protecting the cap.
+ * A call that logs gives its reservation back then (migration 062). One that
+ * never logs simply expires, which is what makes a crashed or platform-killed
+ * request self-healing, with nothing needing to run in its failure path. The
+ * trade-off is that the TTL must outlast the slowest gated request, or a long
+ * track build's own reservation would expire while it is still running and stop
+ * protecting the cap.
  *
  * 150s clears the 120s `maxDuration` the track-build routes set, which is the
  * longest anything gated here can legitimately take.
@@ -122,10 +123,10 @@ export function periodStart(
  *
  * Reserving is a bet made before the model replies. The bet must be high
  * enough that a burst of concurrent requests cannot slip a large real spend
- * past a cap; it is not reconciled away afterwards, it simply expires
- * (RESERVE_TTL_SECONDS) once the real spend has landed in `tokens_spent`.
- * Over-reserving briefly is therefore the safe direction, and matches the
- * stance `lib/pricing.ts` takes on unknown models: over-state, never hide.
+ * past a cap; it lasts only until the real spend lands in `tokens_spent`
+ * (`reservationReleasedBy`). Over-reserving briefly is therefore the safe
+ * direction, and matches the stance `lib/pricing.ts` takes on unknown models:
+ * over-state, never hide.
  *
  * Keyed by the same `feature` strings the routes pass to `logUsage`, so the
  * vocabulary a route is gated under is the one it is billed under.
@@ -186,13 +187,34 @@ export function reserveEstimateFor(feature: string): number {
  * The tokens one logged call adds to the running total.
  *
  * Trivial by design. It is a plain sum rather than a reconciliation against
- * what was reserved, because a single gated request can log several times —
- * the goals route bills three features off one gate — and subtracting an
- * estimate per log row would under-count by the estimates of the calls that
- * never reserved anything. Reservations expire instead of being cancelled.
+ * what was reserved: the real spend is always added in full, and giving the
+ * claim back is a separate step (`reservationReleasedBy`), so no estimate can
+ * shrink what the running total says was spent.
  */
 export function recordedTokens(tokensIn: number, tokensOut: number): number {
   return Math.max(0, tokensIn) + Math.max(0, tokensOut);
+}
+
+/**
+ * Spend the server never saw. A Realtime call runs browser-to-OpenAI and the
+ * browser reports what it spent afterwards, so that figure is a claim, not a
+ * measurement. If it could release a reservation, a learner at the cap could
+ * mint a session, report one token, and mint again: live credentials that spend
+ * real money, with nothing held against any of them.
+ */
+const BROWSER_REPORTED_FEATURES = new Set(["mastery/realtime"]);
+
+/**
+ * Which reservation a logged call gives back: the oldest live one under its own
+ * feature (migration 062), or none. Without this a call counted twice until its
+ * reservation expired — once as real spend, once as the estimate — and a chat's
+ * estimate is several times what it spends.
+ *
+ * Matching on the name is why a route must gate and log under one name
+ * (`lib/usageNames.test.ts`). A reservation nothing releases still expires.
+ */
+export function reservationReleasedBy(feature: string): string | null {
+  return BROWSER_REPORTED_FEATURES.has(feature) ? null : feature;
 }
 
 /**
