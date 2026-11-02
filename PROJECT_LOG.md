@@ -9519,3 +9519,50 @@ fix; details in the doc's §14.
 
 Gate: 2,234 tests pass (about 110 new on this branch), the type check and
 lint are clean, and the build passes.
+
+## 2026-11-02 - A logged call gives back its reservation (migration 062, not yet applied)
+
+Local plan mode's browser test found this on 2026-10-29: a learner who had
+really spent 27,409 of 100,000 tokens was refused as "Monthly usage limit
+reached". The gate sets aside an estimate before each call, and those claims
+only ever expired, so for 150 seconds after a call's real spend was recorded, it
+counted twice. A course-card chat sets aside about 18k and spends about 4k.
+
+049 chose expiry because one gate then billed three features, so a log couldn't
+say what to give back. That no longer holds: every billed call has its own gate
+under the name it logs. Travis chose this over only shortening the hold, which
+needed no migration but left the double count in place.
+
+The fix:
+- `reserve_usage` records each claim's feature, and `record_usage` removes the
+  oldest live claim of that feature in one transaction with adding the spend.
+- Expiry is unchanged, so a request that dies before logging still heals itself.
+- Both new parameters default to NULL, so the code already running keeps working
+  once 062 is applied. **Apply 062 before this deploys.** In the other order
+  every gated request is refused as "unavailable".
+- Both functions are now server-only, following 057: a learner who could call
+  `record_usage` could give their own claim back.
+- `lib/usageNames.test.ts` fails the build if a route gates and logs under
+  different names, since a mismatch would quietly bring the early refusal back.
+
+Decided while building: Realtime keeps its full hold. Those figures are the
+browser's word, and releasing on them would let a learner at the cap mint a
+session, report one token and mint again, each with a live credential.
+`reservationReleasedBy` holds this.
+
+Left alone on purpose: a course-card chat is still refused above about 82% of the
+month, because its 18k estimate no longer fits even though it really costs far
+less. That comes from the one-token-per-byte reservation rule.
+
+Checked:
+- `supabase/tests/062_usage_release_on_log.sql` reproduces the 10-29 refusal on
+  the old call shape, then shows the same next chat running. All 37 checks pass
+  on PGlite (Postgres in WebAssembly), with Docker off here. The 16-client race
+  in `062_usage_release_on_log.sh` has not run yet; it first runs in CI.
+- Breaking the fix on purpose four ways each failed a test: releasing whatever
+  the feature, releasing on a zero log, releasing an expired claim, and a route
+  logging under another name.
+- Not yet run against production or in a browser: that needs 062 applied.
+
+Gate: 2,244 tests pass (10 new), the type check and lint are clean, and the build
+passes.

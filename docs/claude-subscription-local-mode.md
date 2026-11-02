@@ -533,9 +533,9 @@ What it found:
   for 150 s even after the call's real usage is logged, so for that time
   each call counts twice. Three held reservations (54,298), plus what was
   spent, plus the next estimate crossed 100k. This is `main`'s gate,
-  unchanged on this branch, so production behaves the same. Proposed as its
-  own fix. For the test, the owner switched the test learner to Pro, then
-  back to Free.
+  unchanged on this branch, so production behaves the same. Fixed afterwards
+  by migration 062: logging a call now gives its reservation back. For the
+  test, the owner switched the test learner to Pro, then back to Free.
 - **The live site prices plan rows at its unknown-model fallback.** `main`'s
   `MODEL_RATES` doesn't know the `@subscription` models, so the live
   `/admin/users` priced the test learner's October (26.0k in, 1.4k out) at
