@@ -9599,3 +9599,10 @@ on `vtravisjohn@yahoo.com`, the sign-up test account, which is Travis's to decid
 
 Gate: the 31 new tests pass, and the type check and lint are clean on the changed
 files. The full suite runs in CI.
+
+Done the same day: Travis set the new password and ran the seed script. The old
+one no longer matches the account's stored hash, and changing it also ended the
+account's sessions. `notes_enabled` was then turned on for the test learner. The
+Coach and Summarise stay off in plan mode, because both run on OpenAI, so Notes
+there holds screenshots and reasoning without Hugh reading them back.
+`vtravisjohn@yahoo.com` is unchanged until Travis decides.
