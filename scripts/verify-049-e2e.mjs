@@ -13,9 +13,9 @@
 
 import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { requireTestUserPassword } from "./testUserPassword.mjs";
 
 const EMAIL    = "test_user@testmail.com";
-const PASSWORD = "password1234";
 const BASE     = "http://localhost:3000";
 const ROUTE    = "/api/dashboard/classify-topic";
 
@@ -30,6 +30,7 @@ function loadEnv() {
 }
 
 const env = loadEnv();
+const PASSWORD = requireTestUserPassword(env);
 const admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });

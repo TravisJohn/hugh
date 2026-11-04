@@ -26,6 +26,7 @@ import { spawn } from "node:child_process";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { requireTestUserPassword } from "./testUserPassword.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CASES_DIR = join(ROOT, "public", "case-lab");
@@ -40,9 +41,12 @@ const has = (name) => args.includes(`--${name}`);
 const BASE_URL = flag("base-url", "http://localhost:3000").replace(/\/$/, "");
 
 // Case Lab case pages call verifyUserAccess(), so this needs a real session.
-// Defaults match scripts/seed-test-user.mjs; override for a different local user.
+// Defaults to the user scripts/seed-test-user.mjs keeps, whose password lives in
+// .env.local; override for a different local user.
+const ENV_FILE = join(ROOT, ".env.local");
+if (existsSync(ENV_FILE)) process.loadEnvFile(ENV_FILE);
 const QA_EMAIL = process.env.QA_EMAIL ?? flag("email", "test_user@testmail.com");
-const QA_PASSWORD = process.env.QA_PASSWORD ?? flag("password", "password1234");
+const QA_PASSWORD = process.env.QA_PASSWORD ?? flag("password") ?? requireTestUserPassword(process.env);
 const ONLY_CASE = flag("case");
 const HEADED = has("headed");
 const SLOW = has("slow");

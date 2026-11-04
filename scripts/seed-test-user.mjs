@@ -12,12 +12,15 @@
 // Needs NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in .env.local.
 // The service-role key bypasses RLS and email confirmation — dev/test only,
 // never ship this flow to the client.
+//
+// Also needs HUGH_TEST_USER_PASSWORD in .env.local. This repo is public, so the
+// password lives only there, and each run sets the account's password to it.
 
 import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { requireTestUserPassword } from "./testUserPassword.mjs";
 
 const EMAIL    = "test_user@testmail.com";
-const PASSWORD = "password1234";
 const RESET    = process.argv.includes("--reset");
 
 // ── Load .env.local (no dotenv dependency) ──────────────────────────────────
@@ -48,6 +51,7 @@ if (!url || !key) {
   console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local");
   process.exit(1);
 }
+const PASSWORD = requireTestUserPassword(env);
 
 const admin = createClient(url, key, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -109,7 +113,7 @@ async function main() {
 
   console.log("\nReady. Sign in at /login with:");
   console.log(`   email:    ${EMAIL}`);
-  console.log(`   password: ${PASSWORD}`);
+  console.log("   password: the value of HUGH_TEST_USER_PASSWORD in .env.local");
   if (!RESET) {
     console.log("\nTip: re-run with --reset to return this user to a blank dashboard.");
   }
