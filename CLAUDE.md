@@ -95,6 +95,12 @@ budget and then spends against it invisibly.
   and `logUsage` warns in dev.
 - Retry loops accumulate tokens across attempts — a discarded attempt still costs
   money and must still be logged.
+- A route gates and logs under **one `feature` name**. Logging a call gives its
+  reservation back (migration 062); with a mismatch the claim stays held for its
+  full 150 s, on top of the real spend, and learners are refused early
+  (`lib/usageNames.test.ts`). Spend the server never saw gives nothing back:
+  `reservationReleasedBy` in `lib/tokenBudget.ts` keeps Realtime's hold, because
+  those figures are the browser's word.
 - Adding a Claude model also means adding its `@subscription` twin at $0 (a test
   fails otherwise) — see local plan mode below.
 

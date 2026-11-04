@@ -57,6 +57,29 @@ describe("logUsage — who paid", () => {
 });
 
 /**
+ * A chat sets aside far more than it spends, and counting both after the call
+ * refused a learner as "monthly limit reached" at 27% of the month. Logging now
+ * gives the claim back (migration 062), which only works if both calls name the
+ * feature.
+ */
+describe("giving a reservation back", () => {
+  it("reserves under the route's feature, so its log can find the claim", async () => {
+    await checkUsageAllowed(OWNER, "learn/chat");
+    expect(mocks.rpc).toHaveBeenCalledWith("reserve_usage", expect.objectContaining({ p_feature: "learn/chat" }));
+  });
+
+  it("names the feature when it logs, so the spend and the release land together", async () => {
+    await logUsage({ userId: OWNER, feature: "learn/chat", model: "claude-haiku-4-5", tokensIn: 432, tokensOut: 13 });
+    expect(mocks.rpc).toHaveBeenCalledWith("record_usage", expect.objectContaining({ p_tokens: 445, p_feature: "learn/chat" }));
+  });
+
+  it("keeps the hold when the only record of the spend is the browser's word", async () => {
+    await logUsage({ userId: OWNER, feature: "mastery/realtime", model: "gpt-realtime-mini", tokensIn: 432, tokensOut: 13 });
+    expect(mocks.rpc).toHaveBeenCalledWith("record_usage", expect.objectContaining({ p_tokens: 445, p_feature: null }));
+  });
+});
+
+/**
  * The owner lock. Anthropic allows the plan to serve only the person it
  * belongs to, so on a plan-mode server every other account is refused before
  * anything is reserved or spent.

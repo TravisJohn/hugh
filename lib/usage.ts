@@ -16,6 +16,7 @@ import {
   messageForDenial,
   periodStart,
   recordedTokens,
+  reservationReleasedBy,
   reserveEstimateFor,
   statusForDenial,
   tokenLimitFor,
@@ -54,9 +55,9 @@ async function readProfile(userId: string): Promise<QuotaProfile | null> {
  * rows legitimately omit it.
  *
  * Since migration 049 this also adds the spend to `usage_counters`, the running
- * total the gate compares against. That write is purely additive and knows
- * nothing about what was reserved — a single gated request can log several
- * times, so the reservation is expired on a window rather than cancelled here.
+ * total the gate compares against. Since migration 062 the same write gives back
+ * the reservation made under this `feature`, so pass the name the route gated
+ * under (`lib/usageNames.test.ts`).
  *
  * TIMING CONTRACT — awaiting this means "the write is scheduled", NOT "the row
  * exists". The write is handed to `after()` so it survives the response: on
@@ -191,6 +192,7 @@ async function recordAgainstCounter(
       p_user_id:      userId,
       p_period_start: periodStart(profile),
       p_tokens:       tokens,
+      p_feature:      reservationReleasedBy(feature),
     });
     if (error) {
       console.error(`[usage] failed to count "${feature}" for ${userId}:`, error.message);
@@ -239,6 +241,7 @@ export async function checkUsageAllowed(
       p_max_requests:  RATE_LIMIT_MAX_REQUESTS,
       p_rate_window_s: RATE_LIMIT_WINDOW_SECONDS,
       p_reserve_ttl_s: RESERVE_TTL_SECONDS,
+      p_feature:       feature,
     });
 
     if (error) {
