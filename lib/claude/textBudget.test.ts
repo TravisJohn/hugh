@@ -1,16 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type Anthropic from "@anthropic-ai/sdk";
+import type { ClaudeClient } from "./client";
+import { imageReservation, type ImageCall } from "./imageInput";
 import { textReservation, type TextCall } from "./textInput";
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn() }));
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/supabase/service", () => ({ createServiceClient: () => mocks }));
-import { createTextMessage, textBudgetResponse } from "./textBudget";
+import { chargedInputTokens, createImageMessage, createTextMessage, textBudgetResponse } from "./textBudget";
 import { checkUsageAllowed, enforceUsageGate, enforceTtsBudget } from "@/lib/usage";
 
 const call: TextCall = { model: "claude-haiku-4-5", max_tokens: 500, system: "Python helper", messages: [{ role: "user", content: "x".repeat(16000) }] };
 const ai = vi.fn();
-const client = { messages: { create: ai } } as unknown as Anthropic;
+const aiWithImages = vi.fn();
+const client = { messages: { create: ai, createWithImages: aiWithImages } } as unknown as ClaudeClient;
+const imageCall: ImageCall = { ...call, imageCaption: "The question.", images: [{ mediaType: "image/png", base64: "AAAA" }] };
 let profile: { approved: boolean; is_blocked?: boolean; is_admin?: boolean; plan?: string };
 beforeEach(() => {
   vi.clearAllMocks();
@@ -24,6 +28,35 @@ beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 afterEach(() => vi.restoreAllMocks());
+
+describe("a call with images goes through the same gate as text", () => {
+  it("reserves the image hold under the route's own name and makes exactly one attempt", async () => {
+    await createImageMessage(client, "alice", "notes/coach", imageCall);
+    expect(mocks.rpc).toHaveBeenCalledWith("reserve_usage", expect.objectContaining({ p_estimate: imageReservation(imageCall), p_feature: "notes/coach" }));
+    expect(aiWithImages).toHaveBeenCalledWith(imageCall, { maxRetries: 0 });
+    expect(ai).not.toHaveBeenCalled();
+  });
+  it("spends nothing when the gate refuses, and says why", async () => {
+    mocks.rpc.mockResolvedValue({ data: [{ granted: false, reason: "rate_limited", retry_after: 23 }], error: null });
+    try { await createImageMessage(client, "alice", "notes/coach", imageCall); throw new Error("Must refuse"); }
+    catch (error) { expect(textBudgetResponse(error)?.status).toBe(429); }
+    expect(aiWithImages).not.toHaveBeenCalled();
+  });
+});
+
+describe("chargedInputTokens", () => {
+  const usage = (input: number, write: number | null, read: number | null) =>
+    ({ input_tokens: input, cache_creation_input_tokens: write, cache_read_input_tokens: read }) as Anthropic.Usage;
+  it("counts cache writes, because the plan reports most of a call's input that way", () => {
+    expect(chargedInputTokens(usage(3, 1976, 0))).toBe(1979);
+  });
+  it("leaves cache reads out, as learn/chat does", () => {
+    expect(chargedInputTokens(usage(100, 0, 5000))).toBe(100);
+  });
+  it("copes with an API reply that has no cache fields", () => {
+    expect(chargedInputTokens(usage(100, null, null))).toBe(100);
+  });
+});
 
 describe("prompt-size reservation reaches the atomic RPC", () => {
   it("passes the computed estimate, not the old 3000-token constant", async () => {

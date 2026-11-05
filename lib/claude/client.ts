@@ -9,9 +9,9 @@
  * prompts and their parsers either way; only who pays changes.
  *
  * The type is deliberately narrower than the SDK's: `create` takes a
- * `TextCall`, the one shape the plan path supports. A call site that wants
- * tools, images or a stream fails to compile here instead of misbehaving on the
- * plan.
+ * `TextCall`, and `createWithImages` takes an `ImageCall`. Those are the shapes
+ * the plan path supports. A call site that wants tools or a stream fails to
+ * compile here instead of misbehaving on the plan.
  *
  * No `server-only` import: `lib/tracker/generateMilestones.ts` reaches this
  * from offline `tsx` scripts, which run outside Next.
@@ -20,6 +20,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { resolveClaudeBilling } from "./billingMode";
+import { apiImageParams, type ImageCall } from "./imageInput";
 import type { TextCall } from "./textInput";
 import { runClaudeCli } from "./subscription/runClaudeCli";
 import { PlanLimitLatch } from "./subscription/limitLatch";
@@ -27,6 +28,7 @@ import { PlanLimitLatch } from "./subscription/limitLatch";
 export interface ClaudeClient {
   messages: {
     create(call: TextCall, options?: { maxRetries?: number }): Promise<Anthropic.Message>;
+    createWithImages(call: ImageCall, options?: { maxRetries?: number }): Promise<Anthropic.Message>;
   };
 }
 
@@ -61,7 +63,13 @@ const planLimit = new PlanLimitLatch();
 /** Throws if the subscription flag is set wrongly or anywhere it must not be — see `billingMode`. */
 export function claudeClient(env: Readonly<Record<string, string | undefined>> = process.env): ClaudeClient {
   if (resolveClaudeBilling(env).kind === "api") {
-    return new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    const sdk = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    return {
+      messages: {
+        create: (call, options) => sdk.messages.create(call, options),
+        createWithImages: (call, options) => sdk.messages.create(apiImageParams(call), options),
+      },
+    };
   }
   const config = {
     command: "claude",
@@ -74,6 +82,7 @@ export function claudeClient(env: Readonly<Record<string, string | undefined>> =
   return {
     messages: {
       create: (call, options) => runClaudeCli(call, options?.maxRetries, config),
+      createWithImages: (call, options) => runClaudeCli(call, options?.maxRetries, config),
     },
   };
 }

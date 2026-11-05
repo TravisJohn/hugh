@@ -20,6 +20,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
 import type Anthropic from "@anthropic-ai/sdk";
+import type { ImageCall } from "../imageInput";
 import type { TextCall } from "../textInput";
 import { buildInvocation, childEnv, type CliInvocation } from "./cliArgs";
 import { parseEventLine, initApiKeySource, isContinuation, PLAN_KEY_SOURCE, toMessage, type CliEvent } from "./parseResult";
@@ -71,7 +72,7 @@ function reportDroppedCacheHint(invocation: CliInvocation): void {
 }
 
 export async function runClaudeCli(
-  call: TextCall,
+  call: TextCall | ImageCall,
   maxRetries: number | undefined,
   config: RunnerConfig,
 ): Promise<Anthropic.Message> {

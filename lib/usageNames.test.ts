@@ -35,7 +35,7 @@ const sources = [...sourceFiles("app/api"), ...sourceFiles("lib")]
 /** Every name a call site hands to the gate, literal or not, with where it is. */
 const GATE_CALLS = [
   /\b(?:enforceUsageGate|checkUsageAllowed|textBudgetGuard)\(\s*[\w.]+\s*,\s*([^,)]+)/g,
-  /\bcreateTextMessage\(\s*[\w.]+\s*,\s*[\w.]+\s*,\s*([^,)]+)/g,
+  /\bcreate(?:Text|Image)Message\(\s*[\w.]+\s*,\s*[\w.]+\s*,\s*([^,)]+)/g,
 ];
 const LOG_CALL = /\blogUsage\(\{([^}]*)\}/g;
 

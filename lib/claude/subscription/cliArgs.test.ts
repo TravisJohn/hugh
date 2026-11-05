@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { buildInvocation, renderPrompt, childEnv, NEUTRAL_SYSTEM_PROMPT } from "./cliArgs";
+import { buildInvocation, renderImageTurn, renderPrompt, childEnv, NEUTRAL_SYSTEM_PROMPT } from "./cliArgs";
+import type { ImageCall } from "../imageInput";
 import type { TextCall } from "../textInput";
 
 /**
@@ -12,6 +13,51 @@ const call: TextCall = {
   system: "You are Hugh.",
   messages: [{ role: "user", content: "What is a p-value?" }],
 };
+
+const imageCall: ImageCall = {
+  ...call,
+  imageCaption: "The question.",
+  images: [{ mediaType: "image/png", base64: "AAAA" }, { mediaType: "image/jpeg", base64: "BBBB" }],
+};
+
+describe("a call with images", () => {
+  it("leaves a text call's switches and stdin exactly as they were, because the contract was measured on that shape", () => {
+    const { args, prompt } = buildInvocation(call, "s.txt");
+    expect(args).not.toContain("--input-format");
+    expect(prompt).toBe(renderPrompt(call.messages));
+  });
+
+  it("switches stdin to JSON only for a call with images", () => {
+    const { args } = buildInvocation(imageCall, "s.txt");
+    expect(args[args.indexOf("--input-format") + 1]).toBe("stream-json");
+  });
+
+  it("keeps every protection a text call has, so a screenshot can't gain tools or the owner's setup", () => {
+    const text = buildInvocation(call, "s.txt");
+    const image = buildInvocation(imageCall, "s.txt");
+    expect(image.args).toEqual([...text.args, "--input-format", "stream-json"]);
+    expect(image.env).toEqual(text.env);
+  });
+
+  it("sends one line of one user turn: caption, images in order, then the transcript", () => {
+    const line = renderImageTurn(imageCall);
+    expect(line.endsWith("\n")).toBe(true);
+    expect(line.trimEnd()).not.toContain("\n");
+    const turn = JSON.parse(line);
+    expect(turn).toMatchObject({ type: "user", message: { role: "user" } });
+    expect(turn.message.content).toEqual([
+      { type: "text", text: "The question." },
+      { type: "image", source: { type: "base64", media_type: "image/png", data: "AAAA" } },
+      { type: "image", source: { type: "base64", media_type: "image/jpeg", data: "BBBB" } },
+      { type: "text", text: renderPrompt(call.messages) },
+    ]);
+  });
+
+  it("refuses a conversation ending on Hugh's turn, as a text call does", () => {
+    const ended: ImageCall = { ...imageCall, messages: [{ role: "assistant", content: "A is right." }] };
+    expect(() => renderImageTurn(ended)).toThrow("must end with a user turn");
+  });
+});
 
 describe("buildInvocation", () => {
   it("asks for the route's own model, with no tools and one turn", () => {
