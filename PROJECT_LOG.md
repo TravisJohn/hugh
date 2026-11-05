@@ -9617,3 +9617,39 @@ and a thought, and the Coach answered 503 with no spend.
 Found by it: that one session used 61,741 of the test learner's 100,000 tokens for
 the month. The allowance applies in plan mode too, at $0, so at about 4k a chat
 course-card chats start being refused above about 82%, roughly five chats later.
+
+## 2026-11-05 - Notes moves to Claude (first of two PRs)
+
+Travis asked for Notes and Mastery to move to Claude, and for ElevenLabs to go. The
+design was approved as written the same day. Decisions:
+
+- Claude has no live voice: its features page lists no audio input, speech or
+  realtime voice. So Realtime mastery cannot move. It is retired, and everyone
+  takes the scored scripted conversation, already on Claude, with Hugh's lines on
+  screen and the learner answering by mic. Only admins could ever reach Realtime.
+- Speech-to-text stays in the browser (Chrome and Edge, audio goes to Google).
+- ElevenLabs is removed and kept on a `parked/` tag, not commented out. Travis asked
+  for commenting out, and approved removal once told that commented code leaves the
+  package, the environment variables and the tests in place.
+- The whole app moves, live site included, so there is one code path.
+- The Coach and the summary both use `claude-sonnet-4-6`.
+
+This PR covers Notes. Mastery and the ElevenLabs removal are the next one.
+
+A Claude call can now carry images, on the API and on the plan. `TextCall` stays
+text-only, so the other call sites are unchanged. The design is in
+docs/claude-subscription-local-mode.md section 15. Uploads are capped at 7.5 MB,
+down from 10 MB, because Claude's 10 MB limit is measured after base64 encoding. The
+largest of the 1,131 stored images is 3.3 MB, so nothing existing is affected. The
+image type now comes from the file's bytes, because Claude rejects a request whose
+image does not match its declared type.
+
+While in these routes: a failed read of the thread or the screenshot used to pass
+for an empty thread or "not found". Both now fail as failures.
+
+The privacy page changes here rather than in the next PR, because it would be wrong
+the moment this ships: screenshots go to Anthropic now, not OpenAI.
+
+Found on the way: plan rows on other routes count only `input_tokens`, while the
+plan reports most input as cache writes, so they under-count against the allowance.
+It costs nothing at $0, and learners on the API are unaffected. Not fixed here.

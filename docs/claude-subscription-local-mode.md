@@ -149,9 +149,9 @@ How each call keeps behaving like the API version:
 ### 4.2 OpenAI and ElevenLabs
 A Claude plan doesn't cover them. **Recommended: in subscription mode they are
 switched off**, each with its own message: "Off while Hugh runs on your Claude
-plan. Start with `npm run dev` to use it (paid)." The routes affected are Notes
-Coach, Notes summarise, Realtime mastery voice, `/api/tts` and the admin
-architecture assistant. That is what "no tokens burning" means. The
+plan. Start with `npm run dev` to use it (paid)." The routes affected are Realtime
+mastery voice, `/api/tts` and the admin architecture assistant. (Notes Coach and
+Notes summarise were on this list until they moved to Claude: §15.) That is what "no tokens burning" means. The
 alternative, leaving them on the paid keys, is one flag away if you want it.
 Consequence, found in stage 4: scripted mastery can't start without its voice
 (§11).
@@ -341,10 +341,9 @@ that answered the final turn in 1.5 s, served by the plan.
   `claudeClient()`. The only `new Anthropic(...)` left in the app is inside the
   factory, and on the API it builds the same client as before.
 - **The compiler checks the plan path's limits.** `claudeClient()` returns a
-  client whose `create` takes only a `TextCall` (text in, text out). The real
-  SDK client fits that type unchanged, and every current call site compiles
-  against it. A future call that adds tools, images or streaming fails the type
-  check instead of misbehaving on the plan.
+  client whose `create` takes only a `TextCall` (text in, text out), and whose
+  `createWithImages` takes only an `ImageCall` (§15). A future call that adds
+  tools or streaming fails the type check instead of misbehaving on the plan.
 - **Usage rows.** `logUsage` adds `@subscription` to Claude rows in plan mode,
   priced at $0 in `lib/pricing.ts`. A test fails if a Claude model is ever
   priced without its plan twin.
@@ -360,7 +359,7 @@ that answered the final turn in 1.5 s, served by the plan.
   reason (`owner_only`, 403) and its own sentence; it never tells the person
   to contact support. A misconfigured flag throws there too, so the request
   is refused, never served.
-- **Paid features off.** The Coach, Notes summarising, Realtime voice, Hugh's
+- **Paid features off.** Realtime voice, Hugh's
   spoken voice (`/api/tts`) and the architecture assistant each answer 503:
   "… is off while Hugh runs on your Claude plan, which covers Claude only.
   Start Hugh with `npm run dev` to use it (paid)." The check runs before the
@@ -551,3 +550,32 @@ What it found:
 - **Saving a track's focused card returns 500** (`PATCH
   /api/tracker/tracks/[trackId]`) for every account, plan mode or not. The
   route is unchanged from `main`. Proposed as its own fix.
+
+## 15. Images on the plan (2026-11-05)
+
+The Notes Coach reads screenshots, so it moved to Claude with an image path of its
+own. `TextCall` stays text-only, so no other call site can send an image by
+accident. Their API calls and their switches on the plan are unchanged.
+
+- **The call.** `ImageCall` (`lib/claude/imageInput.ts`) adds a caption and the
+  images to a `TextCall`. A route sends it through `createImageMessage`, which uses
+  the same gate as text, so the owner lock holds, and makes one attempt.
+- **On the plan.** The same `claude -p` switches, plus `--input-format stream-json`.
+  One JSON line goes to stdin: the caption, the images, then the usual marked
+  transcript. Images never touch the disk.
+- **The hold.** Base64 would look like millions of tokens to `textReservation`, and
+  Claude does not bill it that way. Each image holds a fixed 5,000 tokens, which
+  covers the most any current model charges for one. Logging the call gives it back.
+- **Counting.** The plan reports most of a call's input as cache writes (a real
+  Coach call: 3 input, 1,976 cache writes), so these routes charge
+  `chargedInputTokens`, as `learn/chat` does.
+- **Ending on the learner.** The Coach button works on a screenshot with no thoughts
+  and straight after a reply. The API refuses a conversation ending on Claude's own
+  turn and `renderPrompt` cannot write one, so `coachTurns` adds a closing turn that
+  says what the press means. It is sent, never stored.
+
+Checked on the real plan login with the real runner and prompt builder: four slices
+of one question with the right option only on the fourth, Coach pressed again after
+a reply, a follow-up turn, Coach pressed with no thoughts, and a 7.3 MB image just
+under the cap. All five answered, every one on the plan. Not yet checked: how the
+Coach's replies compare with `gpt-4o` on real screenshots.
