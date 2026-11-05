@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { verifyUserAccess } from "@/lib/supabase/verify-access";
-import { getRandomPersona } from "@/lib/personas";
 import { safeInternalPath } from "@/utils/safe-redirect";
 import MasteryClient from "./MasteryClient";
 import MasteryRealtimeClient from "./MasteryRealtimeClient";
@@ -88,14 +87,10 @@ export default async function MasteryPage({ params, searchParams }: Props) {
     );
   }
 
-  // Pick a random voice persona for this session's TTS (classic scripted flow)
-  const persona = getRandomPersona();
-
   return (
     <MasteryClient
       milestoneId={milestoneId}
       milestoneTitle={milestone.title as string}
-      personaId={persona.id}
       returnUrl={returnUrl}
       fallbackUrl={fallbackUrl}
       alreadyMastered={milestone.mastery_validated as boolean}

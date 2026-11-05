@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Briefcase, Users, MessageCircle, GraduationCap,
   Mic, MicOff, Loader2, Trophy, RotateCcw, AlertCircle,
 } from "lucide-react";
 import ExitLink from "@/components/ui/ExitLink";
+import { MIC_PROBLEM_MESSAGE } from "@/lib/mastery/micProblem";
 import type { MasteryRecord } from "@/lib/mastery/outcome";
-import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -18,7 +18,6 @@ type ScenarioKey = "interview" | "client" | "huddle" | "teaching";
 type Phase =
   | "setup"       // scenario selection / confirmation
   | "generating"  // fetching Hugh's opener
-  | "playing"     // Hugh's audio is playing
   | "listening"   // user's turn to speak
   | "thinking"    // fetching Hugh's next response
   | "evaluating"  // Claude scoring the conversation (the server records it)
@@ -94,7 +93,6 @@ const COLOR_CLASSES: Record<ColorKey, { bg: string; border: string; text: string
 interface Props {
   milestoneId:     string;
   milestoneTitle:  string;
-  personaId:       string;
   returnUrl?:      string;
   /** The goal board to use when no returnUrl was supplied. */
   fallbackUrl:     string;
@@ -103,7 +101,7 @@ interface Props {
 
 // ── Component ──────────────────────────────────────────────────────────────
 
-export default function MasteryClient({ milestoneId, milestoneTitle, personaId, returnUrl,
+export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
   fallbackUrl, alreadyMastered }: Props) {
   const router = useRouter();
 
@@ -119,16 +117,18 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [apiError,   setApiError]   = useState<string | null>(null);
 
-  const speech      = useSpeechRecognition();
-  const messagesRef = useRef<ConversationMessage[]>([]);
+  const speech       = useSpeechRecognition();
+  const messagesRef  = useRef<ConversationMessage[]>([]);
+  const threadEndRef = useRef<HTMLDivElement>(null);
 
   // Keep ref in sync so async callbacks always see the latest messages
   useEffect(() => { messagesRef.current = messages; }, [messages]);
 
-  // onEnded: always transitions to listening — safe because audio only plays
-  // during "playing" phase (Hugh's turn), never during result or setup.
-  const onAudioEnded = useCallback(() => setPhase("listening"), []);
-  const audio        = useAudioPlayer({ onEnded: onAudioEnded });
+  // Hugh's lines are read, not heard, so the newest one has to stay in view. The
+  // live transcript is listed because it pushes everything above it upwards.
+  useEffect(() => {
+    threadEndRef.current?.scrollIntoView({ block: "end" });
+  }, [messages, phase, speech.transcript]);
 
   // ── Manage speech recognition lifecycle via phase ────────────────────────
   // Do NOT call speech.reset() here — it calls recognition.stop() internally,
@@ -177,9 +177,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
       const text    = data.text!;
       const initial = [{ role: "hugh" as const, text }];
       setMessages(initial);
-      setPhase("playing");
-      await audio.play(text, personaId);
-      // onEnded → "listening"
+      setPhase("listening");
     } catch (e) {
       setApiError((e as Error).message);
       setPhase("setup");
@@ -189,13 +187,13 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
   // ── User finishes speaking ────────────────────────────────────────────────
   async function handleDone() {
     const captured = speech.transcript.trim();
-    speech.reset();
+    // Nothing caught, so leave the mic open. Stopping it here would leave the
+    // screen saying "Listening…" with the mic off: the phase would not change,
+    // so nothing would start it again.
+    if (!captured) return;
 
-    if (!captured) {
-      // Nothing caught — restart listening
-      setTimeout(() => setPhase("listening"), 250);
-      return;
-    }
+    speech.reset();
+    setApiError(null);
 
     const learnerMsg: ConversationMessage = { role: "learner", text: captured };
     const updated                         = [...messagesRef.current, learnerMsg];
@@ -222,20 +220,17 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
       const hughMsg: ConversationMessage = { role: "hugh", text };
       const next    = [...updated, hughMsg];
       setMessages(next);
-      setPhase("playing");
-      await audio.play(text, personaId);
-      // onEnded → "listening"
+      setPhase("listening");
     } catch (e) {
       setApiError((e as Error).message);
       setPhase("listening"); // let user retry their turn
     }
   }
 
-  // ── Clean exit: stop audio/speech before navigating ──────────────────────
+  // ── Clean exit: stop the mic before navigating ───────────────────────────
   // Runs as the onNavigate of an <ExitLink> (see components/ui/ExitLink), so the
   // teardown happens while the prefetched board is already loading.
-  function stopPlayback() {
-    audio.stop();
+  function stopListening() {
     speech.reset();
   }
 
@@ -256,6 +251,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
   const cfg             = SCENARIOS[scenario];
   const colors          = COLOR_CLASSES[cfg.color as ColorKey];
   const isBusy          = ["generating", "thinking", "evaluating"].includes(phase);
+  const micOff          = speech.problem !== null || !speech.isSupported;
   const saveFailed      = evaluation?.record === "failed";
   // On an already-mastered card every practice run is "positive" — mastery is
   // locked, so we never show a fail/almost framing.
@@ -276,7 +272,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
         <ExitLink
           href={boardUrl}
           label="Back"
-          onNavigate={stopPlayback}
+          onNavigate={stopListening}
           className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors"
         />
         <div className="text-center">
@@ -339,7 +335,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                   {alreadyMastered ? "Practice Your Mastery" : "Profess Your Mastery"}
                 </h1>
                 <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm mx-auto">
-                  {cfg.tagline} Hugh leads a 3-exchange voice conversation.{" "}
+                  {cfg.tagline} Hugh leads a 3-exchange conversation, and you answer out loud.{" "}
                   {alreadyMastered
                     ? "This is a practice run — your mastery is already locked in, so explore freely."
                     : <>Score <span className="text-slate-200 font-semibold">7 or higher</span> to confirm mastery.</>}
@@ -347,7 +343,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
               </div>
               <div className={`rounded-2xl border px-5 py-4 text-sm text-slate-400 leading-relaxed text-left ${colors.bg} ${colors.border}`}>
                 <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">How it works</p>
-                Hugh opens the conversation in character. You respond by voice 3 times — keep it clear, accurate, and confident. Hugh evaluates and scores your explanation after the final exchange.
+                Hugh&apos;s lines appear on screen, in character. Read each one, then answer out loud, 3 times in all — keep it clear, accurate, and confident. Your mic opens by itself after each line. Hugh evaluates and scores your explanation after the final exchange.
               </div>
               {apiError && (
                 <p className="text-sm text-red-400">{apiError}</p>
@@ -385,6 +381,10 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
           <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
             <div className="max-w-2xl mx-auto space-y-4">
 
+              {/* Announces each new line to a screen reader, now that Hugh makes
+                  no sound. The live transcript stays outside: announcing every
+                  word as it forms would talk over the learner. */}
+              <div aria-live="polite" className="space-y-4">
               {messages.map((msg, i) =>
                 msg.role === "hugh" ? (
                   <div key={i} className="flex gap-3 max-w-[85%]">
@@ -406,6 +406,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                   </div>
                 )
               )}
+              </div>
 
               {/* Live transcript while the user is recording */}
               {phase === "listening" && (
@@ -417,7 +418,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                     {speech.transcript ? (
                       <p className="text-sm text-slate-200 leading-relaxed">{speech.transcript}</p>
                     ) : (
-                      <p className="text-sm text-slate-500 italic">Listening…</p>
+                      <p className="text-sm text-slate-500 italic">{micOff ? "Your mic is off." : "Listening…"}</p>
                     )}
                   </div>
                 </div>
@@ -433,6 +434,8 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                 </div>
               )}
 
+              <div ref={threadEndRef} />
+
             </div>
           </div>
 
@@ -440,15 +443,41 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
           <div className="shrink-0 border-t border-slate-800/60 px-6 py-5">
             <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
 
+              {/* A failed reply, and a mic that stopped, each get their own copy
+                  and their own way out (rule 5): both would otherwise sit behind
+                  "Listening…" with nothing to tell them from a wait. */}
+              {phase === "listening" && apiError && (
+                <p role="alert" className="text-center text-sm text-red-400">
+                  {apiError} Answer again to retry.
+                </p>
+              )}
+              {phase === "listening" && speech.problem && (
+                <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+                  <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                  <div className="space-y-2">
+                    <p className="text-sm text-red-300">{MIC_PROBLEM_MESSAGE[speech.problem]}</p>
+                    <button
+                      onClick={speech.start}
+                      className="flex items-center gap-1.5 text-xs font-semibold text-red-200 hover:text-red-100 transition-colors"
+                    >
+                      <RotateCcw size={12} />
+                      Try the mic again
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-center gap-5">
                 {phase === "listening" && (
                   <>
-                    <div className="relative flex items-center justify-center">
-                      <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
-                      <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
-                        <Mic size={18} className="text-red-400" />
+                    {!micOff && (
+                      <div className="relative flex items-center justify-center">
+                        <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
+                        <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
+                          <Mic size={18} className="text-red-400" />
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <div className="flex flex-col gap-1.5 items-start">
                       <button
                         onClick={handleDone}
@@ -463,31 +492,13 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                     </div>
                   </>
                 )}
-
-                {phase === "playing" && (
-                  <div className="flex items-center gap-3 text-sm text-slate-400">
-                    <div className="flex gap-1 items-end h-5">
-                      {[0, 1, 2, 3].map(i => (
-                        <div
-                          key={i}
-                          className="w-1 rounded-full bg-amber-400/70"
-                          style={{
-                            height: `${40 + i * 15}%`,
-                            animation: `waveBar 0.7s ease-in-out infinite ${i * 0.12}s alternate`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    Hugh is speaking…
-                  </div>
-                )}
               </div>
 
               {/* End session — always visible during active conversation */}
               <ExitLink
                 href={boardUrl}
                 label="End session & take a break"
-                onNavigate={stopPlayback}
+                onNavigate={stopListening}
                 showIcon={false}
                 iconSize={12}
                 className="inline-flex items-center gap-1.5 text-xs text-slate-700 hover:text-slate-500 transition-colors"
@@ -569,7 +580,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, personaId, 
                 <ExitLink
                   href={boardUrl}
                   label="Back to board without saving"
-                  onNavigate={stopPlayback}
+                  onNavigate={stopListening}
                   showIcon={false}
                   className="block w-full rounded-xl border border-red-500/30 py-2 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
                 />

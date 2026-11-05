@@ -84,11 +84,6 @@
   animation-delay: -2s;
 }
 
-@keyframes waveBar {
-  from { transform: scaleY(0.4); }
-  to   { transform: scaleY(1.0); }
-}
-
 /* ── Code pattern map (/code/start) ─────────────────────────────────────── */
 
 /* Leaves growing out of an opened group cell. The per-leaf delay is set inline

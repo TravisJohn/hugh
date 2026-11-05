@@ -231,7 +231,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "mastery.realtime",
     ],
     spendsTokens: true,
-    tests: 8,
+    tests: 9,
   },
   {
     id:    "code",
