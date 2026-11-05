@@ -29,8 +29,10 @@ const cases = [
   { name: "summary", post: summary, body: { topic: "SQL joins", messages } },
   { name: "refine", post: refine, body: { topic: "SQL joins", answers: [{ question: "Why?", answer: "Reporting" }] } },
   { name: "goals", post: goals, body: { topic: "SQL joins", end_date: "2026-12-01", answers: [{ question: "Why?", answer: "Reporting" }] } },
-  { name: "session", post: session, body: { milestoneId: "00000000-0000-0000-0000-000000000001", scenario: "interview", phase: "open", messages: [] } },
+  { name: "session", post: session, body: { phase: "turn", sessionId: "00000000-0000-0000-0000-000000000001", said: "A join combines rows by matching keys", recent: [] } },
 ];
+/** What the mastery check replies. Every other route reads the default completion. */
+const TURN_CHECK = '{"covered":[],"stated":[],"corrected":[],"reply":"Go on."}';
 function request(body: unknown, raw = false): NextRequest {
   return new NextRequest("http://localhost/test", { method: "POST", body: raw ? String(body) : JSON.stringify(body) });
 }
@@ -49,8 +51,9 @@ beforeEach(() => {
   mocks.from.mockImplementation((table: string) => {
     // The mastery session route checks the card's owner itself (it records
     // results with the service role), so the fake card says who owns it.
-    const data = table === "milestones" ? { id: "milestone", title: "SQL joins", mastery_validated: false, tracks: { user_id: "alice" } }
+    const data = table === "milestones" ? { id: "milestone", title: "SQL joins", mastery_validated: false, concept_ids: null, learning_points: [{ id: "p1", text: "How joins combine rows" }], tracks: { user_id: "alice" } }
       : table === "milestone_entries" ? [{ title: "Joins", body: noteBody }]
+      : table === "mastery_sessions" ? { id: "session", milestone_id: "milestone", topic_refs: ["p1"], covered: [], held: [], turns: 0, finished_at: null }
       : { id: "goal", topic: "SQL joins", track_status: "pending" };
     const result = { data, error: null };
     const chain = { select: vi.fn(), eq: vi.fn(), single: vi.fn(), maybeSingle: vi.fn(), order: vi.fn(), limit: vi.fn(), insert: vi.fn(), update: vi.fn(), then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve) };
@@ -85,7 +88,8 @@ describe.each(cases)("$name text route", ({ post, body }) => {
   });
 });
 
-it.each(cases.filter(c => c.name !== "goals"))("$name reserves the complete prompt then calls once without SDK retries", async ({ post, body }) => {
+it.each(cases.filter(c => c.name !== "goals"))("$name reserves the complete prompt then calls once without SDK retries", async ({ name, post, body }) => {
+  if (name === "session") mocks.ai.mockResolvedValue(completion(TURN_CHECK));
   expect((await post(request(body))).status).toBe(200);
   expect(mocks.ai).toHaveBeenCalledOnce();
   const call = mocks.ai.mock.calls[0][0] as TextCall;
@@ -124,6 +128,7 @@ it("a retry refused by the quota makes no second provider call", async () => {
 
 it("bounds server-side mastery notes, retaining all notes in an accepted prompt", async () => {
   const base = cases.at(-1)!;
+  mocks.ai.mockResolvedValue(completion(TURN_CHECK));
   noteBody = "x".repeat(5000);
   expect((await session(request(base.body))).status).toBe(200);
   expect((mocks.ai.mock.calls[0][0] as TextCall).messages[0].content).toContain(noteBody);

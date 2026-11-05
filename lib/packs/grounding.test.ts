@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  boardSources, cardGrounding, cardKeyPointRefs, cardSourceList, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback,
+  boardSources, cardGrounding, cardKeyPointRefs, cardSourceList, correctionText, GROUNDING_REFUSAL_MESSAGE, misconceptionCorrections,
   groundFromPack, misconceptionsByRef, renderCardSyllabus, type CardGround,
 } from "./grounding";
 import { packTrack } from "./track";
@@ -115,20 +115,23 @@ describe("cardSourceList", () => {
   });
 });
 
-describe("misconceptionFeedback", () => {
+describe("misconceptionCorrections", () => {
   const g = grounded(collinearityCard.concept_ids);
   const [ref, m] = [...misconceptionsByRef(g)][0]!;
 
   it("gives the course's own correction and its source link for a held belief", () => {
-    const text = misconceptionFeedback(g, [ref]);
-    expect(text).toContain(m.claim);
-    expect(text).toContain(m.correction);
-    expect(text).toContain(m.source.href);
+    const [held] = misconceptionCorrections(g, [ref]);
+    expect(held).toMatchObject({ correction: m.correction, href: m.source.href });
+    expect(held!.lead).toContain(m.claim);
+    // What the card stores carries all of it, because that reader has no link to follow.
+    expect(correctionText(held!)).toContain(m.claim);
+    expect(correctionText(held!)).toContain(m.correction);
+    expect(correctionText(held!)).toContain(m.source.href);
   });
 
   it("says nothing when no belief was held, or the ref is not on the card", () => {
-    expect(misconceptionFeedback(g, [])).toBe("");
-    expect(misconceptionFeedback(g, ["nowhere:m1"])).toBe("");
+    expect(misconceptionCorrections(g, [])).toEqual([]);
+    expect(misconceptionCorrections(g, ["nowhere:m1"])).toEqual([]);
   });
 });
 

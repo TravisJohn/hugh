@@ -684,10 +684,10 @@ export function masterySummaryPrompt(params: {
     ? `Mastery score: ${masteryScore}/10.${masteryFeedback ? ` Hugh's verdict: ${masteryFeedback}` : ""}`
     : "(mastery not yet scored)";
 
-  // The same document has two moments. Mastery shows it beside the conversation
-  // before any pass, and it is saved on the card, so that version must claim
-  // nothing the learner has not done yet. An old score or verdict stays out of
-  // it for the same reason.
+  // The same document has two moments. The card's drawer can write it before any
+  // pass, and it is saved on the card, so that version must claim nothing the
+  // learner has not done yet. An old score or verdict stays out of it for the
+  // same reason.
   const brief = mastered
     ? `"what you learned" summary document for a learner who has just mastered a milestone. It should read like a keepsake they can revisit — celebratory but substantive`
     : `"what you've learned so far" study guide for a learner who is about to explain a milestone out loud. They have not done that yet, so do not congratulate them or say they have mastered or explained it. They will glance at it while they talk, so keep it quick to scan`;

@@ -1,3 +1,5 @@
+import { RECENT_LINES } from "@/lib/mastery/turnCheck";
+
 /** Shared browser/server limits. Bytes, not characters, bound multilingual text too. */
 export const TEXT_LIMITS = {
   requestBytes: 192 * 1024,
@@ -55,7 +57,10 @@ export interface TextBodies {
   refine: AnswersBody;
   /** A typed topic with its refinement answers, or (narrow Learn) a catalog course. */
   goals: (AnswersBody & { end_date: string }) | PackGoalBody;
-  session: { milestoneId: string; scenario: "interview" | "client" | "huddle" | "teaching"; phase: "open" | "respond" | "evaluate"; messages: SessionMessage[] };
+  session:
+    | { phase: "start"; milestoneId: string }
+    | { phase: "turn"; sessionId: string; said: string; recent: SessionMessage[] }
+    | { phase: "finish"; sessionId: string };
 }
 export type TextRoute = keyof TextBodies;
 
@@ -68,6 +73,14 @@ export function isPackGoalBody(body: TextBodies["goals"]): body is PackGoalBody 
 
 /** A catalog id: lowercase letters, digits, - or _ (lib/packs/validate.ts). */
 const PACK_ID = /^[a-z0-9][a-z0-9_-]{0,63}$/;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function uuid(value: unknown, name: string): string {
+  const id = string(value, name, 36);
+  if (!UUID.test(id)) throw new TextInputError(`Invalid ${name.toLowerCase()} ID.`);
+  return id;
+}
 
 function endDate(b: Record<string, unknown>): string {
   const end_date = string(b.end_date, "End date", 10);
@@ -141,14 +154,24 @@ function parse(kind: TextRoute, value: unknown): TextBodies[TextRoute] {
       return { ...answers(b), end_date: endDate(b) };
     }
     case "session": {
-      fields(b, ["milestoneId", "scenario", "phase", "messages"]);
-      const milestoneId = string(b.milestoneId, "Milestone", 36);
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(milestoneId)) throw new TextInputError("Invalid milestone ID.");
-      if (typeof b.scenario !== "string" || !["interview", "client", "huddle", "teaching"].includes(b.scenario)) throw new TextInputError("Invalid scenario.");
-      if (typeof b.phase !== "string" || !["open", "respond", "evaluate"].includes(b.phase)) throw new TextInputError("Invalid phase.");
-      const transcript = messages(b.messages, 6, true, b.phase === "open") as SessionMessage[];
-      if (b.phase === "open" && transcript.length !== 0) throw new TextInputError("An opening request must have an empty conversation.");
-      return { milestoneId, scenario: b.scenario as TextBodies["session"]["scenario"], phase: b.phase as TextBodies["session"]["phase"], messages: transcript };
+      if (b.phase === "start") {
+        fields(b, ["phase", "milestoneId"]);
+        return { phase: "start", milestoneId: uuid(b.milestoneId, "Milestone") };
+      }
+      if (b.phase === "turn") {
+        fields(b, ["phase", "sessionId", "said", "recent"]);
+        return {
+          phase: "turn",
+          sessionId: uuid(b.sessionId, "Session"),
+          said: string(b.said, "What you said", TEXT_LIMITS.messageBytes),
+          recent: messages(b.recent, RECENT_LINES, true, true) as SessionMessage[],
+        };
+      }
+      if (b.phase === "finish") {
+        fields(b, ["phase", "sessionId"]);
+        return { phase: "finish", sessionId: uuid(b.sessionId, "Session") };
+      }
+      throw new TextInputError("Invalid phase.");
     }
   }
 }
