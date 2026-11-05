@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { NOTE_IMAGES_BUCKET, SIGNED_URL_TTL } from "@/lib/notes/storage";
 import { assertOwnedStoragePaths } from "@/lib/storage/ownership";
 import { matchesUploadSignature } from "@/lib/storage/fileSignatures";
+import { MAX_IMAGE_FILE_BYTES, MAX_IMAGE_FILE_LABEL } from "@/lib/claude/imageInput";
 import { MAX_BUCKET_PARTS, type NoteImage, type NoteImageBucket } from "@/types";
 
 // Screenshots for a note. Uploads go through this route (service-role) so we can
@@ -20,7 +21,6 @@ import { MAX_BUCKET_PARTS, type NoteImage, type NoteImageBucket } from "@/types"
 
 const unauth = () => NextResponse.json({ error: "Not signed in." }, { status: 401 });
 
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB per screenshot
 const ALLOWED_MIME: Record<string, string> = {
   "image/png": "png",
   "image/jpeg": "jpg",
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
 
   const ext = ALLOWED_MIME[file.type];
   if (!ext) return NextResponse.json({ error: "Only PNG, JPEG, WebP or GIF images are supported." }, { status: 415 });
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Image is larger than 10 MB." }, { status: 413 });
+  if (file.size > MAX_IMAGE_FILE_BYTES) return NextResponse.json({ error: `Image is larger than ${MAX_IMAGE_FILE_LABEL}.` }, { status: 413 });
 
   try {
     const db = createServiceClient();
