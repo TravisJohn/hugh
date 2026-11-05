@@ -9606,3 +9606,14 @@ account's sessions. `notes_enabled` was then turned on for the test learner. The
 Coach and Summarise stay off in plan mode, because both run on OpenAI, so Notes
 there holds screenshots and reasoning without Hugh reading them back.
 `vtravisjohn@yahoo.com` is unchanged until Travis decides.
+
+Browser test on the Claude plan, same day, with 062 applied: 14 Ask Hugh chats, 4
+summaries and 3 review quizzes all served by the plan. All 21 usage rows carry
+`@subscription`, none went to the API key, and no request was refused, including
+the chats past the seventh that failed on 10-29. `reserved_tokens` read 0 after
+the last call, so a logged call does give its hold back. Notes saved a screenshot
+and a thought, and the Coach answered 503 with no spend.
+
+Found by it: that one session used 61,741 of the test learner's 100,000 tokens for
+the month. The allowance applies in plan mode too, at $0, so at about 4k a chat
+course-card chats start being refused above about 82%, roughly five chats later.
