@@ -314,7 +314,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     activityFeatures: ["notes"],
     operations: ["notes.coach", "notes.summarize"],
     spendsTokens: true,
-    tests: 4,
+    tests: 5,
   },
   {
     id:    "margin",

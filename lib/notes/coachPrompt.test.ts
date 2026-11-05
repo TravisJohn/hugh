@@ -1,59 +1,68 @@
 import { describe, it, expect } from "vitest";
-import { buildCoachMessages, COACH_SYSTEM_PROMPT, imagePreamble, type CoachThreadMessage } from "./coachPrompt";
+import { renderPrompt } from "@/lib/claude/subscription/cliArgs";
+import type { CallImage } from "@/lib/claude/imageInput";
+import {
+  buildCoachCall,
+  COACH_ANOTHER_LOOK_TURN,
+  COACH_FIRST_LOOK_TURN,
+  COACH_SYSTEM_PROMPT,
+  coachImageProblem,
+  coachTurns,
+  imagePreamble,
+  type CoachThreadMessage,
+} from "./coachPrompt";
 
-describe("buildCoachMessages", () => {
+const settings = { model: "claude-sonnet-4-6", maxTokens: 1024 };
+const image: CallImage = { mediaType: "image/png", base64: "AAAA" };
+
+describe("coachTurns", () => {
   const thread: CoachThreadMessage[] = [
     { role: "user", content: "I picked B because it's cheaper." },
     { role: "assistant", content: "Actually A is right..." },
     { role: "user", content: "Why though?" },
   ];
 
-  it("always leads with the system prompt", () => {
-    const msgs = buildCoachMessages(thread, []);
-    expect(msgs[0]).toEqual({ role: "system", content: COACH_SYSTEM_PROMPT });
+  it("keeps the thread's order and real roles when the learner spoke last", () => {
+    expect(coachTurns(thread)).toEqual(thread);
   });
 
-  it("preserves the thread order and roles after the system prompt", () => {
-    const msgs = buildCoachMessages(thread, []);
-    // no images → system + 3 thread messages
-    expect(msgs).toHaveLength(4);
-    expect(msgs.slice(1)).toEqual([
-      { role: "user", content: "I picked B because it's cheaper." },
-      { role: "assistant", content: "Actually A is right..." },
-      { role: "user", content: "Why though?" },
+  it("asks for a first answer when Coach is pressed before any thoughts are written", () => {
+    expect(coachTurns([])).toEqual([{ role: "user", content: COACH_FIRST_LOOK_TURN }]);
+  });
+
+  it("closes on a learner turn when Coach is pressed again, because Claude refuses to continue its own reply", () => {
+    const answered = thread.slice(0, 2);
+    expect(coachTurns(answered)).toEqual([...answered, { role: "user", content: COACH_ANOTHER_LOOK_TURN }]);
+  });
+
+  it("drops blank rows, because Claude rejects an empty turn and would fail the whole call", () => {
+    expect(coachTurns([{ role: "assistant", content: "   " }, { role: "user", content: "Hi" }])).toEqual([
+      { role: "user", content: "Hi" },
     ]);
+    expect(coachTurns([{ role: "user", content: " " }])).toEqual([{ role: "user", content: COACH_FIRST_LOOK_TURN }]);
   });
 
-  it("inserts a single image-bearing user message before the thread when images exist", () => {
-    const msgs = buildCoachMessages(thread, ["data:image/png;base64,AAA", "data:image/png;base64,BBB"]);
-    // system + image message + 3 thread messages
-    expect(msgs).toHaveLength(5);
-    const imageMsg = msgs[1];
-    expect(imageMsg.role).toBe("user");
-    expect(Array.isArray(imageMsg.content)).toBe(true);
-    const parts = imageMsg.content as Array<{ type: string; image_url?: { url: string } }>;
-    // one text preamble + two image parts
-    expect(parts[0].type).toBe("text");
-    expect(parts.filter((p) => p.type === "image_url")).toHaveLength(2);
-    expect(parts[1].image_url?.url).toBe("data:image/png;base64,AAA");
+  it("always produces something the plan path can write, so no press of the button can crash it", () => {
+    for (const case_ of [[], thread, thread.slice(0, 2)]) {
+      expect(() => renderPrompt(coachTurns(case_))).not.toThrow();
+    }
+  });
+});
+
+describe("buildCoachCall", () => {
+  it("carries the route's model and ceiling, and the Coach's own instructions", () => {
+    expect(buildCoachCall(settings, [], [image])).toMatchObject({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system: COACH_SYSTEM_PROMPT,
+    });
   });
 
-  it("does not add an image message when there are no images", () => {
-    const msgs = buildCoachMessages(thread, []);
-    expect(msgs.some((m) => Array.isArray(m.content))).toBe(false);
-  });
-
-  it("handles an empty thread (images only)", () => {
-    const msgs = buildCoachMessages([], ["data:image/png;base64,AAA"]);
-    expect(msgs).toHaveLength(2); // system + image message
-    expect(msgs[0].role).toBe("system");
-    expect(msgs[1].role).toBe("user");
-  });
-
-  it("tells the model a multi-snip bucket is one question, not several", () => {
-    const msgs = buildCoachMessages([], ["data:a", "data:b"]);
-    const parts = msgs[1].content as Array<{ type: string; text?: string }>;
-    expect(parts[0].text).toBe(imagePreamble(2));
+  it("captions a multi-snip bucket as one question and keeps its slices in order", () => {
+    const second: CallImage = { mediaType: "image/jpeg", base64: "BBBB" };
+    const call = buildCoachCall(settings, [], [image, second]);
+    expect(call.imageCaption).toBe(imagePreamble(2));
+    expect(call.images).toEqual([image, second]);
   });
 });
 
@@ -74,5 +83,31 @@ describe("imagePreamble", () => {
   it("warns the system prompt's reader that extra images continue the same page", () => {
     expect(COACH_SYSTEM_PROMPT).toContain("consecutive slices of ONE");
     expect(COACH_SYSTEM_PROMPT).toContain("never as separate questions");
+  });
+});
+
+describe("coachImageProblem", () => {
+  it("lets a question through when every slice was read", () => {
+    expect(coachImageProblem([image, image])).toBeNull();
+  });
+
+  it("stops the whole question if one slice failed, rather than answering half of it", () => {
+    expect(coachImageProblem([image, "unreadable"])).toMatchObject({ status: 502, outcome: "failed" });
+  });
+
+  it("counts an unsendable file as refused, so it doesn't read as the system failing", () => {
+    expect(coachImageProblem(["too-large"])).toMatchObject({ status: 413, outcome: "refused" });
+    expect(coachImageProblem(["not-an-image"])).toMatchObject({ status: 415, outcome: "refused" });
+  });
+
+  it("only offers a retry where a retry could work", () => {
+    expect(coachImageProblem(["unreadable"])?.error).toContain("Try again");
+    expect(coachImageProblem(["too-large"])?.error).not.toContain("Try again");
+    expect(coachImageProblem(["not-an-image"])?.error).not.toContain("Try again");
+  });
+
+  it("names the fix for a file that can't be sent, not just the problem", () => {
+    expect(coachImageProblem(["too-large"])?.error).toContain("7.5 MB");
+    expect(coachImageProblem(["too-large"])?.error).toContain("smaller copy");
   });
 });

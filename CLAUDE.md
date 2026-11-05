@@ -46,7 +46,7 @@ pillar's scope changes.
 | Frontend + Backend | Next.js 16 (App Router, Turbopack), React 19, deployed on Vercel |
 | Database + Auth + Storage | Supabase (PostgreSQL + Supabase Auth) |
 | LLM — Anthropic | Claude API (model per route — see Model Selection below) |
-| LLM — OpenAI | Notes Coach (vision), Notes summarise, Realtime mastery voice, admin architecture assistant |
+| LLM — OpenAI | Realtime mastery voice, admin architecture assistant |
 | TTS | ElevenLabs API |
 | STT | Web Speech API (Chrome/Edge only) — a browser API, **not on-device**: Chrome sends the audio to Google. Realtime mastery uses OpenAI's transcription instead |
 | In-browser Python | Pyodide (`lib/code/pyodide.worker.ts`) — code drills and sandbox |
@@ -64,13 +64,13 @@ bulk of Claude spend, so cheap routes should use the cheap model:
 - **`claude-sonnet-4-6`** ($3/$15 per MTok) — reasoning-heavy generation where
   quality matters: track generation, backlog priority, quiz generation, diary
   fact-check, learn/summarize, mastery **evaluate** (scoring), document topic
-  extraction.
+  extraction, the Notes Coach (it reads screenshots), Notes summarise.
 - **`claude-haiku-4-5`** ($1/$5 per MTok — 5× cheaper input) — classification and
   short, low-stakes generation: similarity checks, hints, 5-whys refinement
   questions, mastery **open**/**respond** (in-character conversational lines),
   learn/chat, cloud/chat, code/chat, the topic-domain gate.
-- **OpenAI** — `gpt-4o` where vision is needed (Notes Coach reads screenshots);
-  `gpt-4o-mini` where it isn't (Notes summarise).
+- **OpenAI** — Realtime mastery voice, and `gpt-4o` for the admin architecture
+  assistant.
 
 When in doubt, default to Sonnet. Only move a route to Haiku after confirming the
 output quality holds.
@@ -109,8 +109,10 @@ The owner can run Hugh locally on their own Claude plan instead of the API key
 (docs/claude-subscription-local-mode.md). Local only, owner only; a production
 build with the flag set fails. What it asks of new code:
 - In app code, get a Claude client from `claudeClient()` (`lib/claude/client.ts`),
-  never `new Anthropic(...)`. Its `create` takes text in and text out only. (The
-  two offline operator scripts stay on the API key.)
+  never `new Anthropic(...)`. Its `create` takes text in and text out only; a
+  route that reads screenshots builds an `ImageCall` (`lib/claude/imageInput.ts`)
+  and goes through `createImageMessage`. (The two offline operator scripts stay
+  on the API key.)
 - A route that calls Claude shows plan failures through `textBudgetResponse`
   or `planFailureResponse`.
 - A route that pays OpenAI or ElevenLabs calls `paidServiceOffResponse` before
@@ -157,7 +159,7 @@ ELEVENLABS_VOICE_ID_1/2/3       # required
 NEXT_PUBLIC_SUPABASE_URL        # required, public by design
 NEXT_PUBLIC_SUPABASE_ANON_KEY   # required, public by design
 SUPABASE_SERVICE_ROLE_KEY       # required, bypasses RLS — never expose
-OPENAI_API_KEY                  # optional — gates Notes Coach, Realtime mastery
+OPENAI_API_KEY                  # optional — gates Realtime mastery, admin architecture assistant
 OPENAI_MODEL                    # optional — admin architecture assistant
 HUGH_ADMIN_URL                  # optional — admin architecture assistant
 MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery

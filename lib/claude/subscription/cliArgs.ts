@@ -9,10 +9,12 @@
  * Pure: no process, no filesystem. The runner writes the system prompt to the
  * file named here and feeds `prompt` on stdin — Windows caps a command line at
  * 32,767 characters, and Hugh's syllabus-grounded system prompts are longer.
+ * Images go the same way and never touch the disk.
  *
  * No `server-only` import, on purpose: `lib/tracker/generateMilestones.ts` reaches
  * this module and is also run by offline `tsx` scripts.
  */
+import { imageTurnBlocks, type ImageCall } from "../imageInput";
 import type { TextCall, TextMessage } from "../textInput";
 
 /**
@@ -40,8 +42,9 @@ export interface CliInvocation {
  * the usage gate admits one attempt at a time and passes 0, and Claude Code's
  * own default of 10 would otherwise multiply that one admitted call.
  */
-export function buildInvocation(call: TextCall, systemPromptFile: string, maxRetries?: number): CliInvocation {
+export function buildInvocation(call: TextCall | ImageCall, systemPromptFile: string, maxRetries?: number): CliInvocation {
   const retries = maxRetries === undefined ? SDK_DEFAULT_RETRIES : Math.max(0, Math.floor(maxRetries));
+  const withImages = isImageCall(call);
   return {
     args: [
       "-p",
@@ -53,6 +56,8 @@ export function buildInvocation(call: TextCall, systemPromptFile: string, maxRet
       "--disable-slash-commands",
       "--no-session-persistence",
       "--max-turns", "1",
+      // Plain stdin can only hold text, so a call with images is sent as JSON.
+      ...(withImages ? ["--input-format", "stream-json"] : []),
     ],
     env: {
       CLAUDE_CODE_MAX_OUTPUT_TOKENS:          String(call.max_tokens),
@@ -67,9 +72,13 @@ export function buildInvocation(call: TextCall, systemPromptFile: string, maxRet
       CLAUDE_CODE_DISABLE_TERMINAL_TITLE:     "1",
     },
     systemPrompt: call.system?.trim() ? call.system : NEUTRAL_SYSTEM_PROMPT,
-    prompt: renderPrompt(call.messages),
+    prompt: withImages ? renderImageTurn(call) : renderPrompt(call.messages),
     droppedCacheHint: call.cache_control !== undefined,
   };
+}
+
+function isImageCall(call: TextCall | ImageCall): call is ImageCall {
+  return "images" in call;
 }
 
 const TRANSCRIPT_PREAMBLE =
@@ -99,6 +108,16 @@ export function renderPrompt(messages: readonly TextMessage[]): string {
     `<${m.role}>\n${m.content.replace(/<\/(user|assistant)>/gi, "<\\/$1>")}\n</${m.role}>`,
   );
   return `${TRANSCRIPT_PREAMBLE}\n\n${turns.join("\n\n")}`;
+}
+
+/**
+ * The one line `--input-format stream-json` reads for a call with images: the
+ * caption and images first, as on the API, then the conversation as the same
+ * marked transcript a text call sends.
+ */
+export function renderImageTurn(call: ImageCall): string {
+  const content = [...imageTurnBlocks(call), { type: "text", text: renderPrompt(call.messages) }];
+  return `${JSON.stringify({ type: "user", message: { role: "user", content } })}\n`;
 }
 
 /**

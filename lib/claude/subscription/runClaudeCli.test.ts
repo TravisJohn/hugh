@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { runClaudeCli, type RunnerConfig } from "./runClaudeCli";
 import { SubscriptionCallError } from "./errors";
 import { PlanLimitLatch } from "./limitLatch";
+import type { ImageCall } from "../imageInput";
 import type { TextCall } from "../textInput";
 
 /**
@@ -60,6 +61,17 @@ describe("runClaudeCli", () => {
   it("delivers the prompt through stdin intact, including non-ASCII text", async () => {
     const prompt = "Explain the p-value — “null” hypothesis, 95 % level, ñ";
     expect(replyText(await runClaudeCli(call("echo", prompt), 0, config))).toContain(`<user>\n${prompt}\n</user>`);
+  });
+
+  it("delivers a call's images through stdin whole, as one JSON turn", async () => {
+    const base64 = "A".repeat(2_000_000);
+    const imageCall: ImageCall = {
+      ...call("echo"),
+      imageCaption: "The question.",
+      images: [{ mediaType: "image/png", base64 }],
+    };
+    const turn = JSON.parse(replyText(await runClaudeCli(imageCall, 0, config)));
+    expect(turn.message.content[1].source.data).toHaveLength(base64.length);
   });
 
   it("returns a recorded plan-served answer as an SDK Message", async () => {

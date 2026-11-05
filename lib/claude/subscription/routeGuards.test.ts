@@ -45,7 +45,7 @@ const PLAN_FAILURE_EXEMPT: Record<string, string> = {
 
 describe("subscription mode — route guards", () => {
   it("finds the routes it guards, so an empty scan cannot pass for a clean one", () => {
-    expect(routes.filter(r => PAID_KEYS.test(r.src)).length).toBeGreaterThanOrEqual(5);
+    expect(routes.filter(r => PAID_KEYS.test(r.src)).length).toBeGreaterThanOrEqual(3);
     expect(routes.filter(r => r.src.includes("claudeClient()")).length).toBeGreaterThanOrEqual(15);
   });
 

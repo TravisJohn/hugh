@@ -2,6 +2,7 @@
 
 import { useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import { ImagePlus, Trash2, Loader2, ImageOff, Plus, ChevronUp, ChevronDown, Layers, EyeOff } from "lucide-react";
+import { MAX_IMAGE_FILE_LABEL } from "@/lib/claude/imageInput";
 import { MAX_BUCKET_PARTS, type NoteImage, type NoteImageBucket, type NoteImageFlag } from "@/types";
 import type { PasteMode } from "@/hooks/useNotes";
 
@@ -207,7 +208,7 @@ export default function ImagePanel({
           >
             <ImagePlus size={26} />
             <span className="text-sm">Drop a screenshot here, paste it, or click to browse</span>
-            <span className="text-xs text-slate-600">PNG, JPEG, WebP or GIF · up to 10 MB</span>
+            <span className="text-xs text-slate-600">PNG, JPEG, WebP or GIF · up to {MAX_IMAGE_FILE_LABEL}</span>
           </button>
         </div>
         {hiddenInputs}

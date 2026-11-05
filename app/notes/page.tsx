@@ -11,7 +11,7 @@ import RecordActivity from "@/components/monitor/RecordActivity";
 // through the /api/notes/* routes.
 //
 // Privacy pass (migration 050): this surface accepts arbitrary uploaded images
-// and sends every one to OpenAI's vision model to be read, which makes it the
+// and sends every one to Claude's vision model to be read, which makes it the
 // least bounded personal-data path in the product. It is off by default. The
 // database enforces that in RLS and the /api/notes/* routes enforce it again
 // (they use the service-role client, which bypasses RLS); this check only

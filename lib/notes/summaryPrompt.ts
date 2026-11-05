@@ -1,11 +1,11 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { TextCall } from "@/lib/claude/textInput";
 import type { NoteMessageRole } from "@/types";
 
 // ── The running summary: condense one screenshot's review into revision notes ──
-// Pure payload builder for the summarize route (no OpenAI client, no I/O) so the
+// Pure payload builder for the summarize route (no Claude client, no I/O) so the
 // message assembly can be unit-tested in isolation — same pattern as coachPrompt.
 // The thread is text-only (the learner's thoughts + Hugh's corrections), so this
-// needs no vision: a cheap text model summarises the transcript.
+// needs no vision.
 
 export const SUMMARY_SYSTEM_PROMPT = [
   "You are Hugh, condensing a learner's review of ONE practice question into tight",
@@ -33,18 +33,18 @@ export interface SummaryThreadMessage {
 }
 
 /**
- * Assemble the OpenAI chat payload for a summary turn: the system prompt plus a
- * single user message carrying the thread rendered as a labelled transcript
- * (Learner / Hugh). Keeping it one flattened turn (rather than replaying roles)
- * makes the "summarise all of this" instruction unambiguous.
+ * Assemble a summary turn: the system prompt plus a single user message
+ * carrying the thread rendered as a labelled transcript (Learner / Hugh). Keeping
+ * it one flattened turn (rather than replaying roles) makes the "summarise all of
+ * this" instruction unambiguous.
  */
-export function buildSummaryMessages(thread: SummaryThreadMessage[]): ChatCompletionMessageParam[] {
+export function buildSummaryPrompt(thread: SummaryThreadMessage[]): Pick<TextCall, "system" | "messages"> {
   const transcript = thread
     .map((m) => `${m.role === "user" ? "Learner" : "Hugh"}: ${m.content}`)
     .join("\n\n");
 
-  return [
-    { role: "system", content: SUMMARY_SYSTEM_PROMPT },
-    { role: "user", content: `Summarise this review into revision notes:\n\n${transcript}` },
-  ];
+  return {
+    system: SUMMARY_SYSTEM_PROMPT,
+    messages: [{ role: "user", content: `Summarise this review into revision notes:\n\n${transcript}` }],
+  };
 }

@@ -3,7 +3,7 @@ import { isActiveAccount, type AccountAccessFlags } from "./accountAccess";
 /**
  * Which personal-data surfaces an account is allowed to hold data in.
  *
- * Part of the privacy pass. `/notes` (screenshots, read by OpenAI's vision
+ * Part of the privacy pass. `/notes` (screenshots, read by Claude's vision
  * model) and Monitor's documents/applications (résumés, cover letters,
  * employment history) are the richest personal material in Hugh, and signup is
  * open. Migration 050 puts both behind a per-learner flag that defaults to off,

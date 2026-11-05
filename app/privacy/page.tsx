@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: "What Hugh stores, who processes it, how long it is kept, and how to delete it.",
 };
 
-const LAST_UPDATED = "17 September 2026";
+const LAST_UPDATED = "5 November 2026";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -86,12 +86,13 @@ export default function PrivacyPage() {
             <li><strong className="text-slate-300">Anthropic (Claude)</strong> — receives your
               topic, your answers, diary entries and tutor messages, to generate and teach
               your track — and, after a live voice session, the text transcript of that
-              conversation, to write your recap. Anthropic states it does not use commercial API data to train its
-              models by default.</li>
-            <li><strong className="text-slate-300">OpenAI</strong> — receives screenshots you
-              upload to Notes, so a vision model can read and comment on them, and some text
-              for summarising. If the live voice version of the Prove-it exercise is switched
-              on, OpenAI also receives <strong className="text-slate-300">your voice</strong>:
+              conversation, to write your recap. When you ask the Coach or ask for a summary in
+              Notes, it also receives that screenshot and the thoughts you wrote beside it, so a
+              vision model can read and comment on them. Anthropic states it does not use
+              commercial API data to train its models by default.</li>
+            <li><strong className="text-slate-300">OpenAI</strong> — if the live voice version of
+              the Prove-it exercise is switched on, OpenAI receives{" "}
+              <strong className="text-slate-300">your voice</strong>:
               your browser streams the audio of the conversation directly to OpenAI, which
               transcribes it and replies aloud, together with the card&apos;s summary or your
               diary notes for that card so the coach knows what you studied. OpenAI states
