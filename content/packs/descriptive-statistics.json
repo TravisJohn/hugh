@@ -146,6 +146,7 @@
       "keyPoints": [
         {
           "text": "Descriptive statistics simply describe the data in front of you; they convey no significance, prediction or certainty.",
+          "label": "Scope of descriptive statistics",
           "sourceId": "psu800-01",
           "locator": "Lesson 1, Introduction",
           "anchor": {
@@ -155,6 +156,7 @@
         },
         {
           "text": "Summarising data, numerically and graphically, shows what is going on in the sample; understanding the population the sample came from is the goal of inference.",
+          "label": "Sample summaries vs inference",
           "sourceId": "psu500-01",
           "locator": "1.7 Lesson Summary",
           "anchor": {
@@ -164,6 +166,7 @@
         },
         {
           "text": "Because usually only a sample is drawn and the population mean is unknown, the sample mean is used to estimate it; the sample mean is a statistic and the population mean a parameter.",
+          "label": "Statistic vs parameter distinction",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Measure of Central Tendency",
           "anchor": {
@@ -180,6 +183,7 @@
       "keyPoints": [
         {
           "text": "A categorical variable records names or labels: categories with no logical order, or with an order whose differences between groups are inconsistent, such as rankings.",
+          "label": "Categorical variable definition",
           "sourceId": "psu200-01",
           "locator": "1.1.1 Categorical & Quantitative Variables",
           "anchor": {
@@ -189,6 +193,7 @@
         },
         {
           "text": "A quantitative, or numerical, variable takes numerical values whose magnitudes can be put in a meaningful order with consistent intervals.",
+          "label": "Quantitative variable definition",
           "sourceId": "psu200-01",
           "locator": "1.1.1 Categorical & Quantitative Variables",
           "anchor": {
@@ -198,6 +203,7 @@
         },
         {
           "text": "An unemployment rate is numerical because it takes a wide range of values that it is sensible to add, subtract or average; telephone area codes are numbers, but their average, sum and difference mean nothing, so they are categorical.",
+          "label": "Numerical vs categorical examples",
           "sourceId": "ims-hello",
           "locator": "1.2.2 Types of variables",
           "anchor": {
@@ -207,6 +213,7 @@
         },
         {
           "text": "Telling the types of variable apart matters, because the methods used to analyse them are very different.",
+          "label": "Why variable type matters",
           "sourceId": "psu500-01",
           "locator": "1.2 Classifying Data",
           "anchor": {
@@ -239,6 +246,7 @@
       "keyPoints": [
         {
           "text": "Categorical values can be binary, with two choices; ordinal, where the names imply levels or an order, such as level of education; or nominal, where no order is implied, such as political party.",
+          "label": "Binary, ordinal and nominal categories",
           "sourceId": "psu500-01",
           "locator": "1.2 Classifying Data",
           "anchor": {
@@ -248,6 +256,7 @@
         },
         {
           "text": "A categorical variable whose levels have a natural order, such as median education level, is ordinal; a categorical variable without such an ordering is nominal.",
+          "label": "Ordered vs unordered categories",
           "sourceId": "ims-hello",
           "locator": "1.2.2 Types of variables",
           "anchor": {
@@ -257,6 +266,7 @@
         },
         {
           "text": "Education level has a meaningful order, but the differences between levels are not consistent, so without equal intervals it cannot be classed as quantitative; it is categorical.",
+          "label": "Education level and equal intervals",
           "sourceId": "psu200-01",
           "locator": "1.1.1 Categorical & Quantitative Variables",
           "anchor": {
@@ -273,6 +283,7 @@
       "keyPoints": [
         {
           "text": "A quantitative variable is discrete when it can take only a limited set of values, such as whole numbers, and continuous when it can take any value, including any value between two others.",
+          "label": "Discrete vs continuous values",
           "sourceId": "psu800-01",
           "locator": "Lesson 1, Describing Data",
           "anchor": {
@@ -282,6 +293,7 @@
         },
         {
           "text": "Discrete values are counted, as in the number of people attending; continuous values are measured, as in a person's weight or height.",
+          "label": "Counting vs measuring variables",
           "sourceId": "psu500-01",
           "locator": "1.2 Classifying Data",
           "anchor": {
@@ -291,6 +303,7 @@
         },
         {
           "text": "A population count can only take whole non-negative numbers, jumping from one to the next, so it is discrete; an unemployment rate is continuous.",
+          "label": "Population count vs unemployment rate",
           "sourceId": "ims-hello",
           "locator": "1.2.2 Types of variables",
           "anchor": {
@@ -300,6 +313,7 @@
         },
         {
           "text": "Some variables are ambiguous: cholesterol level can take values on a continuum, but people tend to round it off or know it only as a discrete value.",
+          "label": "Ambiguous discrete or continuous cases",
           "sourceId": "psu100-01",
           "locator": "1.2 Measurement Variables",
           "anchor": {
@@ -316,6 +330,7 @@
       "keyPoints": [
         {
           "text": "A frequency table gives the count of how often each value occurs in the data, and may also give the percentage of the data falling into each category.",
+          "label": "Frequency tables for categories",
           "sourceId": "psu200-02",
           "locator": "2.1.1 One Categorical Variable, Frequency Tables",
           "anchor": {
@@ -325,6 +340,7 @@
         },
         {
           "text": "A proportion is the fraction of the total that has a certain characteristic, and frequencies with percentages are the best way to summarise categorical data.",
+          "label": "Proportions and percentages",
           "sourceId": "psu500-01",
           "locator": "1.3 Summarizing One Qualitative Variable",
           "anchor": {
@@ -334,6 +350,7 @@
         },
         {
           "text": "A proportion is the number in a category divided by the total number, and it must lie between 0 and 1.",
+          "label": "Proportion calculation and bounds",
           "sourceId": "psu200-02",
           "locator": "2.1.1 One Categorical Variable",
           "anchor": {
@@ -343,6 +360,7 @@
         },
         {
           "text": "A cumulative count or percent covers a category and all the categories before it, so cumulative values should only be shown when the data are at least ordinal.",
+          "label": "Cumulative counts and ordinality",
           "sourceId": "psu200-02",
           "locator": "2.1.1 One Categorical Variable, Frequency Tables",
           "anchor": {
@@ -362,6 +380,7 @@
       "keyPoints": [
         {
           "text": "In a bar chart the bars, vertical or horizontal, show the number of cases in each category, and the spaces between the bars signal a categorical variable.",
+          "label": "Bar chart structure and spacing",
           "sourceId": "psu200-02",
           "locator": "2.1.1 One Categorical Variable, Bar Charts",
           "anchor": {
@@ -371,6 +390,7 @@
         },
         {
           "text": "Pie charts work best with only a few categories; when a variable has many, a frequency table or bar chart may be easier to read.",
+          "label": "Pie charts and number of categories",
           "sourceId": "psu200-02",
           "locator": "2.1.1 One Categorical Variable, Considerations",
           "anchor": {
@@ -380,6 +400,7 @@
         },
         {
           "text": "A pie chart can give a high-level overview, but details are hard to read from it: whether one category has more cases than another may not be obvious, while a bar plot makes it plain.",
+          "label": "Pie chart vs bar chart readability",
           "sourceId": "ims-cat",
           "locator": "4.4 Pie charts",
           "anchor": {
@@ -389,6 +410,7 @@
         },
         {
           "text": "A pie chart whose slices show only percentages does not tell the reader how many people fall in each category.",
+          "label": "Pie charts and missing counts",
           "sourceId": "psu800-01",
           "locator": "Lesson 1, Summarizing Categorical Variables",
           "anchor": {
@@ -405,6 +427,7 @@
       "keyPoints": [
         {
           "text": "A two-way contingency table displays two categorical variables at once: like a frequency table with two dimensions, one variable in the rows and the other in the columns.",
+          "label": "Two-way contingency table layout",
           "sourceId": "psu200-02",
           "locator": "2.1.2 Two Categorical Variables",
           "anchor": {
@@ -414,6 +437,7 @@
         },
         {
           "text": "Each value in a contingency table is the number of times one combination of the two variables' outcomes occurred, and row and column totals give the counts across each row and down each column.",
+          "label": "Cell counts and marginal totals",
           "sourceId": "ims-cat",
           "locator": "4.1 Contingency tables and bar plots",
           "anchor": {
@@ -423,6 +447,7 @@
         },
         {
           "text": "Row and column proportions are conditional proportions: the proportion of observations at one level of a categorical variable, given the level of the other.",
+          "label": "Conditional proportions in tables",
           "sourceId": "ims-cat",
           "locator": "4.3 Row and column proportions",
           "anchor": {
@@ -443,6 +468,7 @@
       "keyPoints": [
         {
           "text": "Row proportions divide each count by its row total; for example, 3496 individual applicants who rent out of 8505 individual applicants gives 0.411, the proportion of individual applicants who rent.",
+          "label": "Row proportion calculation",
           "sourceId": "ims-cat",
           "locator": "4.3 Row and column proportions",
           "anchor": {
@@ -452,6 +478,7 @@
         },
         {
           "text": "Column proportions divide each count by its column total; when these rates differ across the levels of one variable, that is evidence the two variables may be associated.",
+          "label": "Column proportions and association",
           "sourceId": "ims-cat",
           "locator": "4.3 Row and column proportions",
           "anchor": {
@@ -461,6 +488,7 @@
         },
         {
           "text": "To see how the share of spam changes with email format, use column proportions: the proportion of spam among plain-text emails and among HTML emails.",
+          "label": "Column proportions for spam example",
           "sourceId": "ims-cat",
           "locator": "4.3 Row and column proportions",
           "anchor": {
@@ -470,6 +498,7 @@
         },
         {
           "text": "It is usually most useful to condition on the explanatory variable, for example computing the proportion of spam for each email format.",
+          "label": "Conditioning on explanatory variable",
           "sourceId": "ims-cat",
           "locator": "4.3 Row and column proportions",
           "anchor": {
@@ -501,6 +530,7 @@
       "keyPoints": [
         {
           "text": "A stacked bar plot is most useful when one variable can reasonably be treated as explanatory and the other as the response, since it groups by one variable and then breaks each bar down by the other.",
+          "label": "Stacked bar plot and variable roles",
           "sourceId": "ims-cat",
           "locator": "4.2.1 Bar plots with two variables",
           "anchor": {
@@ -510,6 +540,7 @@
         },
         {
           "text": "A side-by-side (dodged) bar plot makes the number of cases in each combination of groups easy to see, but when groups differ greatly in size it is hard to tell whether the variables are associated.",
+          "label": "Side-by-side bar plots and group size",
           "sourceId": "ims-cat",
           "locator": "4.2.1 Bar plots with two variables",
           "anchor": {
@@ -519,6 +550,7 @@
         },
         {
           "text": "A standardised stacked bar plot helps check for an association when the primary variable's groups are imbalanced, but it loses all sense of how many cases each bar represents.",
+          "label": "Standardised stacked bar plots",
           "sourceId": "ims-cat",
           "locator": "4.2.1 Bar plots with two variables",
           "anchor": {
@@ -528,6 +560,7 @@
         },
         {
           "text": "A mosaic plot resembles a standardised stacked bar plot, but it still shows the relative sizes of the groups of the primary variable.",
+          "label": "Mosaic plots and group size",
           "sourceId": "ims-cat",
           "locator": "4.2.2 Mosaic plots",
           "anchor": {
@@ -549,6 +582,7 @@
       "keyPoints": [
         {
           "text": "Dot plots show the exact value of each observation, which suits small data sets; with larger samples they become hard to read, so values are instead thought of as belonging to bins.",
+          "label": "Dot plots and sample size limits",
           "sourceId": "ims-num",
           "locator": "5.3 Histograms and shape",
           "anchor": {
@@ -558,6 +592,7 @@
         },
         {
           "text": "The most common histogram splits the range of the data into equal-sized bins, called classes, and counts how many data points fall into each bin.",
+          "label": "Histogram bins and class counts",
           "sourceId": "nist-histogram",
           "locator": "1.3.3.14, Definition",
           "anchor": {
@@ -567,6 +602,7 @@
         },
         {
           "text": "A histogram shows the centre and spread of the data, its skewness, and whether there are outliers or several modes.",
+          "label": "What histograms reveal",
           "sourceId": "nist-histogram",
           "locator": "1.3.3.14, Purpose",
           "anchor": {
@@ -576,6 +612,7 @@
         },
         {
           "text": "Different choices of class intervals give different histograms, and to compare two data sets visually a relative frequency histogram is better, because every such histogram shares the same 0-to-1 scale.",
+          "label": "Class interval choice and comparison",
           "sourceId": "psu500-01",
           "locator": "1.6.2 Histograms",
           "anchor": {
@@ -596,6 +633,7 @@
       "keyPoints": [
         {
           "text": "Histograms also have bars, but they show the frequencies of a quantitative variable; the term bar chart is reserved for graphs of the frequencies of a categorical variable.",
+          "label": "Histogram bars and quantitative data",
           "sourceId": "psu500-01",
           "locator": "1.4 Graphing One Qualitative Variable, Notes on bar charts",
           "anchor": {
@@ -605,6 +643,7 @@
         },
         {
           "text": "A histogram is in effect a bar graph for measurement data, with one difference: its categories are ranges of numbers rather than words.",
+          "label": "Histogram bars and numeric ranges",
           "sourceId": "psu100-03",
           "locator": "3.2 Graphs: Displaying Measurement Data",
           "anchor": {
@@ -633,6 +672,7 @@
       "keyPoints": [
         {
           "text": "A symmetric distribution is similar on both sides of its centre, and the normal, or bell-shaped, distribution is one kind; a skewed distribution is more spread out on one side of the centre than the other.",
+          "label": "Symmetric vs skewed distributions",
           "sourceId": "psu200-02",
           "locator": "2.2.3 Shape",
           "anchor": {
@@ -642,6 +682,7 @@
         },
         {
           "text": "In a right-skewed, or positively skewed, distribution the higher values are more spread out than the lower ones; in a left-skewed, or negatively skewed, one the lower values are more spread out.",
+          "label": "Right-skewed vs left-skewed direction",
           "sourceId": "psu200-02",
           "locator": "2.2.3 Shape",
           "anchor": {
@@ -651,6 +692,7 @@
         },
         {
           "text": "Skew often comes from bounds on the data: data with a lower bound are often skewed right, and data with an upper bound are often skewed left.",
+          "label": "Bounds and skew direction",
           "sourceId": "nist-hist-right",
           "locator": "1.3.3.14.6, Some Causes for Skewed Data",
           "anchor": {
@@ -660,6 +702,7 @@
         },
         {
           "text": "Salary distributions are almost always right-skewed, with a few people making the most money.",
+          "label": "Salary distributions and skew",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Application: The Skewed Nature of Salary Data",
           "anchor": {
@@ -692,6 +735,7 @@
       "keyPoints": [
         {
           "text": "The mode is the most frequently occurring value or values in a distribution, and it can be used with quantitative or categorical variables.",
+          "label": "Mode across variable types",
           "sourceId": "psu200-02",
           "locator": "2.2.4 Measures of Central Tendency",
           "anchor": {
@@ -701,6 +745,7 @@
         },
         {
           "text": "In data analysis a mode is a prominent peak in the distribution; the definition 'the value occurring most often' is often impractical, because many real data sets have no two observations with the same value.",
+          "label": "What the mode shows",
           "sourceId": "ims-num",
           "locator": "5.3 Histograms and shape",
           "anchor": {
@@ -710,6 +755,7 @@
         },
         {
           "text": "Distributions with one, two, or more than two prominent peaks are called unimodal, bimodal and multimodal.",
+          "label": "Unimodal, bimodal and multimodal",
           "sourceId": "ims-num",
           "locator": "5.3 Histograms and shape",
           "anchor": {
@@ -719,6 +765,7 @@
         },
         {
           "text": "A typical example of a histogram with two clear peaks is data that really come from two different populations.",
+          "label": "Bimodal histograms and subpopulations",
           "sourceId": "psu100-03",
           "locator": "3.2 Graphs: Displaying Measurement Data",
           "anchor": {
@@ -740,6 +787,7 @@
       "keyPoints": [
         {
           "text": "The mean is the numerical average: the sum of all the data values divided by the number of values.",
+          "label": "Mean calculation",
           "sourceId": "psu200-02",
           "locator": "2.2.4 Measures of Central Tendency",
           "anchor": {
@@ -749,6 +797,7 @@
         },
         {
           "text": "It is useful to think of the mean as the balancing point of the distribution.",
+          "label": "A physical picture of the mean",
           "sourceId": "ims-num",
           "locator": "5.2 Dot plots and the mean",
           "anchor": {
@@ -758,6 +807,7 @@
         },
         {
           "text": "Simply averaging per-capita incomes across counties treats a county of 5,000 residents the same as one of 5,000,000; instead, add up every county's total income and divide by the number of people in all of them.",
+          "label": "Weighted vs unweighted averaging",
           "sourceId": "ims-num",
           "locator": "5.2 Dot plots and the mean",
           "anchor": {
@@ -779,6 +829,7 @@
       "keyPoints": [
         {
           "text": "The median is the middle of the data once they are ordered from smallest to largest; with an even number of values it is the mean of the two middle values.",
+          "label": "Median for odd and even samples",
           "sourceId": "psu200-02",
           "locator": "2.2.4 Measures of Central Tendency",
           "anchor": {
@@ -788,6 +839,7 @@
         },
         {
           "text": "With an odd number of values the median is one of the observed values; with an even number it is the mean of two values, which may or may not be an observed value.",
+          "label": "Median with odd or even counts",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Measure of Central Tendency",
           "anchor": {
@@ -797,6 +849,7 @@
         },
         {
           "text": "The median splits the data in half: 50% of the data fall below it and 50% above it.",
+          "label": "What the median splits",
           "sourceId": "ims-num",
           "locator": "5.5 Box plots, quartiles, and the median",
           "anchor": {
@@ -825,6 +878,7 @@
       "keyPoints": [
         {
           "text": "In a symmetric distribution the mean, median and mode are all equal, and the mean is often the preferred measure of centre.",
+          "label": "Mean and median in symmetric distributions",
           "sourceId": "psu200-02",
           "locator": "2.2.4 Skewness & Central Tendency",
           "anchor": {
@@ -834,6 +888,7 @@
         },
         {
           "text": "In a skewed distribution the mean and median differ, because the mean is pulled toward the skew: a heavier right tail puts the mean above the median, and a heavier left tail puts it below.",
+          "label": "Skew pulling mean from median",
           "sourceId": "nist-location",
           "locator": "1.3.5.1, Exponential distribution",
           "anchor": {
@@ -843,6 +898,7 @@
         },
         {
           "text": "In right-skewed salary data the mean is greater than the median, because one very large salary pulls the mean toward it, while the median is not determined by the extreme observations.",
+          "label": "Salary skew and mean vs median",
           "sourceId": "psu100-03",
           "locator": "3.3 Numbers: Summarizing Measurement Data",
           "anchor": {
@@ -852,6 +908,7 @@
         },
         {
           "text": "The direction and size of the difference between the mean and median help you picture the likely shape of the histogram, so it is often important to be given both.",
+          "label": "Mean-median gap and histogram shape",
           "sourceId": "psu100-03",
           "locator": "3.3 Numbers: Summarizing Measurement Data",
           "anchor": {
@@ -868,6 +925,7 @@
       "keyPoints": [
         {
           "text": "Measures that extreme values barely affect are called resistant, and measures they do affect are called sensitive; one shortcoming of the mean is that it is easily affected by extreme values.",
+          "label": "Resistant vs sensitive measures",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Effects of Outliers",
           "anchor": {
@@ -877,6 +935,7 @@
         },
         {
           "text": "If a test score of 91 is mistakenly recorded as 9, the mean of the ten scores falls from 82.1 to 73.9, while the median is not much affected.",
+          "label": "Data entry error and summary measures",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Effects of Outliers",
           "anchor": {
@@ -886,6 +945,7 @@
         },
         {
           "text": "The mean is a sensitive measure because every observation is used to calculate it; the median is resistant because only the middle observation determines its value.",
+          "label": "Mean, median and extreme values",
           "sourceId": "psu100-03",
           "locator": "3.3 Numbers: Summarizing Measurement Data",
           "anchor": {
@@ -918,6 +978,7 @@
       "keyPoints": [
         {
           "text": "A percentile gives an observation's position relative to the others as the percentage of the sample below it; the median is the 50th percentile, with half the observations below it.",
+          "label": "Percentile definition and the median",
           "sourceId": "psu100-03",
           "locator": "3.4 Five Useful Numbers (Percentiles)",
           "anchor": {
@@ -927,6 +988,7 @@
         },
         {
           "text": "The 25th percentile, Q1, is called the lower quartile, and the 75th percentile, Q3, the upper quartile.",
+          "label": "Quartiles Q1 and Q3",
           "sourceId": "psu500-01",
           "locator": "1.5.2 Measures of Position",
           "anchor": {
@@ -936,6 +998,7 @@
         },
         {
           "text": "Percentiles have slightly different definitions, and different statistical software and textbooks may use different formulas.",
+          "label": "Percentile formula variations",
           "sourceId": "psu200-02",
           "locator": "2.2.8 Percentiles",
           "anchor": {
@@ -945,6 +1008,7 @@
         },
         {
           "text": "A five-number summary gives, in order, the minimum, the first quartile, the median, the third quartile and the maximum.",
+          "label": "Five-number summary components",
           "sourceId": "psu200-02",
           "locator": "2.2.9 Five Number Summary",
           "anchor": {
@@ -954,6 +1018,7 @@
         },
         {
           "text": "For exam scores with the five-number summary 24, 70, 82.5, 89 and 97, a quarter of the students scored 70 or below, and a quarter scored at least 89.",
+          "label": "Interpreting a five-number summary",
           "sourceId": "psu500-01",
           "locator": "1.5.2 The 5-Number Summary",
           "anchor": {
@@ -975,6 +1040,7 @@
       "keyPoints": [
         {
           "text": "The range is the maximum minus the minimum; it is easy to calculate but very much affected by extreme values.",
+          "label": "Range calculation and sensitivity",
           "sourceId": "psu500-01",
           "locator": "1.5.3 Measures of Variability",
           "anchor": {
@@ -984,6 +1050,7 @@
         },
         {
           "text": "Because the range is heavily influenced by outliers, the interquartile range, the difference between the first and third quartiles, is often preferred: it is resistant to outliers.",
+          "label": "The IQR and extreme values",
           "sourceId": "psu200-02",
           "locator": "2.2.9 Five Number Summary",
           "anchor": {
@@ -993,6 +1060,7 @@
         },
         {
           "text": "The IQR is the span of the middle 50% of the data and the length of the box in a box plot, and the few values it needs are not the extreme ones, which makes it resistant.",
+          "label": "IQR and the box plot box",
           "sourceId": "psu100-03",
           "locator": "3.5 Measures of Spread or Variation",
           "anchor": {
@@ -1002,6 +1070,7 @@
         },
         {
           "text": "The range uses only the two most extreme points, while the interquartile range uses only the middle portion of the data.",
+          "label": "Range vs IQR data usage",
           "sourceId": "nist-scale",
           "locator": "1.3.5.6, Summary",
           "anchor": {
@@ -1022,6 +1091,7 @@
       "keyPoints": [
         {
           "text": "Squaring the deviations from the mean does two things: it makes large values relatively much larger, and it removes any negative signs.",
+          "label": "Squaring deviations from the mean",
           "sourceId": "ims-num",
           "locator": "5.4 Variance and standard deviation",
           "anchor": {
@@ -1031,6 +1101,7 @@
         },
         {
           "text": "The variance is the average squared distance from the mean, and the standard deviation, its square root, is useful for judging how far the data are spread from the mean.",
+          "label": "Variance and standard deviation",
           "sourceId": "ims-num",
           "locator": "5.4 Variance and standard deviation",
           "anchor": {
@@ -1040,6 +1111,7 @@
         },
         {
           "text": "The standard deviation roughly describes how far the typical observation is from the mean, which makes it easier to understand than the variance.",
+          "label": "Standard deviation and typical distance",
           "sourceId": "ims-num",
           "locator": "5.4 Variance and standard deviation",
           "anchor": {
@@ -1049,6 +1121,7 @@
         },
         {
           "text": "The standard deviation puts the spread back into the data's original units, whereas the variance squares the units.",
+          "label": "Units of variance vs standard deviation",
           "sourceId": "nist-scale",
           "locator": "1.3.5.6, Definition of Scale",
           "anchor": {
@@ -1058,6 +1131,7 @@
         },
         {
           "text": "The standard deviation is calculated from every observation, so it is a sensitive measure that outliers influence.",
+          "label": "Standard deviation sensitivity to outliers",
           "sourceId": "psu100-03",
           "locator": "3.5 Measures of Spread or Variation",
           "anchor": {
@@ -1079,6 +1153,7 @@
       "keyPoints": [
         {
           "text": "In a box plot the box covers the middle 50% of observations, from Q1 to Q3, with a line at the median; the whiskers reach the lowest and highest values that are not outliers, and outliers are marked separately.",
+          "label": "Box plot structure and outliers",
           "sourceId": "psu200-03",
           "locator": "3.1 Single Boxplot",
           "anchor": {
@@ -1088,6 +1163,7 @@
         },
         {
           "text": "A skeletal box plot draws a box from Q1 to Q3 and whiskers to the minimum and maximum, but most software also marks outliers; when there are no outliers, the software's box plot is essentially the skeletal one.",
+          "label": "Skeletal vs software box plots",
           "sourceId": "psu500-01",
           "locator": "1.6.3 Boxplots",
           "anchor": {
@@ -1097,6 +1173,7 @@
         },
         {
           "text": "There is a variety of formulas for flagging a box plot's outliers, and different software uses different ones; a common one flags any observation more than 1.5 times the IQR beyond the first or third quartile.",
+          "label": "Outlier flagging formulas",
           "sourceId": "ims-num",
           "locator": "5.5 Box plots, quartiles, and the median",
           "anchor": {
@@ -1106,6 +1183,7 @@
         },
         {
           "text": "A median that sits closer to the lower quartile than to the upper quartile suggests the data are skewed to the right.",
+          "label": "Median position within the box",
           "sourceId": "psu100-03",
           "locator": "3.4 Five Useful Numbers (Percentiles)",
           "anchor": {
@@ -1115,6 +1193,7 @@
         },
         {
           "text": "Box plots are thin enough to sit side by side for comparing groups, but they cannot show whether a distribution is bimodal or has spikes at particular values.",
+          "label": "Box plot limitations for shape",
           "sourceId": "psu100-03",
           "locator": "3.4 Five Useful Numbers (Percentiles)",
           "anchor": {
@@ -1135,6 +1214,7 @@
       "keyPoints": [
         {
           "text": "On a normal distribution about 68% of the data lie within one standard deviation of the mean, about 95% within two, and about 99.7% within three.",
+          "label": "Empirical rule percentages",
           "sourceId": "psu200-02",
           "locator": "2.2.6 The Empirical Rule",
           "anchor": {
@@ -1144,6 +1224,7 @@
         },
         {
           "text": "The empirical rule is a guideline for when a sample is known to be approximately normally distributed, and it also helps explain what the standard deviation represents.",
+          "label": "When the empirical rule applies",
           "sourceId": "psu100-04",
           "locator": "4.2 The Normal Curve",
           "anchor": {
@@ -1153,6 +1234,7 @@
         },
         {
           "text": "Of 50 loan interest rates, 68% lay within one standard deviation of the mean and 96% within two; about 68% and 95% is usual, but far from a hard rule.",
+          "label": "How strictly the empirical rule holds",
           "sourceId": "ims-num",
           "locator": "5.4 Variance and standard deviation",
           "anchor": {
@@ -1185,6 +1267,7 @@
       "keyPoints": [
         {
           "text": "A z-score, or standardised score, is the distance between an individual value and the mean in standard deviation units.",
+          "label": "Z-score definition",
           "sourceId": "psu200-02",
           "locator": "2.2.7 z-scores",
           "anchor": {
@@ -1194,6 +1277,7 @@
         },
         {
           "text": "SAT and ACT scores are on different scales, so a student's scores are converted to z-scores, 1 on the SAT and 0.667 on the ACT, which shows the SAT score is the more impressive.",
+          "label": "Comparing scores on different scales",
           "sourceId": "psu200-02",
           "locator": "2.2.7 z-scores",
           "anchor": {
@@ -1203,6 +1287,7 @@
         },
         {
           "text": "A list of standardised scores always has a mean of 0 and a standard deviation of 1, because subtracting the mean centres the values at zero and dividing by the standard deviation makes it 1.",
+          "label": "Properties of standardised score lists",
           "sourceId": "psu100-04",
           "locator": "4.1 Standard Scores",
           "anchor": {
@@ -1212,6 +1297,7 @@
         },
         {
           "text": "Standardised scores compare relative standing on different lists where the distributions have roughly similar shapes.",
+          "label": "When z-scores are appropriate",
           "sourceId": "psu100-04",
           "locator": "4.1 Standard Scores",
           "anchor": {
@@ -1232,6 +1318,7 @@
       "keyPoints": [
         {
           "text": "Adding a constant to every value, as when an instructor adds five points to each exam score, changes the mean and median by that constant.",
+          "label": "Adding a constant to centre measures",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Adding and Multiplying Constants",
           "anchor": {
@@ -1241,6 +1328,7 @@
         },
         {
           "text": "Multiplying every value by a constant multiplies the mean and median by it too; doubling every score doubles both.",
+          "label": "Multiplying and centre measures",
           "sourceId": "psu500-01",
           "locator": "1.5.1 Adding and Multiplying Constants",
           "anchor": {
@@ -1250,6 +1338,7 @@
         },
         {
           "text": "Adding a constant shifts the data and moves the middle, but leaves the range, IQR, variance and standard deviation unchanged.",
+          "label": "Adding a constant and spread measures",
           "sourceId": "psu500-01",
           "locator": "1.5.3 Adding and Multiplying Constants",
           "anchor": {
@@ -1259,6 +1348,7 @@
         },
         {
           "text": "Multiplying every value by a constant multiplies the standard deviation, range and IQR by that constant, and the variance by its square.",
+          "label": "Multiplying and spread measures",
           "sourceId": "psu500-01",
           "locator": "1.5.3 Adding and Multiplying Constants",
           "anchor": {
@@ -1268,6 +1358,7 @@
         },
         {
           "text": "To compare the variability of groups with very different means, the coefficient of variation is a popular unit-free statistic: the higher it is, the greater the dispersion.",
+          "label": "Coefficient of variation",
           "sourceId": "psu500-01",
           "locator": "1.5.3 Coefficient of Variation",
           "anchor": {
@@ -1288,6 +1379,7 @@
       "keyPoints": [
         {
           "text": "Side-by-side box plots make it easy to compare groups' medians, IQRs and ranges, while dot plots and histograms with groups compare their shape, central tendency and variability.",
+          "label": "Plots for comparing groups",
           "sourceId": "psu200-03",
           "locator": "3.3 One Quantitative and One Categorical Variable",
           "anchor": {
@@ -1297,6 +1389,7 @@
         },
         {
           "text": "Side-by-side box plots, one per group, are placed in one plotting window and drawn on the same scale, a traditional tool for comparing across groups.",
+          "label": "Side-by-side box plots setup",
           "sourceId": "ims-cat",
           "locator": "4.6 Comparing numerical data across groups",
           "anchor": {
@@ -1306,6 +1399,7 @@
         },
         {
           "text": "With unequal group sizes raw counts mislead: 200 asthma attacks among 500 patients against 300 among 1,000 seem to favour the new drug, but per patient that is 0.4 against 0.3.",
+          "label": "Raw counts vs rates across groups",
           "sourceId": "ims-num",
           "locator": "5.2 Dot plots and the mean",
           "anchor": {
@@ -1315,6 +1409,7 @@
         },
         {
           "text": "A difference between groups in observational data, such as in income between counties that did and did not gain population, would at best be a half-baked basis for a causal conclusion.",
+          "label": "Observational differences and causation",
           "sourceId": "ims-cat",
           "locator": "4.6 Comparing numerical data across groups",
           "anchor": {
@@ -1335,6 +1430,7 @@
       "keyPoints": [
         {
           "text": "With skewed data the mean can mislead as a representative value and the median is generally more appropriate; the mean is generally used when the data are fairly symmetric.",
+          "label": "Mean vs median for skewed data",
           "sourceId": "psu100-03",
           "locator": "3.3 Numbers: Summarizing Measurement Data",
           "anchor": {
@@ -1344,6 +1440,7 @@
         },
         {
           "text": "The question matters too: for a country's total income the per-capita income, the mean, is the figure to use, but for the income of a typical citizen it is the median.",
+          "label": "Question context and choice of centre",
           "sourceId": "psu100-03",
           "locator": "3.3 Numbers: Summarizing Measurement Data",
           "anchor": {
@@ -1353,6 +1450,7 @@
         },
         {
           "text": "If the concern is a company's overall profit margin, the mean profit per customer is better: a company could have a positive median profit per customer and still be unprofitable.",
+          "label": "Mean for overall profit margin",
           "sourceId": "ims-num",
           "locator": "5.6 Robust statistics",
           "anchor": {
@@ -1362,6 +1460,7 @@
         },
         {
           "text": "If an app opens in under 5 milliseconds for half its users but takes over 10 seconds for a tenth of them, the median misses that; an upper percentile such as the 95th is more useful.",
+          "label": "Upper percentiles for tail behaviour",
           "sourceId": "ims-num",
           "locator": "5.6 Robust statistics",
           "anchor": {
@@ -1371,6 +1470,7 @@
         },
         {
           "text": "Because the mean, median and mode each reflect a different aspect of centre, an analyst should report at least the mean and median, and preferably all three.",
+          "label": "Reporting multiple centre measures",
           "sourceId": "nist-hist-right",
           "locator": "1.3.3.14.6, Discussion of Skewness",
           "anchor": {
@@ -1402,6 +1502,7 @@
       "keyPoints": [
         {
           "text": "If a sample has outliers or skew, resistant measures are preferred, because sensitive measures tend to overreact to outliers; if it is reasonably symmetric, sensitive measures, which use all the observations, should be used.",
+          "label": "Outliers and choice of summary",
           "sourceId": "psu100-03",
           "locator": "3.5 Measures of Spread or Variation",
           "anchor": {
@@ -1411,6 +1512,7 @@
         },
         {
           "text": "The median and IQR are robust statistics, little affected by extreme observations, while the mean and standard deviation are more heavily influenced by them.",
+          "label": "Robust vs sensitive statistics",
           "sourceId": "ims-num",
           "locator": "5.6 Robust statistics",
           "anchor": {
@@ -1420,6 +1522,7 @@
         },
         {
           "text": "When data are roughly normal the standard deviation is a sensible measure of spread; when they are not, especially with long tails, a measure such as the interquartile range makes sense.",
+          "label": "Standard deviation vs IQR by shape",
           "sourceId": "nist-scale",
           "locator": "1.3.5.6, Robustness",
           "anchor": {
@@ -1429,6 +1532,7 @@
         },
         {
           "text": "Whichever centre you pick, most analyses also need its variability, from percentiles, the IQR or the standard deviation, and a graph of the data to see the full picture.",
+          "label": "Centre, spread and graphical summary",
           "sourceId": "ims-num",
           "locator": "5.6 Robust statistics",
           "anchor": {
@@ -1438,6 +1542,7 @@
         },
         {
           "text": "Graphs can reveal anomalies or patterns hiding in the data, so look at the data graphically, for example as histograms, before getting far into analysis.",
+          "label": "Graphing data before analysis",
           "sourceId": "g-first-steps",
           "locator": "Visualize your data",
           "anchor": {

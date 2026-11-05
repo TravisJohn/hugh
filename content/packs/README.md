@@ -18,7 +18,10 @@ the passage that supports each key point. It never stores a source's text.
    source's extracted text to `.pack-cache/<id>/`, which is git-ignored. Write
    anchors against this text, because it is exactly what the validator
    searches.
-3. **Draft concepts.** Each concept gets 2–5 key points in your own words, and
+3. **Draft concepts.** Each concept gets 2–5 key points in your own words, each
+   with a `label`: the topic's name, at most 6 words and 44 characters, unique
+   on its card. Mastery shows it on the checklist while the learner talks, so it
+   says what to talk about and never states the fact. Each key point also needs
    each key point gets a `start` and an `end` of 2–6 words copied exactly from
    the source. Avoid formulas, which extract as raw notation such as
    `\(b_{1}\)`. In PDFs, also avoid words containing "fi", "fl" or "ff":
