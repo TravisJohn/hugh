@@ -163,6 +163,7 @@ HUGH_ADMIN_URL                  # optional — admin architecture assistant
 MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery
 SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
 HUGH_SUBSCRIPTION_OWNER_ID      # optional — local plan mode only: the one user it serves
+HUGH_TEST_USER_PASSWORD         # optional — local test scripts only: the test learner's password
 ```
 
 ## Folder Structure

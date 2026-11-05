@@ -1191,7 +1191,7 @@ only Learn expands now. Left untouched (still accurate): the hero copy and the
 four-step "How It Works" section on `app/page.tsx`.
 
 **Test user tooling.** Added `scripts/seed-test-user.mjs` — seeds/approves a
-local test learner (`test_user@testmail.com` / `password1234`) using the
+local test learner (`test_user@testmail.com`; its password now lives in `.env.local`) using the
 service-role key, bypassing email confirmation + the approval gate
 (`verifyUserAccess` → `/pending` for unapproved non-admins). `--reset` wipes the
 user's tracks (milestones cascade) + learning_goals to restore a blank
@@ -1221,7 +1221,7 @@ block control for abuse (excessive token usage).
 add redirect URL `http://localhost:3000/auth/confirm` (+ prod domain); recommended
 to set the "Confirm signup" email template link to
 `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/home`.
-Test account: `vtravisjohn@yahoo.com` / `password1234` (real inbox — sign up via
+Test account: `vtravisjohn@yahoo.com` (real inbox — sign up via
 UI, do not pre-seed). Typecheck clean.
 
 **Follow-up — deferred to GCP + interim unstick.** Diagnosed that "Confirm email"
@@ -9566,3 +9566,54 @@ Checked:
 
 Gate: 2,244 tests pass (10 new), the type check and lint are clean, and the build
 passes.
+
+## 2026-11-05 - Launch moves to January, and the test password leaves the repo
+
+Travis moved the launch from Nov 15 2026 to January 2027 and asked for loose ends
+to be fixed first. There is no exact January date yet. The launch dashboard and
+its daily refresh still say Nov 15 until he decides what happens to them. Migration
+062 was applied the same day, after the race test passed on its first CI run.
+
+While looking at why the test learner has no Notes card, the real reason turned
+out to be `profiles.notes_enabled`, set per account, not anything about running
+locally. Turning it on exposed a bigger problem. The test learner's password was
+committed in this public repo, and the account signs in on the live site too.
+With Notes on, anyone who found it could upload images and spend the OpenAI key
+on the Coach, up to that account's monthly allowance.
+
+The change:
+- The password now comes from `HUGH_TEST_USER_PASSWORD` in `.env.local`, read by
+  one helper, `scripts/testUserPassword.mjs`, that all three scripts share.
+- It must be at least 16 characters, because the seed script writes it to the real
+  database. The old password is shorter, so it can't be put back by accident.
+- The seed script no longer prints the password when it finishes.
+- `scripts/testUserPassword.test.ts` fails if a script carries a password in
+  plain text. Three kinds of hard-coded password were planted to prove it fails.
+- The two old log entries that printed it are redacted.
+
+What this does not do: the old password stays in git history, so only changing it
+on the account closes the hole. That is a manual step, `node
+scripts/seed-test-user.mjs`, after setting the new value in `.env.local`. Notes
+stays off for the test learner until that is done. The password also still works
+on `vtravisjohn@yahoo.com`, the sign-up test account, which is Travis's to decide.
+
+Gate: the 31 new tests pass, and the type check and lint are clean on the changed
+files. The full suite runs in CI.
+
+Done the same day: Travis set the new password and ran the seed script. The old
+one no longer matches the account's stored hash, and changing it also ended the
+account's sessions. `notes_enabled` was then turned on for the test learner. The
+Coach and Summarise stay off in plan mode, because both run on OpenAI, so Notes
+there holds screenshots and reasoning without Hugh reading them back.
+`vtravisjohn@yahoo.com` is unchanged until Travis decides.
+
+Browser test on the Claude plan, same day, with 062 applied: 14 Ask Hugh chats, 4
+summaries and 3 review quizzes all served by the plan. All 21 usage rows carry
+`@subscription`, none went to the API key, and no request was refused, including
+the chats past the seventh that failed on 10-29. `reserved_tokens` read 0 after
+the last call, so a logged call does give its hold back. Notes saved a screenshot
+and a thought, and the Coach answered 503 with no spend.
+
+Found by it: that one session used 61,741 of the test learner's 100,000 tokens for
+the month. The allowance applies in plan mode too, at $0, so at about 4k a chat
+course-card chats start being refused above about 82%, roughly five chats later.
