@@ -55,7 +55,7 @@ export const MODEL_RATES: Record<string, ModelRate> = {
  */
 export const FALLBACK_MODEL = "claude-sonnet-4-6";
 
-/** ElevenLabs, USD per character (~Creator plan). */
+/** ElevenLabs, USD per character (~Creator plan). Voice is gone; past rows keep their real cost. */
 export const COST_PER_TTS_CHAR = 0.30 / 1_000;
 
 export function isKnownModel(model: string | null | undefined): boolean {

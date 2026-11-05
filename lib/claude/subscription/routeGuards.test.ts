@@ -31,7 +31,7 @@ const routes = apiRouteFiles().map(file => ({ file, src: readFileSync(join(ROOT,
  * one through a `lib` module instead of reading the key itself is not seen
  * here — today every paid route reads its own key.
  */
-const PAID_KEYS = /process\.env\.(OPENAI_API_KEY|ELEVENLABS_API_KEY)\b/;
+const PAID_KEYS = /process\.env\.OPENAI_API_KEY\b/;
 
 /**
  * Claude routes whose failures are deliberately not shown to the learner.
@@ -49,7 +49,7 @@ describe("subscription mode — route guards", () => {
     expect(routes.filter(r => r.src.includes("claudeClient()")).length).toBeGreaterThanOrEqual(15);
   });
 
-  it("switches off every route that pays OpenAI or ElevenLabs, before it reserves anything", () => {
+  it("switches off every route that pays OpenAI, before it reserves anything", () => {
     const unguarded = routes
       .filter(r => PAID_KEYS.test(r.src))
       .filter(r => {

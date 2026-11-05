@@ -102,7 +102,7 @@ export function mayUseClaude(billing: ClaudeBilling, userId: string): boolean {
 
 /**
  * Whether the plan could have served a call to `model`. A Claude plan covers
- * Claude only: an OpenAI or ElevenLabs row is paid for whatever the mode.
+ * Claude only: an OpenAI row is paid for whatever the mode.
  */
 export function servableByPlan(model: string): boolean {
   return model.startsWith("claude-");

@@ -35,15 +35,6 @@ export function isPresetRoom(r: Room): r is PresetRoom {
 }
 
 // ── Entity interfaces (mirror DB schema exactly) ──────────────────────────
-export interface Persona {
-  id:      string;
-  name:    string;
-  role:    string;
-  company: string;
-  voiceId: string;
-  avatar:  string;
-}
-
 export interface Session {
   id:              string;
   user_id:         string;
@@ -79,11 +70,6 @@ export interface Answer {
   feedback_text:      string | null;
   submitted_at:       string;
 }
-
-// Persona without voiceId — safe to pass to Client Components.
-// The actual ElevenLabs voice ID stays server-only; the TTS route
-// resolves it from personaId server-side.
-export type ClientPersona = Omit<Persona, 'voiceId'>;
 
 // ── Learning goals (dashboard) ────────────────────────────────────────────
 // Status of the Kanban track that is generated for a goal in the background.

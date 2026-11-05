@@ -45,7 +45,6 @@ const EVERY_OPERATION: Record<OperationId, true> = {
   "cloud.chat":       true,
   "notes.coach":      true,
   "notes.summarize":  true,
-  "voice.speak":      true,
   "answers.forget":   true,
 };
 

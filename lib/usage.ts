@@ -19,7 +19,6 @@ import {
   reserveEstimateFor,
   statusForDenial,
   tokenLimitFor,
-  ttsCharLimitFor,
 } from "@/lib/tokenBudget";
 
 // Pricing lives in lib/pricing.ts (pure, unit-tested). Re-exported here so the
@@ -50,8 +49,7 @@ async function readProfile(userId: string): Promise<QuotaProfile | null> {
 
 /**
  * Record one billable call. `model` is required for any call that spent tokens
- * so the row can be priced at that model's real rate (migration 036); TTS-only
- * rows legitimately omit it.
+ * so the row can be priced at that model's real rate (migration 036).
  *
  * Since migration 049 this also adds the spend to `usage_counters`, the running
  * total the gate compares against. Since migration 062 the same write gives back
@@ -74,20 +72,18 @@ export async function logUsage({
   model,
   tokensIn  = 0,
   tokensOut = 0,
-  ttsChars  = 0,
 }: {
   userId:     string;
   feature:    string;
   model?:     string;
   tokensIn?:  number;
   tokensOut?: number;
-  ttsChars?:  number;
 }): Promise<void> {
-  if (!tokensIn && !tokensOut && !ttsChars) return;
+  if (!tokensIn && !tokensOut) return;
 
   // A Claude call the owner's plan served is logged under its $0 rate class
   // (lib/claude/billingMode.ts). Billing is resolved for Claude rows only, so a
-  // misconfigured flag can never cost an OpenAI or TTS row its record.
+  // misconfigured flag can never cost an OpenAI row its record.
   const rowModel = model && servableByPlan(model) ? usageModelFor(resolveClaudeBilling(process.env), model) : model;
 
   // A token-spending row with no known model would be priced at the fallback
@@ -107,7 +103,7 @@ export async function logUsage({
 
   await deferOrRun(
     after,
-    () => writeUsage({ userId, feature, model: rowModel, tokensIn, tokensOut, ttsChars }),
+    () => writeUsage({ userId, feature, model: rowModel, tokensIn, tokensOut }),
     (stage, err) => {
       // Neither branch may throw — see the timing contract above. `schedule`
       // means the deferral itself is broken, which is worth distinguishing:
@@ -132,14 +128,12 @@ async function writeUsage({
   model,
   tokensIn,
   tokensOut,
-  ttsChars,
 }: {
   userId:    string;
   feature:   string;
   model?:    string;
   tokensIn:  number;
   tokensOut: number;
-  ttsChars:  number;
 }): Promise<void> {
   const supabase = createServiceClient();
   const { error } = await supabase.from("usage_logs").insert({
@@ -148,7 +142,6 @@ async function writeUsage({
     model:      model ?? null,
     tokens_in:  tokensIn,
     tokens_out: tokensOut,
-    tts_chars:  ttsChars,
   });
 
   // A rejected insert must not vanish: the spend has already happened and this
@@ -180,8 +173,6 @@ async function recordAgainstCounter(
   tokensOut: number,
 ): Promise<void> {
   const tokens = recordedTokens(tokensIn, tokensOut);
-  // TTS-only rows spend characters, not tokens, and reserve none. The monthly
-  // cap has never counted them; the rate limit is what governs that route.
   if (tokens === 0) return;
 
   try {
@@ -265,7 +256,7 @@ export async function checkUsageAllowed(
 }
 
 /**
- * Route-handler gate for every billable AI/TTS endpoint (HIGH-03/HIGH-05 —
+ * Route-handler gate for every billable AI endpoint (HIGH-03/HIGH-05 —
  * deployment readiness audit). Wraps `checkUsageAllowed` (which covers
  * `is_blocked`/`approved`, the token budget and the request rate) into the
  * 403/429 JSON response every route should return on rejection.
@@ -291,46 +282,6 @@ export async function enforceUsageGate(
     { error: messageForDenial(reason), retryAfter },
     { status: statusForDenial(reason), headers },
   );
-}
-
-/** Reserve the whole TTS request before calling ElevenLabs. Never refund it:
- * a failed stream may already have been billed by the provider. */
-export async function enforceTtsBudget(userId: string, chars: number): Promise<NextResponse | null> {
-  if (!Number.isSafeInteger(chars) || chars <= 0) throw new Error("Invalid TTS reservation");
-  const profile = await readProfile(userId);
-  if (!accountAllowed(profile).allowed) {
-    return NextResponse.json({ error: messageForDenial("blocked") }, { status: 403 });
-  }
-
-  const unavailable = () => NextResponse.json(
-    { error: "Voice usage checks are temporarily unavailable. Please try again shortly." },
-    { status: 503, headers: { "Retry-After": "30" } },
-  );
-
-  try {
-    const { data, error } = await createServiceClient().rpc("reserve_tts", {
-      p_user_id: userId,
-      p_period_start: periodStart(profile),
-      p_chars: chars,
-      p_char_limit: ttsCharLimitFor(profile),
-    });
-    if (error) {
-      console.error(`[usage] reserve_tts unavailable for ${userId}:`, error.message);
-      return unavailable();
-    }
-    const row = Array.isArray(data) ? data[0] : data;
-    if (row?.granted === true) return null;
-    if (row?.granted === false) {
-      return NextResponse.json(
-        { error: "Monthly voice allowance reached. Please contact Travis to reset or upgrade." },
-        { status: 429 },
-      );
-    }
-    console.error(`[usage] reserve_tts returned an invalid decision for ${userId}`);
-  } catch (error) {
-    console.error(`[usage] reserve_tts threw for ${userId}:`, error);
-  }
-  return unavailable();
 }
 
 export interface UsageSummary {

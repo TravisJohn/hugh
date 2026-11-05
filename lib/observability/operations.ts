@@ -54,7 +54,6 @@ export type OperationId =
   | "cloud.chat"
   | "notes.coach"
   | "notes.summarize"
-  | "voice.speak"
   | "answers.forget";
 
 /**
@@ -63,7 +62,7 @@ export type OperationId =
  */
 export type OperationDomain =
   | "track" | "topic" | "quiz" | "mastery" | "ask" | "answers"
-  | "code" | "cloud" | "notes" | "voice";
+  | "code" | "cloud" | "notes";
 
 export interface OperationDefinition {
   /** Stored in `operation_events.operation`. Stable — changing one orphans history. */
@@ -312,17 +311,6 @@ export const OPERATIONS: readonly OperationDefinition[] = [
     failureIsSilent:  false,
     description:
       "Condensing a screenshot into a one-line note title.",
-  },
-  {
-    id:               "voice.speak",
-    domain:           "voice",
-    label:            "Speak (TTS)",
-    clientReportable: false,
-    failureIsSilent:  false,
-    description:
-      "Turning text into speech through ElevenLabs. Billed in characters " +
-      "rather than tokens, and called by whichever surface is speaking — " +
-      "which is why its spend cannot be credited to one of them.",
   },
 ] as const;
 

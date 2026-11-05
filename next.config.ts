@@ -25,7 +25,7 @@ const cspDirectives = (frameAncestors: "none" | "self") => [
   `font-src 'self' data:`,
   `worker-src 'self' blob:`,
   `connect-src 'self' https://cdn.jsdelivr.net${supabaseHost ? ` ${supabaseHost} wss://${new URL(supabaseUrl!).host}` : ""}`,
-  `media-src 'self' blob:`,
+  `media-src 'self'`,
 ].join("; ");
 
 // Framing policy is the one header that varies by path. Everything else is

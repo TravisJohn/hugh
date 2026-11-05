@@ -7,9 +7,6 @@ import {
   RATE_LIMIT_WINDOW_SECONDS,
   RESERVE_TTL_SECONDS,
   tokenLimitFor,
-  ttsCharLimitFor,
-  FREE_MONTHLY_TTS_CHARS,
-  PRO_MONTHLY_TTS_CHARS,
   startOfMonth,
   periodStart,
   reserveEstimateFor,
@@ -51,15 +48,6 @@ describe("tokenLimitFor", () => {
     // A dropped profile read must not become a bypass.
     expect(tokenLimitFor(null)).toBe(DEFAULT_MONTHLY_TOKEN_LIMIT);
     expect(tokenLimitFor(undefined)).toBe(DEFAULT_MONTHLY_TOKEN_LIMIT);
-  });
-});
-
-describe("ttsCharLimitFor", () => {
-  it("caps every plan and never treats a missing profile as unlimited", () => {
-    expect(ttsCharLimitFor({ plan: "free" })).toBe(FREE_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor(null)).toBe(FREE_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor({ plan: "pro" })).toBe(PRO_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor({ is_admin: true })).toBe(PRO_MONTHLY_TTS_CHARS);
   });
 });
 
@@ -126,16 +114,6 @@ describe("reserveEstimateFor", () => {
     }
   });
 
-  it("reserves zero for tts, which spends characters rather than tokens", () => {
-    // The shared gate enforces its rate. reserve_tts enforces the character cap.
-    expect(reserveEstimateFor("tts")).toBe(0);
-  });
-
-  it("does not mistake a registered zero for an unregistered feature", () => {
-    // `?? fallback` would be correct here but `|| fallback` would not, and the
-    // difference is 4,000 phantom tokens on every TTS request.
-    expect(reserveEstimateFor("tts")).not.toBe(DEFAULT_RESERVE_ESTIMATE);
-  });
 });
 
 describe("recordedTokens", () => {

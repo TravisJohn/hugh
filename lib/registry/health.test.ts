@@ -108,11 +108,16 @@ describe("spend attribution", () => {
     expect(report.totalSpendUsd).toBeCloseTo(2, 5);
   });
 
-  it("attributes TTS spend to the voice surface, not to whoever was speaking", () => {
-    // lib/monitor/features.ts already settled that tts cannot be credited to a
-    // learner-facing surface. It must still be visible somewhere.
-    const report = buildHealthReport([usage({ feature: "tts", tts_chars: 1000 })], [], []);
-    expect(rowFor("voice", report).spendUsd).toBeGreaterThan(0);
+  it.each([
+    { feature: "tts", tts_chars: 1000 },
+    { feature: "mastery/realtime", tokens_in: 1000, model: "gpt-realtime-mini" },
+    { feature: "mastery/recap", tokens_in: 1000, model: "claude-sonnet-4-6" },
+    { feature: "mastery/evaluate", tokens_in: 1000, model: "claude-sonnet-4-6" },
+  ])("keeps past spend under the retired name $feature on the Mastery row", row => {
+    // Nothing logs these names now, but the rows still cost what they cost, so
+    // removing a feature must not move its history out of the Mastery line.
+    const report = buildHealthReport([usage(row)], [], []);
+    expect(rowFor("mastery", report).spendUsd).toBeGreaterThan(0);
     expect(report.unattributedSpendUsd).toBe(0);
   });
 });

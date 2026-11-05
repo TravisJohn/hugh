@@ -45,7 +45,7 @@ console.log([
   `Hugh on your Claude plan (${login.status?.subscriptionType ?? "plan"}), listening on ${PLAN_DEV_HOST} only.`,
   "  Claude calls use your plan's limits, not the API key.",
   "  Only the owner account can use Claude here.",
-  "  Off: the Coach, Notes summaries, spoken and Realtime voice, the architecture assistant.",
+  "  Off: the architecture assistant.",
   "",
 ].join("\n"));
 

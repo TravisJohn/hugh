@@ -212,9 +212,12 @@ export const FEATURES: readonly FeatureDefinition[] = [
       "mastery/session",
       // Retired names. Nothing logs them now, but past rows still carry them,
       // and a name no feature claims lands on /admin/features as unattributed.
+      // `tts` is here because Mastery was the last surface to speak; rows from
+      // before 2026-08-24 also include the deleted interview loop.
       "mastery/evaluate",
       "mastery/recap",
       "mastery/realtime",
+      "tts",
     ],
     activityFeatures: ["mastery"],
     operations: ["mastery.session"],
@@ -321,27 +324,6 @@ export const FEATURES: readonly FeatureDefinition[] = [
     // margin must not be what changes that. Asserted, not merely documented.
     spendsTokens: false,
     tests: 1,
-  },
-  {
-    id:    "voice",
-    label: "Voice (TTS)",
-    kind:  "internal",
-    blurb: "ElevenLabs speech, called by whichever surface is speaking.",
-    routes: [],
-    apiRoutes: ["tts"],
-    libDirs:       [],
-    componentDirs: [],
-    tables: [],
-    // `tts` rows are deliberately NOT credited to a learner-facing surface —
-    // they belong to whoever was speaking and cannot be attributed to one.
-    // `lib/monitor/features.ts` excludes them from the Usage view for exactly
-    // this reason; owning them here keeps the spend visible somewhere without
-    // mis-attributing it.
-    usageFeatures: ["tts"],
-    activityFeatures: [],
-    operations: ["voice.speak"],
-    spendsTokens: true,
-    tests: 0,
   },
   {
     id:    "monitor",
