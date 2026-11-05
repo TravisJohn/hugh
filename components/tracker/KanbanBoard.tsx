@@ -416,7 +416,7 @@ export default function KanbanBoard({
             </div>
 
             <p className="text-sm text-slate-400 leading-relaxed">
-              Moving a card to <span className="text-amber-300 font-medium">Mastered</span> unlocks a spoken proficiency session with Hugh — 3 exchanges scored by AI. You need a Pro subscription to access Mastery Sessions.
+              Moving a card to <span className="text-amber-300 font-medium">Mastered</span> unlocks a Mastery session: explain the card&apos;s topics out loud, and Hugh ticks each one you get right. You need a Pro subscription to access Mastery Sessions.
             </p>
 
             <Link

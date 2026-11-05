@@ -141,8 +141,8 @@ export default async function LandingPage() {
                 Start speaking about it
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                Hugh asks on screen and you answer out loud, just like a
-                real conversation.
+                You lead, out loud and in your own words. Hugh replies on
+                screen and ticks off each topic you explain.
               </p>
             </div>
 

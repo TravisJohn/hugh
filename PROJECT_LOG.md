@@ -9742,3 +9742,75 @@ Left as they are:
   card it can repeat a mistake from their notes, and the scorer will then fail that
   mistake against the pack, which is the right result. In one real run it also filled
   a noted gap with a correct sentence of its own, despite "grounded ONLY".
+
+## 2026-11-05 - Mastery becomes a checklist the learner drives
+
+The owner passed the summary panel, then asked for the next step: bullet points with
+no explanation, each one checked as it is touched so the result is deterministic, and
+the learner driving instead of a scenario. Built as a new PR on top of the voice PR,
+which stays as passed. Needs migration 063 applied before a real session can work.
+
+What it does now:
+- The panel lists topic names only, 3 to 15 per card. Hugh opens with no scenario,
+  persona or question. The learner covers topics in any order and presses Finish
+  whenever they like, within 12 turns.
+- After each "Done talking", one Sonnet call compares what was just said with the
+  topics still open, and ticks those covered. Ticks never come off. Hugh replies in a
+  line: it may ask them to expand on what they just said, but won't raise the next
+  topic or give an answer.
+- Finish makes no model call. The score is the share of topics ticked, out of 10,
+  rounded down. A pass is still 7+, with no listed wrong belief left standing.
+- A course card's labels live beside each key point in the packs (1,591 of them).
+  `fingerprint()` doesn't hash a label, so the packs keep their source checks.
+- An older card with no pack uses its own checklist, built on first open, judged
+  against its notes. This replaces "a non-course card keeps every old behaviour" for
+  Mastery only.
+- `mastery_sessions` (migration 063) holds the ticks: server only, references never
+  words, gone after 7 days.
+
+What "deterministic" means here, stated plainly. Fixed: the list, the ticks once
+earned, the arithmetic, and that each tick must quote the learner, with the server
+checking the quote is in what they said. Not fixed: whether a sentence explains a
+topic correctly. That is still Sonnet's call. A tick means "said something correct and
+specific", stricter than the "touched" the owner first asked for, and agreed in the
+design.
+
+Gained: a pass can no longer be read aloud from the panel, there is no summary to wait
+for, and the list can't repeat a mistake from the learner's notes. The panel doesn't
+scroll, so the exception added to Rule 4 earlier today is gone again.
+Lost: no clarity or confidence scoring, the four scenarios and their picker, and
+feedback is now a plain statement of coverage. Existing scores and the card drawer's
+summary are untouched.
+
+Tested with real turns on the plan, writing nothing. Reading every label aloud,
+claiming to know it all, and telling the check to tick everything each earned nothing.
+Asking for the answer was declined. Messy but correct speech earned two ticks with no
+quote thrown out. A stated wrong belief was held, and taking it back cleared it.
+
+Found by looking, not by the tests:
+- The labels as first generated gave answers away ("Posterior mean as weighted
+  average"). About 105 were reworded: a repair pass banned the "X as Y" form, and every
+  rewrite was read by hand. The owner should still spot-check a sample.
+- At 768 wide, 13 of 15 labels wrapped and the last topic was cut off with no way to
+  reach it. The panel is now 320px from `md` up. All 186 real cards were measured at
+  that width; the tallest fits a window 600px high.
+- The result screen ran to 776px in a 497px space, with Try again and Back to board off
+  the bottom, because "Not covered" repeated the panel beside it and corrections
+  stacked. That list now shows only where the panel is hidden, one correction shows at
+  a time with a Next button (Rule 4's "gain pagination"), and the source is a link
+  rather than a raw URL. The card still stores the full text for its later summary.
+- The landing page said "Hugh asks on screen", and the board's Pro prompt promised "3
+  exchanges scored by AI". Both corrected.
+- `coverageFeedback` capped only the coverage sentence at 2000 characters. It now caps
+  the whole of what the card stores.
+
+Left as they are:
+- A failed save, on a practice run with a held wrong belief and the longest correction,
+  at 768x600, still pushes the buttons past the bottom. A held belief writes nothing on
+  an unmastered card, so a save can't fail there. Too rare to pay for.
+- Below `md` the panel is hidden during the session, so the learner sees only the
+  count. Mastery is a desktop surface.
+- Below 600px high the longest cards don't fit. Rule 4 rules out a scrollbar.
+- The conversation thread scrolls, as it always has. Rule 4 doesn't mention it.
+- About a cent a turn on a course card is an estimate, not a measurement. It is free on
+  the plan.
