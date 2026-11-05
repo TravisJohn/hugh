@@ -90,7 +90,7 @@ be impossible, not merely unlikely.
 **Out of scope**
 - Production, Vercel, preview deployments, and any other user.
 - Streaming. Hugh streams nothing to the browser today.
-- OpenAI and ElevenLabs on any subscription. The Codex ChatGPT-plan pilot is a separate track.
+- OpenAI on any subscription. The Codex ChatGPT-plan pilot is a separate track.
 - Offline scripts (replay harness, probes). They stay on the API key on purpose.
 - Restoring the parked provider seam (see §4.8).
 
@@ -146,22 +146,21 @@ How each call keeps behaving like the API version:
 - **Caching.** `cache_control` is dropped (Claude Code caches on its own). That
   doesn't matter at $0, but the adapter reports it rather than hiding it.
 
-### 4.2 OpenAI and ElevenLabs
-A Claude plan doesn't cover them. **Recommended: in subscription mode they are
-switched off**, each with its own message: "Off while Hugh runs on your Claude
-plan. Start with `npm run dev` to use it (paid)." The routes affected are Realtime
-mastery voice, `/api/tts` and the admin architecture assistant. (Notes Coach and
-Notes summarise were on this list until they moved to Claude: §15.) That is what "no tokens burning" means. The
-alternative, leaving them on the paid keys, is one flag away if you want it.
-Consequence, found in stage 4: scripted mastery can't start without its voice
-(§11).
+### 4.2 OpenAI
+A Claude plan doesn't cover it. **Recommended: in subscription mode it is switched
+off**, with its own message: "Off while Hugh runs on your Claude plan. Start with
+`npm run dev` to use it (paid)." The only route affected is the admin architecture
+assistant. (Notes Coach and Notes summarise were on this list until they moved to
+Claude: §15. Realtime mastery voice and `/api/tts` were too, until they were
+removed: §16.) That is what "no tokens burning" means. The alternative, leaving it
+on the paid key, is one flag away if you want it.
 
 ### 4.3 `logUsage` and the usage gate
 - **Zero cost without a migration.** Add `claude-haiku-4-5@subscription` and
   `claude-sonnet-4-6@subscription` to `MODEL_RATES` at $0. `logUsage` adds the
   suffix in one place, from `billingMode`. This follows the existing precedent
   of `gpt-realtime-mini-text`, a rate class that only ever appears in
-  `usage_logs.model`. Only Claude rows are relabelled: an OpenAI or voice row
+  `usage_logs.model`. Only Claude rows are relabelled: an OpenAI row
   keeps its own id whatever the mode, because the plan never pays for it.
 - **The project rules still hold.** Each route still names `MODEL` once. Every
   row is still priced at its own rate. Token counts stay honest, so the Usage
@@ -259,7 +258,7 @@ uses your plan allowance, not dollars.
 
 ## 7. Decisions (approved 2026-10-28)
 - **Approach:** CLI adapter with `claudeClient()`; the parked seam is not restored.
-- **OpenAI and ElevenLabs:** off in subscription mode.
+- **OpenAI and ElevenLabs:** off in subscription mode. (ElevenLabs was removed on 2026-11-05: §16.)
 - **Owner:** your test learner account.
 - **Contract bar:** 19 of 20 strict and 20 of 20 usable. Not met (16 and 19);
   accepted as measured on 2026-10-29 (§13).
@@ -359,20 +358,17 @@ that answered the final turn in 1.5 s, served by the plan.
   reason (`owner_only`, 403) and its own sentence; it never tells the person
   to contact support. A misconfigured flag throws there too, so the request
   is refused, never served.
-- **Paid features off.** Realtime voice, Hugh's
-  spoken voice (`/api/tts`) and the architecture assistant each answer 503:
-  "… is off while Hugh runs on your Claude plan, which covers Claude only.
-  Start Hugh with `npm run dev` to use it (paid)." The check runs before the
-  usage gate, so a refused request reserves nothing. A test reads every API
-  route and fails if one that reads `OPENAI_API_KEY` or `ELEVENLABS_API_KEY`
-  lacks the switch or checks the gate first. (It can't see a route that paid
-  through a `lib` module without naming the key; none does today.)
-- **Scripted mastery doesn't start on the plan.** Its persona voice is
-  ElevenLabs, and the mastery page treats a refused voice as a failed session,
-  so it returns to the setup screen after Hugh's first line. Decided
-  2026-10-29: the owner will handle voice separately; this mode doesn't change
-  the mastery page. Claude's own voice mode isn't available through Claude
-  Code or the API, so the plan can't supply a voice either.
+- **Paid features off.** The architecture assistant answers 503: "… is off while
+  Hugh runs on your Claude plan, which covers Claude only. Start Hugh with
+  `npm run dev` to use it (paid)." The check runs before the usage gate, so a
+  refused request reserves nothing. A test reads every API route and fails if one
+  that reads `OPENAI_API_KEY` lacks the switch or checks the gate first. (It can't
+  see a route that paid through a `lib` module without naming the key; none does
+  today.) Realtime voice and `/api/tts` answered the same way until they were
+  removed: §16.
+- **Scripted mastery didn't start on the plan until 2026-11-05.** Its persona voice
+  was ElevenLabs, and the page treated a refused voice as a failed session. Hugh's
+  lines now appear on screen instead: §16.
 - **What a learner sees when a plan call fails:**
 
   | Reason | Status | Message, in short |
@@ -579,3 +575,28 @@ of one question with the right option only on the fourth, Coach pressed again af
 a reply, a follow-up turn, Coach pressed with no thoughts, and a 7.3 MB image just
 under the cap. All five answered, every one on the plan. Not yet checked: how the
 Coach's replies compare with `gpt-4o` on real screenshots.
+
+## 16. Mastery on the plan (2026-11-05)
+
+Claude has no live voice: its features page lists no audio input, speech or realtime
+voice, and Claude Code's voice mode can't be reached from `claude -p`. So a spoken
+Hugh could not move to the plan. Mastery stopped speaking instead, on the live site
+as well, so there is one code path.
+
+- **What runs.** Hugh's lines appear on screen and the mic opens straight after each
+  one. `tracker/mastery/session` writes the lines and the score, already through
+  `claudeClient()` and the text path, so the plan needed no new code.
+- **Speech-to-text is unchanged.** It stays in the browser: Chrome and Edge only, and
+  the audio goes to Google, on the plan as on the API. The plan does not cover it
+  and is not asked to.
+- **What went.** Realtime mastery, ElevenLabs and `/api/tts`. They are on the
+  `parked/voice-before-claude` tag.
+- **What is still off on the plan.** The architecture assistant, which is OpenAI's.
+
+
+Checked with the real route on the real plan login, with the database faked, no API
+key in the environment and `fetch` set to throw: a course card through opening line,
+two replies and the score. Four plan calls, about 11 seconds, no network call. The
+lines came back in character with no markdown. The score was a fair 6, not passed,
+and so not written, as a first attempt that fails never is. Not yet checked: the same
+session in the browser, with a real mic.

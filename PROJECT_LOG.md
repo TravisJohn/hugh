@@ -9653,3 +9653,48 @@ the moment this ships: screenshots go to Anthropic now, not OpenAI.
 Found on the way: plan rows on other routes count only `input_tokens`, while the
 plan reports most input as cache writes, so they under-count against the allowance.
 It costs nothing at $0, and learners on the API are unaffected. Not fixed here.
+
+
+## 2026-11-05 - Hugh stops speaking: Realtime and ElevenLabs removed (second of two PRs)
+
+The second half of the design approved earlier today. Mastery no longer speaks:
+Hugh's lines appear on screen, the thread keeps the newest in view, a screen reader
+announces it, and the mic opens straight after. Scoring was already on Claude, so
+the plan needed no new code, and scripted Mastery runs there for the first time. The
+whole app moves, live site included. No migration.
+
+Removed: Realtime mastery (client, hook, realtime-session, realtime-usage, recap,
+`lib/mastery/realtime*`, `MASTERY_REALTIME_ENABLED`) and ElevenLabs (`/api/tts`,
+`useAudioPlayer`, `lib/personas.ts`, the character budget code, the `/admin` balance
+card, the health check, the package, its env vars, `scripts/gen-hype-lines.mjs`). It
+is all on the pushed tag `parked/voice-before-claude`, taken before the first change.
+Hugh now pays one provider beyond Claude: OpenAI, for the admin architecture
+assistant, which sends no learner data.
+
+Beyond the approved list, because nothing else called them:
+- `tracker/mastery/evaluate`, an unused second scorer. Scripted Mastery scores
+  through `tracker/mastery/session`.
+- `lib/mastery/criteria`, `result`, `caps`, `masteryInstructions`, and
+  `criteriaSyllabus`.
+- `reservationReleasedBy`. It existed to keep Realtime's hold, because Realtime's
+  spend was the browser's word. Every logged call now releases its own claim.
+
+Fixed because this is now the only path:
+- "Done talking" with nothing said left the mic off behind "Listening…". The phase
+  did not change, so nothing started it again. The mic now stays open.
+- A blocked or missing mic, or a failed speech service, looked like listening. Each
+  now has its own message and a retry (`lib/mastery/micProblem.ts`). Realtime had
+  this and scripted Mastery never did.
+- A failed reply showed nothing until the session ended.
+- The page recorded Mastery use only on the Realtime branch, so a learner's sessions
+  never reached Monitor.
+
+Kept on purpose: past voice spend in `/admin`, with the old rates. Retired usage
+names stay on the Mastery row of `/admin/features`, so history keeps its home; old
+`tts` rows from before 2026-08-24 also include the deleted interview loop. `reserve_tts`
+and `tts_chars` stay in the database. The static drill and focus mp3s stay.
+
+Decisions for later: the "Listen" card on `/home` is coming-soon and promises topics
+read aloud, which would now need a voice provider if it is ever built. The teaching
+view in `tools/architecture-dashboard/dashboard.html` still walks through the
+interview loop deleted in August; it was already stale and is left alone.
