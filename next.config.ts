@@ -11,9 +11,8 @@ const supabaseHost = supabaseUrl ? new URL(supabaseUrl).origin : "";
 // report-only CSP. Report-only so nothing breaks while we observe real
 // violations; promote to enforcing (`Content-Security-Policy`) once that's
 // been done. Directives below cover the browser's actual external surface:
-// Supabase (auth/storage), OpenAI Realtime (mastery WebRTC handshake — see
-// lib/mastery/realtimeSession.ts), and jsDelivr (Pyodide worker script +
-// DuckDB-WASM bundle — see lib/code/pyodide.worker.ts, lib/code/duckdbClient.ts).
+// Supabase (auth/storage) and jsDelivr (Pyodide worker script + DuckDB-WASM
+// bundle — see lib/code/pyodide.worker.ts, lib/code/duckdbClient.ts).
 const cspDirectives = (frameAncestors: "none" | "self") => [
   `default-src 'self'`,
   `base-uri 'self'`,
@@ -25,8 +24,8 @@ const cspDirectives = (frameAncestors: "none" | "self") => [
   `img-src 'self' data: blob:${supabaseHost ? ` ${supabaseHost}` : ""}`,
   `font-src 'self' data:`,
   `worker-src 'self' blob:`,
-  `connect-src 'self' https://api.openai.com https://cdn.jsdelivr.net${supabaseHost ? ` ${supabaseHost} wss://${new URL(supabaseUrl!).host}` : ""}`,
-  `media-src 'self' blob:`,
+  `connect-src 'self' https://cdn.jsdelivr.net${supabaseHost ? ` ${supabaseHost} wss://${new URL(supabaseUrl!).host}` : ""}`,
+  `media-src 'self'`,
 ].join("; ");
 
 // Framing policy is the one header that varies by path. Everything else is

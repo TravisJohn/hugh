@@ -59,9 +59,8 @@ is the shape of the file, never the values.
 - **npm** — `package-lock.json` is the lockfile. Use `npm ci`, not `npm install`,
   for a reproducible restore.
 - **A Supabase project** (Postgres + Auth + Storage).
-- **API keys:** Anthropic and ElevenLabs are required. OpenAI is optional and
-  gates the Notes Coach, Notes summarise, Realtime mastery and the local
-  architecture-dashboard assistant; those fail with a 503 when it is unset.
+- **API keys:** Anthropic is required. OpenAI is optional and gates only the
+  admin architecture assistant, which fails with a 503 when it is unset.
 
 ---
 
@@ -204,22 +203,15 @@ this tag. CI (`.github/workflows/ci.yml`) runs the same set, secretless, on
 
 ---
 
-## 6. Three feature flags that must stay off
+## 6. What must stay as it is
 
-All three are off in production deliberately. Do not flip any of them to "true"
-casually — each has an unresolved reason.
+Both of these are deliberate. Do not change either casually — each has an
+unresolved reason.
 
-1. **`MASTERY_REALTIME_ENABLED`** — the route gates spend and then never calls
-   `logUsage`, which is the bug `CLAUDE.md` names outright. Since migration 049
-   the reservation expires unconfirmed instead of converting to recorded spend,
-   so OpenAI Realtime voice minutes would go unrecorded. It has also never run
-   end to end. Two things must happen first: the route must log its usage, and
-   `/privacy` must disclose that enabling it sends learner **voice audio** to
-   OpenAI, which it currently does not say.
-2. **`DOCUMENT_UPLOAD_ENABLED`** — locked 2026-09-09 pending an answer to what
+1. **`DOCUMENT_UPLOAD_ENABLED`** — locked 2026-09-09 pending an answer to what
    happens when a learner uploads material they did not mean to send. The
    prompt-injection defence around it is unchanged and still in the code.
-3. **Dev-only `npm audit` findings** in `vitest`/`vite` are deliberately
+2. **Dev-only `npm audit` findings** in `vitest`/`vite` are deliberately
    untouched. Clearing them needs `npm audit fix --force`, a breaking upgrade,
    and they are not production exposure — CI audits with `--omit=dev`.
 

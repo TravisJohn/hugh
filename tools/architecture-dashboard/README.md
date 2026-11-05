@@ -56,8 +56,7 @@ are live from `architecture-data.json`.
 > grounded in the real repo.
 
 ### Admin view
-A tab that **embeds Hugh's real `/admin`** (user approve/block/plan, usage & cost,
-ElevenLabs quota) in an iframe, so this dashboard is one place for both
+A tab that **embeds Hugh's real `/admin`** (user approve/block/plan, usage & cost) in an iframe, so this dashboard is one place for both
 architecture and operations. Requires the Hugh dev/prod server running and your
 admin login; "Open in new tab" and "Reload" are provided, and there's a fallback
 note if the app blocks embedding. Target URL is `HUGH_ADMIN_URL`

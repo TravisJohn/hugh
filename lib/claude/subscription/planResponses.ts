@@ -81,7 +81,7 @@ export function paidServiceOffMessage(feature: string): string {
 }
 
 /**
- * For a route that pays OpenAI or ElevenLabs: null on the API, a refusal on
+ * For a route that pays OpenAI: null on the API, a refusal on
  * the plan. Called before the usage gate, so a refused request reserves
  * nothing. A misconfigured flag throws, as it does everywhere it is read.
  */

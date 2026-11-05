@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { micProblemFor, type MicProblem } from '@/lib/mastery/micProblem';
 
 // Full Web Speech API types live in types/speech.d.ts
 
@@ -8,6 +9,8 @@ interface UseSpeechRecognitionReturn {
   transcript:   string;
   isRecording:  boolean;
   isSupported:  boolean;
+  /** Why the mic stopped on its own. Cleared by the next start(). */
+  problem:      MicProblem | null;
   start:        () => void;
   stop:         () => void;
   reset:        () => void;
@@ -17,6 +20,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
   const [finalTranscript,   setFinalTranscript]   = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [isRecording,       setIsRecording]       = useState(false);
+  const [problem,           setProblem]           = useState<MicProblem | null>(null);
 
   // Ref mirrors isRecording so onend/onerror handlers always see the latest
   // value without needing it as a dependency (avoids recreation on each render).
@@ -69,9 +73,13 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      // no-speech and aborted are expected events, not real errors
-      if (event.error === 'no-speech' || event.error === 'aborted') return;
+      const found = micProblemFor(event.error);
+      if (!found) return;
       console.error('[useSpeechRecognition] error:', event.error);
+      // Stops onend restarting: each of these would fail again at once, forever.
+      isRecordingRef.current = false;
+      setIsRecording(false);
+      setProblem(found);
     };
 
     recognitionRef.current = recognition;
@@ -84,6 +92,7 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
 
   const start = useCallback(() => {
     if (!recognitionRef.current) return;
+    setProblem(null);
     isRecordingRef.current = true;
     setIsRecording(true);
     try { recognitionRef.current.start(); } catch { /* already started */ }
@@ -109,5 +118,5 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
     ? finalTranscript + interimTranscript
     : finalTranscript;
 
-  return { transcript, isRecording, isSupported, start, stop, reset };
+  return { transcript, isRecording, isSupported, problem, start, stop, reset };
 }

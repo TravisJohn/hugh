@@ -202,36 +202,27 @@ export const FEATURES: readonly FeatureDefinition[] = [
     id:    "mastery",
     label: "Prove mastery",
     kind:  "learner",
-    blurb: "Explain a milestone out loud — scripted for learners; Realtime is an administrator preview.",
+    blurb: "Explain a milestone out loud: Hugh's lines appear on screen, the learner answers by voice, and the server records the score.",
     routes: ["/mastery/[milestoneId]"],
-    apiRoutes: [
-      "tracker/mastery/evaluate",
-      "tracker/mastery/recap",
-      "tracker/mastery/session",
-      "tracker/mastery/realtime-session",
-      "tracker/mastery/realtime-usage",
-    ],
+    apiRoutes: ["tracker/mastery/session"],
     libDirs:       ["mastery"],
     componentDirs: [],
     tables: ["milestones", "milestone_entries"],
     usageFeatures: [
+      "mastery/session",
+      // Retired names. Nothing logs them now, but past rows still carry them,
+      // and a name no feature claims lands on /admin/features as unattributed.
+      // `tts` is here because Mastery was the last surface to speak; rows from
+      // before 2026-08-24 also include the deleted interview loop.
       "mastery/evaluate",
       "mastery/recap",
-      "mastery/session",
-      // Realtime voice. Gated at mint time under this same string since the
-      // flag was written; it only became a SPEND string once the usage report
-      // landed, because before that nothing was ever logged against it.
       "mastery/realtime",
+      "tts",
     ],
     activityFeatures: ["mastery"],
-    operations: [
-      "mastery.evaluate",
-      "mastery.recap",
-      "mastery.session",
-      "mastery.realtime",
-    ],
+    operations: ["mastery.session"],
     spendsTokens: true,
-    tests: 8,
+    tests: 4,
   },
   {
     id:    "code",
@@ -333,27 +324,6 @@ export const FEATURES: readonly FeatureDefinition[] = [
     // margin must not be what changes that. Asserted, not merely documented.
     spendsTokens: false,
     tests: 1,
-  },
-  {
-    id:    "voice",
-    label: "Voice (TTS)",
-    kind:  "internal",
-    blurb: "ElevenLabs speech, called by whichever surface is speaking.",
-    routes: [],
-    apiRoutes: ["tts"],
-    libDirs:       [],
-    componentDirs: [],
-    tables: [],
-    // `tts` rows are deliberately NOT credited to a learner-facing surface —
-    // they belong to whoever was speaking and cannot be attributed to one.
-    // `lib/monitor/features.ts` excludes them from the Usage view for exactly
-    // this reason; owning them here keeps the spend visible somewhere without
-    // mis-attributing it.
-    usageFeatures: ["tts"],
-    activityFeatures: [],
-    operations: ["voice.speak"],
-    spendsTokens: true,
-    tests: 0,
   },
   {
     id:    "monitor",

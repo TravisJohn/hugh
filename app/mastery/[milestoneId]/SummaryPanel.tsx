@@ -10,24 +10,30 @@ import { summaryMarkdownComponents, downloadMarkdown } from "@/lib/tracker/summa
 
 type Busy = "idle" | "generating" | "saving" | "regenerating";
 
+// Matches the `lg:block` on this panel's <aside> in MasteryClient. A panel nobody
+// can see must not spend a Sonnet call. Widening the window later still works: the
+// panel offers its Generate button.
+const PANEL_VISIBLE = "(min-width: 1024px)";
+
+// Fixed locale and zone: this renders on the server first, and a date in the
+// browser's own format would not match it, which makes React rebuild the page.
+const UPDATED_ON: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" };
+
 interface Props {
   milestoneId:    string;
   milestoneTitle: string;
   initialDoc:     string | null;
   initialDocAt:   string | null;
-  // During the live conversation the panel is a read-only guiding reference;
-  // editing / regenerating happen from the intro and recap screens.
+  // During the conversation the panel is a read-only guide; editing and
+  // regenerating happen from the intro and result screens.
   editable:       boolean;
-  // Lifts the latest saved doc to the parent (e.g. so a fresh recap screen shows
-  // the current summary). Optional — the panel is otherwise self-contained.
-  onDocChange?:   (doc: string, at: string) => void;
 }
 
 // The guiding "what you learned" summary. Self-contained: it generates the doc if
 // the card doesn't have one yet, and (when editable) lets the learner hand-edit or
 // ask Hugh to regenerate it. All persistence goes through the milestone summary route.
 export default function SummaryPanel({
-  milestoneId, milestoneTitle, initialDoc, initialDocAt, editable, onDocChange,
+  milestoneId, milestoneTitle, initialDoc, initialDocAt, editable,
 }: Props) {
   const [doc,   setDoc]   = useState<string | null>(initialDoc);
   const [docAt, setDocAt] = useState<string | null>(initialDocAt);
@@ -35,18 +41,21 @@ export default function SummaryPanel({
   const [error, setError] = useState<string | null>(null);
   const [mode,  setMode]  = useState<"view" | "edit">("view");
   const [draft, setDraft] = useState("");
+  // The route answers 200 with `saved: false` when Claude wrote the document but
+  // the database would not take it. It is shown anyway, because it is already paid
+  // for, and saving it again goes through the PUT so it is not billed twice.
+  const [unsaved, setUnsaved] = useState(false);
 
   const genRanRef = useRef(false);
 
   function applyDoc(nextDoc: string, at: string) {
     setDoc(nextDoc);
     setDocAt(at);
-    onDocChange?.(nextDoc, at);
   }
 
   // Generate the summary once if the card doesn't have one yet.
   useEffect(() => {
-    if (doc || genRanRef.current) return;
+    if (doc || genRanRef.current || !window.matchMedia(PANEL_VISIBLE).matches) return;
     genRanRef.current = true;
     void generate("generating");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,11 +66,12 @@ export default function SummaryPanel({
     setError(null);
     try {
       const res = await fetch(`/api/tracker/milestones/${milestoneId}/summary`, { method: "POST" });
-      const d   = (await res.json().catch(() => ({}))) as { summaryDoc?: string; generatedAt?: string; error?: string };
+      const d   = (await res.json().catch(() => ({}))) as { summaryDoc?: string; generatedAt?: string; saved?: boolean; error?: string };
       if (!res.ok || !d.summaryDoc) {
         setError(d.error ?? "Couldn't generate the summary.");
       } else {
         applyDoc(d.summaryDoc, d.generatedAt ?? new Date().toISOString());
+        setUnsaved(d.saved === false);
       }
     } catch {
       setError("Couldn't reach the summary service.");
@@ -69,8 +79,7 @@ export default function SummaryPanel({
     setBusy("idle");
   }
 
-  async function save() {
-    const next = draft.trim();
+  async function save(next: string) {
     if (!next) { setError("Summary can't be empty."); return; }
     setBusy("saving");
     setError(null);
@@ -85,6 +94,7 @@ export default function SummaryPanel({
         setError(d.error ?? "Couldn't save your changes.");
       } else {
         applyDoc(d.summaryDoc, d.generatedAt ?? new Date().toISOString());
+        setUnsaved(false);
         setMode("view");
       }
     } catch {
@@ -111,7 +121,7 @@ export default function SummaryPanel({
             <p className="truncate text-xs font-semibold uppercase tracking-widest text-slate-500">Your summary</p>
             {docAt && (
               <p className="truncate text-[11px] text-slate-600">
-                Updated {new Date(docAt).toLocaleDateString()}
+                Updated {new Date(docAt).toLocaleDateString("en-GB", UPDATED_ON)}
               </p>
             )}
           </div>
@@ -126,7 +136,7 @@ export default function SummaryPanel({
         )}
       </div>
 
-      {/* Panel body — the ONE place allowed to scroll internally (rule-4 exception, like /notes) */}
+      {/* Panel body: scrolls inside itself, the exception Rule 4 names for this panel. */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
         {busy === "generating" ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
@@ -152,7 +162,7 @@ export default function SummaryPanel({
                 <X size={12} /> Cancel
               </button>
               <button
-                onClick={() => void save()}
+                onClick={() => void save(draft.trim())}
                 disabled={busy === "saving"}
                 className="flex items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-violet-500 disabled:opacity-50"
               >
@@ -167,6 +177,22 @@ export default function SummaryPanel({
                 <Loader2 size={12} className="animate-spin" /> Regenerating…
               </div>
             )}
+            {unsaved && (
+              <div role="alert" className="mb-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2.5">
+                <p className="text-xs leading-relaxed text-amber-100/90">
+                  This summary couldn&apos;t be saved. It won&apos;t be here when you reopen the card.
+                </p>
+                <button
+                  onClick={() => void save(doc)}
+                  disabled={working}
+                  className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold text-amber-200 transition-colors hover:text-amber-50 disabled:opacity-50"
+                >
+                  {busy === "saving" ? <Loader2 size={12} className="animate-spin" /> : <RotateCw size={12} />}
+                  Try saving it again
+                </button>
+              </div>
+            )}
+            {error && <p role="alert" className="mb-2 text-xs text-red-400">{error}</p>}
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={summaryMarkdownComponents}>
               {doc}
             </ReactMarkdown>

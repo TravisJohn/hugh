@@ -11,10 +11,8 @@ import { RETENTION_DAYS } from "@/lib/retention";
 // things untrue here (advertising, analytics partners, data sharing) and omit
 // the things that matter and are genuinely unusual — that an uploaded
 // screenshot is read by a vision model, and that voice is transcribed by
-// Google via the browser — or, with MASTERY_REALTIME_ENABLED, streamed straight
-// from the browser to OpenAI. The OpenAI wording is conditional so the page stays
-// true whichever way that flag is set; if the recap route ever starts persisting
-// the transcript, "What Hugh does not store" becomes false.
+// Google via the browser. If a route ever starts keeping a recording or a
+// transcript, "What Hugh does not store" becomes false.
 //
 // Rule 4 exception: this scrolls, for the same reason the landing page does.
 // It is a document, not a teaching surface.
@@ -71,8 +69,8 @@ export default function PrivacyPage() {
             enforced.</p>
           <p><strong className="text-slate-300">What Hugh does not store.</strong> Your voice.
             When you speak in the Prove-it exercise, Hugh keeps no recording, and the
-            transcript of a live voice session is used once to write your recap and then
-            discarded.</p>
+            text of what you said is used to continue and score the conversation and is
+            then discarded. Hugh keeps your score and its feedback.</p>
         </Section>
 
         <Section title="Who else processes it">
@@ -85,23 +83,13 @@ export default function PrivacyPage() {
           <ul className="mt-3 space-y-3">
             <li><strong className="text-slate-300">Anthropic (Claude)</strong> — receives your
               topic, your answers, diary entries and tutor messages, to generate and teach
-              your track — and, after a live voice session, the text transcript of that
-              conversation, to write your recap. When you ask the Coach or ask for a summary in
+              your track — and the text of what you say in the Prove-it exercise, to reply to
+              you and score the conversation. When you ask the Coach or ask for a summary in
               Notes, it also receives that screenshot and the thoughts you wrote beside it, so a
               vision model can read and comment on them. Anthropic states it does not use
               commercial API data to train its models by default.</li>
-            <li><strong className="text-slate-300">OpenAI</strong> — if the live voice version of
-              the Prove-it exercise is switched on, OpenAI receives{" "}
-              <strong className="text-slate-300">your voice</strong>:
-              your browser streams the audio of the conversation directly to OpenAI, which
-              transcribes it and replies aloud, together with the card&apos;s summary or your
-              diary notes for that card so the coach knows what you studied. OpenAI states
-              that API data is not used to train its models unless you opt in, and that it
-              may retain it for up to 30 days for abuse monitoring.</li>
-            <li><strong className="text-slate-300">ElevenLabs</strong> — receives the text Hugh
-              speaks aloud, to turn it into audio. It receives text, not your voice.</li>
             <li><strong className="text-slate-300">Google</strong> — when you speak to Hugh in the
-              standard Prove-it exercise (not the live voice version above), transcription uses your browser&apos;s built-in speech
+              Prove-it exercise, transcription uses your browser&apos;s built-in speech
               recognition. In Chrome that is not processed on your device: your browser sends
               the audio to Google to be transcribed. Hugh receives only the text back.</li>
             <li><strong className="text-slate-300">Supabase and Vercel</strong> — host the database

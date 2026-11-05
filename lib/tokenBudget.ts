@@ -32,10 +32,6 @@ export const DEFAULT_MONTHLY_TOKEN_LIMIT = 100_000;
  */
 export const PRO_MONTHLY_TOKEN_LIMIT = 1_000_000;
 
-/** Separate monthly character allowances for ElevenLabs, enforced for every plan. */
-export const FREE_MONTHLY_TTS_CHARS = 20_000;
-export const PRO_MONTHLY_TTS_CHARS = 100_000;
-
 /**
  * Requests per window, per user. Applies to every plan including admin: this
  * is abuse protection, not budgeting, and an admin account with a runaway
@@ -87,12 +83,6 @@ export function tokenLimitFor(profile: QuotaProfile | null | undefined): number 
   return profile?.token_limit ?? DEFAULT_MONTHLY_TOKEN_LIMIT;
 }
 
-export function ttsCharLimitFor(profile: QuotaProfile | null | undefined): number {
-  return profile?.is_admin || profile?.plan === "pro"
-    ? PRO_MONTHLY_TTS_CHARS
-    : FREE_MONTHLY_TTS_CHARS;
-}
-
 /** First instant of the current calendar month, as ISO. */
 export function startOfMonth(now: Date = new Date()): string {
   const d = new Date(now);
@@ -124,7 +114,7 @@ export function periodStart(
  * Reserving is a bet made before the model replies. The bet must be high
  * enough that a burst of concurrent requests cannot slip a large real spend
  * past a cap; it lasts only until the real spend lands in `tokens_spent`
- * (`reservationReleasedBy`). Over-reserving briefly is therefore the safe
+ * (migration 062). Over-reserving briefly is therefore the safe
  * direction, and matches the stance `lib/pricing.ts` takes on unknown models:
  * over-state, never hide.
  *
@@ -144,8 +134,6 @@ export const RESERVE_ESTIMATES: Record<string, number> = {
   "learn/chat":                 6_000,
   "learn/summarize":            6_000,
   "review/quiz":                6_000,
-  "mastery/evaluate":           6_000,
-  "mastery/realtime":           6_000,
 
   // Vision — a screenshot dominates the input.
   "notes/coach":                8_000,
@@ -155,7 +143,6 @@ export const RESERVE_ESTIMATES: Record<string, number> = {
   "tracker/points":             3_000,
   "tracker/summary":            3_000,
   "tracker/verify":             2_000,
-  "mastery/recap":              3_000,
   "mastery/session":            2_000,
   "cloud/chat":                 3_000,
   "code/chat":                  3_000,
@@ -165,10 +152,6 @@ export const RESERVE_ESTIMATES: Record<string, number> = {
   // route on 2026-09-04, so 500 under-reserved; a reservation that is under
   // the real cost lets a burst overshoot the cap by the difference.
   "learn/topic-domain":         1_200,
-
-  // TTS spends ElevenLabs characters, not tokens. The shared gate enforces its
-  // request rate; reserve_tts separately enforces the monthly character cap.
-  "tts":                            0,
 };
 
 /**
@@ -188,33 +171,11 @@ export function reserveEstimateFor(feature: string): number {
  *
  * Trivial by design. It is a plain sum rather than a reconciliation against
  * what was reserved: the real spend is always added in full, and giving the
- * claim back is a separate step (`reservationReleasedBy`), so no estimate can
+ * claim back is a separate step (migration 062), so no estimate can
  * shrink what the running total says was spent.
  */
 export function recordedTokens(tokensIn: number, tokensOut: number): number {
   return Math.max(0, tokensIn) + Math.max(0, tokensOut);
-}
-
-/**
- * Spend the server never saw. A Realtime call runs browser-to-OpenAI and the
- * browser reports what it spent afterwards, so that figure is a claim, not a
- * measurement. If it could release a reservation, a learner at the cap could
- * mint a session, report one token, and mint again: live credentials that spend
- * real money, with nothing held against any of them.
- */
-const BROWSER_REPORTED_FEATURES = new Set(["mastery/realtime"]);
-
-/**
- * Which reservation a logged call gives back: the oldest live one under its own
- * feature (migration 062), or none. Without this a call counted twice until its
- * reservation expired — once as real spend, once as the estimate — and a chat's
- * estimate is several times what it spends.
- *
- * Matching on the name is why a route must gate and log under one name
- * (`lib/usageNames.test.ts`). A reservation nothing releases still expires.
- */
-export function reservationReleasedBy(feature: string): string | null {
-  return BROWSER_REPORTED_FEATURES.has(feature) ? null : feature;
 }
 
 /**

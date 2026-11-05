@@ -35,10 +35,7 @@ const EVERY_OPERATION: Record<OperationId, true> = {
   "topic.gate":       true,
   "quiz.generate":    true,
   "quiz.submit":      true,
-  "mastery.evaluate": true,
-  "mastery.recap":    true,
   "mastery.session":  true,
-  "mastery.realtime": true,
   "ask.chat":         true,
   "ask.summarize":    true,
   "ask.verify":       true,
@@ -48,7 +45,6 @@ const EVERY_OPERATION: Record<OperationId, true> = {
   "cloud.chat":       true,
   "notes.coach":      true,
   "notes.summarize":  true,
-  "voice.speak":      true,
   "answers.forget":   true,
 };
 
@@ -139,7 +135,7 @@ describe("failureIsSilent — the failures nobody sees", () => {
     expect(SILENT_FAILURE_IDS).not.toContain("track.build");
     expect(SILENT_FAILURE_IDS).not.toContain("track.retry");
     expect(SILENT_FAILURE_IDS).not.toContain("quiz.generate");
-    expect(SILENT_FAILURE_IDS).not.toContain("mastery.evaluate");
+    expect(SILENT_FAILURE_IDS).not.toContain("mastery.session");
     expect(SILENT_FAILURE_IDS).not.toContain("ask.chat");
     // The answers deletion reports both of its failure stages to the learner
     // and changes nothing when the first one fails, so a silent half-delete

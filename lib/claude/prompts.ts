@@ -660,10 +660,15 @@ export function masterySummaryPrompt(params: {
   milestoneSummary: string;
   points:           Array<{ text: string; covered: boolean }>;
   diaryEntries:     Array<{ title: string | null; body: string; gap: string | null }>;
+  /**
+   * Whether the learner has passed. Not the same as having a score: older rows
+   * can hold a score on a card that was never passed.
+   */
+  mastered:         boolean;
   masteryScore:     number | null;
   masteryFeedback:  string | null;
 }): string {
-  const { topic, milestoneTitle, milestoneSummary, points, diaryEntries, masteryScore, masteryFeedback } = params;
+  const { topic, milestoneTitle, milestoneSummary, points, diaryEntries, mastered, masteryScore, masteryFeedback } = params;
 
   const pointsBlock = points.length > 0
     ? points.map(p => `- [${p.covered ? "covered" : "partial"}] ${p.text}`).join("\n")
@@ -679,7 +684,20 @@ export function masterySummaryPrompt(params: {
     ? `Mastery score: ${masteryScore}/10.${masteryFeedback ? ` Hugh's verdict: ${masteryFeedback}` : ""}`
     : "(mastery not yet scored)";
 
-  return `You are Hugh, a supportive learning coach. Write a concise, well-structured "what you learned" summary document for a learner who has just mastered a milestone. It should read like a keepsake they can revisit — celebratory but substantive, grounded ONLY in the material below (do not invent facts they didn't engage with).
+  // The same document has two moments. Mastery shows it beside the conversation
+  // before any pass, and it is saved on the card, so that version must claim
+  // nothing the learner has not done yet. An old score or verdict stays out of
+  // it for the same reason.
+  const brief = mastered
+    ? `"what you learned" summary document for a learner who has just mastered a milestone. It should read like a keepsake they can revisit — celebratory but substantive`
+    : `"what you've learned so far" study guide for a learner who is about to explain a milestone out loud. They have not done that yet, so do not congratulate them or say they have mastered or explained it. They will glance at it while they talk, so keep it quick to scan`;
+  const masterySection = mastered ? `${masteryBlock}\n\n` : "";
+  const ideasHeading   = mastered ? "What you now understand" : "The key ideas";
+  const closingSection = mastered
+    ? `\n- "## Mastery" — one sentence noting they professed this verbally${masteryScore != null ? " and their score" : ""}.`
+    : "";
+
+  return `You are Hugh, a supportive learning coach. Write a concise, well-structured ${brief}, grounded ONLY in the material below (do not invent facts they didn't engage with).
 
 Subject area: "${topic}"
 Milestone: "${milestoneTitle}"
@@ -693,48 +711,14 @@ The learner's own diary notes for this milestone:
 ${diaryBlock}
 """
 
-${masteryBlock}
-
-Write the document in GitHub-flavoured Markdown with this structure:
+${masterySection}Write the document in GitHub-flavoured Markdown with this structure:
 - A top-level heading: the milestone title.
 - A short 1-2 sentence intro framing what they set out to learn.
-- "## What you now understand" — 3-6 bullet points synthesising the key ideas they genuinely engaged with (draw from their notes and the covered checklist items). Be specific.
+- "## ${ideasHeading}" — 3-6 bullet points synthesising the key ideas they genuinely engaged with (draw from their notes and the covered checklist items). Be specific.
 - "## In your own words" — 1-2 short paragraphs weaving their diary insights into a coherent narrative.
-- If any gaps were noted, a "## Watch-outs" section listing them briefly as things to keep sharp.
-- "## Mastery" — one sentence noting they professed this verbally${masteryScore != null ? " and their score" : ""}.
+- If any gaps were noted, a "## Watch-outs" section listing them briefly as things to keep sharp.${closingSection}
 
 Keep it under ~350 words. Warm, clear, second person ("you"). Respond with ONLY the markdown document — no code fences, no preamble.`;
-}
-
-// ── Guided Reflection recap (Phase 30 — UNMARKED) ────────────────────────
-// After an ungraded reflection conversation, Hugh writes a short, warm recap of
-// what was discussed. It is NOT a grade: no score, no pass/fail, no verdict —
-// just a mirror of the conversation plus a gentle nudge on anything left open.
-export function masteryRecapPrompt(params: {
-  milestoneTitle: string;
-  transcript:     Array<{ role: "coach" | "learner"; text: string }>;
-}): string {
-  const { milestoneTitle, transcript } = params;
-
-  const convo = transcript.length > 0
-    ? transcript.map(t => (t.role === "coach" ? `Coach: ${t.text}` : `Learner: ${t.text}`)).join("\n")
-    : "(No conversation was captured.)";
-
-  return `You are Hugh, a supportive learning coach. The learner just finished an UNGRADED, spoken reflection about "${milestoneTitle}". Write a short, warm recap of what THEY reflected on.
-
-This is NOT an assessment. Do NOT score them, do NOT say whether they passed, failed, mastered, or fell short, and do NOT rate their understanding. It is a friendly mirror of the conversation, grounded ONLY in what they actually said below — never invent points they didn't raise.
-
-Transcript:
-"""
-${convo}
-"""
-
-Write 2-4 short sentences (plain prose, no headings, no bullets, no markdown):
-- Reflect back the main things they talked through, in their own spirit.
-- If a gap or open question surfaced, mention it gently as something worth revisiting — as an invitation, never a judgement.
-- End with a light, encouraging note.
-
-If the transcript is essentially empty, say warmly that there wasn't much to reflect on this time and invite them back. Respond with ONLY the recap text — no preamble.`;
 }
 
 // ── Learning goal refinement (5-whys) ────────────────────────────────────

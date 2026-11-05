@@ -141,8 +141,8 @@ export default async function LandingPage() {
                 Start speaking about it
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
-                Your AI interviewer guides the discussion. Answer by voice —
-                just like a real conversation.
+                Hugh asks on screen and you answer out loud, just like a
+                real conversation.
               </p>
             </div>
 

@@ -10,8 +10,14 @@ interviewed the founder.
 It began as a mock-interview trainer. That loop was deleted on 2026-08-24
 along with the standalone `/tracker` board — both were legacy, and the second
 had become the unhardened path into track generation. **The learning loop is
-the product.** Its voice (`/api/tts`, `lib/personas.ts`, `useAudioPlayer`,
-`useSpeechRecognition`) was never interview-only and survives in `/mastery`.
+the product.** Its mic input (`useSpeechRecognition`) was never interview-only
+and survives in `/mastery`.
+
+Hugh stopped speaking on 2026-11-05. Realtime voice and ElevenLabs were both
+removed: Claude has no live voice, and the owner no longer wanted the spoken
+lines. In `/mastery`, Hugh's lines appear on screen and the learner answers out
+loud. The old path is on the `parked/voice-before-claude` tag. Past voice spend
+stays in `/admin`, so `tts_chars`, `reserve_tts` and the old rates stay too.
 
 `/learn` — a second, standalone "Focused Learning" chat with its own topic
 picker — was deleted on 2026-08-31 for the same reason. Nothing in the app
@@ -28,7 +34,7 @@ BY its goal. Do not reintroduce a chat surface outside `/study/[goalId]/ask`.
 | `/home/learn` → `/study/[goalId]` | Choose a course (one group at a time), then the goal's Kanban track |
 | `/study/[goalId]/ask` | Ask Hugh — tutor chat, diary, focus timer |
 | `/review/[milestoneId]` | Diary-grounded review quiz |
-| `/mastery/[milestoneId]` | Prove mastery out loud (scripted, or Realtime voice behind a flag) |
+| `/mastery/[milestoneId]` | Prove mastery out loud: Hugh's lines on screen with the learner's summary beside them, the learner answers by mic, the server records the score |
 | `/code/start` · `/code/drill` · `/code` | Pattern map, timed fluency drills, free-form Python sandbox |
 | `/cases` · `/cases/lab` | The Case Room (judgment cases) · Case Lab (long-form + CSV) |
 | `/cloud` | Cloud-services reference — assistant, margin notes, and a review list |
@@ -46,9 +52,8 @@ pillar's scope changes.
 | Frontend + Backend | Next.js 16 (App Router, Turbopack), React 19, deployed on Vercel |
 | Database + Auth + Storage | Supabase (PostgreSQL + Supabase Auth) |
 | LLM — Anthropic | Claude API (model per route — see Model Selection below) |
-| LLM — OpenAI | Realtime mastery voice, admin architecture assistant |
-| TTS | ElevenLabs API |
-| STT | Web Speech API (Chrome/Edge only) — a browser API, **not on-device**: Chrome sends the audio to Google. Realtime mastery uses OpenAI's transcription instead |
+| LLM — OpenAI | Admin architecture assistant only |
+| STT | Web Speech API (Chrome/Edge only) — a browser API, **not on-device**: Chrome sends the audio to Google |
 | In-browser Python | Pyodide (`lib/code/pyodide.worker.ts`) — code drills and sandbox |
 | In-browser SQL | DuckDB-WASM (`lib/code/duckdbClient.ts`) |
 | Editor | CodeMirror (`@uiw/react-codemirror`) |
@@ -69,8 +74,7 @@ bulk of Claude spend, so cheap routes should use the cheap model:
   short, low-stakes generation: similarity checks, hints, 5-whys refinement
   questions, mastery **open**/**respond** (in-character conversational lines),
   learn/chat, cloud/chat, code/chat, the topic-domain gate.
-- **OpenAI** — Realtime mastery voice, and `gpt-4o` for the admin architecture
-  assistant.
+- **OpenAI** — `gpt-4o` for the admin architecture assistant, and nothing else.
 
 When in doubt, default to Sonnet. Only move a route to Haiku after confirming the
 output quality holds.
@@ -98,9 +102,7 @@ budget and then spends against it invisibly.
 - A route gates and logs under **one `feature` name**. Logging a call gives its
   reservation back (migration 062); with a mismatch the claim stays held for its
   full 150 s, on top of the real spend, and learners are refused early
-  (`lib/usageNames.test.ts`). Spend the server never saw gives nothing back:
-  `reservationReleasedBy` in `lib/tokenBudget.ts` keeps Realtime's hold, because
-  those figures are the browser's word.
+  (`lib/usageNames.test.ts`).
 - Adding a Claude model also means adding its `@subscription` twin at $0 (a test
   fails otherwise) — see local plan mode below.
 
@@ -115,7 +117,7 @@ build with the flag set fails. What it asks of new code:
   on the API key.)
 - A route that calls Claude shows plan failures through `textBudgetResponse`
   or `planFailureResponse`.
-- A route that pays OpenAI or ElevenLabs calls `paidServiceOffResponse` before
+- A route that pays OpenAI calls `paidServiceOffResponse` before
   its usage gate: the plan covers Claude only.
 
 Guard tests read the routes and fail when any of these is missing.
@@ -154,15 +156,12 @@ full list with notes on what each one gates.
 
 ```
 ANTHROPIC_API_KEY               # required
-ELEVENLABS_API_KEY              # required
-ELEVENLABS_VOICE_ID_1/2/3       # required
 NEXT_PUBLIC_SUPABASE_URL        # required, public by design
 NEXT_PUBLIC_SUPABASE_ANON_KEY   # required, public by design
 SUPABASE_SERVICE_ROLE_KEY       # required, bypasses RLS — never expose
-OPENAI_API_KEY                  # optional — gates Realtime mastery, admin architecture assistant
+OPENAI_API_KEY                  # optional — gates the admin architecture assistant
 OPENAI_MODEL                    # optional — admin architecture assistant
 HUGH_ADMIN_URL                  # optional — admin architecture assistant
-MASTERY_REALTIME_ENABLED        # optional flag — Realtime voice mastery
 SUPABASE_ACCESS_TOKEN           # optional — only for scripts/run-migration.ts
 HUGH_SUBSCRIPTION_OWNER_ID      # optional — local plan mode only: the one user it serves
 HUGH_TEST_USER_PASSWORD         # optional — local test scripts only: the test learner's password
@@ -172,7 +171,7 @@ HUGH_TEST_USER_PASSWORD         # optional — local test scripts only: the test
 ```
 app/                        # Pages and API routes only — no business logic here
   api/                      # admin · architecture · auth · cases · cloud · code
-                            # dashboard · learn · notes · tracker · tts
+                            # dashboard · learn · notes · tracker
   (auth)/                   # login, signup
   home/                     # activity grid + /home/learn topic picker
   study/[goalId]/           # track board, ask page
@@ -196,13 +195,12 @@ types/                      # Shared TypeScript interfaces
 utils/                      # Pure helpers
 supabase/migrations/        # Numbered SQL migration files
 tools/architecture-dashboard/  # Local admin dashboard (built by predev/prebuild)
-public/personas/            # Persona avatar images
 ```
 
 ## Architecture Rules — Read These First
 
 ### 1. Never call external APIs from the client
-Anthropic, OpenAI, and ElevenLabs are server-side only. All calls go through
+Anthropic and OpenAI are server-side only. All calls go through
 `/app/api/**` routes. The browser never sees these API keys.
 
 ### 2. One source of truth for session state
@@ -251,6 +249,13 @@ These are the only two screens permitted to scroll inside their panes, and the
 exception is drawn at *records tools*, not at "screens with a lot on them". A
 teaching surface that outgrows the viewport should lose padding or gain
 pagination — never a scrollbar.
+
+**One panel is the exception to that: Mastery's summary.** A blank canvas is hard
+to start talking from, so on 2026-11-05 the owner put the learner's summary beside
+the conversation (`app/mastery/[milestoneId]/SummaryPanel.tsx`). A summary has no
+fixed length, so the panel's body scrolls inside itself while the page stays
+locked. Below `lg` the panel is hidden rather than squeezed. This grants nothing to
+any other teaching surface.
 
 Those panes are also user-resizable and individually collapsible. The geometry
 lives in `lib/notes/layout.ts` (pure, unit-tested) and is driven by
@@ -306,8 +311,7 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   `learning_goals`, so that column is display only.
 - **A course card is judged against its syllabus.** `lib/packs/grounding.ts`
   is the one place a card's pack is read. Ask (`learn/chat`, given the
-  card's `milestoneId`), scripted mastery, the Realtime reflection, the diary
-  check and the review quiz all take the card's syllabus from it, rendered
+  card's `milestoneId`), mastery, the diary check and the review quiz all take the card's syllabus from it, rendered
   by `renderCardSyllabus` or as plain data; none of them imports a pack. On
   a course card, mastery criteria come from the pack's key points, never
   `learning_points`. A listed wrong belief left uncorrected fails the card
@@ -328,12 +332,6 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   migrations 052 and 059. The windows live in `lib/retention.ts`, which `/privacy` renders
   and a test holds equal to the SQL — adding an expiry means changing both.
 
-## Persona Configuration
-Personas are a static config (not in DB), now used by scripted mastery for its
-TTS voice. Three personas in `lib/personas.ts`, each with `id`, `name`, `role`,
-`company`, `voiceId` (maps to `ELEVENLABS_VOICE_ID_1/2/3`), `avatar`. One is
-picked at random per mastery session.
-
 ## Key Design Decisions
 | Decision | Choice | Reason |
 |---|---|---|
@@ -344,6 +342,8 @@ picked at random per mastery session.
 | Review quizzes | Must quote verified diary lines | A quiz on untaught material is noise |
 | Cases | Static JSON, zero runtime AI | Fast, cheap, portable; AI is used to author them offline |
 | Cost accounting | Per-row, per-model | Models differ by up to 20×; one blended rate mis-states spend |
+| Mastery's voice | Hugh's lines on screen, the learner answers by mic | Claude has no live voice, and one scored path runs the same on the plan and the live site |
+| Mastery's cheat sheet | The learner's full summary sits beside the conversation, read-only while they talk | A blank canvas is hard to start from. The owner accepted on 2026-11-05 that a pass at 7+ may therefore have been read out, and that a card with no summary yet costs a Sonnet call and a short wait. Do not tighten or hide it without asking. Before a pass the summary is written as a guide that claims nothing; after one, as a keepsake (`mastery_validated` decides, not whether a score exists) |
 
 ## DO NOT Build (deferred)
 - Voice analysis: filler words, speech pace, volume, confidence scoring
@@ -356,10 +356,10 @@ picked at random per mastery session.
 - Widening the topic gate beyond data/analytics — that's a separate app
 
 ## DO NOT Do (ever)
-- Call Anthropic, OpenAI, or ElevenLabs from client components
+- Call Anthropic or OpenAI from client components
 - Use the `any` TypeScript type
 - Add scrollable containers to a teaching screen (see Rule 4 for the two
-  records-tool exceptions)
+  records-tool exceptions and Mastery's summary panel)
 - Hardcode API keys, or a model string in more than one place per route
 - Spend tokens without calling `logUsage` with the model
 - Swallow a Supabase `error` — an unchecked write is how a "ready" track shipped

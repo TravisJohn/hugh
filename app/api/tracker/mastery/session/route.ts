@@ -155,8 +155,8 @@ Generate ONE natural opening line that:
 3. Is 1-2 sentences, conversational, authentic to your role as ${persona}
 4. Does NOT start with "As a..." or similar role announcements
 
-Return ONLY the spoken line. No quotes, no stage directions, no labels.
-This line is read aloud — use plain text only, no markdown, asterisks, or emphasis markers.`;
+Return ONLY the line itself. No quotes, no stage directions, no labels.
+This line is shown on screen as plain text — no markdown, asterisks, or emphasis markers.`;
 
   } else if (phase === "respond") {
     const conversationText = buildConversationText(messages);
@@ -182,8 +182,8 @@ Generate ONE natural follow-up line that:
 3. Is 1-2 sentences, stays in character as ${persona}
 4. Keeps the conversation moving forward naturally
 
-Return ONLY the spoken line. No quotes, no stage directions.
-This line is read aloud — use plain text only, no markdown, asterisks, or emphasis markers.`;
+Return ONLY the line itself. No quotes, no stage directions.
+This line is shown on screen as plain text — no markdown, asterisks, or emphasis markers.`;
 
   } else if (phase === "evaluate") {
     const conversationText = buildConversationText(messages);

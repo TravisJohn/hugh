@@ -7,14 +7,10 @@ import {
   RATE_LIMIT_WINDOW_SECONDS,
   RESERVE_TTL_SECONDS,
   tokenLimitFor,
-  ttsCharLimitFor,
-  FREE_MONTHLY_TTS_CHARS,
-  PRO_MONTHLY_TTS_CHARS,
   startOfMonth,
   periodStart,
   reserveEstimateFor,
   recordedTokens,
-  reservationReleasedBy,
   accountAllowed,
   statusForDenial,
   messageForDenial,
@@ -52,15 +48,6 @@ describe("tokenLimitFor", () => {
     // A dropped profile read must not become a bypass.
     expect(tokenLimitFor(null)).toBe(DEFAULT_MONTHLY_TOKEN_LIMIT);
     expect(tokenLimitFor(undefined)).toBe(DEFAULT_MONTHLY_TOKEN_LIMIT);
-  });
-});
-
-describe("ttsCharLimitFor", () => {
-  it("caps every plan and never treats a missing profile as unlimited", () => {
-    expect(ttsCharLimitFor({ plan: "free" })).toBe(FREE_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor(null)).toBe(FREE_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor({ plan: "pro" })).toBe(PRO_MONTHLY_TTS_CHARS);
-    expect(ttsCharLimitFor({ is_admin: true })).toBe(PRO_MONTHLY_TTS_CHARS);
   });
 });
 
@@ -127,16 +114,6 @@ describe("reserveEstimateFor", () => {
     }
   });
 
-  it("reserves zero for tts, which spends characters rather than tokens", () => {
-    // The shared gate enforces its rate. reserve_tts enforces the character cap.
-    expect(reserveEstimateFor("tts")).toBe(0);
-  });
-
-  it("does not mistake a registered zero for an unregistered feature", () => {
-    // `?? fallback` would be correct here but `|| fallback` would not, and the
-    // difference is 4,000 phantom tokens on every TTS request.
-    expect(reserveEstimateFor("tts")).not.toBe(DEFAULT_RESERVE_ESTIMATE);
-  });
 });
 
 describe("recordedTokens", () => {
@@ -154,21 +131,6 @@ describe("recordedTokens", () => {
     // is a separate step in record_usage (migration 062), so no estimate can
     // shrink what the running total says was spent.
     expect(recordedTokens(1_000, 0)).toBe(1_000);
-  });
-});
-
-describe("reservationReleasedBy", () => {
-  it("lets a call the server watched give back its own claim", () => {
-    expect(reservationReleasedBy("learn/chat")).toBe("learn/chat");
-    expect(reservationReleasedBy("tracker/generate")).toBe("tracker/generate");
-  });
-
-  it("never lets a figure from the browser give budget back", () => {
-    // A Realtime call runs browser-to-OpenAI, and the browser reports what it
-    // spent. If that report released the claim, a learner at the cap could mint
-    // a session, report one token, and mint again: live credentials that spend
-    // real money, with nothing held against any of them.
-    expect(reservationReleasedBy("mastery/realtime")).toBeNull();
   });
 });
 

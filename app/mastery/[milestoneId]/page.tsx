@@ -1,35 +1,33 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { verifyUserAccess } from "@/lib/supabase/verify-access";
-import { getRandomPersona } from "@/lib/personas";
 import { safeInternalPath } from "@/utils/safe-redirect";
+import { randomScenario } from "@/lib/mastery/scenario";
 import MasteryClient from "./MasteryClient";
-import MasteryRealtimeClient from "./MasteryRealtimeClient";
 import RecordActivity from "@/components/monitor/RecordActivity";
-import { canUseRealtime } from "@/lib/mastery/realtimeAccess";
 
 interface Props {
   params:       Promise<{ milestoneId: string }>;
-  searchParams: Promise<{ returnUrl?: string; classic?: string }>;
+  searchParams: Promise<{ returnUrl?: string }>;
 }
 
 export default async function MasteryPage({ params, searchParams }: Props) {
   const { milestoneId }             = await params;
-  const { returnUrl: rawReturnUrl, classic } = await searchParams;
+  const { returnUrl: rawReturnUrl } = await searchParams;
 
   // Sanitised once here; every downstream redirect()/client prop uses this,
   // never the raw query value.
   const returnUrl = rawReturnUrl ? safeInternalPath(rawReturnUrl, "/home/learn") : undefined;
 
   const supabase = await createClient();
-  const { profile } = await verifyUserAccess(supabase);
+  await verifyUserAccess(supabase);
 
   // Ownership + data fetch — include the track's goal_id so the client can
   // build a fallback URL pointing at that goal's board. The standalone
   // /tracker board this used to fall back to no longer exists.
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("id, title, kanban_column, mastery_validated, track_id, summary_doc, summary_doc_at, tracks!track_id!inner(user_id, goal_id)")
+    .select("id, title, kanban_column, mastery_validated, summary_doc, summary_doc_at, track_id, tracks!track_id!inner(user_id, goal_id)")
     .eq("id", milestoneId)
     .single();
 
@@ -59,46 +57,20 @@ export default async function MasteryPage({ params, searchParams }: Props) {
     redirect(returnUrl ?? fallbackUrl);
   }
 
-  // S3 containment: the flag enables an administrator preview only. Learners
-  // use scripted mastery until Realtime accounting is server-authoritative.
-  // `?classic=1` is an intentional escape
-  // hatch to the original scripted flow (used by the Realtime error UI so we
-  // never silently fall back mid-session).
-  const realtimeEnabled = canUseRealtime(process.env.MASTERY_REALTIME_ENABLED, profile);
-
-  if (realtimeEnabled && classic !== "1") {
-    const classicUrl =
-      `/mastery/${milestoneId}?classic=1` +
-      (returnUrl ? `&returnUrl=${encodeURIComponent(returnUrl)}` : "");
-    return (
-      <>
-        {/* Records that this surface was used today. Renders nothing. */}
-        <RecordActivity feature="mastery" />
-        <MasteryRealtimeClient
-          milestoneId={milestoneId}
-          milestoneTitle={milestone.title as string}
-          returnUrl={returnUrl}
-          fallbackUrl={fallbackUrl}
-          alreadyMastered={milestone.mastery_validated as boolean}
-          classicUrl={classicUrl}
-          summaryDoc={(milestone as { summary_doc?: string | null }).summary_doc ?? null}
-          summaryDocAt={(milestone as { summary_doc_at?: string | null }).summary_doc_at ?? null}
-        />
-      </>
-    );
-  }
-
-  // Pick a random voice persona for this session's TTS (classic scripted flow)
-  const persona = getRandomPersona();
-
   return (
-    <MasteryClient
-      milestoneId={milestoneId}
-      milestoneTitle={milestone.title as string}
-      personaId={persona.id}
-      returnUrl={returnUrl}
-      fallbackUrl={fallbackUrl}
-      alreadyMastered={milestone.mastery_validated as boolean}
-    />
+    <>
+      {/* Records that this surface was used today. Renders nothing. */}
+      <RecordActivity feature="mastery" />
+      <MasteryClient
+        milestoneId={milestoneId}
+        milestoneTitle={milestone.title as string}
+        returnUrl={returnUrl}
+        fallbackUrl={fallbackUrl}
+        alreadyMastered={milestone.mastery_validated as boolean}
+        initialScenario={randomScenario()}
+        summaryDoc={milestone.summary_doc as string | null}
+        summaryDocAt={milestone.summary_doc_at as string | null}
+      />
+    </>
   );
 }
