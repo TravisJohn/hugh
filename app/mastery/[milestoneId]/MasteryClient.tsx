@@ -9,11 +9,11 @@ import {
 import ExitLink from "@/components/ui/ExitLink";
 import { MIC_PROBLEM_MESSAGE } from "@/lib/mastery/micProblem";
 import type { MasteryRecord } from "@/lib/mastery/outcome";
+import { SCENARIO_KEYS, type ScenarioKey } from "@/lib/mastery/scenario";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import SummaryPanel from "./SummaryPanel";
 
 // ── Types ──────────────────────────────────────────────────────────────────
-
-type ScenarioKey = "interview" | "client" | "huddle" | "teaching";
 
 type Phase =
   | "setup"       // scenario selection / confirmation
@@ -70,12 +70,7 @@ const SCENARIOS: Record<ScenarioKey, {
   },
 };
 
-const SCENARIO_KEYS = Object.keys(SCENARIOS) as ScenarioKey[];
 const MAX_EXCHANGES = 3;
-
-function randomScenario(): ScenarioKey {
-  return SCENARIO_KEYS[Math.floor(Math.random() * SCENARIO_KEYS.length)];
-}
 
 // ── Color helpers ──────────────────────────────────────────────────────────
 
@@ -97,12 +92,17 @@ interface Props {
   /** The goal board to use when no returnUrl was supplied. */
   fallbackUrl:     string;
   alreadyMastered: boolean;
+  /** Chosen on the server, so the server's render and the browser's agree. */
+  initialScenario: ScenarioKey;
+  /** What the card already has saved. The panel writes one if this is null. */
+  summaryDoc:      string | null;
+  summaryDocAt:    string | null;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
-  fallbackUrl, alreadyMastered }: Props) {
+  fallbackUrl, alreadyMastered, initialScenario, summaryDoc, summaryDocAt }: Props) {
   const router = useRouter();
 
   // returnUrl carries study-context when the learner came from
@@ -111,7 +111,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
   const boardUrl = returnUrl ?? fallbackUrl;
 
   const [phase,      setPhase]      = useState<Phase>("setup");
-  const [scenario,   setScenario]   = useState<ScenarioKey>(randomScenario);
+  const [scenario,   setScenario]   = useState<ScenarioKey>(initialScenario);
   const [pickMode,   setPickMode]   = useState(false);  // show scenario grid on retry
   const [messages,   setMessages]   = useState<ConversationMessage[]>([]);
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
@@ -239,7 +239,8 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
   // the result screen only navigate, and they are shown only when the server
   // reports the result saved. The board celebrates a card arriving with
   // ?mastered=, and that must never fire for a result that was not recorded.
-  // The summary document is still generated lazily by the milestone drawer.
+  // The panel beside the conversation writes a summary if the card has none. The
+  // drawer still does for a card passed with that panel hidden.
   function navigateBackMastered() {
     const sep = boardUrl.includes("?") ? "&" : "?";
     router.push(`${boardUrl}${sep}mastered=${milestoneId}`);
@@ -296,341 +297,360 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
         </div>
       </header>
 
-      {/* ── SETUP / SCENARIO ─────────────────────────────────────────────── */}
-      {phase === "setup" && (
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10">
-          {pickMode ? (
-            <div className="w-full max-w-lg space-y-4">
-              <div className="text-center mb-6">
-                <p className="text-lg font-semibold text-slate-200">Choose a scenario</p>
-                <p className="mt-1 text-sm text-slate-500">Pick the context that feels most challenging.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {SCENARIO_KEYS.map(key => {
-                  const s    = SCENARIOS[key];
-                  const sc   = COLOR_CLASSES[s.color as ColorKey];
-                  const Icon = s.Icon;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => startSession(key)}
-                      className={`flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all hover:brightness-110 ${sc.bg} ${sc.border}`}
-                    >
-                      <Icon size={18} className={sc.text} />
-                      <p className={`text-sm font-semibold ${sc.text}`}>{s.label}</p>
-                      <p className="text-xs text-slate-500 leading-relaxed">{s.tagline}</p>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="w-full max-w-md space-y-6 text-center">
-              <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
-                <cfg.Icon size={14} />
-                {cfg.label}
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-100">
-                  {alreadyMastered ? "Practice Your Mastery" : "Profess Your Mastery"}
-                </h1>
-                <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm mx-auto">
-                  {cfg.tagline} Hugh leads a 3-exchange conversation, and you answer out loud.{" "}
-                  {alreadyMastered
-                    ? "This is a practice run — your mastery is already locked in, so explore freely."
-                    : <>Score <span className="text-slate-200 font-semibold">7 or higher</span> to confirm mastery.</>}
-                </p>
-              </div>
-              <div className={`rounded-2xl border px-5 py-4 text-sm text-slate-400 leading-relaxed text-left ${colors.bg} ${colors.border}`}>
-                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">How it works</p>
-                Hugh&apos;s lines appear on screen, in character. Read each one, then answer out loud, 3 times in all — keep it clear, accurate, and confident. Your mic opens by itself after each line. Hugh evaluates and scores your explanation after the final exchange.
-              </div>
-              {apiError && (
-                <p className="text-sm text-red-400">{apiError}</p>
+      <main className="relative z-10 flex flex-1 min-h-0 gap-4 px-4 py-4 md:px-6">
+        <section className="flex flex-1 min-w-0 min-h-0 flex-col">
+          {/* ── SETUP / SCENARIO ─────────────────────────────────────────────── */}
+          {phase === "setup" && (
+            <div className="flex flex-1 flex-col items-center justify-center px-6 py-6">
+              {pickMode ? (
+                <div className="w-full max-w-lg space-y-4">
+                  <div className="text-center mb-6">
+                    <p className="text-lg font-semibold text-slate-200">Choose a scenario</p>
+                    <p className="mt-1 text-sm text-slate-500">Pick the context that feels most challenging.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {SCENARIO_KEYS.map(key => {
+                      const s    = SCENARIOS[key];
+                      const sc   = COLOR_CLASSES[s.color as ColorKey];
+                      const Icon = s.Icon;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => startSession(key)}
+                          className={`flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all hover:brightness-110 ${sc.bg} ${sc.border}`}
+                        >
+                          <Icon size={18} className={sc.text} />
+                          <p className={`text-sm font-semibold ${sc.text}`}>{s.label}</p>
+                          <p className="text-xs text-slate-500 leading-relaxed">{s.tagline}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full max-w-md space-y-6 text-center">
+                  <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
+                    <cfg.Icon size={14} />
+                    {cfg.label}
+                  </div>
+                  <div>
+                    <h1 className="text-2xl font-bold text-slate-100">
+                      {alreadyMastered ? "Practice Your Mastery" : "Profess Your Mastery"}
+                    </h1>
+                    <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm mx-auto">
+                      {cfg.tagline} Hugh leads a 3-exchange conversation, and you answer out loud.{" "}
+                      {alreadyMastered
+                        ? "This is a practice run — your mastery is already locked in, so explore freely."
+                        : <>Score <span className="text-slate-200 font-semibold">7 or higher</span> to confirm mastery.</>}
+                    </p>
+                  </div>
+                  <div className={`rounded-2xl border px-5 py-4 text-sm text-slate-400 leading-relaxed text-left ${colors.bg} ${colors.border}`}>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">How it works</p>
+                    Hugh&apos;s lines appear on screen, in character. Read each one, then answer out loud, 3 times in all — keep it clear, accurate, and confident. Your mic opens by itself after each line. Hugh evaluates and scores your explanation after the final exchange.
+                    <span className="hidden lg:inline"> Your summary stays on the right the whole time: use it to find your footing, then say it your own way.</span>
+                  </div>
+                  {apiError && (
+                    <p className="text-sm text-red-400">{apiError}</p>
+                  )}
+                  <button
+                    onClick={() => startSession(scenario)}
+                    className={`w-full rounded-2xl border py-3.5 text-sm font-bold transition-all hover:brightness-110 ${colors.bg} ${colors.border} ${colors.text}`}
+                  >
+                    Begin Session
+                  </button>
+                  <button
+                    onClick={() => setPickMode(true)}
+                    className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
+                  >
+                    Change scenario
+                  </button>
+                </div>
               )}
-              <button
-                onClick={() => startSession(scenario)}
-                className={`w-full rounded-2xl border py-3.5 text-sm font-bold transition-all hover:brightness-110 ${colors.bg} ${colors.border} ${colors.text}`}
-              >
-                Begin Session
-              </button>
-              <button
-                onClick={() => setPickMode(true)}
-                className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
-              >
-                Change scenario
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── ACTIVE CONVERSATION ───────────────────────────────────────────── */}
-      {!["setup", "result"].includes(phase) && (
-        <div className="relative z-10 flex flex-1 flex-col min-h-0">
-          {/* Exchange counter */}
-          {!["evaluating"].includes(phase) && (
-            <div className="shrink-0 flex justify-center py-3">
-              <span className="rounded-full bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-400">
-                Exchange {currentExchange} of {MAX_EXCHANGES}
-              </span>
             </div>
           )}
 
-          {/* Message thread */}
-          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
-            <div className="max-w-2xl mx-auto space-y-4">
-
-              {/* Announces each new line to a screen reader, now that Hugh makes
-                  no sound. The live transcript stays outside: announcing every
-                  word as it forms would talk over the learner. */}
-              <div aria-live="polite" className="space-y-4">
-              {messages.map((msg, i) =>
-                msg.role === "hugh" ? (
-                  <div key={i} className="flex gap-3 max-w-[85%]">
-                    <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-300">
-                      H
-                    </div>
-                    <div className="rounded-2xl rounded-tl-sm border border-slate-700/60 bg-slate-800/60 px-4 py-3">
-                      <p className="text-sm text-slate-200 leading-relaxed">{msg.text}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={i} className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse">
-                    <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-sky-900/60 text-xs font-bold text-sky-300">
-                      Y
-                    </div>
-                    <div className="rounded-2xl rounded-tr-sm border border-sky-800/40 bg-sky-900/30 px-4 py-3">
-                      <p className="text-sm text-slate-200 leading-relaxed">{msg.text}</p>
-                    </div>
-                  </div>
-                )
-              )}
-              </div>
-
-              {/* Live transcript while the user is recording */}
-              {phase === "listening" && (
-                <div className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse">
-                  <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-sky-900/60 text-xs font-bold text-sky-300">
-                    Y
-                  </div>
-                  <div className="rounded-2xl rounded-tr-sm border border-sky-700/50 bg-sky-900/40 px-4 py-3 min-w-[120px]">
-                    {speech.transcript ? (
-                      <p className="text-sm text-slate-200 leading-relaxed">{speech.transcript}</p>
-                    ) : (
-                      <p className="text-sm text-slate-500 italic">{micOff ? "Your mic is off." : "Listening…"}</p>
-                    )}
-                  </div>
+          {/* ── ACTIVE CONVERSATION ───────────────────────────────────────────── */}
+          {!["setup", "result"].includes(phase) && (
+            <div className="flex flex-1 flex-col min-h-0">
+              {/* Exchange counter */}
+              {!["evaluating"].includes(phase) && (
+                <div className="shrink-0 flex justify-center py-3">
+                  <span className="rounded-full bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-400">
+                    Exchange {currentExchange} of {MAX_EXCHANGES}
+                  </span>
                 </div>
               )}
 
-              {/* Spinner states */}
-              {isBusy && (
-                <div className="flex items-center gap-2 text-xs text-slate-500 px-1 py-2">
-                  <Loader2 size={12} className="animate-spin" />
-                  {phase === "generating" && "Hugh is setting the scene…"}
-                  {phase === "thinking"   && "Hugh is responding…"}
-                  {phase === "evaluating" && "Hugh is evaluating your responses…"}
-                </div>
-              )}
+              {/* Message thread */}
+              <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+                <div className="max-w-2xl mx-auto space-y-4">
 
-              <div ref={threadEndRef} />
-
-            </div>
-          </div>
-
-          {/* Bottom mic area */}
-          <div className="shrink-0 border-t border-slate-800/60 px-6 py-5">
-            <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
-
-              {/* A failed reply, and a mic that stopped, each get their own copy
-                  and their own way out (rule 5): both would otherwise sit behind
-                  "Listening…" with nothing to tell them from a wait. */}
-              {phase === "listening" && apiError && (
-                <p role="alert" className="text-center text-sm text-red-400">
-                  {apiError} Answer again to retry.
-                </p>
-              )}
-              {phase === "listening" && speech.problem && (
-                <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
-                  <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
-                  <div className="space-y-2">
-                    <p className="text-sm text-red-300">{MIC_PROBLEM_MESSAGE[speech.problem]}</p>
-                    <button
-                      onClick={speech.start}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-red-200 hover:text-red-100 transition-colors"
-                    >
-                      <RotateCcw size={12} />
-                      Try the mic again
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center justify-center gap-5">
-                {phase === "listening" && (
-                  <>
-                    {!micOff && (
-                      <div className="relative flex items-center justify-center">
-                        <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
-                        <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
-                          <Mic size={18} className="text-red-400" />
+                  {/* Announces each new line to a screen reader, now that Hugh makes
+                      no sound. The live transcript stays outside: announcing every
+                      word as it forms would talk over the learner. */}
+                  <div aria-live="polite" className="space-y-4">
+                  {messages.map((msg, i) =>
+                    msg.role === "hugh" ? (
+                      <div key={i} className="flex gap-3 max-w-[85%]">
+                        <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-300">
+                          H
+                        </div>
+                        <div className="rounded-2xl rounded-tl-sm border border-slate-700/60 bg-slate-800/60 px-4 py-3">
+                          <p className="text-sm text-slate-200 leading-relaxed">{msg.text}</p>
                         </div>
                       </div>
-                    )}
-                    <div className="flex flex-col gap-1.5 items-start">
-                      <button
-                        onClick={handleDone}
-                        className="flex items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-500 transition-colors"
-                      >
-                        <MicOff size={15} />
-                        Done talking
-                      </button>
-                      {!speech.isSupported && (
-                        <p className="text-xs text-red-400">Chrome or Edge required for voice input</p>
-                      )}
+                    ) : (
+                      <div key={i} className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse">
+                        <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-sky-900/60 text-xs font-bold text-sky-300">
+                          Y
+                        </div>
+                        <div className="rounded-2xl rounded-tr-sm border border-sky-800/40 bg-sky-900/30 px-4 py-3">
+                          <p className="text-sm text-slate-200 leading-relaxed">{msg.text}</p>
+                        </div>
+                      </div>
+                    )
+                  )}
+                  </div>
+
+                  {/* Live transcript while the user is recording */}
+                  {phase === "listening" && (
+                    <div className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse">
+                      <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-sky-900/60 text-xs font-bold text-sky-300">
+                        Y
+                      </div>
+                      <div className="rounded-2xl rounded-tr-sm border border-sky-700/50 bg-sky-900/40 px-4 py-3 min-w-[120px]">
+                        {speech.transcript ? (
+                          <p className="text-sm text-slate-200 leading-relaxed">{speech.transcript}</p>
+                        ) : (
+                          <p className="text-sm text-slate-500 italic">{micOff ? "Your mic is off." : "Listening…"}</p>
+                        )}
+                      </div>
                     </div>
-                  </>
-                )}
+                  )}
+
+                  {/* Spinner states */}
+                  {isBusy && (
+                    <div className="flex items-center gap-2 text-xs text-slate-500 px-1 py-2">
+                      <Loader2 size={12} className="animate-spin" />
+                      {phase === "generating" && "Hugh is setting the scene…"}
+                      {phase === "thinking"   && "Hugh is responding…"}
+                      {phase === "evaluating" && "Hugh is evaluating your responses…"}
+                    </div>
+                  )}
+
+                  <div ref={threadEndRef} />
+
+                </div>
               </div>
 
-              {/* End session — always visible during active conversation */}
-              <ExitLink
-                href={boardUrl}
-                label="End session & take a break"
-                onNavigate={stopListening}
-                showIcon={false}
-                iconSize={12}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-700 hover:text-slate-500 transition-colors"
-              />
+              {/* Bottom mic area */}
+              <div className="shrink-0 border-t border-slate-800/60 px-6 py-5">
+                <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
 
+                  {/* A failed reply, and a mic that stopped, each get their own copy
+                      and their own way out (rule 5): both would otherwise sit behind
+                      "Listening…" with nothing to tell them from a wait. */}
+                  {phase === "listening" && apiError && (
+                    <p role="alert" className="text-center text-sm text-red-400">
+                      {apiError} Answer again to retry.
+                    </p>
+                  )}
+                  {phase === "listening" && speech.problem && (
+                    <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                      <div className="space-y-2">
+                        <p className="text-sm text-red-300">{MIC_PROBLEM_MESSAGE[speech.problem]}</p>
+                        <button
+                          onClick={speech.start}
+                          className="flex items-center gap-1.5 text-xs font-semibold text-red-200 hover:text-red-100 transition-colors"
+                        >
+                          <RotateCcw size={12} />
+                          Try the mic again
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-center gap-5">
+                    {phase === "listening" && (
+                      <>
+                        {!micOff && (
+                          <div className="relative flex items-center justify-center">
+                            <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
+                            <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
+                              <Mic size={18} className="text-red-400" />
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-1.5 items-start">
+                          <button
+                            onClick={handleDone}
+                            className="flex items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-500 transition-colors"
+                          >
+                            <MicOff size={15} />
+                            Done talking
+                          </button>
+                          {!speech.isSupported && (
+                            <p className="text-xs text-red-400">Chrome or Edge required for voice input</p>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* End session — always visible during active conversation */}
+                  <ExitLink
+                    href={boardUrl}
+                    label="End session & take a break"
+                    onNavigate={stopListening}
+                    showIcon={false}
+                    iconSize={12}
+                    className="inline-flex items-center gap-1.5 text-xs text-slate-700 hover:text-slate-500 transition-colors"
+                  />
+
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* ── RESULT ────────────────────────────────────────────────────────── */}
-      {phase === "result" && (
-        <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-10">
-          <div className="w-full max-w-md space-y-5">
+          {/* ── RESULT ────────────────────────────────────────────────────────── */}
+          {phase === "result" && (
+            <div className="flex flex-1 flex-col items-center justify-center px-6 py-6">
+              <div className="w-full max-w-md space-y-5">
 
-            {/* Score card */}
-            <div className={`rounded-3xl border p-6 text-center ${
-              positive
-                ? "border-green-500/30 bg-green-500/5"
-                : "border-amber-500/30 bg-amber-500/5"
-            }`}>
-              <div className={`text-5xl font-black mb-1 ${positive ? "text-green-300" : "text-amber-300"}`}>
-                {evaluation?.score ?? "—"}
-                <span className="text-2xl font-normal text-slate-500">/10</span>
-              </div>
-              <p className={`text-sm font-semibold ${positive ? "text-green-400" : "text-amber-400"}`}>
-                {saveFailed
-                  ? "Scored, but not saved"
-                  : alreadyMastered
-                  ? "Still mastered — practice logged"
-                  : evaluation?.passed
-                  ? "Mastery confirmed"
-                  : "Almost — one more try will get you there"}
-              </p>
-            </div>
-
-            {/* Feedback */}
-            {evaluation?.feedback && (
-              <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 px-5 py-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">Hugh&apos;s Feedback</p>
-                <p className="text-sm text-slate-300 leading-relaxed">{evaluation.feedback}</p>
-              </div>
-            )}
-
-            {/* Error fallback */}
-            {apiError && !evaluation && (
-              <p className="text-sm text-red-400 text-center">{apiError}</p>
-            )}
-
-            {/* Scenario tag */}
-            <div className="flex justify-center">
-              <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
-                <cfg.Icon size={12} />
-                {cfg.label}
-              </div>
-            </div>
-
-            {/* CTA. A scored session the server could not record gets its own
-                copy and its own way out (rule 5): the score above is real, only
-                the saving failed, and running the session again scores and
-                records afresh. The board link leaves without a record. Every
-                other button only navigates, because the server has already
-                recorded the result. */}
-            {saveFailed ? (
-              <div className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5">
-                <div className="flex items-start gap-2.5">
-                  <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
-                  <p className="text-sm text-red-300">
-                    Hugh scored this session but couldn&apos;t save the result. Your score above is real; run the session again to record it.
+                {/* Score card */}
+                <div className={`rounded-3xl border p-6 text-center ${
+                  positive
+                    ? "border-green-500/30 bg-green-500/5"
+                    : "border-amber-500/30 bg-amber-500/5"
+                }`}>
+                  <div className={`text-5xl font-black mb-1 ${positive ? "text-green-300" : "text-amber-300"}`}>
+                    {evaluation?.score ?? "—"}
+                    <span className="text-2xl font-normal text-slate-500">/10</span>
+                  </div>
+                  <p className={`text-sm font-semibold ${positive ? "text-green-400" : "text-amber-400"}`}>
+                    {saveFailed
+                      ? "Scored, but not saved"
+                      : alreadyMastered
+                      ? "Still mastered — practice logged"
+                      : evaluation?.passed
+                      ? "Mastery confirmed"
+                      : "Almost — one more try will get you there"}
                   </p>
                 </div>
-                <button
-                  onClick={() => startSession(scenario)}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-500/20 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/30 transition-colors"
-                >
-                  <RotateCcw size={14} />
-                  Run it again
-                </button>
-                <ExitLink
-                  href={boardUrl}
-                  label="Back to board without saving"
-                  onNavigate={stopListening}
-                  showIcon={false}
-                  className="block w-full rounded-xl border border-red-500/30 py-2 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
-                />
-              </div>
-            ) : alreadyMastered ? (
-              <div className="space-y-2">
-                <button
-                  onClick={navigateBackMastered}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
-                >
-                  <Trophy size={16} />
-                  Finish
-                </button>
-                <button
-                  onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700 py-3 text-sm text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors"
-                >
-                  <RotateCcw size={14} />
-                  Practice again
-                </button>
-              </div>
-            ) : evaluation?.passed ? (
-              <button
-                onClick={navigateBackMastered}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
-              >
-                <Trophy size={16} />
-                Continue
-              </button>
-            ) : (
-              <div className="space-y-2">
-                <button
-                  onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors"
-                >
-                  <RotateCcw size={14} />
-                  Try a different scenario
-                </button>
-                <button
-                  onClick={() => startSession(scenario)}
-                  className="w-full rounded-2xl border border-slate-700 py-3 text-sm text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
-                >
-                  Same scenario, fresh start
-                </button>
-              </div>
-            )}
 
-          </div>
-        </div>
-      )}
+                {/* Feedback */}
+                {evaluation?.feedback && (
+                  <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 px-5 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">Hugh&apos;s Feedback</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">{evaluation.feedback}</p>
+                  </div>
+                )}
+
+                {/* Error fallback */}
+                {apiError && !evaluation && (
+                  <p className="text-sm text-red-400 text-center">{apiError}</p>
+                )}
+
+                {/* Scenario tag */}
+                <div className="flex justify-center">
+                  <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
+                    <cfg.Icon size={12} />
+                    {cfg.label}
+                  </div>
+                </div>
+
+                {/* CTA. A scored session the server could not record gets its own
+                    copy and its own way out (rule 5): the score above is real, only
+                    the saving failed, and running the session again scores and
+                    records afresh. The board link leaves without a record. Every
+                    other button only navigates, because the server has already
+                    recorded the result. */}
+                {saveFailed ? (
+                  <div className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                      <p className="text-sm text-red-300">
+                        Hugh scored this session but couldn&apos;t save the result. Your score above is real; run the session again to record it.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => startSession(scenario)}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-500/20 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/30 transition-colors"
+                    >
+                      <RotateCcw size={14} />
+                      Run it again
+                    </button>
+                    <ExitLink
+                      href={boardUrl}
+                      label="Back to board without saving"
+                      onNavigate={stopListening}
+                      showIcon={false}
+                      className="block w-full rounded-xl border border-red-500/30 py-2 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
+                    />
+                  </div>
+                ) : alreadyMastered ? (
+                  <div className="space-y-2">
+                    <button
+                      onClick={navigateBackMastered}
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
+                    >
+                      <Trophy size={16} />
+                      Finish
+                    </button>
+                    <button
+                      onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700 py-3 text-sm text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors"
+                    >
+                      <RotateCcw size={14} />
+                      Practice again
+                    </button>
+                  </div>
+                ) : evaluation?.passed ? (
+                  <button
+                    onClick={navigateBackMastered}
+                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
+                  >
+                    <Trophy size={16} />
+                    Continue
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors"
+                    >
+                      <RotateCcw size={14} />
+                      Try a different scenario
+                    </button>
+                    <button
+                      onClick={() => startSession(scenario)}
+                      className="w-full rounded-2xl border border-slate-700 py-3 text-sm text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
+                    >
+                      Same scenario, fresh start
+                    </button>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* The guide beside the conversation. It sits outside the phases so it
+            stays mounted and never refetches, and it is read-only while the
+            learner talks. A summary that fails says so in here and holds nothing
+            up: the session never depends on it. */}
+        <aside className="hidden lg:block w-[380px] shrink-0 min-h-0">
+          <SummaryPanel
+            milestoneId={milestoneId}
+            milestoneTitle={milestoneTitle}
+            initialDoc={summaryDoc}
+            initialDocAt={summaryDocAt}
+            editable={phase === "setup" || phase === "result"}
+          />
+        </aside>
+      </main>
 
     </div>
   );

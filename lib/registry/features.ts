@@ -222,7 +222,7 @@ export const FEATURES: readonly FeatureDefinition[] = [
     activityFeatures: ["mastery"],
     operations: ["mastery.session"],
     spendsTokens: true,
-    tests: 3,
+    tests: 4,
   },
   {
     id:    "code",

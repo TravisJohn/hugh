@@ -24,14 +24,16 @@ interface MilestoneRow {
   kanban_column:     string;
   learning_points:   LearningPoint[] | null;
   coverage:          unknown; // legacy or current shape — normalized on read
+  mastery_validated: boolean | null;
   mastery_score:     number | null;
   mastery_feedback:  string | null;
   tracks:            { user_id: string; topic_description: string } | null;
 }
 
-// POST: (re)generate the mastery "what you learned" summary document for a
-// mastered milestone, store it, and return it. Auto-called on first mastery and
-// from the drawer's Regenerate button.
+// POST: (re)generate the "what you learned" summary document for a card in the
+// Mastered column, store it, and return it. Before a pass it is a guide to talk
+// from, which Mastery shows beside the conversation; after one it is a keepsake.
+// Auto-called by that panel and on first mastery, and from the Regenerate buttons.
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -53,7 +55,7 @@ export async function POST(
 
   const { data } = await supabase
     .from("milestones")
-    .select("id, title, summary, kanban_column, learning_points, coverage, mastery_score, mastery_feedback, tracks!track_id!inner(user_id, topic_description)")
+    .select("id, title, summary, kanban_column, learning_points, coverage, mastery_validated, mastery_score, mastery_feedback, tracks!track_id!inner(user_id, topic_description)")
     .eq("id", id)
     .single();
 
@@ -93,6 +95,7 @@ export async function POST(
     milestoneSummary: ms.summary,
     points,
     diaryEntries,
+    mastered:         ms.mastery_validated === true,
     masteryScore:     ms.mastery_score,
     masteryFeedback:  ms.mastery_feedback,
   });
@@ -164,8 +167,8 @@ export async function POST(
   }
 }
 
-// PUT: persist a learner-EDITED summary document (Phase 30 — the Guided Reflection
-// panel lets the learner hand-edit the summary when they spot a gap). No LLM call;
+// PUT: persist a learner-EDITED summary document (Mastery's summary panel and the
+// card drawer both let the learner hand-edit it when they spot a gap). No LLM call;
 // this simply saves the provided markdown as the new summary_doc.
 const MAX_SUMMARY_CHARS = 20_000;
 

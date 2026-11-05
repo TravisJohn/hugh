@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { verifyUserAccess } from "@/lib/supabase/verify-access";
 import { safeInternalPath } from "@/utils/safe-redirect";
+import { randomScenario } from "@/lib/mastery/scenario";
 import MasteryClient from "./MasteryClient";
 import RecordActivity from "@/components/monitor/RecordActivity";
 
@@ -26,7 +27,7 @@ export default async function MasteryPage({ params, searchParams }: Props) {
   // /tracker board this used to fall back to no longer exists.
   const { data: milestone } = await supabase
     .from("milestones")
-    .select("id, title, kanban_column, mastery_validated, track_id, tracks!track_id!inner(user_id, goal_id)")
+    .select("id, title, kanban_column, mastery_validated, summary_doc, summary_doc_at, track_id, tracks!track_id!inner(user_id, goal_id)")
     .eq("id", milestoneId)
     .single();
 
@@ -66,6 +67,9 @@ export default async function MasteryPage({ params, searchParams }: Props) {
         returnUrl={returnUrl}
         fallbackUrl={fallbackUrl}
         alreadyMastered={milestone.mastery_validated as boolean}
+        initialScenario={randomScenario()}
+        summaryDoc={milestone.summary_doc as string | null}
+        summaryDocAt={milestone.summary_doc_at as string | null}
       />
     </>
   );
