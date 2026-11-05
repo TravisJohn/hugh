@@ -202,36 +202,24 @@ export const FEATURES: readonly FeatureDefinition[] = [
     id:    "mastery",
     label: "Prove mastery",
     kind:  "learner",
-    blurb: "Explain a milestone out loud — scripted for learners; Realtime is an administrator preview.",
+    blurb: "Explain a milestone out loud: Hugh's lines appear on screen, the learner answers by voice, and the server records the score.",
     routes: ["/mastery/[milestoneId]"],
-    apiRoutes: [
-      "tracker/mastery/evaluate",
-      "tracker/mastery/recap",
-      "tracker/mastery/session",
-      "tracker/mastery/realtime-session",
-      "tracker/mastery/realtime-usage",
-    ],
+    apiRoutes: ["tracker/mastery/session"],
     libDirs:       ["mastery"],
     componentDirs: [],
     tables: ["milestones", "milestone_entries"],
     usageFeatures: [
+      "mastery/session",
+      // Retired names. Nothing logs them now, but past rows still carry them,
+      // and a name no feature claims lands on /admin/features as unattributed.
       "mastery/evaluate",
       "mastery/recap",
-      "mastery/session",
-      // Realtime voice. Gated at mint time under this same string since the
-      // flag was written; it only became a SPEND string once the usage report
-      // landed, because before that nothing was ever logged against it.
       "mastery/realtime",
     ],
     activityFeatures: ["mastery"],
-    operations: [
-      "mastery.evaluate",
-      "mastery.recap",
-      "mastery.session",
-      "mastery.realtime",
-    ],
+    operations: ["mastery.session"],
     spendsTokens: true,
-    tests: 9,
+    tests: 3,
   },
   {
     id:    "code",

@@ -706,37 +706,6 @@ Write the document in GitHub-flavoured Markdown with this structure:
 Keep it under ~350 words. Warm, clear, second person ("you"). Respond with ONLY the markdown document — no code fences, no preamble.`;
 }
 
-// ── Guided Reflection recap (Phase 30 — UNMARKED) ────────────────────────
-// After an ungraded reflection conversation, Hugh writes a short, warm recap of
-// what was discussed. It is NOT a grade: no score, no pass/fail, no verdict —
-// just a mirror of the conversation plus a gentle nudge on anything left open.
-export function masteryRecapPrompt(params: {
-  milestoneTitle: string;
-  transcript:     Array<{ role: "coach" | "learner"; text: string }>;
-}): string {
-  const { milestoneTitle, transcript } = params;
-
-  const convo = transcript.length > 0
-    ? transcript.map(t => (t.role === "coach" ? `Coach: ${t.text}` : `Learner: ${t.text}`)).join("\n")
-    : "(No conversation was captured.)";
-
-  return `You are Hugh, a supportive learning coach. The learner just finished an UNGRADED, spoken reflection about "${milestoneTitle}". Write a short, warm recap of what THEY reflected on.
-
-This is NOT an assessment. Do NOT score them, do NOT say whether they passed, failed, mastered, or fell short, and do NOT rate their understanding. It is a friendly mirror of the conversation, grounded ONLY in what they actually said below — never invent points they didn't raise.
-
-Transcript:
-"""
-${convo}
-"""
-
-Write 2-4 short sentences (plain prose, no headings, no bullets, no markdown):
-- Reflect back the main things they talked through, in their own spirit.
-- If a gap or open question surfaced, mention it gently as something worth revisiting — as an invitation, never a judgement.
-- End with a light, encouraging note.
-
-If the transcript is essentially empty, say warmly that there wasn't much to reflect on this time and invite them back. Respond with ONLY the recap text — no preamble.`;
-}
-
 // ── Learning goal refinement (5-whys) ────────────────────────────────────
 
 export function refinementQuestionPrompt(

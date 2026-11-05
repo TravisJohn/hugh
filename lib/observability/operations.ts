@@ -44,10 +44,7 @@ export type OperationId =
   | "topic.gate"
   | "quiz.generate"
   | "quiz.submit"
-  | "mastery.evaluate"
-  | "mastery.recap"
   | "mastery.session"
-  | "mastery.realtime"
   | "ask.chat"
   | "ask.summarize"
   | "ask.verify"
@@ -160,15 +157,6 @@ export const OPERATIONS: readonly OperationDefinition[] = [
       "A pass that could not be saved is 'failed', with stage 'record'.",
   },
   {
-    id:               "mastery.evaluate",
-    domain:           "mastery",
-    label:            "Evaluate mastery",
-    clientReportable: false,
-    failureIsSilent:  false,
-    description:
-      "Scoring a learner's spoken mastery attempt.",
-  },
-  {
     id:               "ask.chat",
     domain:           "ask",
     label:            "Ask Hugh",
@@ -229,36 +217,14 @@ export const OPERATIONS: readonly OperationDefinition[] = [
       "Writing the summary shown on a milestone card.",
   },
   {
-    id:               "mastery.recap",
-    domain:           "mastery",
-    label:            "Write mastery recap",
-    clientReportable: false,
-    failureIsSilent:  false,
-    description:
-      "Composing the written recap after a spoken mastery attempt. Separate " +
-      "from mastery.evaluate because scoring can succeed while the recap fails.",
-  },
-  {
     id:               "mastery.session",
     domain:           "mastery",
     label:            "Open mastery session",
     clientReportable: false,
     failureIsSilent:  false,
     description:
-      "Starting a scripted mastery session and generating its opening line.",
-  },
-  {
-    id:               "mastery.realtime",
-    domain:           "mastery",
-    label:            "Record realtime voice spend",
-    clientReportable: false,
-    failureIsSilent:  true,
-    description:
-      "Recording what a Realtime voice session cost. The spend happens " +
-      "browser-to-OpenAI, so the server never observes it and only a report " +
-      "from the client can close the loop. A report that never arrives is " +
-      "invisible: the session looked fine to the learner, the reservation " +
-      "expires, the budget springs back, and the provider still bills.",
+      "A mastery session: Hugh's opening line, each reply, and the score the " +
+      "server records.",
   },
   {
     id:               "ask.summarize",

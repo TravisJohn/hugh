@@ -73,10 +73,6 @@ describe("giving a reservation back", () => {
     expect(mocks.rpc).toHaveBeenCalledWith("record_usage", expect.objectContaining({ p_tokens: 445, p_feature: "learn/chat" }));
   });
 
-  it("keeps the hold when the only record of the spend is the browser's word", async () => {
-    await logUsage({ userId: OWNER, feature: "mastery/realtime", model: "gpt-realtime-mini", tokensIn: 432, tokensOut: 13 });
-    expect(mocks.rpc).toHaveBeenCalledWith("record_usage", expect.objectContaining({ p_tokens: 445, p_feature: null }));
-  });
 });
 
 /**

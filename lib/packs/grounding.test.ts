@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  boardSources, cardGrounding, cardKeyPointRefs, cardSourceList, criteriaSyllabus, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback,
+  boardSources, cardGrounding, cardKeyPointRefs, cardSourceList, GROUNDING_REFUSAL_MESSAGE, misconceptionFeedback,
   groundFromPack, misconceptionsByRef, renderCardSyllabus, type CardGround,
 } from "./grounding";
 import { packTrack } from "./track";
@@ -112,15 +112,6 @@ describe("cardSourceList", () => {
     const list = cardSourceList(g);
     expect(list).toHaveLength(cardKeyPointRefs(g).length + misconceptionsByRef(g).size);
     expect(list.every(item => item.source.href.length > 0)).toBe(true);
-  });
-});
-
-describe("criteriaSyllabus", () => {
-  it("hands mastery the card's key points and wrong beliefs, in order", () => {
-    const g = grounded(collinearityCard.concept_ids);
-    const s = criteriaSyllabus(g);
-    expect(s.keyPoints).toEqual(g.concepts.flatMap(c => c.keyPoints.map(k => k.text)));
-    expect(s.misconceptions.map(m => m.ref)).toEqual([...misconceptionsByRef(g).keys()]);
   });
 });
 

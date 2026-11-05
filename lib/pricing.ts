@@ -26,11 +26,12 @@ export const MODEL_RATES: Record<string, ModelRate> = {
   // never in a request. Token counts stay real; the money is $0.
   "claude-sonnet-4-6@subscription": { input: 0, output: 0 },
   "claude-haiku-4-5@subscription":  { input: 0, output: 0 },
-  // OpenAI — Notes Coach (vision), Notes summariser, architecture assistant
+  // OpenAI — the admin architecture assistant, and past Notes rows
   "gpt-4o":                 { input: 2.5,  output: 10   },
   "gpt-4o-mini":            { input: 0.15, output: 0.6  },
 
-  // OpenAI Realtime — mastery voice coach (`MASTERY_REALTIME_ENABLED`).
+  // OpenAI Realtime — the mastery voice coach, retired 2026-11-05. Nothing bills
+  // at these rates now; they stay so past rows keep their real cost.
   //
   // Realtime bills audio and text tokens at DIFFERENT rates on the same model:
   // audio input is 10.00 against text's 0.60, a 16x spread. `ModelRate` holds one

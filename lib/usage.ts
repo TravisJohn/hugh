@@ -16,7 +16,6 @@ import {
   messageForDenial,
   periodStart,
   recordedTokens,
-  reservationReleasedBy,
   reserveEstimateFor,
   statusForDenial,
   tokenLimitFor,
@@ -192,7 +191,7 @@ async function recordAgainstCounter(
       p_user_id:      userId,
       p_period_start: periodStart(profile),
       p_tokens:       tokens,
-      p_feature:      reservationReleasedBy(feature),
+      p_feature:      feature,
     });
     if (error) {
       console.error(`[usage] failed to count "${feature}" for ${userId}:`, error.message);

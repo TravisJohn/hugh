@@ -188,20 +188,6 @@ export function cardKeyPointRefs(g: CardGround): string[] {
 }
 
 /**
- * The card's syllabus as the plain shape `lib/mastery/criteria.ts` takes
- * (`CriteriaSyllabus`), so mastery never imports a pack.
- */
-export function criteriaSyllabus(g: CardGround): {
-  keyPoints:      string[];
-  misconceptions: Array<{ ref: string; claim: string; correction: string }>;
-} {
-  return {
-    keyPoints:      g.concepts.flatMap(c => c.keyPoints.map(k => k.text)),
-    misconceptions: g.concepts.flatMap(c => c.misconceptions.map(m => ({ ref: m.ref, claim: m.claim, correction: m.correction }))),
-  };
-}
-
-/**
  * What the learner reads after holding a wrong belief: the course's own
  * correction and where it comes from (PRD row 4, "the feedback gives the
  * pack's correction and its source"). Written by the server from the pack,

@@ -53,8 +53,8 @@ const names = (calls: typeof gates) => new Set(calls.map(call => call.name));
 
 describe("a route gates and logs under one name", () => {
   it("still sees the call sites, so a rename can't silently empty this guard", () => {
-    expect(gates.length).toBeGreaterThan(20);
-    expect(logs.length).toBeGreaterThan(20);
+    expect(gates.length).toBeGreaterThan(15);
+    expect(logs.length).toBeGreaterThan(15);
     expect(names(gates)).toContain('"learn/chat"');
     expect(names(logs)).toContain('"learn/chat"');
   });
