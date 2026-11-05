@@ -34,7 +34,7 @@ BY its goal. Do not reintroduce a chat surface outside `/study/[goalId]/ask`.
 | `/home/learn` → `/study/[goalId]` | Choose a course (one group at a time), then the goal's Kanban track |
 | `/study/[goalId]/ask` | Ask Hugh — tutor chat, diary, focus timer |
 | `/review/[milestoneId]` | Diary-grounded review quiz |
-| `/mastery/[milestoneId]` | Prove mastery out loud: Hugh's lines on screen, the learner answers by mic, the server records the score |
+| `/mastery/[milestoneId]` | Prove mastery out loud: Hugh's lines on screen with the learner's summary beside them, the learner answers by mic, the server records the score |
 | `/code/start` · `/code/drill` · `/code` | Pattern map, timed fluency drills, free-form Python sandbox |
 | `/cases` · `/cases/lab` | The Case Room (judgment cases) · Case Lab (long-form + CSV) |
 | `/cloud` | Cloud-services reference — assistant, margin notes, and a review list |
@@ -250,6 +250,13 @@ exception is drawn at *records tools*, not at "screens with a lot on them". A
 teaching surface that outgrows the viewport should lose padding or gain
 pagination — never a scrollbar.
 
+**One panel is the exception to that: Mastery's summary.** A blank canvas is hard
+to start talking from, so on 2026-11-05 the owner put the learner's summary beside
+the conversation (`app/mastery/[milestoneId]/SummaryPanel.tsx`). A summary has no
+fixed length, so the panel's body scrolls inside itself while the page stays
+locked. Below `lg` the panel is hidden rather than squeezed. This grants nothing to
+any other teaching surface.
+
 Those panes are also user-resizable and individually collapsible. The geometry
 lives in `lib/notes/layout.ts` (pure, unit-tested) and is driven by
 `useNotesLayout`; a collapsed pane becomes a clickable rail, never nothing. Pane
@@ -336,6 +343,7 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
 | Cases | Static JSON, zero runtime AI | Fast, cheap, portable; AI is used to author them offline |
 | Cost accounting | Per-row, per-model | Models differ by up to 20×; one blended rate mis-states spend |
 | Mastery's voice | Hugh's lines on screen, the learner answers by mic | Claude has no live voice, and one scored path runs the same on the plan and the live site |
+| Mastery's cheat sheet | The learner's full summary sits beside the conversation, read-only while they talk | A blank canvas is hard to start from. The owner accepted on 2026-11-05 that a pass at 7+ may therefore have been read out, and that a card with no summary yet costs a Sonnet call and a short wait. Do not tighten or hide it without asking. Before a pass the summary is written as a guide that claims nothing; after one, as a keepsake (`mastery_validated` decides, not whether a score exists) |
 
 ## DO NOT Build (deferred)
 - Voice analysis: filler words, speech pace, volume, confidence scoring
@@ -351,7 +359,7 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
 - Call Anthropic or OpenAI from client components
 - Use the `any` TypeScript type
 - Add scrollable containers to a teaching screen (see Rule 4 for the two
-  records-tool exceptions)
+  records-tool exceptions and Mastery's summary panel)
 - Hardcode API keys, or a model string in more than one place per route
 - Spend tokens without calling `logUsage` with the model
 - Swallow a Supabase `error` — an unchecked write is how a "ready" track shipped

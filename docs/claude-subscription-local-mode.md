@@ -586,6 +586,9 @@ as well, so there is one code path.
 - **What runs.** Hugh's lines appear on screen and the mic opens straight after each
   one. `tracker/mastery/session` writes the lines and the score, already through
   `claudeClient()` and the text path, so the plan needed no new code.
+- **What sits beside it.** The learner's summary, from `tracker/summary`, also already
+  on `claudeClient()`. It writes one only if the card has none. If the plan refuses,
+  the panel shows its own message and the session still runs.
 - **Speech-to-text is unchanged.** It stays in the browser: Chrome and Edge only, and
   the audio goes to Google, on the plan as on the API. The plan does not cover it
   and is not asked to.
