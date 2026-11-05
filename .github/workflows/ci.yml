@@ -85,6 +85,10 @@ jobs:
         run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_062_usage_release_test
       - name: Test that a logged call gives back its own reservation, under a real race
         run: docker exec -e PGUSER=postgres -e PGDATABASE=hugh_062_usage_release_test "${{ job.services.postgres.id }}" sh /tmp/hugh-s1/tests/062_usage_release_on_log.sh
+      - name: Create disposable mastery-sessions database
+        run: docker exec "${{ job.services.postgres.id }}" createdb -U postgres hugh_063_mastery_sessions_test
+      - name: Test that mastery ticks are server-only
+        run: docker exec "${{ job.services.postgres.id }}" psql -U postgres -d hugh_063_mastery_sessions_test -f /tmp/hugh-s1/tests/063_mastery_sessions.sql
 
   verify:
     name: lint · typecheck · test · audit · build

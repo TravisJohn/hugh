@@ -12,8 +12,8 @@ function concept(id: string, over: Partial<PackConcept> = {}): PackConcept {
   return {
     id, title: `Concept ${id}`, outcome: `Explain ${id}.`,
     keyPoints: [
-      { text: `First point about ${id}.`,  sourceId: "src", locator: "Lesson 1", anchor: { start: "first two words", end: "last two words" } },
-      { text: `Second point about ${id}.`, sourceId: "src", locator: "Lesson 1", anchor: { start: "other two words", end: "closing two words" } },
+      { text: `First point about ${id}.`,  label: `First ${id} topic`,  sourceId: "src", locator: "Lesson 1", anchor: { start: "first two words", end: "last two words" } },
+      { text: `Second point about ${id}.`, label: `Second ${id} topic`, sourceId: "src", locator: "Lesson 1", anchor: { start: "other two words", end: "closing two words" } },
     ],
     ...over,
   };
@@ -98,6 +98,28 @@ describe("checkPack", () => {
     const long = concept("a");
     long.keyPoints[0] = { ...long.keyPoints[0], text: "word ".repeat(41) };
     expect(errors(checkPack(pack({ concepts: [long, concept("b")] })))[0].path).toBe("concepts[0].keyPoints[0].text");
+  });
+
+  it("rejects a topic label too long for one line of Mastery's checklist", () => {
+    const words = concept("a");
+    words.keyPoints[0] = { ...words.keyPoints[0], label: "one two three four five six seven" };
+    expect(errors(checkPack(pack({ concepts: [words, concept("b")] })))[0].path).toBe("concepts[0].keyPoints[0].label");
+    const chars = concept("a");
+    chars.keyPoints[0] = { ...chars.keyPoints[0], label: "x".repeat(45) };
+    expect(errors(checkPack(pack({ concepts: [chars, concept("b")] })))[0].path).toBe("concepts[0].keyPoints[0].label");
+  });
+
+  it("rejects a topic label written as a sentence, because it would be something to read out", () => {
+    const c = concept("a");
+    c.keyPoints[0] = { ...c.keyPoints[0], label: "VIF detects collinearity." };
+    expect(errors(checkPack(pack({ concepts: [c, concept("b")] })))[0].path).toBe("concepts[0].keyPoints[0].label");
+  });
+
+  it("rejects two topics with one name on a card, since a learner could not tell the ticks apart", () => {
+    const a = concept("a"), b = concept("b");
+    b.keyPoints[0] = { ...b.keyPoints[0], label: a.keyPoints[0].label.toUpperCase() };
+    const issues = errors(checkPack(pack({ concepts: [a, b], cards: [{ id: "one", title: "One", conceptIds: ["a", "b"] }] })));
+    expect(issues.some(i => i.path === "cards[0]" && /both labelled/.test(i.message))).toBe(true);
   });
 
   it("rejects an anchor longer than six words, so anchors locate a passage rather than copy it", () => {

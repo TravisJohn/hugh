@@ -44,15 +44,40 @@ describe("text request boundaries", () => {
     const code = "```python\n" + "records = [{'id': 1, 'name': 'Málaga'}]\n".repeat(120) + "```";
     expect(parseTextBody("code", { messages: [msg(code)], context: "Python drill" }).messages[0].content).toBe(code);
   });
-  it("validates all mastery phases, enum types and complete transcripts", () => {
-    const base = { milestoneId: "00000000-0000-0000-0000-000000000001", scenario: "interview", phase: "open", messages: [] };
-    expect(parseTextBody("session", base)).toEqual(base);
-    for (const field of [{ scenario: ["interview"] }, { scenario: "__proto__" }, { phase: ["open"] }, { milestoneId: "oops" }, { messages: {} }]) {
-      expect(() => parseTextBody("session", { ...base, ...field })).toThrow();
+  it("accepts a mastery session's three steps, each with only what that step needs", () => {
+    const id = "00000000-0000-0000-0000-000000000001";
+    const start = { phase: "start", milestoneId: id };
+    const turn = { phase: "turn", sessionId: id, said: "VIF measures inflation", recent: [] };
+    const finish = { phase: "finish", sessionId: id };
+    expect(parseTextBody("session", start)).toEqual(start);
+    expect(parseTextBody("session", turn)).toEqual(turn);
+    expect(parseTextBody("session", finish)).toEqual(finish);
+  });
+  it("refuses a browser naming its own ticks, score or result in a mastery request", () => {
+    const id = "00000000-0000-0000-0000-000000000001";
+    expect(() => parseTextBody("session", { phase: "turn", sessionId: id, said: "x", recent: [], covered: ["a:1"] })).toThrow();
+    expect(() => parseTextBody("session", { phase: "finish", sessionId: id, score: 10 })).toThrow();
+    expect(() => parseTextBody("session", { phase: "start", milestoneId: id, topic_refs: ["a:1"] })).toThrow();
+  });
+  it("refuses a malformed mastery request", () => {
+    const id = "00000000-0000-0000-0000-000000000001";
+    for (const body of [
+      { phase: "open", milestoneId: id },
+      { phase: ["start"], milestoneId: id },
+      { phase: "start", milestoneId: "oops" },
+      { phase: "finish", sessionId: "oops" },
+      { phase: "turn", sessionId: id, said: "   ", recent: [] },
+      { phase: "turn", sessionId: id, said: "x", recent: {} },
+    ]) {
+      expect(() => parseTextBody("session", body)).toThrow();
     }
-    const messages = Array.from({ length: 6 }, (_, i) => ({ role: i % 2 ? "learner" : "hugh", text: "A short response" }));
-    expect(parseTextBody("session", { ...base, phase: "evaluate", messages }).messages).toEqual(messages);
-    expect(() => parseTextBody("session", { ...base, phase: "evaluate", messages: [...messages, ...messages] })).toThrow();
+  });
+  it("bounds how much earlier conversation a mastery turn may send", () => {
+    const id = "00000000-0000-0000-0000-000000000001";
+    const recent = Array.from({ length: 6 }, (_, i) => ({ role: i % 2 ? "learner" : "hugh", text: "A short response" }));
+    const accepted = parseTextBody("session", { phase: "turn", sessionId: id, said: "x", recent });
+    expect(accepted.phase === "turn" && accepted.recent).toEqual(recent);
+    expect(() => parseTextBody("session", { phase: "turn", sessionId: id, said: "x", recent: [...recent, ...recent] })).toThrow();
   });
 });
 

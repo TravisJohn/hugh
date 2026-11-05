@@ -228,6 +228,7 @@
       "keyPoints": [
         {
           "text": "A problem is nonlinear when a model of the form bias plus weighted features cannot predict its label accurately; in other words, its decision surface is not a line.",
+          "label": "Nonlinear problems and linear models",
           "sourceId": "g-nn-intro",
           "locator": "Neural networks: introduction",
           "anchor": {
@@ -237,6 +238,7 @@
         },
         {
           "text": "A feature cross, built from two existing features, lets a linear model represent a nonlinear relationship between them, such as a hyperbolic boundary between two classes.",
+          "label": "Feature crosses for nonlinear boundaries",
           "sourceId": "g-nn-intro",
           "locator": "Neural networks: introduction",
           "anchor": {
@@ -246,6 +248,7 @@
         },
         {
           "text": "Neural networks are model architectures designed to find nonlinear patterns; during training the model learns by itself the feature crosses that minimise loss, so nobody has to find them by experiment.",
+          "label": "Automatic feature cross learning",
           "sourceId": "g-nn-intro",
           "locator": "Neural networks: introduction",
           "anchor": {
@@ -255,6 +258,7 @@
         },
         {
           "text": "Linearity implies monotonicity: increasing a feature must always increase the output if its weight is positive, or always decrease it if the weight is negative.",
+          "label": "Linearity and monotonicity",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.1 Limitations of linear models",
           "anchor": {
@@ -264,6 +268,7 @@
         },
         {
           "text": "Some relationships are not even monotonic: above a normal body temperature of 37°C higher temperatures indicate greater health risk, but below it lower temperatures do.",
+          "label": "Non-monotonic relationships in practice",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.1 Limitations of linear models",
           "anchor": {
@@ -286,6 +291,7 @@
       "keyPoints": [
         {
           "text": "Each neuron in a hidden layer is calculated like the output of a linear model: multiply each input from the previous layer by its own weight, sum the products, and add a bias.",
+          "label": "Single neuron weighted sum calculation",
           "sourceId": "g-nn-nodes",
           "locator": "Adding layers to the network",
           "anchor": {
@@ -295,6 +301,7 @@
         },
         {
           "text": "In a multi-layer perceptron each hidden neuron takes a weighted linear sum of the previous layer's values and then applies a non-linear activation function, such as the hyperbolic tangent.",
+          "label": "Hidden neuron activation in an MLP",
           "sourceId": "sk-mlp",
           "locator": "1.17.1 Multi-layer Perceptron",
           "anchor": {
@@ -304,6 +311,7 @@
         },
         {
           "text": "Adjusting a linear network's weights and bias does not change the overall mathematical relationship between its input and output: the model is still linear.",
+          "label": "Linear networks and overall linearity",
           "sourceId": "g-nn-nodes",
           "locator": "Adding layers to the network",
           "anchor": {
@@ -313,6 +321,7 @@
         },
         {
           "text": "An activation function works on a neuron's weighted sum plus its bias to turn input signals into an output; activation functions are differentiable, and most of them add nonlinearity.",
+          "label": "Activation function role and properties",
           "sourceId": "d2l-mlp",
           "locator": "5.1.2 Activation functions",
           "anchor": {
@@ -333,6 +342,7 @@
       "keyPoints": [
         {
           "text": "Linear calculations performed on the output of linear calculations are themselves linear, so a network built only from linear layers cannot learn nonlinearities.",
+          "label": "Stacked linear layers and expressiveness",
           "sourceId": "g-nn-nodes",
           "locator": "Exercise 2",
           "anchor": {
@@ -342,6 +352,7 @@
         },
         {
           "text": "A hidden layer without a non-linearity gains nothing: an affine function of an affine function is still affine, and a linear model could already represent any affine function.",
+          "label": "Affine functions of affine functions",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.3 From linear to nonlinear",
           "anchor": {
@@ -351,6 +362,7 @@
         },
         {
           "text": "To realise the potential of several layers, a non-linear activation function is applied to each hidden unit after its affine step; with it in place, the network can no longer be collapsed into a linear model.",
+          "label": "Activation functions unlocking layer depth",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.3 From linear to nonlinear",
           "anchor": {
@@ -386,6 +398,7 @@
       "keyPoints": [
         {
           "text": "The sigmoid function outputs values between 0 and 1, and the tanh function outputs values between -1 and 1.",
+          "label": "Sigmoid and tanh output ranges",
           "sourceId": "g-nn-activation",
           "locator": "Common activation functions",
           "anchor": {
@@ -395,6 +408,7 @@
         },
         {
           "text": "ReLU, the rectified linear unit, returns 0 when its input is less than 0, and returns the input itself when it is 0 or more.",
+          "label": "ReLU behaviour below and above zero",
           "sourceId": "g-nn-activation",
           "locator": "Common activation functions",
           "anchor": {
@@ -404,6 +418,7 @@
         },
         {
           "text": "ReLU often works a little better than smooth functions such as sigmoid or tanh because it is less susceptible to the vanishing gradient problem, and it is significantly easier to compute.",
+          "label": "ReLU advantages over smooth activations",
           "sourceId": "g-nn-activation",
           "locator": "Common activation functions",
           "anchor": {
@@ -413,6 +428,7 @@
         },
         {
           "text": "In practice any mathematical function can serve as an activation function, but starting with ReLU is recommended.",
+          "label": "Choosing an activation function in practice",
           "sourceId": "g-nn-activation",
           "locator": "Other activation functions",
           "anchor": {
@@ -422,6 +438,7 @@
         },
         {
           "text": "Sigmoid is still widely used on output units to read outputs as probabilities in binary classification, but in hidden layers it has largely been replaced by ReLU, partly because its gradient vanishes for large positive and negative inputs.",
+          "label": "Sigmoid in output vs hidden layers",
           "sourceId": "d2l-mlp",
           "locator": "5.1.2.2 Sigmoid function",
           "anchor": {
@@ -445,6 +462,7 @@
       "keyPoints": [
         {
           "text": "In neural network terminology, the layers between the input layer and the output layer are hidden layers, and the nodes in them are called neurons.",
+          "label": "Hidden layers and neuron terminology",
           "sourceId": "g-nn-nodes",
           "locator": "Adding layers to the network",
           "anchor": {
@@ -454,6 +472,7 @@
         },
         {
           "text": "Stacking fully connected layers, each feeding the one above until the outputs, gives a multilayer perceptron (MLP); the earlier layers can be thought of as a representation and the final layer as a linear predictor.",
+          "label": "MLP structure and layer roles",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.2 Incorporating hidden layers",
           "anchor": {
@@ -463,6 +482,7 @@
         },
         {
           "text": "When layers are fully connected, every input influences every neuron in the hidden layer, and each of those influences every neuron in the output layer.",
+          "label": "Fully connected layer influence",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.2 Incorporating hidden layers",
           "anchor": {
@@ -472,6 +492,7 @@
         },
         {
           "text": "A network with three inputs, one hidden layer of four neurons and one output has 21 parameters: three weights and a bias for each hidden neuron (16), plus four weights and a bias for the output (5).",
+          "label": "Parameter count in a small network",
           "sourceId": "g-nn-nodes",
           "locator": "Exercise 2",
           "anchor": {
@@ -481,6 +502,7 @@
         },
         {
           "text": "The standard components of a neural network are nodes organised in layers, learned weights and biases connecting each layer to the one beneath it, and an activation function transforming each node's output; different layers may use different activation functions.",
+          "label": "Standard neural network components",
           "sourceId": "g-nn-activation",
           "locator": "Summary",
           "anchor": {
@@ -502,6 +524,7 @@
       "keyPoints": [
         {
           "text": "Forward propagation, or the forward pass, calculates and stores a network's intermediate values, including its outputs, in order from the input layer to the output layer.",
+          "label": "Forward propagation and stored values",
           "sourceId": "d2l-backprop",
           "locator": "5.3.1 Forward propagation",
           "anchor": {
@@ -511,6 +534,7 @@
         },
         {
           "text": "Each layer is calculated from the one before it: the neurons of the output layer, for example, take the hidden layer's neuron values as their inputs.",
+          "label": "Layer-by-layer forward calculation",
           "sourceId": "g-nn-nodes",
           "locator": "Adding layers to the network",
           "anchor": {
@@ -520,6 +544,7 @@
         },
         {
           "text": "In a multi-layer perceptron the input layer is a set of neurons representing the input features, and the output layer receives the last hidden layer's values and transforms them into output values.",
+          "label": "Input and output layer functions",
           "sourceId": "sk-mlp",
           "locator": "1.17.1 Multi-layer Perceptron",
           "anchor": {
@@ -529,6 +554,7 @@
         },
         {
           "text": "With a sigmoid activation, each node's output is a sigmoid transform of a linear combination of the previous layer's nodes, so every output lies between 0 and 1.",
+          "label": "Sigmoid forward pass node outputs",
           "sourceId": "g-nn-activation",
           "locator": "Neural networks: activation functions",
           "anchor": {
@@ -552,6 +578,7 @@
       "keyPoints": [
         {
           "text": "For regression, scikit-learn's multi-layer perceptron uses no activation function in the output layer, which is the same as the identity; it uses squared error as the loss and outputs continuous values.",
+          "label": "Regression output layer and loss",
           "sourceId": "sk-mlp",
           "locator": "1.17.3 Regression",
           "anchor": {
@@ -561,6 +588,7 @@
         },
         {
           "text": "A one-vs.-all neural network has one output node per class, each with a sigmoid activation, so each output value is the probability that the example belongs to that class.",
+          "label": "One-vs-all output nodes",
           "sourceId": "g-nn-multiclass",
           "locator": "One versus all",
           "anchor": {
@@ -570,6 +598,7 @@
         },
         {
           "text": "Applying softmax to the output layer assigns each class a probability so that all of them add up to 1.0, a constraint that helps training converge more quickly.",
+          "label": "Softmax and probability distribution",
           "sourceId": "g-nn-multiclass",
           "locator": "One versus one (softmax)",
           "anchor": {
@@ -579,6 +608,7 @@
         },
         {
           "text": "Softmax assumes each example belongs to exactly one class; when an example can belong to several classes at once, softmax cannot be used and multiple logistic regressions are needed instead.",
+          "label": "Softmax assumptions and multi-label cases",
           "sourceId": "g-nn-multiclass",
           "locator": "One label versus many labels",
           "anchor": {
@@ -601,6 +631,7 @@
       "keyPoints": [
         {
           "text": "Loss is a number describing how wrong a model's predictions are, measured as the distance between predictions and actual labels; the goal of training is to reduce it to its lowest possible value.",
+          "label": "Loss definition and training goal",
           "sourceId": "g-linreg-loss",
           "locator": "Linear regression: loss",
           "anchor": {
@@ -610,6 +641,7 @@
         },
         {
           "text": "When choosing a loss, consider outliers: mean squared error moves the model toward outliers while mean absolute error does not, and L2 loss penalises an outlier much more heavily than L1 loss.",
+          "label": "Loss choice and outlier sensitivity",
           "sourceId": "g-linreg-loss",
           "locator": "Choosing a loss",
           "anchor": {
@@ -619,6 +651,7 @@
         },
         {
           "text": "A multi-layer perceptron's loss depends on the problem: average cross-entropy for classification, shown with an L2 penalty term on the weights, and mean squared error for regression.",
+          "label": "MLP loss functions by problem type",
           "sourceId": "sk-mlp",
           "locator": "Mathematical formulation",
           "anchor": {
@@ -628,6 +661,7 @@
         },
         {
           "text": "With softmax and cross-entropy, the derivative for each output is the gap between the probability the model assigned and what actually happened, much as the regression gradient is observation minus estimate.",
+          "label": "Softmax cross-entropy output gradient",
           "sourceId": "d2l-softmax",
           "locator": "4.1.2.2 Softmax and cross-entropy loss",
           "anchor": {
@@ -662,6 +696,7 @@
       "keyPoints": [
         {
           "text": "A multi-layer perceptron starts from random weights and minimises its loss function by repeatedly updating those weights.",
+          "label": "Weight updates from random initialisation",
           "sourceId": "sk-mlp",
           "locator": "Mathematical formulation",
           "anchor": {
@@ -671,6 +706,7 @@
         },
         {
           "text": "In gradient descent the gradient of the loss with respect to the weights is computed and subtracted from the weights, scaled by a learning rate that is greater than zero.",
+          "label": "Gradient computation and weight update",
           "sourceId": "sk-mlp",
           "locator": "Mathematical formulation",
           "anchor": {
@@ -680,6 +716,7 @@
         },
         {
           "text": "If the learning rate is too low, a model can take a long time to converge; if it is too high, the model never converges and instead bounces around the weights and bias that minimise the loss.",
+          "label": "Learning rate and convergence behaviour",
           "sourceId": "g-hyperparameters",
           "locator": "Learning rate",
           "anchor": {
@@ -689,6 +726,7 @@
         },
         {
           "text": "The ideal learning rate depends on the problem: each model and dataset has its own.",
+          "label": "Problem-specific ideal learning rate",
           "sourceId": "g-hyperparameters",
           "locator": "Learning rate",
           "anchor": {
@@ -698,6 +736,7 @@
         },
         {
           "text": "Training stops when it reaches a preset maximum number of iterations, or when the improvement in loss falls below a small threshold.",
+          "label": "Training stopping criteria",
           "sourceId": "sk-mlp",
           "locator": "Mathematical formulation",
           "anchor": {
@@ -731,6 +770,7 @@
       "keyPoints": [
         {
           "text": "The loss of a linear model always forms a convex surface, so when a linear regression converges it has found the weights and bias that produce the lowest loss.",
+          "label": "Linear model loss surface convexity",
           "sourceId": "g-gradient-descent",
           "locator": "Convergence and convex functions",
           "anchor": {
@@ -740,6 +780,7 @@
         },
         {
           "text": "Unlike much earlier work, deep learning accepts suboptimal solutions, deals with non-convex nonlinear optimisation problems, and is willing to try things before proving them.",
+          "label": "Deep learning and non-convex optimisation",
           "sourceId": "d2l-intro",
           "locator": "1.7 Success stories / characteristics",
           "anchor": {
@@ -749,6 +790,7 @@
         },
         {
           "text": "In practice, finding parameters that fit a neural network's training data is seldom the problem; understanding how the trained network generalises is far the bigger one.",
+          "label": "Generalisation vs fitting in practice",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5 Generalization in deep learning",
           "anchor": {
@@ -783,6 +825,7 @@
       "keyPoints": [
         {
           "text": "Backpropagation is the most common training algorithm for neural networks; it is what makes gradient descent feasible for networks with several layers.",
+          "label": "Backpropagation and gradient descent",
           "sourceId": "g-nn-backprop",
           "locator": "Training using backpropagation",
           "anchor": {
@@ -792,6 +835,7 @@
         },
         {
           "text": "Backpropagation calculates the gradient for a network's parameters by traversing the network in reverse order, from the output layer to the input layer, using the chain rule from calculus.",
+          "label": "Chain rule and reverse network traversal",
           "sourceId": "d2l-backprop",
           "locator": "5.3.3 Backpropagation",
           "anchor": {
@@ -801,6 +845,7 @@
         },
         {
           "text": "After the loss is computed, a backward pass propagates it from the output layer to the earlier layers, giving every weight an update value meant to decrease the loss.",
+          "label": "Backward pass and weight updates",
           "sourceId": "sk-mlp",
           "locator": "Mathematical formulation",
           "anchor": {
@@ -810,6 +855,7 @@
         },
         {
           "text": "Training alternates forward propagation with backpropagation, and backpropagation reuses values stored during the forward pass; that is one reason training needs significantly more memory than prediction.",
+          "label": "Forward and backward pass memory use",
           "sourceId": "d2l-backprop",
           "locator": "5.3.4 Training neural networks",
           "anchor": {
@@ -819,6 +865,7 @@
         },
         {
           "text": "Machine learning libraries such as Keras handle backpropagation automatically, so you do not perform the underlying calculations yourself.",
+          "label": "Automatic backpropagation in libraries",
           "sourceId": "g-nn-backprop",
           "locator": "Training using backpropagation",
           "anchor": {
@@ -855,6 +902,7 @@
       "keyPoints": [
         {
           "text": "Batch size is the number of examples a model processes before it updates its weights and bias; when a dataset holds hundreds of thousands or millions of examples, using the full batch is not practical.",
+          "label": "Batch size and full-batch impracticality",
           "sourceId": "g-hyperparameters",
           "locator": "Batch size",
           "anchor": {
@@ -864,6 +912,7 @@
         },
         {
           "text": "Stochastic gradient descent uses a single example per iteration, chosen at random; given enough iterations it works, but it is very noisy.",
+          "label": "Stochastic gradient descent and noise",
           "sourceId": "g-hyperparameters",
           "locator": "Batch size",
           "anchor": {
@@ -873,6 +922,7 @@
         },
         {
           "text": "Mini-batch stochastic gradient descent is a compromise: each iteration takes a random batch of more than one but fewer than all examples, averages their gradients, and updates the weights and bias once.",
+          "label": "Mini-batch gradient averaging",
           "sourceId": "g-hyperparameters",
           "locator": "Batch size",
           "anchor": {
@@ -882,6 +932,7 @@
         },
         {
           "text": "An epoch means the model has processed every training example once; with 1,000 examples and a mini-batch size of 100, one epoch takes 10 iterations.",
+          "label": "Epoch and iteration relationship",
           "sourceId": "g-hyperparameters",
           "locator": "Epochs",
           "anchor": {
@@ -891,6 +942,7 @@
         },
         {
           "text": "Rather than a full batch or a single example, training usually takes a minibatch; its size depends on memory, hardware, the layers and the dataset, and a number between 32 and 256 is a good start.",
+          "label": "Typical minibatch size range",
           "sourceId": "d2l-linreg",
           "locator": "3.1.1.4 Minibatch stochastic gradient descent",
           "anchor": {
@@ -926,6 +978,7 @@
       "keyPoints": [
         {
           "text": "Adam is a stochastic optimiser like SGD, but it automatically adjusts how much to update each parameter, using adaptive estimates of lower-order moments.",
+          "label": "Adam adaptive parameter updates",
           "sourceId": "sk-mlp",
           "locator": "1.17.5 Algorithms",
           "anchor": {
@@ -935,6 +988,7 @@
         },
         {
           "text": "SGD and Adam support online and mini-batch training; L-BFGS, a solver that approximates second-order derivative information, supports neither.",
+          "label": "SGD, Adam and L-BFGS training modes",
           "sourceId": "sk-mlp",
           "locator": "1.17.5 Algorithms",
           "anchor": {
@@ -944,6 +998,7 @@
         },
         {
           "text": "L-BFGS was observed to converge faster and to better solutions on small datasets, Adam is robust on relatively large ones, and SGD with momentum can beat both if its learning rate is tuned well.",
+          "label": "Optimiser comparison across dataset sizes",
           "sourceId": "sk-mlp",
           "locator": "1.17.7 Tips on practical use",
           "anchor": {
@@ -965,6 +1020,7 @@
       "keyPoints": [
         {
           "text": "A loss curve shows how loss changes as a model trains; a typical one falls steeply over the first few iterations, then gradually, before flattening out.",
+          "label": "Typical loss curve shape",
           "sourceId": "g-gradient-descent",
           "locator": "Model convergence and loss curves",
           "anchor": {
@@ -974,6 +1030,7 @@
         },
         {
           "text": "Once a model converges, more iterations no longer reduce the loss, which then fluctuates slightly around its lowest values; to confirm convergence, keep training until the loss has stabilised.",
+          "label": "Convergence and loss stabilisation",
           "sourceId": "g-gradient-descent",
           "locator": "Gradient descent",
           "anchor": {
@@ -983,6 +1040,7 @@
         },
         {
           "text": "With a learning rate that is too large the model never converges: each iteration makes the loss either bounce around or keep increasing.",
+          "label": "Large learning rate and loss behaviour",
           "sourceId": "g-hyperparameters",
           "locator": "Learning rate",
           "anchor": {
@@ -992,6 +1050,7 @@
         },
         {
           "text": "To improve an oscillating loss curve, check the data against a schema and remove bad examples, and reduce the learning rate.",
+          "label": "Remedies for oscillating loss",
           "sourceId": "g-loss-curves",
           "locator": "Exercise 1: Oscillating loss curve",
           "anchor": {
@@ -1001,6 +1060,7 @@
         },
         {
           "text": "A sudden jump in loss can come from NaNs in the input data, such as a value produced by dividing by zero, or from a batch holding a burst of outliers after poor shuffling.",
+          "label": "Sudden loss jumps and their causes",
           "sourceId": "g-loss-curves",
           "locator": "Exercise 2: Loss curve with a sharp jump",
           "anchor": {
@@ -1023,6 +1083,7 @@
       "keyPoints": [
         {
           "text": "Unstable gradients threaten optimisation itself: updates can be so large that they destroy the model, the exploding gradient problem, or so small that parameters hardly move, the vanishing gradient problem.",
+          "label": "Exploding and vanishing gradient problems",
           "sourceId": "d2l-init",
           "locator": "5.4.1 Vanishing and exploding gradients",
           "anchor": {
@@ -1032,6 +1093,7 @@
         },
         {
           "text": "In deep networks the gradients for layers near the input can be products of many small terms; when they approach 0 they are said to vanish, and those layers train very slowly or not at all.",
+          "label": "Near-input layer gradient products",
           "sourceId": "g-nn-backprop",
           "locator": "Vanishing gradients",
           "anchor": {
@@ -1041,6 +1103,7 @@
         },
         {
           "text": "The sigmoid's gradient vanishes when its inputs are large and when they are small, so across many layers the overall gradient may vanish; this is why ReLU became the default choice.",
+          "label": "Sigmoid gradient vanishing across layers",
           "sourceId": "d2l-init",
           "locator": "5.4.1.1 Vanishing gradients",
           "anchor": {
@@ -1050,6 +1113,7 @@
         },
         {
           "text": "If a network's weights are very large, the lower layers' gradients involve products of many large terms and can explode, growing too large to converge; batch normalisation or a lower learning rate can help.",
+          "label": "Large weights and exploding gradients",
           "sourceId": "g-nn-backprop",
           "locator": "Exploding gradients",
           "anchor": {
@@ -1059,6 +1123,7 @@
         },
         {
           "text": "A ReLU unit whose weighted sum falls below 0 can get stuck outputting 0, with no gradient flowing through it, and may never recover; a lower learning rate or a ReLU variant such as LeakyReLU helps prevent this.",
+          "label": "Dead ReLU units and recovery",
           "sourceId": "g-nn-backprop",
           "locator": "Dead ReLU units",
           "anchor": {
@@ -1081,6 +1146,7 @@
       "keyPoints": [
         {
           "text": "The initialisation scheme plays a significant role in how a network learns: together with the activation function it affects how quickly optimisation converges, and poor choices can cause exploding or vanishing gradients.",
+          "label": "Initialisation effects on learning",
           "sourceId": "d2l-init",
           "locator": "5.4 Numerical stability and initialization",
           "anchor": {
@@ -1090,6 +1156,7 @@
         },
         {
           "text": "Initialisation heuristics aim to keep the initial gradients neither too large nor too small, and random initialisation is key to breaking symmetry before optimisation.",
+          "label": "Symmetry breaking and gradient scale",
           "sourceId": "d2l-init",
           "locator": "5.4.3 Summary",
           "anchor": {
@@ -1099,6 +1166,7 @@
         },
         {
           "text": "Xavier initialisation aims for the variance of each layer's outputs not to depend on its number of inputs, and the variance of its gradients not to depend on its number of outputs.",
+          "label": "Xavier initialisation variance targets",
           "sourceId": "d2l-init",
           "locator": "5.4.3 Summary",
           "anchor": {
@@ -1108,6 +1176,7 @@
         },
         {
           "text": "If you do not specify an initialisation method, deep learning frameworks use a default random initialisation, which often works well in practice.",
+          "label": "Default initialisation in frameworks",
           "sourceId": "d2l-init",
           "locator": "5.4.2.1 Default initialization",
           "anchor": {
@@ -1142,6 +1211,7 @@
       "keyPoints": [
         {
           "text": "Overfitting means building a model that matches, or memorises, the training set so closely that it fails to make correct predictions on new data.",
+          "label": "Overfitting and training set memorisation",
           "sourceId": "g-overfitting",
           "locator": "Overfitting",
           "anchor": {
@@ -1151,6 +1221,7 @@
         },
         {
           "text": "On a generalisation curve, training and validation loss behave alike at first and then diverge, with training loss falling or holding steady while validation loss rises; that suggests overfitting.",
+          "label": "Generalisation curve and diverging losses",
           "sourceId": "g-overfitting",
           "locator": "Detecting overfitting",
           "anchor": {
@@ -1160,6 +1231,7 @@
         },
         {
           "text": "If training and validation error are both substantial with little gap between them, the model may be too simple to capture the pattern; that is underfitting.",
+          "label": "Underfitting and model capacity",
           "sourceId": "d2l-generalization",
           "locator": "3.6.2 Underfitting or overfitting?",
           "anchor": {
@@ -1169,6 +1241,7 @@
         },
         {
           "text": "Deep networks for classification are typically expressive enough to fit every training example perfectly, even in datasets of millions of examples.",
+          "label": "Deep network capacity on large datasets",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5.1 Revisiting overfitting and regularization",
           "anchor": {
@@ -1178,6 +1251,7 @@
         },
         {
           "text": "Because the deep networks being compared can often fit all the training labels, nearly all gains must come from mitigating overfitting, that is, closing the generalisation gap.",
+          "label": "Where deep network gains come from",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5.5 Summary",
           "anchor": {
@@ -1224,6 +1298,7 @@
       "keyPoints": [
         {
           "text": "Hyperparameters, such as the learning rate, batch size and number of epochs, are values you control; parameters, such as the weights and bias, are values the model calculates during training.",
+          "label": "Hyperparameters vs learned parameters",
           "sourceId": "g-hyperparameters",
           "locator": "Linear regression: hyperparameters",
           "anchor": {
@@ -1233,6 +1308,7 @@
         },
         {
           "text": "A multi-layer perceptron requires several hyperparameters to be tuned, such as the number of hidden neurons, the number of layers and the number of iterations.",
+          "label": "MLP hyperparameters to tune",
           "sourceId": "sk-mlp",
           "locator": "Advantages and disadvantages",
           "anchor": {
@@ -1242,6 +1318,7 @@
         },
         {
           "text": "Use a validation set to evaluate results while you develop a model, and once it suggests the model predicts well, use a separate test set to double-check it.",
+          "label": "Validation and test set roles",
           "sourceId": "g-dividing-datasets",
           "locator": "Training, validation, and test sets",
           "anchor": {
@@ -1251,6 +1328,7 @@
         },
         {
           "text": "Hyperparameters should all be chosen before the test set is touched, because using test data in model selection risks overfitting the test data.",
+          "label": "Test set and hyperparameter selection order",
           "sourceId": "d2l-generalization",
           "locator": "3.6.3 Model selection",
           "anchor": {
@@ -1260,6 +1338,7 @@
         },
         {
           "text": "When training data is scarce, K-fold cross-validation splits it into K subsets, trains and validates K times, each time holding out a different subset, and averages the results.",
+          "label": "K-fold cross-validation for small datasets",
           "sourceId": "d2l-generalization",
           "locator": "3.6.3.1 Cross-validation",
           "anchor": {
@@ -1295,6 +1374,7 @@
       "keyPoints": [
         {
           "text": "Weight decay, usually called L2 regularisation outside deep learning, restricts the values the parameters can take rather than their number, and may be the most widely used way to regularise parametric models.",
+          "label": "L2 regularisation and parameter constraints",
           "sourceId": "d2l-weight-decay",
           "locator": "3.7.1 Norms and weight decay",
           "anchor": {
@@ -1304,6 +1384,7 @@
         },
         {
           "text": "Weights close to zero barely affect L2 regularisation, but large weights can have a huge impact on it.",
+          "label": "Weight magnitude and L2 penalty impact",
           "sourceId": "g-regularization",
           "locator": "L2 regularization",
           "anchor": {
@@ -1313,6 +1394,7 @@
         },
         {
           "text": "scikit-learn's multi-layer perceptrons use a parameter, alpha, for an L2 regularisation term that helps avoid overfitting by penalising weights with large magnitudes.",
+          "label": "Alpha parameter in scikit-learn MLPs",
           "sourceId": "sk-mlp",
           "locator": "1.17.4 Regularization",
           "anchor": {
@@ -1322,6 +1404,7 @@
         },
         {
           "text": "Setting the regularisation rate to zero removes regularisation completely, so training focuses only on minimising loss, which carries the highest possible risk of overfitting.",
+          "label": "Zero regularisation and overfitting exposure",
           "sourceId": "g-regularization",
           "locator": "Regularization rate (lambda)",
           "anchor": {
@@ -1331,6 +1414,7 @@
         },
         {
           "text": "The learning rate and the regularisation rate tend to pull weights in opposite directions: a high learning rate often pulls weights away from zero, while a high regularisation rate pushes them towards it.",
+          "label": "Learning rate vs regularisation rate effects",
           "sourceId": "g-regularization",
           "locator": "Finding equilibrium between learning rate and regularization rate",
           "anchor": {
@@ -1351,6 +1435,7 @@
       "keyPoints": [
         {
           "text": "Dropout regularisation works by randomly dropping out unit activations in a network for a single gradient step.",
+          "label": "Dropout and random unit deactivation",
           "sourceId": "g-nn-backprop",
           "locator": "Dropout regularization",
           "anchor": {
@@ -1360,6 +1445,7 @@
         },
         {
           "text": "The more you drop out, the stronger the regularisation: a rate of 0.0 means no dropout, 1.0 drops every node so the model learns nothing, and values in between are the useful ones.",
+          "label": "Dropout rate and regularisation strength",
           "sourceId": "g-nn-backprop",
           "locator": "Dropout regularization",
           "anchor": {
@@ -1369,6 +1455,7 @@
         },
         {
           "text": "When dropout zeroes out some hidden units, the output no longer depends on them and their gradients vanish in backpropagation, so the output layer cannot rely too heavily on any one hidden unit.",
+          "label": "Dropout effect on output layer dependence",
           "sourceId": "d2l-dropout",
           "locator": "5.6.1 Dropout in practice",
           "anchor": {
@@ -1378,6 +1465,7 @@
         },
         {
           "text": "Standard dropout zeroes out a fraction of the nodes in each layer and rescales the rest by the fraction retained, so each layer's expected value stays unchanged.",
+          "label": "Dropout zeroing and expected value rescaling",
           "sourceId": "d2l-dropout",
           "locator": "5.6 Dropout",
           "anchor": {
@@ -1410,6 +1498,7 @@
       "keyPoints": [
         {
           "text": "Early stopping regularises without calculating any complexity penalty: it ends training before the model fully converges, for example when the validation loss starts to rise.",
+          "label": "How early stopping limits overfitting",
           "sourceId": "g-regularization",
           "locator": "Early stopping",
           "anchor": {
@@ -1419,6 +1508,7 @@
         },
         {
           "text": "Early stopping usually increases training loss but can decrease test loss; it is quick but rarely optimal, and unlikely to match a model trained thoroughly at the ideal regularisation rate.",
+          "label": "Early stopping trade-offs vs full training",
           "sourceId": "g-regularization",
           "locator": "Early stopping",
           "anchor": {
@@ -1428,6 +1518,7 @@
         },
         {
           "text": "The common stopping rule monitors validation error, typically once per epoch, and stops when it has not improved by more than a small amount for some number of epochs, which is called a patience criterion.",
+          "label": "Patience criterion and stopping rule",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5.3 Early stopping",
           "anchor": {
@@ -1437,6 +1528,7 @@
         },
         {
           "text": "Early stopping matters most when labels are noisy or inherently variable; when classes are cleanly separable and labels are not noisy, it tends not to improve generalisation much.",
+          "label": "When early stopping aids generalisation",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5.3 Early stopping",
           "anchor": {
@@ -1459,6 +1551,7 @@
       "keyPoints": [
         {
           "text": "A multi-layer perceptron is sensitive to feature scaling, so scale each input, for example to [0, 1] or [-1, +1], or standardise it to mean 0 and variance 1, and apply the same scaling to the test set.",
+          "label": "MLP sensitivity to feature scaling",
           "sourceId": "sk-mlp",
           "locator": "1.17.7 Tips on practical use",
           "anchor": {
@@ -1468,6 +1561,7 @@
         },
         {
           "text": "Fit the scaler on the training data only, then apply that same transformation to the test data.",
+          "label": "Scaler fitting and test set application",
           "sourceId": "sk-mlp",
           "locator": "1.17.7 Tips on practical use",
           "anchor": {
@@ -1477,6 +1571,7 @@
         },
         {
           "text": "Normalising features to similar ranges helps a model converge faster, because with very different ranges gradient descent can bounce; optimisers such as Adagrad and Adam guard against this by changing the effective learning rate over time.",
+          "label": "Feature normalisation and convergence speed",
           "sourceId": "g-normalization",
           "locator": "Numerical data: normalization",
           "anchor": {
@@ -1486,6 +1581,7 @@
         },
         {
           "text": "Without feature scaling, a model pays too much attention to features with wide ranges and not enough to features with narrow ranges.",
+          "label": "Feature range imbalance and model attention",
           "sourceId": "g-normalization",
           "locator": "Numerical data: normalization",
           "anchor": {
@@ -1495,6 +1591,7 @@
         },
         {
           "text": "Very high feature values invite the NaN trap: a value that exceeds floating-point precision is set to NaN, and once one number in the model becomes NaN, others eventually do too.",
+          "label": "Very high values and NaN propagation",
           "sourceId": "g-normalization",
           "locator": "Numerical data: normalization",
           "anchor": {
@@ -1529,6 +1626,7 @@
       "keyPoints": [
         {
           "text": "When the right representation of the data cannot be worked out by hand, a deep network uses data to learn both a representation, in its hidden layers, and a linear predictor that acts on it.",
+          "label": "Learning representations from data",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.1 Limitations of linear models",
           "anchor": {
@@ -1538,6 +1636,7 @@
         },
         {
           "text": "Representation learning is about automatically finding the appropriate way to represent data; deep learning does it as multi-level representation learning, through many layers of transformations.",
+          "label": "Multi-level representation learning",
           "sourceId": "d2l-intro",
           "locator": "1.8 Summary",
           "anchor": {
@@ -1547,6 +1646,7 @@
         },
         {
           "text": "A key advantage of deep learning is that it replaces not only the shallow model at the end of a traditional pipeline but also the labour-intensive process of feature engineering.",
+          "label": "Deep learning replacing feature engineering",
           "sourceId": "d2l-intro",
           "locator": "1.7 Success stories / characteristics",
           "anchor": {
@@ -1556,6 +1656,7 @@
         },
         {
           "text": "Each layer of a network is, in effect, learning a more complex, higher-level function over the raw inputs.",
+          "label": "Layer-wise function complexity",
           "sourceId": "g-nn-activation",
           "locator": "Neural networks: activation functions",
           "anchor": {
@@ -1565,6 +1666,7 @@
         },
         {
           "text": "Once deep learning took over, manually engineered ways of transforming data for shallow models were replaced by automatically tuned filters that gave better accuracy.",
+          "label": "Learned filters vs manual data transforms",
           "sourceId": "d2l-intro",
           "locator": "1.7 Success stories / characteristics",
           "anchor": {
@@ -1587,6 +1689,7 @@
       "keyPoints": [
         {
           "text": "Even a network with a single hidden layer, given enough nodes and the right weights, can model any function; actually learning that function is the hard part.",
+          "label": "Single hidden layer theoretical capacity",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.4 Universal approximators",
           "anchor": {
@@ -1596,6 +1699,7 @@
         },
         {
           "text": "Many functions can be approximated much more compactly with deeper, rather than wider, networks.",
+          "label": "Depth vs width for compact approximation",
           "sourceId": "d2l-mlp",
           "locator": "5.1.1.4 Universal approximators",
           "anchor": {
@@ -1605,6 +1709,7 @@
         },
         {
           "text": "A deep multilayer perceptron has an inductive bias towards building up a complicated function by composing simpler functions.",
+          "label": "Inductive bias toward composed functions",
           "sourceId": "d2l-generalization-deep",
           "locator": "5.5.1 Revisiting overfitting and regularization",
           "anchor": {
@@ -1614,6 +1719,7 @@
         },
         {
           "text": "Once activation functions are in place, adding layers has more impact: stacking nonlinearities on nonlinearities lets a model represent very complicated relationships between inputs and predictions.",
+          "label": "Stacked nonlinearities and model complexity",
           "sourceId": "g-nn-activation",
           "locator": "Neural networks: activation functions",
           "anchor": {
@@ -1647,6 +1753,7 @@
       "keyPoints": [
         {
           "text": "Unlike neural networks, decision forests consume tabular data natively, with no need for preprocessing such as feature normalisation or one-hot encoding, or for imputing missing values.",
+          "label": "Decision forests and native tabular input",
           "sourceId": "g-df-appropriate",
           "locator": "Appropriate data",
           "anchor": {
@@ -1656,6 +1763,7 @@
         },
         {
           "text": "Decision forests are not well suited to consuming unstructured data such as images or text directly; workarounds exist, but neural networks generally handle such data better.",
+          "label": "Decision forests on unstructured data",
           "sourceId": "g-df-appropriate",
           "locator": "Appropriate data",
           "anchor": {
@@ -1665,6 +1773,7 @@
         },
         {
           "text": "Decision forests are sample efficient, suiting small datasets and those with a high ratio of features to examples, and they typically make predictions faster than comparable neural networks.",
+          "label": "Decision forest sample efficiency and speed",
           "sourceId": "g-df-appropriate",
           "locator": "Performance",
           "anchor": {
@@ -1674,6 +1783,7 @@
         },
         {
           "text": "Many of the most exciting deep learning models do not work without large datasets, and some that do work with little data are no better than traditional approaches.",
+          "label": "Deep learning data requirements",
           "sourceId": "d2l-intro",
           "locator": "1.2 Key components: data",
           "anchor": {
@@ -1683,6 +1793,7 @@
         },
         {
           "text": "Neural networks are not necessarily always better than simpler approaches such as feature crosses, but they offer a flexible alternative that works well in many cases.",
+          "label": "Neural networks vs simpler alternatives",
           "sourceId": "g-nn-activation",
           "locator": "Summary",
           "anchor": {

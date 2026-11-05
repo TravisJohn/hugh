@@ -111,12 +111,15 @@ export default function PrivacyPage() {
             removes all of it.
           </p>
           <p>
-            Three things do expire. If you upload a document to build a course and never
+            Four things do expire. If you upload a document to build a course and never
             approve the topic Hugh suggests, the text extracted from it is deleted
             after {RETENTION_DAYS.pendingDocumentExtractions} days. A review quiz — its
             questions, its answer key and the answers you picked — is deleted
             after {RETENTION_DAYS.reviewQuizzes} days; whether you passed stays on the
-            card. And technical records of what Hugh did — whether a request succeeded
+            card. The list of topics ticked in a mastery session is deleted
+            after {RETENTION_DAYS.masterySessions} days; it holds which topics, never your
+            words, and your score stays on the card. And technical records of what Hugh
+            did — whether a request succeeded
             and how long it took — are deleted after {RETENTION_DAYS.operationEvents} days.
           </p>
           <p>

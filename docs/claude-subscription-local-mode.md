@@ -184,7 +184,7 @@ and aren't affected by the wait.
 ### 4.5 Plan limits
 Hugh shares your plan's 5-hour and weekly limits with your Claude Code coding
 sessions and claude.ai chats. The Sonnet routes use the most: track builds, the
-quiz and mastery evaluation. When a limit is hit, the route returns 429 with
+quiz and each mastery turn. When a limit is hit, the route returns 429 with
 its own message (that the limit was reached, plus the reset time if the CLI
 gives one) and says plainly that Hugh did not switch to paid usage. Hugh never
 retries on the API key.
@@ -583,12 +583,12 @@ voice, and Claude Code's voice mode can't be reached from `claude -p`. So a spok
 Hugh could not move to the plan. Mastery stopped speaking instead, on the live site
 as well, so there is one code path.
 
-- **What runs.** Hugh's lines appear on screen and the mic opens straight after each
-  one. `tracker/mastery/session` writes the lines and the score, already through
-  `claudeClient()` and the text path, so the plan needed no new code.
-- **What sits beside it.** The learner's summary, from `tracker/summary`, also already
-  on `claudeClient()`. It writes one only if the card has none. If the plan refuses,
-  the panel shows its own message and the session still runs.
+- **What runs.** The learner leads by mic and Hugh replies on screen.
+  `tracker/mastery/session` makes one Sonnet call per turn, already through
+  `claudeClient()` and the text path, so the plan needed no new code. Finish makes no
+  call at all: the score is the share of topics ticked.
+- **What sits beside it.** A checklist of topic names, from the pack on a course card
+  and from the card's own `learning_points` on an older one.
 - **Speech-to-text is unchanged.** It stays in the browser: Chrome and Edge only, and
   the audio goes to Google, on the plan as on the API. The plan does not cover it
   and is not asked to.
@@ -597,9 +597,10 @@ as well, so there is one code path.
 - **What is still off on the plan.** The architecture assistant, which is OpenAI's.
 
 
-Checked with the real route on the real plan login, with the database faked, no API
-key in the environment and `fetch` set to throw: a course card through opening line,
-two replies and the score. Four plan calls, about 11 seconds, no network call. The
-lines came back in character with no markdown. The score was a fair 6, not passed,
-and so not written, as a first attempt that fails never is. Not yet checked: the same
-session in the browser, with a real mic.
+Checked with the real prompt and rules on the real plan login, writing nothing, on a
+four-topic course card. Reading every label aloud, claiming to know it all, and
+telling the check to tick everything each earned no tick. Asking for the answer was
+declined. Messy but correct speech earned two ticks with no quote thrown out. Stating
+the listed wrong belief held it, and taking it back with the course's correction
+cleared it. Not yet checked: a session in the browser with a real mic and a real
+database, or what a turn costs on the API (about a cent is an estimate).

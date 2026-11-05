@@ -18,6 +18,9 @@ export const KEY_POINTS_MIN     = 2;
 export const KEY_POINTS_MAX     = 5;
 export const MISCONCEPTIONS_MAX = 3;
 export const KEY_POINT_MAX_WORDS = 40;
+export const KEY_POINT_LABEL_MAX_WORDS = 6;
+// Fits one line of Mastery's checklist, so the longest card needs no scrollbar.
+export const KEY_POINT_LABEL_MAX_CHARS = 44;
 export const ANCHOR_MIN_WORDS   = 2;
 export const ANCHOR_MAX_WORDS   = 6;
 export const REVIEW_MIN_SAMPLE  = 5;
@@ -96,10 +99,10 @@ class ShapeReader {
 
   keyPoint = (v: unknown, p: string): PackKeyPoint | null => {
     if (!isObj(v)) return this.fail(p, "must be an object");
-    const text = this.str(v, "text", p), sourceId = this.str(v, "sourceId", p);
+    const text = this.str(v, "text", p), label = this.str(v, "label", p), sourceId = this.str(v, "sourceId", p);
     const locator = this.str(v, "locator", p), anchor = this.anchor(v.anchor, `${p}.anchor`);
-    return text !== null && sourceId !== null && locator !== null && anchor !== null
-      ? { text, sourceId, locator, anchor } : null;
+    return text !== null && label !== null && sourceId !== null && locator !== null && anchor !== null
+      ? { text, label, sourceId, locator, anchor } : null;
   };
 
   misconception = (v: unknown, p: string): PackMisconception | null => {
@@ -383,7 +386,18 @@ export function checkPack(pack: ReferencePack): PackIssue[] {
     c.keyPoints.forEach((k, i) => {
       const words = wordCount(k.text);
       if (words > KEY_POINT_MAX_WORDS) error(`${p}.keyPoints[${i}].text`, `is ${words} words; the limit is ${KEY_POINT_MAX_WORDS}`);
+      const labelWords = wordCount(k.label);
+      if (labelWords > KEY_POINT_LABEL_MAX_WORDS) error(`${p}.keyPoints[${i}].label`, `is ${labelWords} words; the limit is ${KEY_POINT_LABEL_MAX_WORDS}`);
+      if (k.label.length > KEY_POINT_LABEL_MAX_CHARS) error(`${p}.keyPoints[${i}].label`, `is ${k.label.length} characters; the limit is ${KEY_POINT_LABEL_MAX_CHARS}`);
+      if (/[.!?;:]\s*$/.test(k.label)) error(`${p}.keyPoints[${i}].label`, "names a topic, so it does not end like a sentence");
     });
+  });
+
+  // Two ticks with the same name would be two things a learner cannot tell apart.
+  const conceptById = new Map(pack.concepts.map(c => [c.id, c]));
+  (pack.cards ?? []).forEach((card, i) => {
+    const labels = card.conceptIds.flatMap(id => (conceptById.get(id)?.keyPoints ?? []).map(k => k.label.trim().toLowerCase()));
+    for (const label of duplicates(labels)) error(`cards[${i}]`, `two topics on this card are both labelled "${label}"`);
   });
 
   for (const t of anchorTargets(pack)) {

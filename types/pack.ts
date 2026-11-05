@@ -41,6 +41,12 @@ export interface PackAnchor {
 export interface PackKeyPoint {
   /** Our own words. Never the source's sentence. */
   text:     string;
+  /**
+   * The topic's name, shown on Mastery's checklist while the learner talks. It
+   * says what to talk about, never what to say. Not part of what the judge
+   * checked: it makes no claim, so writing one leaves a pack's status alone.
+   */
+  label:    string;
   sourceId: string;
   /** Where in the source: a lesson or section, or a page number for a PDF. */
   locator:  string;

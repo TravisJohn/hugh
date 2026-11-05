@@ -51,16 +51,16 @@ function fakeClient(replies: () => Result[]) {
   };
   const chain = {
     select: () => chain, eq: () => chain, order: () => chain, limit: () => chain,
-    is: () => chain, returns: () => chain, update: () => chain, insert: () => chain,
+    is: () => chain, returns: () => chain, update: () => chain, insert: () => chain, delete: () => chain,
     maybeSingle: next, single: next,
     then: (resolve: (r: Result) => unknown) => next().then(resolve),
   };
   return chain;
 }
 
-const card = (conceptIds: string[]) => reply({
+const card = (conceptIds: string[], over: Record<string, unknown> = {}) => reply({
   id: "card", title: "Multicollinearity", mastery_validated: false,
-  concept_ids: conceptIds, tracks: { user_id: "alice" },
+  concept_ids: conceptIds, tracks: { user_id: "alice" }, ...over,
 });
 const notes = reply([{ title: "VIF", body: "Collinear predictors inflate coefficient variance.", covered: null }]);
 const post = (url: string, body: unknown) => new NextRequest(`http://localhost${url}`, { method: "POST", body: JSON.stringify(body) });
@@ -120,48 +120,74 @@ describe("Ask on a course card", () => {
 
 // ── Mastery ─────────────────────────────────────────────────────────────────
 
-describe("scripted mastery on a course card (PRD row 4)", () => {
-  const evaluate = () => session(post("/api/tracker/mastery/session", {
-    milestoneId: "card", scenario: "interview", phase: "evaluate",
-    messages: [{ role: "hugh", text: "What does VIF do?" }, { role: "learner", text: "It removes multicollinearity." }],
-  }));
+describe("a mastery session on a course card (PRD row 4)", () => {
+  const URL = "/api/tracker/mastery/session";
+  const refs = ground.concepts.flatMap(c => c.keyPoints.map(k => k.ref));
+  const heldRow = (over: Record<string, unknown> = {}) => reply({
+    id: "sess", milestone_id: "card", topic_refs: refs, covered: [], held: [], turns: 1, finished_at: null, ...over,
+  });
+  const start = () => session(post(URL, { phase: "start", milestoneId: "card" }));
+  const turn = (said: string) => session(post(URL, { phase: "turn", sessionId: "sess", said, recent: [] }));
+  const finish = () => session(post(URL, { phase: "finish", sessionId: "sess" }));
+  const check = (over: Record<string, unknown> = {}) => mocks.ai.mockResolvedValue(text(JSON.stringify({
+    covered: [], stated: [], corrected: [], reply: "Go on.", ...over,
+  })));
+  const noted = { data: null, error: null, count: 1 } as Result;
 
-  it("judges against the syllabus and asks which wrong beliefs were held", async () => {
-    userReplies = [card(COURSE_CARD), notes];
-    mocks.ai.mockResolvedValue(text(JSON.stringify({ score: 6, feedback: "Partly.", passed: false, misconceptionsHeld: [] })));
-    await evaluate();
-    const prompt = mocks.ai.mock.calls[0]![3].messages[0].content as string;
-    expect(prompt).toContain(syllabus);
-    expect(prompt).toContain('"misconceptionsHeld"');
-    expect(prompt).toMatch(/relative to the course syllabus above/);
+  it("offers the pack's topics by name, keeping the statements behind them on the server", async () => {
+    userReplies = [card(COURSE_CARD), noted];
+    serviceReplies = [reply(null), reply({ id: "sess" })];
+    const body = await (await start()).json();
+    expect(body.topics.map((t: { ref: string }) => t.ref)).toEqual(refs);
+    expect(JSON.stringify(body)).not.toContain(ground.concepts[0]!.keyPoints[0]!.text);
+    expect(mocks.ai).not.toHaveBeenCalled();
   });
 
-  it("fails a high score that left a wrong belief standing, writes nothing, and gives the course's correction", async () => {
-    userReplies = [card(COURSE_CARD), notes];
-    mocks.ai.mockResolvedValue(text(JSON.stringify({ score: 9, feedback: "Fluent.", passed: true, misconceptionsHeld: [vifRef] })));
-    const res  = await evaluate();
-    const body = await res.json();
-    expect(body).toMatchObject({ score: 9, passed: false, record: "skipped" });
-    expect(body.feedback).toContain(vif.correction);
-    expect(body.feedback).toContain(vif.source.href);
+  it("refuses a card whose course can't be taught, in its own words, before opening a session", async () => {
+    userReplies = [card(["linear-regression:no-such-concept"])];
+    const res = await start();
+    expect(res.status).toBe(503);
+    expect((await res.json()).error).toBe(GROUNDING_REFUSAL_MESSAGE["unknown-concept"]);
     expect(mocks.serviceDb.from).not.toHaveBeenCalled();
   });
 
-  it("refuses an evaluation that left out the misconception list, rather than passing on silence", async () => {
-    userReplies = [card(COURSE_CARD), notes];
-    mocks.ai.mockResolvedValue(text(JSON.stringify({ score: 9, feedback: "Fluent.", passed: true })));
-    expect((await evaluate()).status).toBe(500);
-    expect(mocks.serviceDb.from).not.toHaveBeenCalled();
+  it("judges a turn against the card's source-checked points, not the learner's notes", async () => {
+    userReplies = [card(COURSE_CARD)];
+    serviceReplies = [heldRow(), reply({ id: "sess" })];
+    check();
+    expect((await turn("It inflates the variance")).status).toBe(200);
+    const prompt = mocks.ai.mock.calls[0]![3].messages[0].content as string;
+    expect(prompt).toContain(ground.concepts[0]!.keyPoints[0]!.text);
+    expect(prompt).toContain(vif.claim);
+    expect(prompt).not.toContain("<learner_notes>");
   });
 
-  it("leaves an open-topic card's prompt exactly as it was", async () => {
-    userReplies = [card([]), notes];
-    mocks.ai.mockResolvedValue(text(JSON.stringify({ score: 6, feedback: "Partly.", passed: false })));
-    await evaluate();
+  it("holds a listed wrong belief the learner stated, and says so to the page", async () => {
+    userReplies = [card(COURSE_CARD)];
+    serviceReplies = [heldRow(), reply({ id: "sess" })];
+    check({ stated: [{ ref: vifRef, quote: vif.claim }] });
+    expect(await (await turn(vif.claim)).json()).toMatchObject({ heldCount: 1 });
+  });
+
+  it("fails full coverage that left a wrong belief standing, writes nothing, and gives the course's correction", async () => {
+    userReplies = [card(COURSE_CARD)];
+    serviceReplies = [heldRow({ covered: refs, held: [vifRef] }), reply({ id: "sess" })];
+    const body = await (await finish()).json();
+    expect(body).toMatchObject({ score: 10, passed: false, record: "skipped" });
+    expect(body.corrections).toHaveLength(1);
+    expect(body.corrections[0]).toMatchObject({ correction: vif.correction, href: vif.source.href });
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("judges an older card on its own checklist and notes, with no syllabus in sight", async () => {
+    userReplies = [card([], { learning_points: [{ id: "p1", text: "What VIF measures" }] }), notes];
+    serviceReplies = [heldRow({ topic_refs: ["p1"] }), reply({ id: "sess" })];
+    check();
+    expect((await turn("It measures inflation")).status).toBe(200);
     const prompt = mocks.ai.mock.calls[0]![3].messages[0].content as string;
+    expect(prompt).toContain("<learner_notes>");
+    expect(prompt).toContain("What VIF measures");
     expect(prompt).not.toContain("<course_syllabus>");
-    expect(prompt).not.toContain("misconceptionsHeld");
-    expect(prompt).toMatch(/factually correct relative to their own notes/);
   });
 });
 

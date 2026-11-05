@@ -46,10 +46,12 @@ const userUpdate = vi.fn();
 const serviceUpdate = vi.fn();
 const userInsert = vi.fn();
 const serviceInsert = vi.fn();
+const serviceDelete = vi.fn();
+const userDelete = vi.fn();
 const reply = (data: unknown): Result => ({ data, error: null });
 const failure = (message: string, code?: string): Result => ({ data: null, error: { message, code } });
 
-function fakeClient(replies: () => Result[], update: ReturnType<typeof vi.fn>, insert: ReturnType<typeof vi.fn>) {
+function fakeClient(replies: () => Result[], update: ReturnType<typeof vi.fn>, insert: ReturnType<typeof vi.fn>, del: ReturnType<typeof vi.fn>) {
   const next = () => {
     const r = replies().shift();
     if (!r) throw new Error("Unexpected database query");
@@ -60,16 +62,21 @@ function fakeClient(replies: () => Result[], update: ReturnType<typeof vi.fn>, i
     is: () => chain, returns: () => chain,
     maybeSingle: next, single: next,
     then: (resolve: (r: Result) => unknown) => next().then(resolve),
-    update, insert,
+    update, insert, delete: del,
   };
   update.mockReturnValue(chain);
   insert.mockReturnValue(chain);
+  del.mockReturnValue(chain);
   return chain;
 }
 
+const CHECKLIST = [
+  { id: "p1", text: "What VIF measures" }, { id: "p2", text: "When VIF is too high" },
+  { id: "p3", text: "Dropping a predictor" }, { id: "p4", text: "Ridge regression" },
+];
 const owned = (over: Record<string, unknown> = {}) =>
-  reply({ id: "card", title: "Collinearity", mastery_validated: false, tracks: { user_id: "alice" }, ...over });
-const notMine = reply({ id: "card", title: "Collinearity", mastery_validated: false, tracks: { user_id: "bob" } });
+  reply({ id: "card", title: "Collinearity", mastery_validated: false, concept_ids: null, learning_points: CHECKLIST, tracks: { user_id: "alice" }, ...over });
+const notMine = reply({ id: "card", title: "Collinearity", mastery_validated: false, concept_ids: null, learning_points: CHECKLIST, tracks: { user_id: "bob" } });
 
 function patch(body: unknown) {
   return PATCH(
@@ -80,21 +87,25 @@ function patch(body: unknown) {
   );
 }
 
-function evaluate() {
+function sessionCall(body: object) {
   return session(new NextRequest("http://localhost/api/tracker/mastery/session", {
-    method: "POST",
-    body: JSON.stringify({
-      milestoneId: "card", scenario: "interview", phase: "evaluate",
-      messages: [{ role: "hugh", text: "Explain it." }, { role: "learner", text: "It inflates variance." }],
-    }),
-    headers: { "Content-Type": "application/json" },
+    method: "POST", body: JSON.stringify(body), headers: { "Content-Type": "application/json" },
   }));
 }
+const startCall  = () => sessionCall({ phase: "start", milestoneId: "card" });
+const turnCall   = (said: string) => sessionCall({ phase: "turn", sessionId: "sess", said, recent: [] });
+const finishCall = () => sessionCall({ phase: "finish", sessionId: "sess" });
 
-/** The evaluator's reply, as Sonnet would send it. */
-function scored(json: object) {
+/** The server's record of a session in progress. */
+const heldSession = (over: Record<string, unknown> = {}) => reply({
+  id: "sess", milestone_id: "card", topic_refs: ["p1", "p2", "p3", "p4"],
+  covered: [], held: [], turns: 1, finished_at: null, ...over,
+});
+
+/** The check's reply, as Sonnet would send it. */
+function checked(json: object) {
   mocks.ai.mockResolvedValue({
-    content: [{ type: "text", text: JSON.stringify(json) }],
+    content: [{ type: "text", text: JSON.stringify({ covered: [], stated: [], corrected: [], reply: "Go on.", ...json }) }],
     usage: { input_tokens: 10, output_tokens: 5 },
   });
 }
@@ -104,8 +115,8 @@ beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => {});
   userReplies = [];
   serviceReplies = [];
-  mocks.userDb.from.mockReturnValue(fakeClient(() => userReplies, userUpdate, userInsert));
-  mocks.serviceDb.from.mockReturnValue(fakeClient(() => serviceReplies, serviceUpdate, serviceInsert));
+  mocks.userDb.from.mockReturnValue(fakeClient(() => userReplies, userUpdate, userInsert, userDelete));
+  mocks.serviceDb.from.mockReturnValue(fakeClient(() => serviceReplies, serviceUpdate, serviceInsert, serviceDelete));
 });
 afterEach(() => { vi.restoreAllMocks(); });
 
@@ -295,53 +306,246 @@ describe("review submit: the server grades and records the pass", () => {
   });
 });
 
-describe("mastery session evaluate: the server records the result it scored", () => {
-  it("validates a first pass and records the score and feedback itself", async () => {
-    userReplies.push(owned(), reply([{ title: "Note", body: "VIF measures inflation." }]));
-    serviceReplies.push(reply(null));
-    scored({ score: 8, feedback: "Clear.", passed: true });
-    const res = await evaluate();
-    expect(await res.json()).toEqual({ score: 8, feedback: "Clear.", passed: true, record: "saved" });
-    expect(serviceUpdate).toHaveBeenCalledWith({ mastery_validated: true, mastery_score: 8, mastery_feedback: "Clear." });
-    expect(userUpdate).not.toHaveBeenCalled();
+describe("mastery start: the server opens the session and holds its list", () => {
+  const noted = (count: number) => ({ data: null, error: null, count }) as Result;
+
+  it("opens with the service role, sends names only, and spends nothing", async () => {
+    userReplies.push(owned(), noted(2));
+    serviceReplies.push(reply(null), reply({ id: "sess" }));
+    const res = await startCall();
+    expect(await res.json()).toEqual({
+      sessionId: "sess",
+      topics: CHECKLIST.map(p => ({ ref: p.id, label: p.text })),
+      turnsLeft: 12,
+    });
+    expect(serviceInsert).toHaveBeenCalledWith({ user_id: "alice", milestone_id: "card", topic_refs: ["p1", "p2", "p3", "p4"] });
+    expect(userInsert).not.toHaveBeenCalled();
+    expect(mocks.ai).not.toHaveBeenCalled();
   });
 
-  it("decides pass or fail from the score, not the model's own flag", async () => {
-    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
-    scored({ score: 5, feedback: "Thin.", passed: true });
-    expect(await (await evaluate()).json()).toEqual({ score: 5, feedback: "Thin.", passed: false, record: "skipped" });
-    expect(serviceUpdate).not.toHaveBeenCalled();
+  it("abandons the last unfinished attempt, so ticks never carry into a new one", async () => {
+    userReplies.push(owned(), noted(2));
+    serviceReplies.push(reply(null), reply({ id: "sess" }));
+    await startCall();
+    expect(serviceDelete).toHaveBeenCalledOnce();
   });
 
-  it("logs a practice run on a mastered card without touching the validated flag", async () => {
-    userReplies.push(owned({ mastery_validated: true }), reply([{ title: "Note", body: "x" }]));
-    serviceReplies.push(reply(null));
-    scored({ score: 4, feedback: "Rusty.", passed: false });
-    await evaluate();
-    expect(serviceUpdate).toHaveBeenCalledWith({ mastery_score: 4, mastery_feedback: "Rusty." });
-  });
-
-  it("reports a scored session it could not save, so the page can say so", async () => {
-    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+  it("does not open a session it could not clear the way for", async () => {
+    userReplies.push(owned(), noted(2));
     serviceReplies.push(failure("permission denied"));
-    scored({ score: 9, feedback: "Sharp.", passed: true });
-    const res = await evaluate();
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ score: 9, feedback: "Sharp.", passed: true, record: "failed" });
+    expect((await startCall()).status).toBe(500);
+    expect(serviceInsert).not.toHaveBeenCalled();
+  });
+
+  it("reports a session it could not store, rather than a list with nowhere to hold ticks", async () => {
+    userReplies.push(owned(), noted(2));
+    serviceReplies.push(reply(null), failure("disk full"));
+    expect((await startCall()).status).toBe(500);
     expect(recordOperation).toHaveBeenCalledWith(expect.objectContaining({ outcome: "failed" }));
   });
 
-  it("records nothing when the evaluator returns an impossible score", async () => {
+  it("says an older card's list isn't ready, instead of opening a session with no topics", async () => {
+    userReplies.push(owned({ learning_points: null }));
+    expect((await startCall()).status).toBe(409);
+    expect(mocks.serviceDb.from).not.toHaveBeenCalled();
+  });
+
+  it("refuses a card with no notes, and reports a failed count as an error, not as no notes", async () => {
+    userReplies.push(owned(), noted(0));
+    expect((await startCall()).status).toBe(422);
+    userReplies.push(owned(), failure("timeout"));
+    expect((await startCall()).status).toBe(500);
+  });
+
+  it("refuses another learner's card before opening anything", async () => {
+    userReplies.push(notMine);
+    expect((await startCall()).status).toBe(404);
+    expect(mocks.serviceDb.from).not.toHaveBeenCalled();
+  });
+
+  it("reports a failed card lookup as an error, not as a missing card", async () => {
+    userReplies.push(failure("timeout"));
+    expect((await startCall()).status).toBe(500);
+  });
+});
+
+describe("mastery turn: ticks are earned on the server and held there", () => {
+  const SAID = "VIF tells you how much the variance of a coefficient is inflated";
+  const QUOTE = "variance of a coefficient is inflated";
+
+  it("holds a verified tick with the service role, and tells the page where it stands", async () => {
+    serviceReplies.push(heldSession({ covered: ["p2"], turns: 3 }), reply({ id: "sess" }));
     userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
-    scored({ score: 11, feedback: "Wow.", passed: true });
-    expect((await evaluate()).status).toBe(500);
+    checked({ covered: [{ ref: "p1", quote: QUOTE }], reply: "Say more." });
+    const res = await turnCall(SAID);
+    expect(await res.json()).toEqual({ reply: "Say more.", covered: ["p2", "p1"], heldCount: 0, turnsLeft: 8 });
+    expect(serviceUpdate).toHaveBeenCalledWith({ covered: ["p2", "p1"], held: [], turns: 4 });
+    expect(userUpdate).not.toHaveBeenCalled();
+  });
+
+  it("ticks nothing on a quote the learner never said, and records that it threw one out", async () => {
+    serviceReplies.push(heldSession(), reply({ id: "sess" }));
+    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+    checked({ covered: [{ ref: "p1", quote: "words nobody ever said" }] });
+    expect((await (await turnCall(SAID)).json()).covered).toEqual([]);
+    expect(recordOperation).toHaveBeenCalledWith(expect.objectContaining({ detail: { phase: "turn", rejected: 1 } }));
+  });
+
+  it("logs what the check cost, under the name the budget gate used", async () => {
+    serviceReplies.push(heldSession(), reply({ id: "sess" }));
+    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+    checked({});
+    await turnCall(SAID);
+    expect(mocks.ai.mock.calls[0]![2]).toBe("mastery/session");
+    expect(logUsage).toHaveBeenCalledWith(expect.objectContaining({ feature: "mastery/session", model: "claude-sonnet-4-6" }));
+  });
+
+  it("still logs the spend on a reply it cannot read, and fails the turn rather than ticking nothing", async () => {
+    serviceReplies.push(heldSession());
+    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+    mocks.ai.mockResolvedValue({ content: [{ type: "text", text: "not json" }], usage: { input_tokens: 10, output_tokens: 5 } });
+    expect((await turnCall(SAID)).status).toBe(502);
+    expect(logUsage).toHaveBeenCalled();
     expect(serviceUpdate).not.toHaveBeenCalled();
   });
 
-  it("refuses another learner's card before spending on the evaluator", async () => {
-    userReplies.push(notMine);
-    expect((await evaluate()).status).toBe(404);
+  it("does not count a double-send twice", async () => {
+    serviceReplies.push(heldSession(), reply(null));
+    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+    checked({});
+    expect((await turnCall(SAID)).status).toBe(409);
+  });
+
+  it("reports a tick it could not hold, rather than showing one the server does not have", async () => {
+    serviceReplies.push(heldSession(), failure("permission denied"));
+    userReplies.push(owned(), reply([{ title: "Note", body: "x" }]));
+    checked({ covered: [{ ref: "p1", quote: QUOTE }] });
+    expect((await turnCall(SAID)).status).toBe(500);
+    expect(recordOperation).toHaveBeenCalledWith(expect.objectContaining({ outcome: "failed" }));
+  });
+
+  it("spends nothing once the session has used all its turns", async () => {
+    serviceReplies.push(heldSession({ turns: 12 }));
+    expect((await turnCall(SAID)).status).toBe(409);
     expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("spends nothing on a session that has finished", async () => {
+    serviceReplies.push(heldSession({ finished_at: "2026-11-05T00:00:00Z" }));
+    expect((await turnCall(SAID)).status).toBe(409);
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("spends nothing when every topic is covered and nothing needs taking back", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3", "p4"] }));
+    userReplies.push(owned());
+    const res = await turnCall(SAID);
+    expect(res.status).toBe(200);
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("refuses a session that isn't this learner's before spending", async () => {
+    serviceReplies.push(reply(null));
+    expect((await turnCall(SAID)).status).toBe(404);
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("reports a failed session lookup as an error, not as a missing session", async () => {
+    serviceReplies.push(failure("timeout"));
+    expect((await turnCall(SAID)).status).toBe(500);
+  });
+
+  it("reports failed notes as an error on an older card, rather than checking without its authority", async () => {
+    serviceReplies.push(heldSession());
+    userReplies.push(owned(), failure("timeout"));
+    expect((await turnCall(SAID)).status).toBe(500);
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+});
+
+describe("mastery finish: the server adds up the ticks it holds and records the result", () => {
+  it("validates a first pass at 70% with the service role, without a model call", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3"] }), reply(null), reply(null));
+    userReplies.push(owned());
+    expect(await (await finishCall()).json()).toEqual({
+      score: 7, headline: "You covered 3 of 4 topics.", missed: ["Ridge regression"], corrections: [],
+      covered: ["p1", "p2", "p3"], passed: true, record: "saved",
+    });
+    expect(serviceUpdate).toHaveBeenCalledWith({
+      mastery_validated: true, mastery_score: 7, mastery_feedback: "You covered 3 of 4 topics. Not covered: Ridge regression.",
+    });
+    expect(userUpdate).not.toHaveBeenCalled();
+    expect(mocks.ai).not.toHaveBeenCalled();
+  });
+
+  it("records nothing on a first attempt under 70%", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2"] }), reply(null));
+    userReplies.push(owned());
+    expect(await (await finishCall()).json()).toMatchObject({ score: 5, passed: false, record: "skipped" });
+    expect(serviceUpdate).not.toHaveBeenCalledWith(expect.objectContaining({ mastery_score: 5 }));
+  });
+
+  it("logs a practice run on a mastered card without touching the validated flag", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1"] }), reply(null), reply(null));
+    userReplies.push(owned({ mastery_validated: true }));
+    await finishCall();
+    expect(serviceUpdate).toHaveBeenCalledWith({ mastery_score: 2, mastery_feedback: expect.stringContaining("1 of 4") });
+  });
+
+  it("gives the same result for the same ticks, every time", async () => {
+    const run = async () => {
+      serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3"] }), reply(null), reply(null));
+      userReplies.push(owned());
+      return (await finishCall()).json();
+    };
+    expect(await run()).toEqual(await run());
+  });
+
+  it("reports a result it could not save, and leaves the session open so saving needs no repeat", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3", "p4"] }), failure("permission denied"));
+    userReplies.push(owned());
+    const res = await finishCall();
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ score: 10, passed: true, record: "failed" });
+    expect(serviceUpdate).toHaveBeenCalledOnce();
+    expect(recordOperation).toHaveBeenCalledWith(expect.objectContaining({ outcome: "failed" }));
+  });
+
+  it("closes the session once the result is safe", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3", "p4"] }), reply(null), reply(null));
+    userReplies.push(owned());
+    await finishCall();
+    expect(serviceUpdate).toHaveBeenLastCalledWith({ finished_at: expect.any(String) });
+  });
+
+  it("keeps the result when only closing the session fails", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3", "p4"] }), reply(null), failure("timeout"));
+    userReplies.push(owned());
+    expect(await (await finishCall()).json()).toMatchObject({ passed: true, record: "saved" });
+  });
+
+  it("refuses to finish with no turns, so opening a practice run can't replace a real score", async () => {
+    serviceReplies.push(heldSession({ turns: 0 }));
+    expect((await finishCall()).status).toBe(409);
     expect(serviceUpdate).not.toHaveBeenCalled();
+  });
+
+  it("refuses a session that has already finished", async () => {
+    serviceReplies.push(heldSession({ finished_at: "2026-11-05T00:00:00Z" }));
+    expect((await finishCall()).status).toBe(409);
+    expect(serviceUpdate).not.toHaveBeenCalled();
+  });
+
+  it("refuses a session on another learner's card before recording anything", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1", "p2", "p3", "p4"] }));
+    userReplies.push(notMine);
+    expect((await finishCall()).status).toBe(404);
+    expect(serviceUpdate).not.toHaveBeenCalled();
+  });
+
+  it("counts against the list the session began with, so trimming the checklist mid-session can't raise the share", async () => {
+    serviceReplies.push(heldSession({ covered: ["p1"] }), reply(null));
+    userReplies.push(owned({ learning_points: [CHECKLIST[0]] }));
+    expect(await (await finishCall()).json()).toMatchObject({ score: 2, passed: false });
   });
 });

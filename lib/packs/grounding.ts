@@ -30,6 +30,8 @@ export interface GroundedKeyPoint {
   /** `conceptId:n`, the reference the machine check and the checklist use. */
   ref:    string;
   text:   string;
+  /** The topic's name, for Mastery's checklist. `text` is what the learner has to show. */
+  label:  string;
   source: CardSource;
 }
 
@@ -119,7 +121,7 @@ export function groundFromPack(pack: ReferencePack, conceptIds: readonly string[
     concepts.push({
       id: c.id, title: c.title, outcome: c.outcome,
       keyPoints: c.keyPoints.map((k, i) => ({
-        ref: `${c.id}:${i + 1}`, text: k.text, source: cardSource(sources.get(k.sourceId), k.locator, k.anchor),
+        ref: `${c.id}:${i + 1}`, text: k.text, label: k.label, source: cardSource(sources.get(k.sourceId), k.locator, k.anchor),
       })),
       misconceptions: (c.misconceptions ?? []).map((m, i) => ({
         ref: `${c.id}:m${i + 1}`, claim: m.claim, correction: m.correction,
@@ -187,21 +189,37 @@ export function cardKeyPointRefs(g: CardGround): string[] {
   return g.concepts.flatMap(c => c.keyPoints.map(k => k.ref));
 }
 
+/** A wrong belief left standing: the course's own correction and where it comes from. */
+export interface HeldCorrection {
+  lead:       string;
+  correction: string;
+  sourceName: string;
+  href:       string;
+}
+
 /**
- * What the learner reads after holding a wrong belief: the course's own
- * correction and where it comes from (PRD row 4, "the feedback gives the
- * pack's correction and its source"). Written by the server from the pack,
- * never by the model, so the correction and the link are exactly the
- * source-checked ones. Empty when nothing was held.
+ * What the learner reads after holding a wrong belief (PRD row 4, "the feedback
+ * gives the pack's correction and its source"). Written by the server from the
+ * pack, never by the model, so the correction and the link are exactly the
+ * source-checked ones. One entry per belief, none when nothing was held.
  */
-export function misconceptionFeedback(g: CardGround, heldRefs: readonly string[]): string {
+export function misconceptionCorrections(g: CardGround, heldRefs: readonly string[]): HeldCorrection[] {
   const byRef = misconceptionsByRef(g);
   return heldRefs.flatMap(ref => {
     const m = byRef.get(ref);
     if (!m) return [];
-    const where = m.source.manual ? `${m.source.publisher}, ${m.source.locator}: ${m.source.href}` : `${m.source.publisher}: ${m.source.href}`;
-    return [`Not yet: "${m.claim}" is a common misconception. ${m.correction} (Source: ${where})`];
-  }).join("\n");
+    return [{
+      lead:       `Not yet: "${m.claim}" is a common misconception.`,
+      correction: m.correction,
+      sourceName: m.source.manual ? `${m.source.publisher}, ${m.source.locator}` : m.source.publisher,
+      href:       m.source.href,
+    }];
+  });
+}
+
+/** The same correction as one line, for what the card stores. */
+export function correctionText(c: HeldCorrection): string {
+  return `${c.lead} ${c.correction} (Source: ${c.sourceName}: ${c.href})`;
 }
 
 /** What a card's Sources section shows: the list, or why there is none. */

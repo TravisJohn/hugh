@@ -31,9 +31,9 @@ interface MilestoneRow {
 }
 
 // POST: (re)generate the "what you learned" summary document for a card in the
-// Mastered column, store it, and return it. Before a pass it is a guide to talk
-// from, which Mastery shows beside the conversation; after one it is a keepsake.
-// Auto-called by that panel and on first mastery, and from the Regenerate buttons.
+// Mastered column, store it, and return it. Before a pass it is a guide that claims
+// nothing; after one it is a keepsake. Auto-called on first mastery, and from the
+// drawer's Generate and Regenerate buttons.
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -145,7 +145,7 @@ export async function POST(
       });
       // The learner still gets the document. It was paid for, it is finished,
       // and discarding it would charge them a second time for the same words.
-      // `saved: false` is the honest half: the panel shows it, says it will not
+      // `saved: false` is the honest half: the drawer shows it, says it will not
       // be here next time, and offers to store it again without regenerating.
       return NextResponse.json({ summaryDoc: doc, generatedAt, saved: false });
     }
@@ -167,8 +167,8 @@ export async function POST(
   }
 }
 
-// PUT: persist a learner-EDITED summary document (Mastery's summary panel and the
-// card drawer both let the learner hand-edit it when they spot a gap). No LLM call;
+// PUT: persist a learner-EDITED summary document (the card drawer lets the learner
+// hand-edit it when they spot a gap). No LLM call;
 // this simply saves the provided markdown as the new summary_doc.
 const MAX_SUMMARY_CHARS = 20_000;
 
@@ -207,7 +207,7 @@ export async function PUT(
   const generatedAt = new Date().toISOString();
   // Checked the same way as the POST above. This path already read its error,
   // but an error was never the whole answer: an update matching no rows reports
-  // nothing at all, and this is the route the panel retries against when a
+  // nothing at all, and this is the route the drawer retries against when a
   // generated summary could not be stored. A silent no-op here would tell the
   // learner their rescue worked.
   const stored = writeOutcome(

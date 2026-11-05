@@ -154,6 +154,7 @@
       "keyPoints": [
         {
           "text": "A conditional probability is the probability of an event given that another event has occurred.",
+          "label": "Definition of conditional probability",
           "sourceId": "psu414-04",
           "locator": "Overview",
           "anchor": {
@@ -163,6 +164,7 @@
         },
         {
           "text": "Finding a conditional probability from counts takes two steps: restrict attention to the cases where the condition holds, then count the outcome of interest within that smaller group.",
+          "label": "Conditional probability from counts",
           "sourceId": "psu414-04",
           "locator": "4.1 The Motivation",
           "anchor": {
@@ -172,6 +174,7 @@
         },
         {
           "text": "P(A|B) and P(B|A) measure different things and usually differ: nearly every puppy is adorable, but not every adorable thing is a puppy.",
+          "label": "P(A|B) versus P(B|A)",
           "sourceId": "br-02",
           "locator": "2.1.2 Conditional probability & likelihood",
           "anchor": {
@@ -181,6 +184,7 @@
         },
         {
           "text": "Comparing P(A|B) with P(A) shows how far information about B changes our understanding of A. In some cases new information makes an event more certain.",
+          "label": "New information and event probability",
           "sourceId": "br-02",
           "locator": "2.1.2 Conditional probability & likelihood",
           "anchor": {
@@ -190,6 +194,7 @@
         },
         {
           "text": "For a diagnostic test, the probability of testing positive given the disease is its sensitivity. A patient wants the reverse, the probability of the disease given a positive test: the positive predictive value.",
+          "label": "Sensitivity versus predictive value",
           "sourceId": "psu414-04",
           "locator": "4.2 What is Conditional Probability?",
           "anchor": {
@@ -213,6 +218,7 @@
       "keyPoints": [
         {
           "text": "Bayes' theorem finds a conditional probability P(A|B) when it is the reverse conditional probability, P(B|A), that is known.",
+          "label": "Reversing a conditional probability",
           "sourceId": "psu414-06",
           "locator": "Overview",
           "anchor": {
@@ -222,6 +228,7 @@
         },
         {
           "text": "Probabilities held before new information arrives are called prior probabilities. The conditional probabilities worked out after taking that information into account are called posterior probabilities.",
+          "label": "Prior and posterior probabilities",
           "sourceId": "psu414-06",
           "locator": "6.1 An Example",
           "anchor": {
@@ -231,6 +238,7 @@
         },
         {
           "text": "Bayes' rule builds the posterior for an event from two pieces: the event's prior probability, and the likelihood of the observed data if that event were true.",
+          "label": "Ingredients of Bayes' rule",
           "sourceId": "br-02",
           "locator": "2.1.4 Posterior probability model via Bayes' Rule!",
           "anchor": {
@@ -240,6 +248,7 @@
         },
         {
           "text": "Bayes' formula combines prior knowledge with current data to produce a posterior. In effect it swaps which of the two events is the conditioning event.",
+          "label": "Swapping the conditioning event",
           "sourceId": "nist-bayes",
           "locator": "Bayes formula, prior and posterior distribution models",
           "anchor": {
@@ -249,6 +258,7 @@
         },
         {
           "text": "A posterior should make intuitive sense. A defective lamp makes the factory with the highest defect rate more likely to be its source, and the factory with the lowest rate less likely.",
+          "label": "Sanity-checking a posterior",
           "sourceId": "psu414-06",
           "locator": "6.1 An Example",
           "anchor": {
@@ -273,6 +283,7 @@
       "keyPoints": [
         {
           "text": "A positive screening result can still leave a disease unlikely: in one worked example it raised the chance only from 1% to 16%. That is typical when the disease is fairly unusual, and is no reason to discard the test.",
+          "label": "Positive result and disease probability",
           "sourceId": "psu414-06",
           "locator": "6.3 Another Example",
           "anchor": {
@@ -282,6 +293,7 @@
         },
         {
           "text": "Given a positive result, only 3 of the 12 people who tested positive actually had the disease, a 25% chance. Allowing for the disease's rarity and a fairly high false positive rate, having it is relatively unlikely.",
+          "label": "False positives among positive results",
           "sourceId": "br-01",
           "locator": "1.1.4 Asking questions",
           "anchor": {
@@ -291,6 +303,7 @@
         },
         {
           "text": "Testing for a rare event tends to produce many false positives even when sensitivity and specificity are very high: in one worked example the posterior after the positive tests was still just under 50%.",
+          "label": "Rare events and false positive rates",
           "sourceId": "st21-11",
           "locator": "11.3 Doing Bayesian estimation",
           "anchor": {
@@ -300,6 +313,7 @@
         },
         {
           "text": "Retesting after a positive result changes the starting point: for the second test the population of interest is not everyone, but the people who already tested positive once.",
+          "label": "Retesting and the new prior",
           "sourceId": "psu414-06",
           "locator": "6.3 Another Example",
           "anchor": {
@@ -335,6 +349,7 @@
       "keyPoints": [
         {
           "text": "To a Bayesian, a probability measures how plausible an event is. To a frequentist, it is the long-run relative frequency of a repeatable event.",
+          "label": "Two readings of probability",
           "sourceId": "br-01",
           "locator": "1.1.2 The meaning of probability",
           "anchor": {
@@ -344,6 +359,7 @@
         },
         {
           "text": "Many events of interest happen only once, such as an election. The long-run frequency reading is awkward for them, while the Bayesian reading still gives a way to express their uncertainty.",
+          "label": "One-off events and probability",
           "sourceId": "br-01",
           "locator": "1.1.2 The meaning of probability",
           "anchor": {
@@ -353,6 +369,7 @@
         },
         {
           "text": "Frequentist methods treat a parameter as fixed but unknown. Bayesian methods treat it as a random variable with a probability distribution, which lets prior beliefs be updated with data through Bayes' theorem.",
+          "label": "How parameters are treated differently",
           "sourceId": "psu415-11",
           "locator": "Summary",
           "anchor": {
@@ -362,6 +379,7 @@
         },
         {
           "text": "A Bayesian analysis assesses the uncertainty of a hypothesis in light of the observed data. A frequentist analysis assesses the uncertainty of the observed data in light of an assumed hypothesis.",
+          "label": "What each framework conditions on",
           "sourceId": "br-01",
           "locator": "1.1.4 Asking questions",
           "anchor": {
@@ -371,6 +389,7 @@
         },
         {
           "text": "Bayesian and frequentist analyses share the goal of learning from data, and on the same data they will typically reach a similar set of conclusions.",
+          "label": "Bayesian and frequentist agreement",
           "sourceId": "br-01",
           "locator": "1.1 Thinking like a Bayesian",
           "anchor": {
@@ -394,6 +413,7 @@
       "keyPoints": [
         {
           "text": "A prior model says which values the unknown can take and gives each a prior weight or probability, and those probabilities sum to 1.",
+          "label": "Structure of a prior model",
           "sourceId": "br-02",
           "locator": "2.3.1 Prior probability model",
           "anchor": {
@@ -403,6 +423,7 @@
         },
         {
           "text": "Before the current data are examined, old information or even subjective judgement is used to build a prior distribution, which expresses how likely the various parameter values are thought to be.",
+          "label": "Sources of prior distributions",
           "sourceId": "nist-bayes",
           "locator": "Bayesian analysis considers population parameters to be random",
           "anchor": {
@@ -412,6 +433,7 @@
         },
         {
           "text": "Past results can supply prior information: the results of earlier polls can be organised into a formal prior probability model for a candidate's current support.",
+          "label": "Past poll results and the prior",
           "sourceId": "br-03",
           "locator": "Chapter 3 introduction",
           "anchor": {
@@ -421,6 +443,7 @@
         },
         {
           "text": "In most applications no data will ever exist to validate the chosen prior. Parametric priors are usually picked for their flexibility and mathematical convenience.",
+          "label": "Choosing parametric priors",
           "sourceId": "nist-bayes",
           "locator": "Bayesian analysis considers population parameters to be random",
           "anchor": {
@@ -442,6 +465,7 @@
       "keyPoints": [
         {
           "text": "Once the data are observed, the likelihood asks how compatible those particular data are with each possible value of the parameter.",
+          "label": "Likelihood across parameter values",
           "sourceId": "br-02",
           "locator": "2.3.3 The Binomial likelihood function",
           "anchor": {
@@ -451,6 +475,7 @@
         },
         {
           "text": "The further a candidate value sits from the rate seen in the sample, the less likely the observed result. A 60% poll result would be extremely unlikely if true support were as low as 30% or as high as 90%.",
+          "label": "Distance from sample and likelihood",
           "sourceId": "br-03",
           "locator": "3.2 The Binomial data model & likelihood function",
           "anchor": {
@@ -460,6 +485,7 @@
         },
         {
           "text": "The difference between likelihood and probability is subtle, partly because the two words are used interchangeably in everyday conversation.",
+          "label": "Likelihood vs probability distinction",
           "sourceId": "br-02",
           "locator": "2.1.2 Conditional probability & likelihood",
           "anchor": {
@@ -496,6 +522,7 @@
       "keyPoints": [
         {
           "text": "The total probability of the observed data across all possible parameter values comes from the law of total probability: the likelihood at each value, weighted by that value's prior probability, added up.",
+          "label": "Total probability of observed data",
           "sourceId": "br-02",
           "locator": "2.3.4 Normalizing constant",
           "anchor": {
@@ -505,6 +532,7 @@
         },
         {
           "text": "The normalising constant's only purpose is to scale the posterior probabilities so that they sum to one.",
+          "label": "Role of the normalising constant",
           "sourceId": "br-02",
           "locator": "2.3.6 Posterior shortcut",
           "anchor": {
@@ -514,6 +542,7 @@
         },
         {
           "text": "The marginal likelihood matters mainly because it makes the posterior values true probabilities.",
+          "label": "Marginal likelihood and true probabilities",
           "sourceId": "st21-11",
           "locator": "11.3.2 Estimating posterior distributions",
           "anchor": {
@@ -523,6 +552,7 @@
         },
         {
           "text": "Computing the marginal likelihood is often one of the most difficult parts of a Bayesian analysis.",
+          "label": "Difficulty of marginal likelihood",
           "sourceId": "st21-11",
           "locator": "11.3 Doing Bayesian estimation",
           "anchor": {
@@ -546,6 +576,7 @@
       "keyPoints": [
         {
           "text": "Bayes' rule balances the prior against the likelihood, and needs three pieces to do it: the prior, the likelihood and a normalising constant.",
+          "label": "Three pieces Bayes' rule needs",
           "sourceId": "br-02",
           "locator": "2.3.4 Normalizing constant",
           "anchor": {
@@ -555,6 +586,7 @@
         },
         {
           "text": "Because the normalising constant does not depend on the parameter, the posterior is proportional to prior times likelihood, and all the information needed to build it is held in those two.",
+          "label": "Posterior proportionality",
           "sourceId": "br-02",
           "locator": "2.3.6 Posterior shortcut",
           "anchor": {
@@ -564,6 +596,7 @@
         },
         {
           "text": "Bayesian inference raises belief in each parameter value in proportion to how likely the data are under that value, balanced against what was believed before seeing the data.",
+          "label": "Belief revision via the posterior",
           "sourceId": "st21-11",
           "locator": "11.3.2 Estimating posterior distributions",
           "anchor": {
@@ -573,6 +606,7 @@
         },
         {
           "text": "Neither the new data nor the prior information should be thrown out in favour of the other; a Bayesian builds a posterior that combines information from both.",
+          "label": "Balancing prior and data",
           "sourceId": "br-03",
           "locator": "3.3 The Beta posterior model",
           "anchor": {
@@ -582,6 +616,7 @@
         },
         {
           "text": "Combining prior and data narrowed the range of plausible values: after the poll, the candidate's support was fairly certainly somewhere between 35% and 65%.",
+          "label": "Posterior narrowing plausible values",
           "sourceId": "br-03",
           "locator": "3.3 The Beta posterior model",
           "anchor": {
@@ -605,6 +640,7 @@
       "keyPoints": [
         {
           "text": "The beta model is a natural prior for a proportion, because a beta random variable is continuous and restricted to values between 0 and 1.",
+          "label": "Why beta suits a proportion",
           "sourceId": "br-03",
           "locator": "3.1 The Beta prior model",
           "anchor": {
@@ -614,6 +650,7 @@
         },
         {
           "text": "Setting both shape parameters to 1 makes the beta flat from 0 to 1, the same as the standard uniform distribution.",
+          "label": "Flat beta and the uniform prior",
           "sourceId": "br-03",
           "locator": "3.1.1 Beta foundations",
           "anchor": {
@@ -623,6 +660,7 @@
         },
         {
           "text": "A Beta(20,20) has values closer to its mean of 0.5, and so less variability, than a Beta(5,5).",
+          "label": "Beta variability and shape parameters",
           "sourceId": "br-03",
           "locator": "3.1.1 Beta foundations",
           "anchor": {
@@ -632,6 +670,7 @@
         },
         {
           "text": "The shape parameters steer where a beta puts its plausibility: Beta(5,11) favours values below 0.5, Beta(14,1) favours values near 1, and Beta(1,1) spreads plausibility equally from 0 to 1.",
+          "label": "Shape parameters and plausibility",
           "sourceId": "br-04",
           "locator": "Chapter 4 introduction",
           "anchor": {
@@ -641,6 +680,7 @@
         },
         {
           "text": "A beta prior can be tuned by trial and error, plotting candidate pairs of shape parameters; for a set of past polls, a Beta(45,55) closely captured their typical outcomes and variability.",
+          "label": "Tuning beta shape parameters",
           "sourceId": "br-03",
           "locator": "3.1.2 Tuning the Beta prior",
           "anchor": {
@@ -663,6 +703,7 @@
       "keyPoints": [
         {
           "text": "The beta-binomial model applies to any proportion between 0 and 1 that is learned from the number of successes in a fixed number of independent trials, each with the same chance of success.",
+          "label": "Beta-binomial model conditions",
           "sourceId": "br-03",
           "locator": "3.4 The Beta-Binomial model",
           "anchor": {
@@ -672,6 +713,7 @@
         },
         {
           "text": "A beta prior combined with binomial data gives a beta posterior. Its updated parameters, alpha plus the successes and beta plus the failures, show the influence of the prior and of the observed data.",
+          "label": "Beta posterior updated parameters",
           "sourceId": "br-03",
           "locator": "3.7 Chapter summary",
           "anchor": {
@@ -681,6 +723,7 @@
         },
         {
           "text": "After a poll in which 30 of 50 people supported the candidate, expected support moved from about 45% to 50%, and the posterior's variability decreased, narrowing the range of plausible values.",
+          "label": "Posterior shift after a poll",
           "sourceId": "br-03",
           "locator": "3.3 The Beta posterior model",
           "anchor": {
@@ -690,6 +733,7 @@
         },
         {
           "text": "Strong counterevidence can move the posterior far from the prior: a psychologist who expected fewer than about 25% of people to obey came to place the figure between about 30% and 70%.",
+          "label": "Strong counterevidence and the posterior",
           "sourceId": "br-03",
           "locator": "3.6.1 A Bayesian analysis",
           "anchor": {
@@ -713,6 +757,7 @@
       "keyPoints": [
         {
           "text": "A prior is conjugate when the posterior it produces, proportional to prior times likelihood, belongs to the same family of distributions as the prior.",
+          "label": "Definition of conjugate priors",
           "sourceId": "br-05",
           "locator": "5.1 Revisiting choice of prior",
           "anchor": {
@@ -722,6 +767,7 @@
         },
         {
           "text": "The beta is a conjugate prior for a proportion when samples are binomial, and the gamma is a conjugate prior for a failure rate when failure or repair times are exponentially distributed.",
+          "label": "Beta and gamma conjugate examples",
           "sourceId": "nist-bayes",
           "locator": "Bayes formula, prior and posterior distribution models, and conjugate priors",
           "anchor": {
@@ -731,6 +777,7 @@
         },
         {
           "text": "Conjugate priors give posterior models that are easy to derive and readily interpretable.",
+          "label": "Advantages of conjugate priors",
           "sourceId": "br-05",
           "locator": "5.6 Chapter summary",
           "anchor": {
@@ -740,6 +787,7 @@
         },
         {
           "text": "With one particular non-conjugate prior, it was hard to see how the posterior balanced the prior and the data, and summaries such as its mean would need even more integration.",
+          "label": "Challenges of non-conjugate priors",
           "sourceId": "br-05",
           "locator": "5.1 Revisiting choice of prior",
           "anchor": {
@@ -749,6 +797,7 @@
         },
         {
           "text": "Different conjugate families suit different data: beta-binomial for successes in a set of trials, gamma-Poisson for counts with no upper limit, and normal-normal for continuous data.",
+          "label": "Conjugate families for different data",
           "sourceId": "br-05",
           "locator": "5.6 Chapter summary",
           "anchor": {
@@ -784,6 +833,7 @@
       "keyPoints": [
         {
           "text": "How closely the posterior follows the prior or the data depends on the relative strength of each.",
+          "label": "Relative strength of prior and data",
           "sourceId": "br-01",
           "locator": "1.1.3 The Bayesian balancing act",
           "anchor": {
@@ -793,6 +843,7 @@
         },
         {
           "text": "As the sample grows, the likelihood becomes more insistent and the data gain influence over the posterior, while the influence of the prior diminishes.",
+          "label": "Sample size and prior influence",
           "sourceId": "br-04",
           "locator": "4.3.1 Connecting observations to concepts",
           "anchor": {
@@ -802,6 +853,7 @@
         },
         {
           "text": "How quickly the posterior tips toward the data depends on the prior: the more informative the prior, the greater its influence on the posterior.",
+          "label": "Prior informativeness and posterior",
           "sourceId": "br-04",
           "locator": "4.3.1 Connecting observations to concepts",
           "anchor": {
@@ -811,6 +863,7 @@
         },
         {
           "text": "In the beta-binomial model the posterior mean is a weighted average of the prior mean and the observed success rate, with weights that add up to 1.",
+          "label": "What the posterior mean balances",
           "sourceId": "br-04",
           "locator": "4.3.2 Connecting concepts to theory",
           "anchor": {
@@ -820,6 +873,7 @@
         },
         {
           "text": "The more data there are, the more the posterior mean drifts toward the data and away from the prior. How fast that happens depends on whether the prior is informative or vague.",
+          "label": "Data volume and posterior drift",
           "sourceId": "br-04",
           "locator": "4.3.2 Connecting concepts to theory",
           "anchor": {
@@ -859,6 +913,7 @@
       "keyPoints": [
         {
           "text": "The more certain the prior information, the smaller the prior's variability; the vaguer the prior information, the greater its variability.",
+          "label": "Prior certainty and variability",
           "sourceId": "br-04",
           "locator": "4.1 Different priors, different posteriors",
           "anchor": {
@@ -868,6 +923,7 @@
         },
         {
           "text": "An informative prior reflects specific information about the unknown with high certainty, that is, with low variability.",
+          "label": "Informative prior characteristics",
           "sourceId": "br-04",
           "locator": "4.1 Different priors, different posteriors",
           "anchor": {
@@ -877,6 +933,7 @@
         },
         {
           "text": "A vague or diffuse prior reflects little specific information about the unknown. A flat prior, which gives every possible value equal plausibility, is a special case.",
+          "label": "Vague and flat priors",
           "sourceId": "br-04",
           "locator": "4.1 Different priors, different posteriors",
           "anchor": {
@@ -886,6 +943,7 @@
         },
         {
           "text": "Uninformative priors try to influence the posterior as little as possible. Weakly informative, or default, priors influence it only slightly, for example a prior centred on 0.5 but fairly flat.",
+          "label": "Uninformative and weakly informative priors",
           "sourceId": "st21-11",
           "locator": "11.5 Choosing a prior",
           "anchor": {
@@ -895,6 +953,7 @@
         },
         {
           "text": "Priors can also be built from the scientific literature or existing data, called empirical priors. Uninformative and weakly informative priors raise the least concern about steering the results.",
+          "label": "Empirical and uninformative priors",
           "sourceId": "st21-11",
           "locator": "11.5 Choosing a prior",
           "anchor": {
@@ -918,6 +977,7 @@
       "keyPoints": [
         {
           "text": "Changing only the prior, with the same data and likelihood, moves the posterior toward the new prior.",
+          "label": "Prior choice and posterior location",
           "sourceId": "st21-11",
           "locator": "11.4 Effects of different priors",
           "anchor": {
@@ -927,6 +987,7 @@
         },
         {
           "text": "A prior built from a much larger earlier study is more concentrated, and the posterior then sits much closer to it: Bayesian inference weighs the prior and the likelihood by their relative strength.",
+          "label": "Large study prior and posterior pull",
           "sourceId": "st21-11",
           "locator": "11.4 Effects of different priors",
           "anchor": {
@@ -936,6 +997,7 @@
         },
         {
           "text": "However strongly analysts' priors differ, they will reach a common posterior understanding in light of strong data.",
+          "label": "Convergence with strong data",
           "sourceId": "br-04",
           "locator": "4.3.1 Connecting observations to concepts",
           "anchor": {
@@ -945,6 +1007,7 @@
         },
         {
           "text": "Prior information may be inaccurate and lead to misleading conclusions, the choice of prior may be wrong, and there is no one correct way to put prior information in: different approaches can give different results.",
+          "label": "Risks of prior misspecification",
           "sourceId": "nist-bayes",
           "locator": "Pro's and con's for using Bayesian methods",
           "anchor": {
@@ -954,6 +1017,7 @@
         },
         {
           "text": "Subjectivity is not unique to Bayesian analysis: prior knowledge shapes what any analyst measures, why they measure it, and how they model it.",
+          "label": "Subjectivity beyond Bayesian analysis",
           "sourceId": "br-01",
           "locator": "1.2 A quick history lesson",
           "anchor": {
@@ -999,6 +1063,7 @@
       "keyPoints": [
         {
           "text": "In a sequential analysis the posterior is updated as each new batch of data arrives, and the posterior so far becomes the prior for the next batch.",
+          "label": "Mechanics of sequential updating",
           "sourceId": "br-04",
           "locator": "4.4 Sequential analysis: Evolving with data",
           "anchor": {
@@ -1008,6 +1073,7 @@
         },
         {
           "text": "On day two of a study, the analyst does not start afresh from the original prior: the posterior from the end of day one is the starting point.",
+          "label": "Starting point for new data",
           "sourceId": "br-04",
           "locator": "4.4 Sequential analysis: Evolving with data",
           "anchor": {
@@ -1017,6 +1083,7 @@
         },
         {
           "text": "The final posterior does not depend on the order in which the data are observed.",
+          "label": "Order independence of the posterior",
           "sourceId": "br-04",
           "locator": "4.4 Sequential analysis: Evolving with data",
           "anchor": {
@@ -1026,6 +1093,7 @@
         },
         {
           "text": "Bayesian analysis can be sequential: the posterior from one analysis can become the prior for the next.",
+          "label": "Sequential Bayesian analysis",
           "sourceId": "st21-11",
           "locator": "11.3.1 Updating our beliefs",
           "anchor": {
@@ -1064,6 +1132,7 @@
       "keyPoints": [
         {
           "text": "Bayesians hold that everything to know about a parameter is in its posterior, so a point estimate is taken from it, such as the posterior mean or median.",
+          "label": "Point estimates from the posterior",
           "sourceId": "psu415-11",
           "locator": "11.3 Bayesian Estimation",
           "anchor": {
@@ -1073,6 +1142,7 @@
         },
         {
           "text": "Which point estimate is best depends on the loss function chosen; when minimising squared error, the best estimate is the posterior mean.",
+          "label": "Loss functions and point estimates",
           "sourceId": "psu415-11",
           "locator": "Summary",
           "anchor": {
@@ -1082,6 +1152,7 @@
         },
         {
           "text": "If the cost of a guess is the absolute size of its error, the guess that keeps the expected cost smallest is the posterior median.",
+          "label": "Posterior median and absolute loss",
           "sourceId": "psu415-11",
           "locator": "11.3 Bayesian Estimation",
           "anchor": {
@@ -1091,6 +1162,7 @@
         },
         {
           "text": "The maximum a posteriori (MAP) estimate is the value with the highest posterior probability. With a uniform prior it equalled the sample proportion, because that prior did not influence the estimate.",
+          "label": "MAP estimate and uniform prior",
           "sourceId": "st21-11",
           "locator": "11.3.3 Maximum a posteriori (MAP) estimation",
           "anchor": {
@@ -1100,6 +1172,7 @@
         },
         {
           "text": "Posterior estimates should reflect both the central tendency and the variability of the parameter; the posterior mean and mode summarise central tendency alone.",
+          "label": "Central tendency vs variability",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1124,6 +1197,7 @@
       "keyPoints": [
         {
           "text": "A credible interval is a range chosen so that the posterior probability of the parameter lying inside it is 1 minus alpha, with alpha small, such as 0.05.",
+          "label": "Definition of a credible interval",
           "sourceId": "psu415-11",
           "locator": "11.3 Bayesian Estimation",
           "anchor": {
@@ -1133,6 +1207,7 @@
         },
         {
           "text": "A middle 95% credible interval runs from the 2.5th to the 97.5th posterior percentile, so it marks the middle 95% of posterior plausible values.",
+          "label": "Middle 95% credible interval",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1142,6 +1217,7 @@
         },
         {
           "text": "The area under the posterior over a 95% credible interval is 0.95, so there is a 95% posterior probability that the parameter lies inside it.",
+          "label": "Posterior area and credible intervals",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1151,6 +1227,7 @@
         },
         {
           "text": "The 95% level is common but somewhat arbitrary, ingrained by tradition. There is no one right credible level; 50%, 80% or 95% may be used, depending on the context.",
+          "label": "Choice of credible level",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1160,6 +1237,7 @@
         },
         {
           "text": "For a strongly lopsided posterior, an interval can be built from the 95% of values with the highest posterior density instead of the middle 95%; the two differ meaningfully only when the posterior is extremely skewed.",
+          "label": "Highest posterior density intervals",
           "sourceId": "br-08",
           "locator": "8.1 Posterior estimation",
           "anchor": {
@@ -1181,6 +1259,7 @@
       "keyPoints": [
         {
           "text": "A confidence interval is read as a procedure that is right with a given probability in the long run: a 95% confidence interval is one that will contain the true population mean 95% of the time.",
+          "label": "How to read a confidence interval",
           "sourceId": "st21-10",
           "locator": "10.1 Confidence intervals",
           "anchor": {
@@ -1190,6 +1269,7 @@
         },
         {
           "text": "In the classical approach a confidence interval is a frequency statement about how often numbers calculated from samples capture the true parameter. Strictly, no probability statement can be made about the parameter, because it is fixed.",
+          "label": "Frequency reading of confidence intervals",
           "sourceId": "nist-bayes",
           "locator": "Bayesian analysis considers population parameters to be random",
           "anchor": {
@@ -1199,6 +1279,7 @@
         },
         {
           "text": "Because Bayesian parameters are treated as random, intervals calculated from the posterior are legitimate probability statements about the unknown parameters.",
+          "label": "Bayesian probability and parameters",
           "sourceId": "nist-bayes",
           "locator": "Bayesian analysis considers population parameters to be random",
           "anchor": {
@@ -1208,6 +1289,7 @@
         },
         {
           "text": "A credible interval gives what people often hope a confidence interval gives: there is a 95% probability that the parameter falls between its two ends.",
+          "label": "Credible vs confidence interpretation",
           "sourceId": "st21-11",
           "locator": "11.3.4 Credible intervals",
           "anchor": {
@@ -1243,6 +1325,7 @@
       "keyPoints": [
         {
           "text": "A Bayesian hypothesis test asks how likely the hypothesis is to be correct given the data. A frequentist test asks how likely data this extreme, or more, would be if the hypothesis were incorrect.",
+          "label": "Bayesian vs frequentist hypothesis tests",
           "sourceId": "br-01",
           "locator": "1.1.4 Asking questions",
           "anchor": {
@@ -1252,6 +1335,7 @@
         },
         {
           "text": "The posterior probability of a claim such as 'the proportion is below 0.2' is the area under the posterior over that range; in the example there was about an 84.9% posterior chance of it.",
+          "label": "Posterior probability of a claim",
           "sourceId": "br-08",
           "locator": "8.2.1 One-sided tests",
           "anchor": {
@@ -1261,6 +1345,7 @@
         },
         {
           "text": "Posterior odds divide the posterior probability of one hypothesis by the other's: 0.849 against 0.151 gives odds of about 5.6, so the claim is nearly 6 times as likely as its alternative.",
+          "label": "Posterior odds for competing hypotheses",
           "sourceId": "br-08",
           "locator": "8.2.1 One-sided tests",
           "anchor": {
@@ -1270,6 +1355,7 @@
         },
         {
           "text": "No universal cut-off says how big a posterior probability or Bayes factor must be to call a claim true; the posterior gives a holistic measure of uncertainty, which is more useful than a yes-or-no decision.",
+          "label": "No universal posterior threshold",
           "sourceId": "br-08",
           "locator": "8.2.1 One-sided tests",
           "anchor": {
@@ -1279,6 +1365,7 @@
         },
         {
           "text": "What counts as substantially different from a hypothesised value depends on context, so it is best defined before seeing any data, for example as any value outside a 0.05 window around it.",
+          "label": "Defining a meaningful difference",
           "sourceId": "br-08",
           "locator": "8.2.2 Two-sided tests",
           "anchor": {
@@ -1313,6 +1400,7 @@
       "keyPoints": [
         {
           "text": "A Bayes factor describes how likely the data are under one hypothesis relative to another.",
+          "label": "Definition of a Bayes factor",
           "sourceId": "st21-11",
           "locator": "11.6 Bayesian hypothesis testing",
           "anchor": {
@@ -1322,6 +1410,7 @@
         },
         {
           "text": "Comparing the posterior odds with the prior odds shows how much the data shifted belief: in one example the odds for a claim became about 60 times higher than before.",
+          "label": "Prior to posterior odds shift",
           "sourceId": "br-08",
           "locator": "8.2.1 One-sided tests",
           "anchor": {
@@ -1331,6 +1420,7 @@
         },
         {
           "text": "A Bayes factor is read against 1: equal to 1, the data left the hypothesis's plausibility unchanged; above 1, they raised it, more convincingly the larger it is; below 1, they lowered it.",
+          "label": "Reading a Bayes factor",
           "sourceId": "br-08",
           "locator": "8.2.1 One-sided tests",
           "anchor": {
@@ -1340,6 +1430,7 @@
         },
         {
           "text": "When the parameters are uncertain, a Bayes factor needs the marginal likelihood, an average of the likelihood over all parameter values weighted by their prior probabilities, which complicates it.",
+          "label": "Marginal likelihood in Bayes factors",
           "sourceId": "st21-11",
           "locator": "11.6.1 Bayes factors",
           "anchor": {
@@ -1349,6 +1440,7 @@
         },
         {
           "text": "Because a Bayes factor compares two hypotheses, it can show evidence in favour of the null, which standard null hypothesis testing cannot. That helps tell a true null result from weak evidence overall.",
+          "label": "Evidence for the null hypothesis",
           "sourceId": "st21-11",
           "locator": "11.6.2 Bayes factors for statistical hypotheses",
           "anchor": {
@@ -1383,6 +1475,7 @@
       "keyPoints": [
         {
           "text": "The posterior predictive model for new data accounts for two sources of variability: sampling variability in the new data, and posterior variability in the parameter.",
+          "label": "Two sources of predictive variability",
           "sourceId": "br-08",
           "locator": "8.3 Posterior prediction",
           "anchor": {
@@ -1392,6 +1485,7 @@
         },
         {
           "text": "It weights the chance of each possible new outcome under every parameter value by how plausible that value is in the posterior.",
+          "label": "Weighting predictive outcomes",
           "sourceId": "br-08",
           "locator": "8.3 Posterior prediction",
           "anchor": {
@@ -1401,6 +1495,7 @@
         },
         {
           "text": "Like any posterior quantity, predictions balance information from both the prior and the data.",
+          "label": "Prior and data in predictions",
           "sourceId": "br-08",
           "locator": "8.3 Posterior prediction",
           "anchor": {
@@ -1410,6 +1505,7 @@
         },
         {
           "text": "Compared with fixing the parameter at its most plausible value, the predictive distribution gives more weight to smaller and larger outcomes: most likely 3 of the next 20, but plausibly anywhere from 0 to 10.",
+          "label": "Predictive spread vs point estimate",
           "sourceId": "br-08",
           "locator": "8.3 Posterior prediction",
           "anchor": {
@@ -1445,6 +1541,7 @@
       "keyPoints": [
         {
           "text": "If a model's assumptions are reasonable, the posterior model should be able to simulate data similar to the data actually observed.",
+          "label": "Model assumptions and simulated data",
           "sourceId": "br-10",
           "locator": "10.2.1 Checking the model assumptions",
           "anchor": {
@@ -1454,6 +1551,7 @@
         },
         {
           "text": "The check simulates a sample from the data model at each set of posterior plausible parameter values, then compares the features of those simulated samples with the original data.",
+          "label": "Mechanics of predictive checks",
           "sourceId": "br-10",
           "locator": "10.2.1 Checking the model assumptions",
           "anchor": {
@@ -1463,6 +1561,7 @@
         },
         {
           "text": "Simulated datasets can capture the typical value and range of the observed data yet miss a feature such as two peaks. That does not necessarily make the model bad.",
+          "label": "Missing features in simulated data",
           "sourceId": "br-10",
           "locator": "10.2.1 Checking the model assumptions",
           "anchor": {
@@ -1472,6 +1571,7 @@
         },
         {
           "text": "A posterior predictive check can confirm that a model is wrong: in one example the simulated values showed a higher centre and more variability than the observed values.",
+          "label": "Detecting a wrong model",
           "sourceId": "br-10",
           "locator": "10.2.2 Dealing with wrong models",
           "anchor": {
@@ -1481,6 +1581,7 @@
         },
         {
           "text": "Checking assumptions from a plot of the outcome against one predictor stops working once a model has several predictors; a posterior predictive check scales to other model settings.",
+          "label": "Predictive checks with many predictors",
           "sourceId": "br-10",
           "locator": "10.2.1 Checking the model assumptions",
           "anchor": {
@@ -1504,6 +1605,7 @@
       "keyPoints": [
         {
           "text": "For a binary-outcome test, such as a test of conversion rates, the probability that B will beat A in the long run can be calculated.",
+          "label": "Probability B beats A long-run",
           "sourceId": "miller-bayes-ab",
           "locator": "A/B testing: binary outcomes",
           "anchor": {
@@ -1513,6 +1615,7 @@
         },
         {
           "text": "The beta is a convenient prior for a conversion rate: starting from a non-informative prior, the belief about the rate after S successes and F failures is Beta(S+1, F+1).",
+          "label": "Beta prior for conversion rates",
           "sourceId": "miller-bayes-ab",
           "locator": "Derivation",
           "anchor": {
@@ -1522,6 +1625,7 @@
         },
         {
           "text": "Each variant gets its own beta belief. The probability that B's rate exceeds A's is found by adding up their joint probability over every pair of values in which B's is the higher.",
+          "label": "Joint probability across both variants",
           "sourceId": "miller-bayes-ab",
           "locator": "Derivation",
           "anchor": {
@@ -1531,6 +1635,7 @@
         },
         {
           "text": "The same approach extends beyond two groups: with three variants, it gives the probability that C beats both A and B in the long run.",
+          "label": "Extending the approach to three variants",
           "sourceId": "miller-bayes-ab",
           "locator": "A/B/C testing: binary outcomes",
           "anchor": {
@@ -1540,6 +1645,7 @@
         },
         {
           "text": "An informative prior can also be used, provided its beta parameters remain whole numbers.",
+          "label": "Informative priors in A/B testing",
           "sourceId": "miller-bayes-ab",
           "locator": "Footnote 1",
           "anchor": {
@@ -1564,6 +1670,7 @@
       "keyPoints": [
         {
           "text": "In models with many parameters the normalising constant is an intractable multiple integral, so instead of specifying the posterior exactly, we approximate it by simulation.",
+          "label": "Intractable normalising constants",
           "sourceId": "br-06",
           "locator": "Unit 2 introduction",
           "anchor": {
@@ -1573,6 +1680,7 @@
         },
         {
           "text": "Grid approximation draws an independent sample from a discretised version of the posterior. It is straightforward, but it breaks down in more complicated models.",
+          "label": "Grid approximation method",
           "sourceId": "br-06",
           "locator": "6.4 Chapter summary",
           "anchor": {
@@ -1582,6 +1690,7 @@
         },
         {
           "text": "Unlike grid approximation, MCMC simulation methods scale up to more complicated Bayesian models.",
+          "label": "MCMC scalability",
           "sourceId": "br-06",
           "locator": "6.2 Markov chains via rstan",
           "anchor": {
@@ -1591,6 +1700,7 @@
         },
         {
           "text": "MCMC produces a chain of dependent values that are not drawn from the posterior itself, yet the chain will mimic the posterior as long as it is long enough.",
+          "label": "MCMC chain and posterior mimicry",
           "sourceId": "br-06",
           "locator": "6.4 Chapter summary",
           "anchor": {
@@ -1600,6 +1710,7 @@
         },
         {
           "text": "Credible intervals are often computed by sampling from the posterior and taking quantiles of the samples, which helps when the posterior has no easy formula.",
+          "label": "Credible intervals from simulation",
           "sourceId": "st21-11",
           "locator": "11.3.4 Credible intervals",
           "anchor": {
@@ -1638,6 +1749,7 @@
       "keyPoints": [
         {
           "text": "A downward trend in a trace plot shows a chain that has not yet stabilised or learned to explore the range of plausible values, and hints at strong correlation among its values.",
+          "label": "Trace plot trends and mixing",
           "sourceId": "br-06",
           "locator": "6.3.1 Examining trace plots",
           "anchor": {
@@ -1647,6 +1759,7 @@
         },
         {
           "text": "Each chain should be stable, and parallel chains should be consistent: their paths will differ, but they should show similar features and give similar posterior approximations.",
+          "label": "Stability across parallel chains",
           "sourceId": "br-06",
           "locator": "6.3.2 Comparing parallel chains",
           "anchor": {
@@ -1656,6 +1769,7 @@
         },
         {
           "text": "Fast-mixing chains behave like an independent sample: they move quickly around the plausible values, their autocorrelation drops off quickly, and their effective sample size ratio is reasonably large.",
+          "label": "Fast-mixing chain characteristics",
           "sourceId": "br-06",
           "locator": "6.3.3 Calculating effective sample size & autocorrelation",
           "anchor": {
@@ -1665,6 +1779,7 @@
         },
         {
           "text": "A chain's effective sample size is the number of independent samples that would give an equally accurate posterior approximation; it is typically smaller than the chain's actual length.",
+          "label": "Effective sample size",
           "sourceId": "br-06",
           "locator": "6.3.3 Calculating effective sample size & autocorrelation",
           "anchor": {
@@ -1674,6 +1789,7 @@
         },
         {
           "text": "R-hat is the ratio of the variability across all chains combined to the variability within each chain. A value near 1 is ideal; above 1.05 raises red flags about the simulation's stability.",
+          "label": "R-hat and chain stability",
           "sourceId": "br-06",
           "locator": "6.3.4 Calculating R-hat",
           "anchor": {

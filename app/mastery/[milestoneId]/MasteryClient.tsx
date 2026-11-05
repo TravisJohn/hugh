@@ -2,86 +2,59 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Briefcase, Users, MessageCircle, GraduationCap,
-  Mic, MicOff, Loader2, Trophy, RotateCcw, AlertCircle,
-} from "lucide-react";
+import { Mic, MicOff, Loader2, Trophy, RotateCcw, AlertCircle, Flag } from "lucide-react";
 import ExitLink from "@/components/ui/ExitLink";
+import type { TextBodies } from "@/lib/claude/textInput";
 import { MIC_PROBLEM_MESSAGE } from "@/lib/mastery/micProblem";
 import type { MasteryRecord } from "@/lib/mastery/outcome";
-import { SCENARIO_KEYS, type ScenarioKey } from "@/lib/mastery/scenario";
+import type { HeldCorrection } from "@/lib/packs/grounding";
+import type { MasteryTopic } from "@/lib/mastery/topics";
+import { RECENT_LINES } from "@/lib/mastery/turnCheck";
+import type { CoverageResponse } from "@/types";
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
-import SummaryPanel from "./SummaryPanel";
+import TopicPanel, { type TopicListState } from "./TopicPanel";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type Phase =
-  | "setup"       // scenario selection / confirmation
-  | "generating"  // fetching Hugh's opener
-  | "listening"   // user's turn to speak
-  | "thinking"    // fetching Hugh's next response
-  | "evaluating"  // Claude scoring the conversation (the server records it)
-  | "result";     // show score + feedback
+  | "setup"      // the list and how it works
+  | "starting"   // the server opening a session
+  | "listening"  // the learner's turn: they drive
+  | "thinking"   // Hugh checking what they just said
+  | "finishing"  // the server adding it up and recording the result
+  | "result";    // score + feedback
 
 interface ConversationMessage {
   role: "hugh" | "learner";
   text: string;
 }
 
-interface Evaluation {
-  score:    number;
-  feedback: string;
-  passed:   boolean;
-  /** Whether the server recorded it. The score is real either way. */
-  record:   MasteryRecord;
+interface StartReply {
+  sessionId: string;
+  topics:    MasteryTopic[];
+  turnsLeft: number;
 }
 
-// ── Scenario config ────────────────────────────────────────────────────────
+interface TurnReply {
+  reply:     string;
+  covered:   string[];
+  heldCount: number;
+  turnsLeft: number;
+}
 
-const SCENARIOS: Record<ScenarioKey, {
-  label:   string;
-  Icon:    React.ElementType;
-  tagline: string;
-  color:   string;
-}> = {
-  interview: {
-    label:   "Technical Interview",
-    Icon:    Briefcase,
-    tagline: "Walk the interviewer through your understanding of this topic.",
-    color:   "violet",
-  },
-  client: {
-    label:   "Client Briefing",
-    Icon:    Users,
-    tagline: "A client needs to understand this topic to make a decision. Be their expert.",
-    color:   "sky",
-  },
-  huddle: {
-    label:   "Team Huddle",
-    Icon:    MessageCircle,
-    tagline: "A new teammate missed the context. Get them up to speed clearly.",
-    color:   "amber",
-  },
-  teaching: {
-    label:   "Teaching a Junior",
-    Icon:    GraduationCap,
-    tagline: "A junior developer is assigned to this area. Mentor them well.",
-    color:   "green",
-  },
-};
-
-const MAX_EXCHANGES = 3;
-
-// ── Color helpers ──────────────────────────────────────────────────────────
-
-type ColorKey = "violet" | "sky" | "amber" | "green";
-
-const COLOR_CLASSES: Record<ColorKey, { bg: string; border: string; text: string }> = {
-  violet: { bg: "bg-violet-500/10", border: "border-violet-500/40", text: "text-violet-300" },
-  sky:    { bg: "bg-sky-500/10",    border: "border-sky-500/40",    text: "text-sky-300"    },
-  amber:  { bg: "bg-amber-500/10",  border: "border-amber-500/40",  text: "text-amber-300"  },
-  green:  { bg: "bg-green-500/10",  border: "border-green-500/40",  text: "text-green-300"  },
-};
+interface Evaluation {
+  score:       number;
+  headline:    string;
+  /** Labels left open. The panel shows them, so they are only spelled out where it is hidden. */
+  missed:      string[];
+  /** One per wrong belief left standing. They take turns on screen, so none is cut off. */
+  corrections: HeldCorrection[];
+  /** What the server scored, so the panel can never disagree with the result. */
+  covered:     string[];
+  passed:      boolean;
+  /** Whether the server recorded it. The score is real either way. */
+  record:      MasteryRecord;
+}
 
 // ── Props ──────────────────────────────────────────────────────────────────
 
@@ -92,17 +65,40 @@ interface Props {
   /** The goal board to use when no returnUrl was supplied. */
   fallbackUrl:     string;
   alreadyMastered: boolean;
-  /** Chosen on the server, so the server's render and the browser's agree. */
-  initialScenario: ScenarioKey;
-  /** What the card already has saved. The panel writes one if this is null. */
-  summaryDoc:      string | null;
-  summaryDocAt:    string | null;
+  /** Names only. Empty on an older card whose checklist has not been built yet. */
+  initialTopics:   MasteryTopic[];
+  /** Why this card has no list and cannot get one here. */
+  topicsProblem:   string | null;
+}
+
+// An older card may not have a checklist yet. The coverage route builds and
+// stores one, the same list its Ask page shows.
+async function fetchCardTopics(milestoneId: string): Promise<MasteryTopic[]> {
+  const res  = await fetch(`/api/tracker/milestones/${milestoneId}/coverage`);
+  const data = await res.json().catch(() => ({})) as CoverageResponse;
+  if (!res.ok || !data.learningPoints?.length) {
+    throw new Error(data.error ?? "Hugh couldn't build this card's list of topics.");
+  }
+  return data.learningPoints.map(p => ({ ref: p.id, label: p.text }));
+}
+
+async function callSession<T>(body: TextBodies["session"]): Promise<T> {
+  const res = await fetch("/api/tracker/mastery/session", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    throw new Error((d as { error?: string }).error ?? `Error ${res.status}`);
+  }
+  return res.json() as Promise<T>;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
 
 export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
-  fallbackUrl, alreadyMastered, initialScenario, summaryDoc, summaryDocAt }: Props) {
+  fallbackUrl, alreadyMastered, initialTopics, topicsProblem }: Props) {
   const router = useRouter();
 
   // returnUrl carries study-context when the learner came from
@@ -111,10 +107,17 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
   const boardUrl = returnUrl ?? fallbackUrl;
 
   const [phase,      setPhase]      = useState<Phase>("setup");
-  const [scenario,   setScenario]   = useState<ScenarioKey>(initialScenario);
-  const [pickMode,   setPickMode]   = useState(false);  // show scenario grid on retry
+  const [topics,     setTopics]     = useState<MasteryTopic[]>(initialTopics);
+  const [listError,  setListError]  = useState<string | null>(topicsProblem);
+  const [sessionId,  setSessionId]  = useState<string | null>(null);
+  const [covered,    setCovered]    = useState<string[]>([]);
+  const [heldCount,  setHeldCount]  = useState(0);
+  const [turnsLeft,  setTurnsLeft]  = useState(0);
   const [messages,   setMessages]   = useState<ConversationMessage[]>([]);
+  // Words Hugh could not check. Kept, so a failed turn loses nothing the learner said.
+  const [unsent,     setUnsent]     = useState("");
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+  const [correctionAt, setCorrectionAt] = useState(0);
   const [apiError,   setApiError]   = useState<string | null>(null);
 
   const speech       = useSpeechRecognition();
@@ -130,53 +133,51 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
     threadEndRef.current?.scrollIntoView({ block: "end" });
   }, [messages, phase, speech.transcript]);
 
+  function retryList() {
+    setListError(null);
+    fetchCardTopics(milestoneId).then(setTopics).catch((e: Error) => setListError(e.message));
+  }
+
+  useEffect(() => {
+    if (initialTopics.length > 0 || topicsProblem) return;
+    fetchCardTopics(milestoneId).then(setTopics).catch((e: Error) => setListError(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const allDone = topics.length > 0 && covered.length >= topics.length && heldCount === 0;
+
   // ── Manage speech recognition lifecycle via phase ────────────────────────
   // Do NOT call speech.reset() here — it calls recognition.stop() internally,
   // and calling recognition.start() immediately after causes a race condition
   // where the engine hasn't fully stopped, so start() silently fails.
-  // The transcript is already cleared by handleDone() between exchanges.
+  // The transcript is already cleared when a turn is sent. With every topic
+  // covered there is nothing left to listen for, so the mic stays off.
   useEffect(() => {
-    if (phase === "listening") {
+    if (phase === "listening" && !allDone) {
       speech.start();
     } else if (speech.isRecording) {
       speech.stop();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase]);
-
-  // ── API call helper ───────────────────────────────────────────────────────
-  async function callSession(
-    apiPhase: "open" | "respond" | "evaluate",
-    msgs: ConversationMessage[],
-    activeScenario: ScenarioKey,
-  ) {
-    const res = await fetch("/api/tracker/mastery/session", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ milestoneId, scenario: activeScenario, phase: apiPhase, messages: msgs }),
-    });
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
-      throw new Error((d as { error?: string }).error ?? `Error ${res.status}`);
-    }
-    return res.json() as Promise<{ text?: string; score?: number; feedback?: string; passed?: boolean; record?: MasteryRecord }>;
-  }
+  }, [phase, allDone]);
 
   // ── Start or restart a session ────────────────────────────────────────────
-  async function startSession(chosen: ScenarioKey) {
-    setScenario(chosen);
-    setPickMode(false);
+  // Every attempt starts clean on the server too: a pass is earned in one sitting.
+  async function startSession() {
     setMessages([]);
+    setCovered([]);
+    setHeldCount(0);
+    setUnsent("");
     setEvaluation(null);
     setApiError(null);
     speech.reset();  // clear any transcript leftover from a previous session
-    setPhase("generating");
+    setPhase("starting");
 
     try {
-      const data    = await callSession("open", [], chosen);
-      const text    = data.text!;
-      const initial = [{ role: "hugh" as const, text }];
-      setMessages(initial);
+      const data = await callSession<StartReply>({ phase: "start", milestoneId });
+      setSessionId(data.sessionId);
+      setTopics(data.topics);
+      setTurnsLeft(data.turnsLeft);
       setPhase("listening");
     } catch (e) {
       setApiError((e as Error).message);
@@ -184,47 +185,79 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
     }
   }
 
-  // ── User finishes speaking ────────────────────────────────────────────────
-  async function handleDone() {
+  // ── Send what the learner just said ───────────────────────────────────────
+  // Returns the reply, or null when it did not get through. The caller decides
+  // what follows, so the mic is never reopened just to be closed again.
+  async function submitTurn(): Promise<TurnReply | null> {
     const captured = speech.transcript.trim();
+    const said     = [unsent, captured].filter(Boolean).join(" ");
     // Nothing caught, so leave the mic open. Stopping it here would leave the
     // screen saying "Listening…" with the mic off: the phase would not change,
     // so nothing would start it again.
-    if (!captured) return;
+    if (!said || !sessionId) return null;
 
     speech.reset();
     setApiError(null);
 
-    const learnerMsg: ConversationMessage = { role: "learner", text: captured };
-    const updated                         = [...messagesRef.current, learnerMsg];
+    const before  = messagesRef.current;
+    const updated = captured ? [...before, { role: "learner" as const, text: captured }] : before;
     setMessages(updated);
+    setPhase("thinking");
 
-    const learnerCount = updated.filter(m => m.role === "learner").length;
+    // A failed line is already in `said`, so it is left out of the context.
+    const context = unsent ? before.slice(0, -1) : before;
+    try {
+      const data = await callSession<TurnReply>({
+        phase: "turn", sessionId, said, recent: context.slice(-RECENT_LINES),
+      });
+      setUnsent("");
+      setCovered(data.covered);
+      setHeldCount(data.heldCount);
+      setTurnsLeft(data.turnsLeft);
+      setMessages([...updated, { role: "hugh", text: data.reply }]);
+      return data;
+    } catch (e) {
+      setUnsent(said);
+      setApiError((e as Error).message);
+      setPhase("listening");
+      return null;
+    }
+  }
 
-    if (learnerCount >= MAX_EXCHANGES) {
-      setPhase("evaluating");
-      try {
-        const data = await callSession("evaluate", updated, scenario);
-        setEvaluation({ score: data.score!, feedback: data.feedback!, passed: data.passed!, record: data.record! });
-      } catch (e) {
-        setApiError((e as Error).message);
-      }
-      setPhase("result");
+  // ── Add it up: the server scores the ticks it holds and records the result ─
+  async function finish() {
+    if (!sessionId) return;
+    setApiError(null);
+    setPhase("finishing");
+    try {
+      const data = await callSession<Evaluation>({ phase: "finish", sessionId });
+      setEvaluation(data);
+      setCovered(data.covered);
+      setCorrectionAt(0);
+    } catch (e) {
+      setEvaluation(null);
+      setApiError((e as Error).message);
+    }
+    setPhase("result");
+  }
+
+  async function handleDone() {
+    const reply = await submitTurn();
+    if (!reply) return;
+    if (reply.turnsLeft === 0) {
+      await finish();
       return;
     }
+    setPhase("listening");
+  }
 
-    setPhase("thinking");
-    try {
-      const data    = await callSession("respond", updated, scenario);
-      const text    = data.text!;
-      const hughMsg: ConversationMessage = { role: "hugh", text };
-      const next    = [...updated, hughMsg];
-      setMessages(next);
-      setPhase("listening");
-    } catch (e) {
-      setApiError((e as Error).message);
-      setPhase("listening"); // let user retry their turn
+  // Someone mid-sentence who presses Finish means to include what they just said.
+  async function handleFinish() {
+    if (unsent || speech.transcript.trim()) {
+      const reply = await submitTurn();
+      if (!reply) return;
     }
+    await finish();
   }
 
   // ── Clean exit: stop the mic before navigating ───────────────────────────
@@ -234,29 +267,30 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
     speech.reset();
   }
 
-  // The result is recorded by the server the moment the session is scored
+  // The result is recorded by the server the moment the session is finished
   // (lib/mastery/outcome.ts); this page no longer writes it. So the buttons on
   // the result screen only navigate, and they are shown only when the server
   // reports the result saved. The board celebrates a card arriving with
   // ?mastered=, and that must never fire for a result that was not recorded.
-  // The panel beside the conversation writes a summary if the card has none. The
-  // drawer still does for a card passed with that panel hidden.
   function navigateBackMastered() {
     const sep = boardUrl.includes("?") ? "&" : "?";
     router.push(`${boardUrl}${sep}mastered=${milestoneId}`);
   }
 
   // ── Derived values ────────────────────────────────────────────────────────
-  const learnerCount    = messages.filter(m => m.role === "learner").length;
-  const currentExchange = Math.min(learnerCount + 1, MAX_EXCHANGES);
-  const cfg             = SCENARIOS[scenario];
-  const colors          = COLOR_CLASSES[cfg.color as ColorKey];
-  const isBusy          = ["generating", "thinking", "evaluating"].includes(phase);
-  const micOff          = speech.problem !== null || !speech.isSupported;
-  const saveFailed      = evaluation?.record === "failed";
+  const learnerCount = messages.filter(m => m.role === "learner").length;
+  const isBusy       = ["starting", "thinking", "finishing"].includes(phase);
+  const micOff       = speech.problem !== null || !speech.isSupported;
+  const canFinish    = learnerCount > 0 || !!unsent || !!speech.transcript.trim();
+  const saveFailed   = evaluation?.record === "failed";
   // On an already-mastered card every practice run is "positive" — mastery is
   // locked, so we never show a fail/almost framing.
-  const positive        = alreadyMastered || !!evaluation?.passed;
+  const positive     = alreadyMastered || !!evaluation?.passed;
+
+  const list: TopicListState =
+    listError                    ? { kind: "failed", message: listError, onRetry: topicsProblem ? undefined : retryList }
+    : topics.length === 0        ? { kind: "building" }
+    :                              { kind: "ready" };
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -280,110 +314,66 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Mastery Session</p>
           <p className="mt-0.5 max-w-[280px] truncate text-sm font-semibold text-slate-200">{milestoneTitle}</p>
         </div>
-        {/* Exchange progress dots */}
-        <div className="flex items-center gap-1.5">
-          {Array.from({ length: MAX_EXCHANGES }).map((_, i) => (
-            <div
-              key={i}
-              className={`h-2 w-2 rounded-full transition-colors duration-300 ${
-                i < learnerCount
-                  ? "bg-green-400"
-                  : i === learnerCount && !["result", "setup", "evaluating"].includes(phase)
-                  ? "bg-amber-400 animate-pulse"
-                  : "bg-slate-700"
-              }`}
-            />
-          ))}
-        </div>
+        {/* The count, which is all a screen too narrow for the panel gets, and
+            what a screen reader hears as a topic is ticked. */}
+        <p aria-live="polite" className="min-w-[3.5rem] text-right text-xs font-semibold text-slate-400">
+          {list.kind === "ready" && phase !== "setup" ? `${covered.length} of ${topics.length}` : ""}
+        </p>
       </header>
 
       <main className="relative z-10 flex flex-1 min-h-0 gap-4 px-4 py-4 md:px-6">
         <section className="flex flex-1 min-w-0 min-h-0 flex-col">
-          {/* ── SETUP / SCENARIO ─────────────────────────────────────────────── */}
+          {/* ── SETUP ───────────────────────────────────────────────────────── */}
           {phase === "setup" && (
             <div className="flex flex-1 flex-col items-center justify-center px-6 py-6">
-              {pickMode ? (
-                <div className="w-full max-w-lg space-y-4">
-                  <div className="text-center mb-6">
-                    <p className="text-lg font-semibold text-slate-200">Choose a scenario</p>
-                    <p className="mt-1 text-sm text-slate-500">Pick the context that feels most challenging.</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {SCENARIO_KEYS.map(key => {
-                      const s    = SCENARIOS[key];
-                      const sc   = COLOR_CLASSES[s.color as ColorKey];
-                      const Icon = s.Icon;
-                      return (
-                        <button
-                          key={key}
-                          onClick={() => startSession(key)}
-                          className={`flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all hover:brightness-110 ${sc.bg} ${sc.border}`}
-                        >
-                          <Icon size={18} className={sc.text} />
-                          <p className={`text-sm font-semibold ${sc.text}`}>{s.label}</p>
-                          <p className="text-xs text-slate-500 leading-relaxed">{s.tagline}</p>
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div className="w-full max-w-md space-y-6 text-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-100">
+                    {alreadyMastered ? "Practice Your Mastery" : "Profess Your Mastery"}
+                  </h1>
+                  <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm mx-auto">
+                    Explain the topics out loud, in any order and in your own words.{" "}
+                    {alreadyMastered
+                      ? "This is a practice run — your mastery is already locked in, so explore freely."
+                      : <>Cover <span className="text-slate-200 font-semibold">at least 70%</span> of them, with no wrong belief left standing, to confirm mastery.</>}
+                  </p>
                 </div>
-              ) : (
-                <div className="w-full max-w-md space-y-6 text-center">
-                  <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
-                    <cfg.Icon size={14} />
-                    {cfg.label}
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-bold text-slate-100">
-                      {alreadyMastered ? "Practice Your Mastery" : "Profess Your Mastery"}
-                    </h1>
-                    <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm mx-auto">
-                      {cfg.tagline} Hugh leads a 3-exchange conversation, and you answer out loud.{" "}
-                      {alreadyMastered
-                        ? "This is a practice run — your mastery is already locked in, so explore freely."
-                        : <>Score <span className="text-slate-200 font-semibold">7 or higher</span> to confirm mastery.</>}
-                    </p>
-                  </div>
-                  <div className={`rounded-2xl border px-5 py-4 text-sm text-slate-400 leading-relaxed text-left ${colors.bg} ${colors.border}`}>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">How it works</p>
-                    Hugh&apos;s lines appear on screen, in character. Read each one, then answer out loud, 3 times in all — keep it clear, accurate, and confident. Your mic opens by itself after each line. Hugh evaluates and scores your explanation after the final exchange.
-                    <span className="hidden lg:inline"> Your summary stays on the right the whole time: use it to find your footing, then say it your own way.</span>
-                  </div>
-                  {apiError && (
-                    <p className="text-sm text-red-400">{apiError}</p>
-                  )}
-                  <button
-                    onClick={() => startSession(scenario)}
-                    className={`w-full rounded-2xl border py-3.5 text-sm font-bold transition-all hover:brightness-110 ${colors.bg} ${colors.border} ${colors.text}`}
-                  >
-                    Begin Session
-                  </button>
-                  <button
-                    onClick={() => setPickMode(true)}
-                    className="text-xs text-slate-600 hover:text-slate-400 transition-colors"
-                  >
-                    Change scenario
-                  </button>
+                <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-5 py-4 text-sm text-slate-400 leading-relaxed text-left">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">How it works</p>
+                  You lead. Your mic opens when you begin. Press Done talking after each point and Hugh checks it against the list, then replies in a line. Hugh won&apos;t bring up the next topic or give you an answer. Press Finish whenever you&apos;re ready.
                 </div>
-              )}
+                {apiError && (
+                  <p role="alert" className="text-sm text-red-400">{apiError}</p>
+                )}
+                <button
+                  onClick={startSession}
+                  disabled={list.kind !== "ready"}
+                  className="w-full rounded-2xl border border-sky-500/40 bg-sky-500/10 py-3.5 text-sm font-bold text-sky-300 transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Begin Session
+                </button>
+              </div>
             </div>
           )}
 
           {/* ── ACTIVE CONVERSATION ───────────────────────────────────────────── */}
           {!["setup", "result"].includes(phase) && (
             <div className="flex flex-1 flex-col min-h-0">
-              {/* Exchange counter */}
-              {!["evaluating"].includes(phase) && (
-                <div className="shrink-0 flex justify-center py-3">
-                  <span className="rounded-full bg-slate-800/80 px-3 py-1 text-xs font-semibold text-slate-400">
-                    Exchange {currentExchange} of {MAX_EXCHANGES}
-                  </span>
-                </div>
-              )}
-
               {/* Message thread */}
               <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">
                 <div className="max-w-2xl mx-auto space-y-4">
+
+                  {/* Not a real line of Hugh's: it costs nothing and is never sent. */}
+                  {messages.length === 0 && phase === "listening" && (
+                    <div className="flex gap-3 max-w-[85%]">
+                      <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-slate-300">
+                        H
+                      </div>
+                      <div className="rounded-2xl rounded-tl-sm border border-slate-700/60 bg-slate-800/60 px-4 py-3">
+                        <p className="text-sm text-slate-200 leading-relaxed">Start wherever you like. I&apos;m listening.</p>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Announces each new line to a screen reader, now that Hugh makes
                       no sound. The live transcript stays outside: announcing every
@@ -413,7 +403,7 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
                   </div>
 
                   {/* Live transcript while the user is recording */}
-                  {phase === "listening" && (
+                  {phase === "listening" && !allDone && (
                     <div className="flex gap-3 max-w-[85%] ml-auto flex-row-reverse">
                       <div className="shrink-0 mt-1 flex h-7 w-7 items-center justify-center rounded-full bg-sky-900/60 text-xs font-bold text-sky-300">
                         Y
@@ -432,9 +422,9 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
                   {isBusy && (
                     <div className="flex items-center gap-2 text-xs text-slate-500 px-1 py-2">
                       <Loader2 size={12} className="animate-spin" />
-                      {phase === "generating" && "Hugh is setting the scene…"}
-                      {phase === "thinking"   && "Hugh is responding…"}
-                      {phase === "evaluating" && "Hugh is evaluating your responses…"}
+                      {phase === "starting"  && "Getting your session ready…"}
+                      {phase === "thinking"  && "Hugh is checking that…"}
+                      {phase === "finishing" && "Hugh is adding it up…"}
                     </div>
                   )}
 
@@ -447,15 +437,26 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
               <div className="shrink-0 border-t border-slate-800/60 px-6 py-5">
                 <div className="max-w-2xl mx-auto flex flex-col items-center gap-4">
 
-                  {/* A failed reply, and a mic that stopped, each get their own copy
-                      and their own way out (rule 5): both would otherwise sit behind
-                      "Listening…" with nothing to tell them from a wait. */}
+                  {/* A turn Hugh could not check, and a mic that stopped, each get
+                      their own copy and their own way out (rule 5): both would
+                      otherwise sit behind "Listening…" with nothing to tell them
+                      from a wait. What the learner said is kept for the retry. */}
                   {phase === "listening" && apiError && (
-                    <p role="alert" className="text-center text-sm text-red-400">
-                      {apiError} Answer again to retry.
-                    </p>
+                    <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                      <div className="space-y-2">
+                        <p className="text-sm text-red-300">{apiError} What you said is kept.</p>
+                        <button
+                          onClick={handleDone}
+                          className="flex items-center gap-1.5 text-xs font-semibold text-red-200 hover:text-red-100 transition-colors"
+                        >
+                          <RotateCcw size={12} />
+                          Try again
+                        </button>
+                      </div>
+                    </div>
                   )}
-                  {phase === "listening" && speech.problem && (
+                  {phase === "listening" && !allDone && speech.problem && (
                     <div role="alert" className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
                       <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
                       <div className="space-y-2">
@@ -471,32 +472,52 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
                     </div>
                   )}
 
-                  <div className="flex items-center justify-center gap-5">
-                    {phase === "listening" && (
-                      <>
-                        {!micOff && (
-                          <div className="relative flex items-center justify-center">
-                            <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
-                            <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
-                              <Mic size={18} className="text-red-400" />
-                            </div>
+                  {phase === "listening" && allDone && (
+                    <p className="text-sm font-semibold text-green-300">Every topic is covered.</p>
+                  )}
+                  {phase === "listening" && !allDone && turnsLeft > 0 && turnsLeft <= 3 && (
+                    <p className="text-xs text-amber-300">
+                      {turnsLeft === 1 ? "1 turn left" : `${turnsLeft} turns left`}. The session finishes itself after that.
+                    </p>
+                  )}
+
+                  {phase === "listening" && (
+                    <div className="flex flex-wrap items-center justify-center gap-3">
+                      {!allDone && !micOff && (
+                        <div className="relative mr-2 flex items-center justify-center">
+                          <div className="absolute h-12 w-12 rounded-full bg-red-500/20 animate-ping" />
+                          <div className="relative flex h-10 w-10 items-center justify-center rounded-full border border-red-500/50 bg-red-500/20">
+                            <Mic size={18} className="text-red-400" />
                           </div>
-                        )}
-                        <div className="flex flex-col gap-1.5 items-start">
-                          <button
-                            onClick={handleDone}
-                            className="flex items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-500 transition-colors"
-                          >
-                            <MicOff size={15} />
-                            Done talking
-                          </button>
-                          {!speech.isSupported && (
-                            <p className="text-xs text-red-400">Chrome or Edge required for voice input</p>
-                          )}
                         </div>
-                      </>
-                    )}
-                  </div>
+                      )}
+                      {!allDone && (
+                        <button
+                          onClick={handleDone}
+                          className="flex items-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-sky-500 transition-colors"
+                        >
+                          <MicOff size={15} />
+                          Done talking
+                        </button>
+                      )}
+                      <button
+                        onClick={handleFinish}
+                        disabled={!canFinish}
+                        title={canFinish ? undefined : "Say something first, so Hugh has something to check."}
+                        className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                          allDone
+                            ? "bg-green-600 text-white hover:bg-green-500"
+                            : "border border-slate-700 text-slate-300 hover:border-slate-600 hover:text-slate-100"
+                        }`}
+                      >
+                        <Flag size={15} />
+                        Finish
+                      </button>
+                    </div>
+                  )}
+                  {phase === "listening" && !allDone && !speech.isSupported && (
+                    <p className="text-xs text-red-400">Chrome or Edge required for voice input</p>
+                  )}
 
                   {/* End session — always visible during active conversation */}
                   <ExitLink
@@ -515,98 +536,148 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
 
           {/* ── RESULT ────────────────────────────────────────────────────────── */}
           {phase === "result" && (
-            <div className="flex flex-1 flex-col items-center justify-center px-6 py-6">
-              <div className="w-full max-w-md space-y-5">
+            <div className="flex flex-1 flex-col items-center justify-center px-2 py-2 md:px-4">
+              <div className="w-full max-w-xl space-y-2.5">
 
-                {/* Score card */}
-                <div className={`rounded-3xl border p-6 text-center ${
-                  positive
-                    ? "border-green-500/30 bg-green-500/5"
-                    : "border-amber-500/30 bg-amber-500/5"
-                }`}>
-                  <div className={`text-5xl font-black mb-1 ${positive ? "text-green-300" : "text-amber-300"}`}>
-                    {evaluation?.score ?? "—"}
-                    <span className="text-2xl font-normal text-slate-500">/10</span>
-                  </div>
-                  <p className={`text-sm font-semibold ${positive ? "text-green-400" : "text-amber-400"}`}>
-                    {saveFailed
-                      ? "Scored, but not saved"
-                      : alreadyMastered
-                      ? "Still mastered — practice logged"
-                      : evaluation?.passed
-                      ? "Mastery confirmed"
-                      : "Almost — one more try will get you there"}
-                  </p>
-                </div>
+                {evaluation && (
+                  <>
+                    {/* Score card */}
+                    <div className={`flex items-center justify-center gap-4 rounded-2xl border px-5 py-3 ${
+                      positive
+                        ? "border-green-500/30 bg-green-500/5"
+                        : "border-amber-500/30 bg-amber-500/5"
+                    }`}>
+                      <div className={`text-4xl font-black ${positive ? "text-green-300" : "text-amber-300"}`}>
+                        {evaluation.score}
+                        <span className="text-xl font-normal text-slate-500">/10</span>
+                      </div>
+                      <p className={`text-sm font-semibold ${positive ? "text-green-400" : "text-amber-400"}`}>
+                        {saveFailed
+                          ? "Scored, but not saved"
+                          : alreadyMastered
+                          ? "Still mastered — practice logged"
+                          : evaluation.passed
+                          ? "Mastery confirmed"
+                          : "Not yet"}
+                      </p>
+                    </div>
 
-                {/* Feedback */}
-                {evaluation?.feedback && (
-                  <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 px-5 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-2">Hugh&apos;s Feedback</p>
-                    <p className="text-sm text-slate-300 leading-relaxed">{evaluation.feedback}</p>
-                  </div>
+                    {/* This screen cannot scroll (Rule 4). The list of what is open lives in
+                        the panel beside it, and corrections take turns rather than stack. */}
+                    <div className="rounded-2xl border border-slate-700/60 bg-slate-800/40 px-5 py-3.5">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1.5">Where you got to</p>
+                      <p className="text-sm text-slate-300 leading-relaxed">{evaluation.headline}</p>
+                      {evaluation.missed.length > 0 && evaluation.corrections.length === 0 && (
+                        <p className="mt-1.5 text-sm text-slate-400 leading-relaxed md:hidden">
+                          Not covered: {evaluation.missed.join("; ")}.
+                        </p>
+                      )}
+                      {evaluation.corrections.length > 0 && (
+                        <div className="mt-2.5 border-t border-slate-700/60 pt-2.5">
+                          <p className="text-sm text-amber-100/90 leading-relaxed">
+                            {evaluation.corrections[correctionAt]?.lead} {evaluation.corrections[correctionAt]?.correction}{" "}
+                            <a
+                              href={evaluation.corrections[correctionAt]?.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="whitespace-nowrap text-amber-300 underline underline-offset-2 hover:text-amber-200"
+                            >
+                              Source
+                            </a>
+                            <span className="text-slate-500"> · {evaluation.corrections[correctionAt]?.sourceName}</span>
+                          </p>
+                          {evaluation.corrections.length > 1 && (
+                            <div className="mt-2 flex items-center justify-between gap-3 text-xs">
+                              <span className="text-slate-500">
+                                Correction {correctionAt + 1} of {evaluation.corrections.length}
+                              </span>
+                              <button
+                                onClick={() => setCorrectionAt(i => (i + 1) % evaluation.corrections.length)}
+                                className="font-semibold text-amber-300 transition-colors hover:text-amber-200"
+                              >
+                                Next
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </>
                 )}
 
-                {/* Error fallback */}
-                {apiError && !evaluation && (
-                  <p className="text-sm text-red-400 text-center">{apiError}</p>
-                )}
-
-                {/* Scenario tag */}
-                <div className="flex justify-center">
-                  <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${colors.bg} ${colors.border} ${colors.text}`}>
-                    <cfg.Icon size={12} />
-                    {cfg.label}
-                  </div>
-                </div>
-
-                {/* CTA. A scored session the server could not record gets its own
-                    copy and its own way out (rule 5): the score above is real, only
-                    the saving failed, and running the session again scores and
-                    records afresh. The board link leaves without a record. Every
-                    other button only navigates, because the server has already
-                    recorded the result. */}
-                {saveFailed ? (
-                  <div className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5">
+                {/* The ticks are safe on the server, so a failure here never means
+                    repeating the session. Pressing again adds them up and records
+                    them afresh (rule 5). */}
+                {!evaluation && (
+                  <div role="alert" className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3.5">
                     <div className="flex items-start gap-2.5">
                       <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
                       <p className="text-sm text-red-300">
-                        Hugh scored this session but couldn&apos;t save the result. Your score above is real; run the session again to record it.
+                        {apiError ?? "Hugh couldn't add up this session."} Your ticks are safe.
                       </p>
                     </div>
                     <button
-                      onClick={() => startSession(scenario)}
+                      onClick={finish}
                       className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-500/20 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/30 transition-colors"
                     >
                       <RotateCcw size={14} />
-                      Run it again
+                      Try again
                     </button>
                     <ExitLink
                       href={boardUrl}
-                      label="Back to board without saving"
+                      label="Back to board"
                       onNavigate={stopListening}
                       showIcon={false}
                       className="block w-full rounded-xl border border-red-500/30 py-2 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
                     />
                   </div>
+                )}
+
+                {/* CTA. Every button but the save retry only navigates, because
+                    the server has already recorded the result. */}
+                {evaluation && (saveFailed ? (
+                  <div className="space-y-2.5 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400" />
+                      <p className="text-sm text-red-300">
+                        Hugh added this up but couldn&apos;t save the result. Your score above is real, and saving it doesn&apos;t mean repeating anything.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={finish}
+                        className="w-full flex items-center justify-center gap-2 rounded-xl bg-red-500/20 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/30 transition-colors"
+                      >
+                        <RotateCcw size={14} />
+                        Try saving again
+                      </button>
+                      <ExitLink
+                        href={boardUrl}
+                        label="Back without saving"
+                        onNavigate={stopListening}
+                        showIcon={false}
+                        className="flex items-center justify-center rounded-xl border border-red-500/30 py-2.5 text-center text-xs text-red-300/80 hover:text-red-200 hover:border-red-500/50 transition-colors"
+                      />
+                    </div>
+                  </div>
                 ) : alreadyMastered ? (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={navigateBackMastered}
-                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3 text-sm font-bold text-white hover:bg-green-500 transition-colors"
                     >
                       <Trophy size={16} />
                       Finish
                     </button>
                     <button
-                      onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
+                      onClick={startSession}
                       className="w-full flex items-center justify-center gap-2 rounded-2xl border border-slate-700 py-3 text-sm text-slate-400 hover:text-slate-200 hover:border-slate-600 transition-colors"
                     >
                       <RotateCcw size={14} />
                       Practice again
                     </button>
                   </div>
-                ) : evaluation?.passed ? (
+                ) : evaluation.passed ? (
                   <button
                     onClick={navigateBackMastered}
                     className="w-full flex items-center justify-center gap-2 rounded-2xl bg-green-600 py-3.5 text-sm font-bold text-white hover:bg-green-500 transition-colors"
@@ -615,40 +686,34 @@ export default function MasteryClient({ milestoneId, milestoneTitle, returnUrl,
                     Continue
                   </button>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
-                      onClick={() => { setPickMode(true); setPhase("setup"); setMessages([]); setEvaluation(null); }}
+                      onClick={startSession}
                       className="w-full flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 py-3 text-sm font-semibold text-amber-300 hover:bg-amber-500/20 transition-colors"
                     >
                       <RotateCcw size={14} />
-                      Try a different scenario
+                      Start over
                     </button>
-                    <button
-                      onClick={() => startSession(scenario)}
-                      className="w-full rounded-2xl border border-slate-700 py-3 text-sm text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
-                    >
-                      Same scenario, fresh start
-                    </button>
+                    <ExitLink
+                      href={boardUrl}
+                      label="Back to board"
+                      onNavigate={stopListening}
+                      showIcon={false}
+                      className="block w-full rounded-2xl border border-slate-700 py-3 text-center text-sm text-slate-500 hover:text-slate-300 hover:border-slate-600 transition-colors"
+                    />
                   </div>
-                )}
+                ))}
 
               </div>
             </div>
           )}
         </section>
 
-        {/* The guide beside the conversation. It sits outside the phases so it
-            stays mounted and never refetches, and it is read-only while the
-            learner talks. A summary that fails says so in here and holds nothing
-            up: the session never depends on it. */}
-        <aside className="hidden lg:block w-[380px] shrink-0 min-h-0">
-          <SummaryPanel
-            milestoneId={milestoneId}
-            milestoneTitle={milestoneTitle}
-            initialDoc={summaryDoc}
-            initialDocAt={summaryDocAt}
-            editable={phase === "setup" || phase === "result"}
-          />
+        {/* The checklist beside the conversation. It sits outside the phases so
+            it stays mounted. Its width is what lets the longest card fit: narrower,
+            and most labels wrap (TopicPanel). */}
+        <aside className="hidden md:block w-80 shrink-0 min-h-0">
+          <TopicPanel topics={topics} covered={covered} heldCount={heldCount} list={list} />
         </aside>
       </main>
 

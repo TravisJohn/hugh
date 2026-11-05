@@ -167,6 +167,7 @@
       "keyPoints": [
         {
           "text": "Regression relates a predictor (also called an explanatory or independent variable) to a response (also called an outcome or dependent variable); predictor and response are the usual terms today.",
+          "label": "Predictor and response terminology",
           "sourceId": "psu-01",
           "locator": "1.1 What is Simple Linear Regression?",
           "anchor": {
@@ -176,6 +177,7 @@
         },
         {
           "text": "When data show a trend but also scatter around it, the relationship is statistical rather than deterministic.",
+          "label": "Statistical vs deterministic trends",
           "sourceId": "psu-01",
           "locator": "1.1 Types of relationships",
           "anchor": {
@@ -197,6 +199,7 @@
       "keyPoints": [
         {
           "text": "Simple linear regression studies one predictor variable; multiple linear regression studies two or more.",
+          "label": "Simple vs multiple regression",
           "sourceId": "psu-01",
           "locator": "1.1 What is Simple Linear Regression?",
           "anchor": {
@@ -206,6 +209,7 @@
         },
         {
           "text": "Fitting a line answers one question: which straight line best summarises the trend between two quantitative variables?",
+          "label": "What fitting a line answers",
           "sourceId": "psu-01",
           "locator": "1.2 What is the Best Fitting Line?",
           "anchor": {
@@ -227,6 +231,7 @@
       "keyPoints": [
         {
           "text": "The population regression line summarises the trend in the population between the predictor and the mean of the responses.",
+          "label": "The population regression line",
           "sourceId": "psu-01",
           "locator": "1.3 The Simple Linear Regression Model",
           "anchor": {
@@ -236,6 +241,7 @@
         },
         {
           "text": "We can almost never observe the whole population, so we use a sample of data to estimate the population regression line.",
+          "label": "Estimating from a sample",
           "sourceId": "psu-01",
           "locator": "1.3 The Simple Linear Regression Model",
           "anchor": {
@@ -258,6 +264,7 @@
       "keyPoints": [
         {
           "text": "Least squares picks the line that makes the sum of the squared prediction errors as small as possible.",
+          "label": "The least squares criterion",
           "sourceId": "psu-01",
           "locator": "1.2 What is the Best Fitting Line?",
           "anchor": {
@@ -267,6 +274,7 @@
         },
         {
           "text": "Because the formulas for the intercept and slope are derived from the least squares criterion, the fitted equation is called the least squares regression line.",
+          "label": "Origin of the fitted equation",
           "sourceId": "psu-01",
           "locator": "1.2 What is the Best Fitting Line?",
           "anchor": {
@@ -289,6 +297,7 @@
       "keyPoints": [
         {
           "text": "The slope is the change in the mean response for each one-unit increase in the predictor.",
+          "label": "Interpreting the slope",
           "sourceId": "psu-01",
           "locator": "1.2 What is the Best Fitting Line?",
           "anchor": {
@@ -298,6 +307,7 @@
         },
         {
           "text": "The intercept is the predicted mean response when x is 0, which only means something if x = 0 lies within the range of the data. Predicting outside that range is extrapolation and can be nonsense.",
+          "label": "Intercept and extrapolation",
           "sourceId": "psu-01",
           "locator": "1.2 What is the Best Fitting Line?",
           "anchor": {
@@ -320,6 +330,7 @@
       "keyPoints": [
         {
           "text": "The mean square error (MSE) estimates the common variance of the responses around the population line, that is, how much points scatter around the true trend.",
+          "label": "MSE and error variance",
           "sourceId": "psu-01",
           "locator": "1.4 What is The Common Error Variance?",
           "anchor": {
@@ -329,6 +340,7 @@
         },
         {
           "text": "The square root of the MSE, written S, estimates sigma and is known as the regression or residual standard error.",
+          "label": "Residual standard error S",
           "sourceId": "psu-01",
           "locator": "1.4 What is The Common Error Variance?",
           "anchor": {
@@ -351,6 +363,7 @@
       "keyPoints": [
         {
           "text": "R-squared (the coefficient of determination) times 100 is the percentage of the variation in the response that is reduced by taking the predictor into account.",
+          "label": "What R-squared measures",
           "sourceId": "psu-01",
           "locator": "1.5 The Coefficient of Determination",
           "anchor": {
@@ -360,6 +373,7 @@
         },
         {
           "text": "R-squared and the correlation coefficient can be greatly affected by just one data point or a few, and a plot of the data usually tells more of the story than either number.",
+          "label": "Sensitivity of R-squared",
           "sourceId": "psu-01",
           "locator": "1.8 R-squared Cautions, Caution 3",
           "anchor": {
@@ -403,6 +417,7 @@
       "keyPoints": [
         {
           "text": "Saying x 'explains' the variation in y risks being misread as x causing it. A large R-squared does not mean x causes the changes in y.",
+          "label": "R-squared and causation",
           "sourceId": "psu-01",
           "locator": "1.5 The Coefficient of Determination",
           "anchor": {
@@ -412,6 +427,7 @@
         },
         {
           "text": "Correlation (or association) does not imply causation, as an example relating wine consumption to heart-disease deaths across countries illustrates.",
+          "label": "Correlation vs causation",
           "sourceId": "psu-01",
           "locator": "1.8 R-squared Cautions, Caution 4",
           "anchor": {
@@ -434,6 +450,7 @@
       "keyPoints": [
         {
           "text": "Multiple linear regression extends the simple model from one predictor to two or more.",
+          "label": "Extending to multiple predictors",
           "sourceId": "psu-05",
           "locator": "Lesson 5 overview",
           "anchor": {
@@ -443,6 +460,7 @@
         },
         {
           "text": "Each coefficient is the change in the mean response per unit increase in its predictor while all the other predictors are held constant.",
+          "label": "Holding other predictors constant",
           "sourceId": "psu-05",
           "locator": "5.3 The Multiple Linear Regression Model",
           "anchor": {
@@ -452,6 +470,7 @@
         },
         {
           "text": "The model-checking procedures from simple regression still apply, but the error distribution is now considered at a fixed set of values for all the predictors rather than one.",
+          "label": "Model checking in multiple regression",
           "sourceId": "psu-05",
           "locator": "Lesson 5 overview",
           "anchor": {
@@ -474,6 +493,7 @@
       "keyPoints": [
         {
           "text": "To ask whether there is a linear relationship between x and y, test whether the population slope is 0 with a t-test, or alternatively with an analysis of variance F-test.",
+          "label": "Testing whether a slope is zero",
           "sourceId": "psu-02",
           "locator": "Lesson 2 overview",
           "anchor": {
@@ -483,6 +503,7 @@
         },
         {
           "text": "If a confidence interval for the slope contains 0, the data give no evidence of a linear relationship in the population. If it excludes 0, they do.",
+          "label": "Confidence interval for a slope",
           "sourceId": "psu-02",
           "locator": "2.1 Inference for the Population Intercept and Slope",
           "anchor": {
@@ -505,6 +526,7 @@
       "keyPoints": [
         {
           "text": "Multiple regression supports three different hypothesis tests for slopes: that one slope is 0, that all slopes are 0, and that a subset of slopes is 0.",
+          "label": "Three hypothesis tests for slopes",
           "sourceId": "psu-06",
           "locator": "Lesson 6 overview",
           "anchor": {
@@ -514,6 +536,7 @@
         },
         {
           "text": "Testing whether all of a model's slope parameters are zero uses the analysis of variance F-test.",
+          "label": "F-test for all slopes",
           "sourceId": "psu-06",
           "locator": "6.1 Three Types of Hypotheses",
           "anchor": {
@@ -535,6 +558,7 @@
       "keyPoints": [
         {
           "text": "A confidence interval estimates the mean response at a given x. A prediction interval covers one new response at that x.",
+          "label": "Confidence vs prediction intervals",
           "sourceId": "psu-03",
           "locator": "Lesson 3 overview",
           "anchor": {
@@ -544,6 +568,7 @@
         },
         {
           "text": "The standard error of a prediction has an extra MSE term that the standard error of the fit does not.",
+          "label": "Standard error of prediction",
           "sourceId": "psu-03",
           "locator": "3.3 Prediction Interval for a New Response",
           "anchor": {
@@ -553,6 +578,7 @@
         },
         {
           "text": "Both intervals are narrowest at the mean of the predictor values and widen further out.",
+          "label": "Interval width across predictor range",
           "sourceId": "psu-03",
           "locator": "3.3, Fig 3.5",
           "anchor": {
@@ -589,6 +615,7 @@
       "keyPoints": [
         {
           "text": "The simple linear regression model rests on four conditions, LINE: the mean response is a Linear function of x, and the errors are Independent, Normally distributed and of Equal variance at each x.",
+          "label": "The LINE conditions",
           "sourceId": "psu-04",
           "locator": "4.1 Background",
           "anchor": {
@@ -598,6 +625,7 @@
         },
         {
           "text": "All four can be stated at once: the errors are independent normal random variables with mean zero and constant variance.",
+          "label": "The four error assumptions",
           "sourceId": "psu-04",
           "locator": "4.1 Background",
           "anchor": {
@@ -633,6 +661,7 @@
       "keyPoints": [
         {
           "text": "A residuals-versus-fits plot (residuals against fitted values) is the most frequently created residual plot. It is used to detect non-linearity, unequal error variances and outliers.",
+          "label": "Residuals-versus-fits plot",
           "sourceId": "psu-04",
           "locator": "4.2 Residuals vs. Fits Plot",
           "anchor": {
@@ -642,6 +671,7 @@
         },
         {
           "text": "A residuals-versus-order plot checks independence by revealing serial correlation, but only when you know the order the data were collected in.",
+          "label": "Residuals-versus-order plot",
           "sourceId": "psu-04",
           "locator": "4.5 Residuals vs. Order Plot",
           "anchor": {
@@ -651,6 +681,7 @@
         },
         {
           "text": "A normal probability plot of the residuals checks the normality condition: if the plot is approximately linear, it is reasonable to assume the errors are normally distributed.",
+          "label": "Normal probability plot of residuals",
           "sourceId": "psu-04",
           "locator": "4.6 Normal Probability Plot of Residuals",
           "anchor": {
@@ -673,6 +704,7 @@
       "keyPoints": [
         {
           "text": "A common way to code a categorical predictor is a 0/1 indicator variable: 1 for observations with the characteristic of interest, 0 for the rest.",
+          "label": "Indicator variable coding",
           "sourceId": "psu-08",
           "locator": "8.1, coding the Smoking predictor",
           "anchor": {
@@ -682,6 +714,7 @@
         },
         {
           "text": "A categorical variable with c groups needs c - 1 indicator variables, each taking the value 0 or 1.",
+          "label": "Number of indicators per category",
           "sourceId": "psu-08",
           "locator": "8.4 Coding Qualitative Variables",
           "anchor": {
@@ -716,6 +749,7 @@
       "keyPoints": [
         {
           "text": "Two predictors interact when the effect of one on the response depends on the value of the other.",
+          "label": "When predictors interact",
           "sourceId": "psu-08",
           "locator": "8.6 Interaction Effects",
           "anchor": {
@@ -725,6 +759,7 @@
         },
         {
           "text": "When two predictors interact, a slope can no longer be read as the change in the mean response per unit increase in its predictor with the other predictors held constant.",
+          "label": "Slope interpretation with interactions",
           "sourceId": "psu-08",
           "locator": "8.6 Interaction Effects",
           "anchor": {
@@ -734,6 +769,7 @@
         },
         {
           "text": "If an interaction term stays in the model, its main effects stay too, whether or not they are significant. This is the hierarchy principle.",
+          "label": "The hierarchy principle",
           "sourceId": "psu-09",
           "locator": "9.6 Interactions Between Quantitative Predictors",
           "anchor": {
@@ -756,6 +792,7 @@
       "keyPoints": [
         {
           "text": "When a plot of the residuals against a predictor suggests a nonlinear relationship, a polynomial regression model is one way to account for it.",
+          "label": "Polynomial regression for nonlinearity",
           "sourceId": "psu-09",
           "locator": "9.7 Polynomial Regression",
           "anchor": {
@@ -765,6 +802,7 @@
         },
         {
           "text": "Polynomial regression is still linear regression, because the model is linear in its coefficients even when it is curved in x.",
+          "label": "Linearity in polynomial regression",
           "sourceId": "psu-09",
           "locator": "9.7 Polynomial Regression",
           "anchor": {
@@ -799,6 +837,7 @@
       "keyPoints": [
         {
           "text": "When the error variances are unequal, transforming the response and/or the predictors (or using weighted least squares) can fix it.",
+          "label": "Transformations for unequal variance",
           "sourceId": "psu-09",
           "locator": "Lesson 9 overview",
           "anchor": {
@@ -808,6 +847,7 @@
         },
         {
           "text": "Taking the logarithm of the response is one way to model a nonlinear relationship between the response and the predictors.",
+          "label": "Log transformation of the response",
           "sourceId": "psu-09",
           "locator": "Lesson 9 overview",
           "anchor": {
@@ -830,6 +870,7 @@
       "keyPoints": [
         {
           "text": "When multicollinearity exists, each coefficient depends on which other predictors are in the model, and the coefficients become less precise as more predictors are added.",
+          "label": "Effect of multicollinearity on coefficients",
           "sourceId": "psu-12",
           "locator": "Lesson 12 overview",
           "anchor": {
@@ -839,6 +880,7 @@
         },
         {
           "text": "Signs of multicollinearity include coefficient estimates that vary from model to model, and individual t-tests that are not significant while the overall F-test is.",
+          "label": "Signs of multicollinearity",
           "sourceId": "psu-12",
           "locator": "12.4 Detecting Multicollinearity Using Variance Inflation Factors",
           "anchor": {
@@ -848,6 +890,7 @@
         },
         {
           "text": "A variance inflation factor (VIF) quantifies how much the variance of an estimated coefficient is inflated; multicollinearity inflates those variances.",
+          "label": "Variance inflation factors",
           "sourceId": "psu-12",
           "locator": "12.4 Detecting Multicollinearity Using Variance Inflation Factors",
           "anchor": {
@@ -857,6 +900,7 @@
         },
         {
           "text": "To reduce multicollinearity that comes from the data, remove one or more of the offending predictors, or collect more data under different conditions.",
+          "label": "Reducing multicollinearity",
           "sourceId": "psu-12",
           "locator": "12.5 Reducing Data-based Multicollinearity",
           "anchor": {
@@ -891,6 +935,7 @@
       "keyPoints": [
         {
           "text": "An outlier is an observation whose response is very different from what the model predicts for it.",
+          "label": "Outliers in regression",
           "sourceId": "psu-11",
           "locator": "Lesson 11 overview",
           "anchor": {
@@ -900,6 +945,7 @@
         },
         {
           "text": "A high-leverage point has an unusual combination of predictor values. Outliers and high-leverage points are different, and one point can be both.",
+          "label": "High-leverage points",
           "sourceId": "psu-11",
           "locator": "Lesson 11 overview",
           "anchor": {
@@ -909,6 +955,7 @@
         },
         {
           "text": "Being unusual is not enough to matter: the question is whether a point has undue influence, meaning it actually changes the fitted model.",
+          "label": "Influence on the fitted model",
           "sourceId": "psu-11",
           "locator": "Lesson 11 overview",
           "anchor": {
@@ -932,6 +979,7 @@
       "keyPoints": [
         {
           "text": "Leaving out an important predictor (an underspecified model) is the worst case: coefficients and predictions are biased, and confidence intervals are wider than they should be.",
+          "label": "Underspecified models",
           "sourceId": "psu-10",
           "locator": "10.1 What if the Regression Equation Contains Wrong Predictors?",
           "anchor": {
@@ -941,6 +989,7 @@
         },
         {
           "text": "Stepwise regression builds a model by entering and removing candidate predictors one step at a time until no further change is justified.",
+          "label": "Stepwise regression",
           "sourceId": "psu-10",
           "locator": "10.2 Stepwise Regression",
           "anchor": {
@@ -950,6 +999,7 @@
         },
         {
           "text": "Model building should start from knowing your goal and research question, because knowing how you plan to use the model helps greatly when building it.",
+          "label": "Starting from research goals",
           "sourceId": "psu-10",
           "locator": "10.1, A goal and a strategy",
           "anchor": {
@@ -973,6 +1023,7 @@
       "keyPoints": [
         {
           "text": "Testing a model on the data it was trained on is a methodological mistake: a model that memorised that data would score perfectly yet predict nothing useful. This is overfitting.",
+          "label": "Overfitting on training data",
           "sourceId": "sklearn-cv",
           "locator": "3.1 Cross-validation: evaluating estimator performance",
           "anchor": {
@@ -982,6 +1033,7 @@
         },
         {
           "text": "To avoid overfitting, part of the available data is held out as a test set.",
+          "label": "The test set",
           "sourceId": "sklearn-cv",
           "locator": "3.1 Cross-validation: evaluating estimator performance",
           "anchor": {
@@ -991,6 +1043,7 @@
         },
         {
           "text": "Tuning a model's settings against the test set lets knowledge of it leak into the model, so yet another part of the data is held out as a validation set for tuning.",
+          "label": "The validation set",
           "sourceId": "sklearn-cv",
           "locator": "3.1 Cross-validation: evaluating estimator performance",
           "anchor": {
@@ -1013,6 +1066,7 @@
       "keyPoints": [
         {
           "text": "In k-fold cross-validation the training data are split into k folds. Each fold in turn is used to validate a model trained on the other k - 1.",
+          "label": "k-fold cross-validation",
           "sourceId": "sklearn-cv",
           "locator": "3.1 Cross-validation: evaluating estimator performance",
           "anchor": {
@@ -1022,6 +1076,7 @@
         },
         {
           "text": "The reported score is the average over the k folds. It costs more computation, but wastes less data than holding out one fixed validation set.",
+          "label": "Averaging across folds",
           "sourceId": "sklearn-cv",
           "locator": "3.1 Cross-validation: evaluating estimator performance",
           "anchor": {
@@ -1044,6 +1099,7 @@
       "keyPoints": [
         {
           "text": "Adding unimportant predictors, transformations and interactions makes a model more complicated and can overfit it, increasing uncertainty about the effects that matter.",
+          "label": "Model complexity and overfitting",
           "sourceId": "psu-12",
           "locator": "12.9 Other Regression Pitfalls: Overfitting",
           "anchor": {
@@ -1053,6 +1109,7 @@
         },
         {
           "text": "Training error is easy to compute but can dramatically underestimate the error on new observations.",
+          "label": "Training error vs new-data error",
           "sourceId": "islr2-05",
           "locator": "Slide 2: Training Error versus Test error",
           "anchor": {
@@ -1062,6 +1119,7 @@
         },
         {
           "text": "Searching a very large space of candidate models can overfit and give coefficient estimates with high variance.",
+          "label": "Large model search and variance",
           "sourceId": "islr2-06",
           "locator": "Slide 8: Stepwise Selection",
           "anchor": {
@@ -1098,6 +1156,7 @@
       "keyPoints": [
         {
           "text": "Ridge regression adds a penalty on the size of the coefficients to the least squares criterion.",
+          "label": "Ridge regression penalty",
           "sourceId": "sklearn-linear",
           "locator": "1.1.2 Ridge regression and classification",
           "anchor": {
@@ -1107,6 +1166,7 @@
         },
         {
           "text": "A tuning parameter sets how strongly coefficients are shrunk. More shrinkage makes them more robust to collinearity.",
+          "label": "The shrinkage tuning parameter",
           "sourceId": "sklearn-linear",
           "locator": "1.1.2 Ridge regression and classification",
           "anchor": {
@@ -1116,6 +1176,7 @@
         },
         {
           "text": "The lasso can shrink some coefficients exactly to zero, so it also selects predictors and gives sparser models.",
+          "label": "Lasso and predictor selection",
           "sourceId": "sklearn-linear",
           "locator": "1.1.3 Lasso",
           "anchor": {
@@ -1138,6 +1199,7 @@
       "keyPoints": [
         {
           "text": "Many estimators expect features centred near zero with comparable variance. Standardising (subtracting the mean, dividing by the standard deviation) is a common first step.",
+          "label": "Standardising features",
           "sourceId": "sklearn-preprocessing",
           "locator": "8.3.1 Standardization, or mean removal and variance scaling",
           "anchor": {
@@ -1147,6 +1209,7 @@
         },
         {
           "text": "Penalised linear models assume features on similar scales: a feature with a far larger variance can dominate the fit and stop the model learning from the others.",
+          "label": "Feature scale in penalised models",
           "sourceId": "sklearn-preprocessing",
           "locator": "8.3.1 Standardization, or mean removal and variance scaling",
           "anchor": {
@@ -1168,6 +1231,7 @@
       "keyPoints": [
         {
           "text": "Besides gradient descent, least squares can be minimised directly, without an iterative algorithm.",
+          "label": "Direct solution for least squares",
           "sourceId": "cs229-notes1",
           "locator": "Section 2, The normal equations (p. 8)",
           "anchor": {
@@ -1177,6 +1241,7 @@
         },
         {
           "text": "The direct method takes the derivatives of the cost with respect to each parameter and sets them to zero; solving those equations gives the coefficients.",
+          "label": "Deriving coefficients from derivatives",
           "sourceId": "cs229-notes1",
           "locator": "Section 2, The normal equations (p. 8)",
           "anchor": {
@@ -1200,6 +1265,7 @@
       "keyPoints": [
         {
           "text": "Gradient descent starts from an initial guess and repeatedly moves each parameter a small step downhill on the cost. The step size is the learning rate.",
+          "label": "Gradient descent and learning rate",
           "sourceId": "cs229-notes1",
           "locator": "Section 1, LMS algorithm (p. 5)",
           "anchor": {
@@ -1209,6 +1275,7 @@
         },
         {
           "text": "Batch gradient descent looks at every training example on every step.",
+          "label": "Batch gradient descent",
           "sourceId": "cs229-notes1",
           "locator": "Section 1, LMS algorithm (p. 7)",
           "anchor": {
@@ -1218,6 +1285,7 @@
         },
         {
           "text": "Stochastic gradient descent is efficient and easy to implement, but it is sensitive to feature scaling, so features should be standardised first.",
+          "label": "Stochastic gradient descent and scaling",
           "sourceId": "sklearn-sgd",
           "locator": "1.5 Stochastic Gradient Descent",
           "anchor": {

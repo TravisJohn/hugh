@@ -15,8 +15,8 @@ and survives in `/mastery`.
 
 Hugh stopped speaking on 2026-11-05. Realtime voice and ElevenLabs were both
 removed: Claude has no live voice, and the owner no longer wanted the spoken
-lines. In `/mastery`, Hugh's lines appear on screen and the learner answers out
-loud. The old path is on the `parked/voice-before-claude` tag. Past voice spend
+lines. In `/mastery`, the learner talks through the card's topics out loud and
+Hugh replies on screen. The old path is on the `parked/voice-before-claude` tag. Past voice spend
 stays in `/admin`, so `tts_chars`, `reserve_tts` and the old rates stay too.
 
 `/learn` — a second, standalone "Focused Learning" chat with its own topic
@@ -34,7 +34,7 @@ BY its goal. Do not reintroduce a chat surface outside `/study/[goalId]/ask`.
 | `/home/learn` → `/study/[goalId]` | Choose a course (one group at a time), then the goal's Kanban track |
 | `/study/[goalId]/ask` | Ask Hugh — tutor chat, diary, focus timer |
 | `/review/[milestoneId]` | Diary-grounded review quiz |
-| `/mastery/[milestoneId]` | Prove mastery out loud: Hugh's lines on screen with the learner's summary beside them, the learner answers by mic, the server records the score |
+| `/mastery/[milestoneId]` | Prove mastery out loud: the learner leads through a checklist of the card's topics by mic, Hugh ticks each one they explain and replies on screen, and the server adds up the ticks and records the score |
 | `/code/start` · `/code/drill` · `/code` | Pattern map, timed fluency drills, free-form Python sandbox |
 | `/cases` · `/cases/lab` | The Case Room (judgment cases) · Case Lab (long-form + CSV) |
 | `/cloud` | Cloud-services reference — assistant, margin notes, and a review list |
@@ -68,12 +68,11 @@ bulk of Claude spend, so cheap routes should use the cheap model:
 
 - **`claude-sonnet-4-6`** ($3/$15 per MTok) — reasoning-heavy generation where
   quality matters: track generation, backlog priority, quiz generation, diary
-  fact-check, learn/summarize, mastery **evaluate** (scoring), document topic
-  extraction, the Notes Coach (it reads screenshots), Notes summarise.
+  fact-check, learn/summarize, mastery's **turn check** (which topics a turn
+  covered, and Hugh's reply), document topic extraction, the Notes Coach (it reads screenshots), Notes summarise.
 - **`claude-haiku-4-5`** ($1/$5 per MTok — 5× cheaper input) — classification and
   short, low-stakes generation: similarity checks, hints, 5-whys refinement
-  questions, mastery **open**/**respond** (in-character conversational lines),
-  learn/chat, cloud/chat, code/chat, the topic-domain gate.
+  questions, learn/chat, cloud/chat, code/chat, the topic-domain gate.
 - **OpenAI** — `gpt-4o` for the admin architecture assistant, and nothing else.
 
 When in doubt, default to Sonnet. Only move a route to Haiku after confirming the
@@ -250,13 +249,6 @@ exception is drawn at *records tools*, not at "screens with a lot on them". A
 teaching surface that outgrows the viewport should lose padding or gain
 pagination — never a scrollbar.
 
-**One panel is the exception to that: Mastery's summary.** A blank canvas is hard
-to start talking from, so on 2026-11-05 the owner put the learner's summary beside
-the conversation (`app/mastery/[milestoneId]/SummaryPanel.tsx`). A summary has no
-fixed length, so the panel's body scrolls inside itself while the page stays
-locked. Below `lg` the panel is hidden rather than squeezed. This grants nothing to
-any other teaching surface.
-
 Those panes are also user-resizable and individually collapsible. The geometry
 lives in `lib/notes/layout.ts` (pure, unit-tested) and is driven by
 `useNotesLayout`; a collapsed pane becomes a clickable rail, never nothing. Pane
@@ -304,6 +296,12 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   basic fields. If a learner-written write starts failing, grant that one
   column in a new migration; never grant the table back. The milestone PATCH
   route accepts no results at all.
+- **Mastery's ticks are server-held.** A tick is what writes the result, so since
+  migration 063 they live in `mastery_sessions`, written only by
+  `tracker/mastery/session`: RLS on, no learner policy, no learner privilege. A
+  row holds which topics, never the learner's words, and expires after 7 days.
+  Each tick must quote the learner, and the server checks the quote is in what
+  they said (`lib/mastery/turnCheck.ts`).
 - **A card's concepts are server-written.** `milestones.concept_ids`
   (migration 060) names the reference-pack concepts a course card teaches, as
   `packId:conceptId`. Grounding keys off it, so no learner grant ever includes
@@ -316,7 +314,9 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   a course card, mastery criteria come from the pack's key points, never
   `learning_points`. A listed wrong belief left uncorrected fails the card
   whatever the score, and the feedback quotes the pack's correction and
-  source. A card with no `concept_ids` keeps every old behaviour. A course
+  source. A card with no `concept_ids` keeps every old behaviour, except in
+  mastery, where its checklist is its own `learning_points` (built on first
+  open) and turns are judged against its notes. A course
   card whose pack can't be loaded is refused with its own message, never
   taught ungrounded.
 - **The review answer key never reaches the browser.** Since migration 059 the
@@ -329,7 +329,7 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
   publish the key.
 - **Retention:** what a learner made (including `goal_answers`) is kept until
   they delete it. Only temporary or system records expire, by pg_cron jobs in
-  migrations 052 and 059. The windows live in `lib/retention.ts`, which `/privacy` renders
+  migrations 052, 059 and 063. The windows live in `lib/retention.ts`, which `/privacy` renders
   and a test holds equal to the SQL — adding an expiry means changing both.
 
 ## Key Design Decisions
@@ -342,8 +342,9 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
 | Review quizzes | Must quote verified diary lines | A quiz on untaught material is noise |
 | Cases | Static JSON, zero runtime AI | Fast, cheap, portable; AI is used to author them offline |
 | Cost accounting | Per-row, per-model | Models differ by up to 20×; one blended rate mis-states spend |
-| Mastery's voice | Hugh's lines on screen, the learner answers by mic | Claude has no live voice, and one scored path runs the same on the plan and the live site |
-| Mastery's cheat sheet | The learner's full summary sits beside the conversation, read-only while they talk | A blank canvas is hard to start from. The owner accepted on 2026-11-05 that a pass at 7+ may therefore have been read out, and that a card with no summary yet costs a Sonnet call and a short wait. Do not tighten or hide it without asking. Before a pass the summary is written as a guide that claims nothing; after one, as a keepsake (`mastery_validated` decides, not whether a score exists) |
+| Mastery's format | The learner leads by mic, in any order, and Hugh replies on screen in a line. No scenario, persona or opening question | The owner asked for this on 2026-11-05. Claude has no live voice, and one scored path runs the same on the plan and the live site. Hugh may ask them to expand on what they just said, but never raises the next topic or gives an answer |
+| Mastery's checklist | Topic names only: a `label` on each key point, at most 6 words and 44 characters | Replaced the full-summary panel on 2026-11-05, because a pass could be read out from it. A label says what to talk about, never what to say. It was also the only teaching-screen scrollbar, now gone. Do not bring back explanations without asking |
+| Mastery's score | The share of the card's topics ticked, out of 10, rounded down, with no model call at Finish. A pass is 7+ with no listed wrong belief left standing | The owner asked for it to be deterministic. Fixed: the list, ticks that never come off, the arithmetic, and that each tick quotes the learner. Not fixed: whether a sentence explains a topic correctly, which is Sonnet's call. A tick means "said something correct and specific", stricter than "touched" |
 
 ## DO NOT Build (deferred)
 - Voice analysis: filler words, speech pace, volume, confidence scoring
@@ -359,7 +360,7 @@ component or a route that imports `server-only`. See `lib/notes/layout.ts`,
 - Call Anthropic or OpenAI from client components
 - Use the `any` TypeScript type
 - Add scrollable containers to a teaching screen (see Rule 4 for the two
-  records-tool exceptions and Mastery's summary panel)
+  records-tool exceptions)
 - Hardcode API keys, or a model string in more than one place per route
 - Spend tokens without calling `logUsage` with the model
 - Swallow a Supabase `error` — an unchecked write is how a "ready" track shipped

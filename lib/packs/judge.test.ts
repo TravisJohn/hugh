@@ -11,8 +11,8 @@ function concept(id: string, withMisconception = false): PackConcept {
   return {
     id, title: id, outcome: `Explain ${id}.`,
     keyPoints: [
-      { text: `${id} point one.`, sourceId: "src", locator: "L1", anchor },
-      { text: `${id} point two.`, sourceId: "src", locator: "L1", anchor },
+      { text: `${id} point one.`, label: `${id} one`, sourceId: "src", locator: "L1", anchor },
+      { text: `${id} point two.`, label: `${id} two`, sourceId: "src", locator: "L1", anchor },
     ],
     ...(withMisconception ? { misconceptions: [{ claim: `${id} wrong belief.`, correction: `${id} right answer.`, sourceId: "src", locator: "L1", anchor }] } : {}),
   };
@@ -49,6 +49,11 @@ describe("judgedItems", () => {
 describe("fingerprint", () => {
   it("does not change when only the status changes, so recording a check cannot break it", () => {
     expect(fingerprint({ ...pack(), status: "machine-checked" })).toBe(fingerprint(pack()));
+  });
+  it("does not change when a topic label changes, because a label makes no claim for the judge to check", () => {
+    const edited = pack();
+    edited.concepts[1].keyPoints[0] = { ...edited.concepts[1].keyPoints[0], label: "Another name" };
+    expect(fingerprint(edited)).toBe(fingerprint(pack()));
   });
   it("changes when a key point's wording changes, so an edit after the check is caught", () => {
     const edited = pack();
